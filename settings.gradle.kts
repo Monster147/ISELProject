@@ -3,5 +3,9 @@ plugins {
 }
 rootProject.name = "2025-projetoFinal"
 
-include("backend")
 include("frontend")
+include("backend:app")
+include("backend:domain")
+include("backend:http")
+include("backend:repo")
+include("backend:service")
