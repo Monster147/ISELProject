@@ -1,0 +1,24 @@
+{
+    "report_type": [
+      {
+        "id": "automovel",
+        "name": "Automóvel"
+      },
+      {
+        "id": "patrimonial",
+        "name": "Patrimonial"
+      },
+      {
+        "id": "saude",
+        "name": "Saúde"
+      },
+      {
+        "id": "trabalho",
+        "name": "Trabalho"
+      },
+      {
+        "id": "natural",
+        "name": "Natural"
+      }
+    ]
+}

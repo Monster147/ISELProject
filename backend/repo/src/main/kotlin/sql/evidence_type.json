@@ -1,0 +1,24 @@
+{
+  "report_type": [
+    {
+      "id": "foto",
+      "name": "Foto"
+    },
+    {
+      "id": "documento",
+      "name": "Documento"
+    },
+    {
+      "id": "video",
+      "name": "Vídeo"
+    },
+    {
+      "id": "audio",
+      "name": "Aúdio"
+    },
+    {
+      "id": "declaracao",
+      "name": "Declaração"
+    }
+  ]
+}
