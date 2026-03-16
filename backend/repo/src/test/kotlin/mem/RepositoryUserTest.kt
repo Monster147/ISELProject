@@ -1,0 +1,4 @@
+package mem
+
+class RepositoryUserTest {
+}

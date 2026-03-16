@@ -1,0 +1,4 @@
+package jdbi
+
+class RepositoryJdbiUserTest {
+}
