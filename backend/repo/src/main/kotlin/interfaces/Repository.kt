@@ -1,0 +1,13 @@
+package interfaces
+
+interface Repository<T> {
+    fun findById(id: Int): T? // Get an entity by its ID
+
+    fun findAll(): List<T> // Retrieve all entities
+
+    fun save(entity: T) // Save a new or existing entity
+
+    fun deleteById(id: Int): Boolean // Delete an entity by its ID
+
+    fun clear() // Delete all entries
+}

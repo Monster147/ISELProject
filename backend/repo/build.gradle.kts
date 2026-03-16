@@ -9,11 +9,12 @@ repositories {
 }
 
 dependencies {
+    api(project(":backend:domain"))
     testImplementation(kotlin("test"))
 }
 
 kotlin {
-    jvmToolchain(22)
+    jvmToolchain(21)
 }
 
 tasks.test {
