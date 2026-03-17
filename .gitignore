@@ -50,3 +50,5 @@ bin/
 local.properties
 
 .idea/
+
+package-lock.json

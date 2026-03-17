@@ -9,6 +9,23 @@ repositories {
 }
 
 dependencies {
+    implementation("org.springframework:spring-webmvc:6.2.11")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+    // To use Servlet API
+    implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
+
+    // To get password encode
+    api("org.springframework.security:spring-security-core:6.5.5")
+
+    testImplementation("org.springframework:spring-test:6.2.11")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("com.github.RetroAchievements:api-kotlin:2.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
     testImplementation(kotlin("test"))
 }
 

@@ -24,7 +24,7 @@ CREATE TABLE dbo.intervenor(
     id_type                 VARCHAR(255)       NOT NULL,
     name                    VARCHAR(255)      NOT NULL,
     contact_info            VARCHAR(255)      NOT NULL,
-    address                 VARCHAR(255)      NOT NULL,
+    address                 VARCHAR(255)      NOT NULL
 );
 
 CREATE TABLE dbo.report
