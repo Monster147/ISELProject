@@ -1,4 +1,5 @@
 import {StyleSheet, Text, View, Image} from "react-native"
+import {Link} from 'expo-router'
 import Logo from '../assets/img/isel.png'
 
 
@@ -12,6 +13,8 @@ const Home = () =>{
             <View style={styles.cart}>
                 <Text>This is a cart</Text>
             </View>
+            <Link href="/about" style={styles.link}>About Page</Link>
+            <Link href="/contact" style={styles.link}>Contact Page</Link>
         </View>
     )
 }
@@ -39,5 +42,9 @@ const styles = StyleSheet.create({
         width: 150,
         height: 150,
         marginVertical: 20
+    },
+    link: {
+        marginVertical: 10,
+        borderBottomWidth: 1,
     }
 })
