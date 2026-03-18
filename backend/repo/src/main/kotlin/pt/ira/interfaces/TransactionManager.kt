@@ -1,4 +1,4 @@
-package interfaces
+package pt.ira.interfaces
 
 interface TransactionManager {
     /**

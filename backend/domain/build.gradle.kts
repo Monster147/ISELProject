@@ -2,6 +2,8 @@ plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
+    id("org.springframework.boot") version "3.5.6"
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
 repositories {
@@ -24,7 +26,6 @@ dependencies {
 
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("com.github.RetroAchievements:api-kotlin:2.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
     testImplementation(kotlin("test"))
 }

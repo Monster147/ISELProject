@@ -1,11 +1,11 @@
-package mem
+package pt.ira.mem
 
-import PasswordValidationInfo
-import Role
-import Token
-import TokenValidationInfo
-import User
-import interfaces.RepositoryUser
+import pt.ira.PasswordValidationInfo
+import pt.ira.Role
+import pt.ira.Token
+import pt.ira.TokenValidationInfo
+import pt.ira.User
+import pt.ira.interfaces.RepositoryUser
 import java.time.Instant
 
 class RepositoryUserMem : RepositoryUser {

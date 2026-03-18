@@ -1,3 +1,5 @@
+package pt.ira
+
 /**
  * Strongly typed information of token hashed by a TokenEncoder.
  */

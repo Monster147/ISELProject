@@ -1,3 +1,5 @@
+package pt.ira
+
 enum class Role (
     val id: Int,
     val displayName: String,

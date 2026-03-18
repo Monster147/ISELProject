@@ -1,3 +1,5 @@
+package pt.ira
+
 import java.time.Instant
 
 data class Token(

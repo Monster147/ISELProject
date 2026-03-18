@@ -1,4 +1,4 @@
-package interfaces
+package pt.ira.interfaces
 
 /**
  * The lifecycle of a Transaction is managed outside the scope of the IoC/DI container.

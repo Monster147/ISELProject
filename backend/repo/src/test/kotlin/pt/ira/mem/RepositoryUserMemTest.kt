@@ -1,11 +1,12 @@
-package mem
+package pt.ira.mem
 
-import PasswordValidationInfo
-import Token
-import TokenValidationInfo
-import interfaces.RepositoryUser
+import pt.ira.PasswordValidationInfo
+import pt.ira.Token
+import pt.ira.TokenValidationInfo
+import pt.ira.interfaces.RepositoryUser
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import pt.ira.Role
 import java.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

@@ -1,10 +1,10 @@
-package interfaces
+package pt.ira.interfaces
 
-import PasswordValidationInfo
-import Role
-import Token
-import User
-import TokenValidationInfo
+import pt.ira.PasswordValidationInfo
+import pt.ira.Role
+import pt.ira.Token
+import pt.ira.User
+import pt.ira.TokenValidationInfo
 import java.time.Instant
 
 interface RepositoryUser: Repository<User> {

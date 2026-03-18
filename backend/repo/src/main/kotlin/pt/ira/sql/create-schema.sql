@@ -20,11 +20,12 @@ CREATE TABLE dbo.users
 CREATE TYPE dbo.report_status AS ENUM ('submetido', 'aprovado', 'rejeitado', 'em edição');
 
 CREATE TABLE dbo.intervenor(
-    id                      VARCHAR(255)       PRIMARY KEY,
+    id                      SERIAL             PRIMARY KEY,
+    idNumber                VARCHAR(255)       UNIQUE NOT NULL,
     id_type                 VARCHAR(255)       NOT NULL,
-    name                    VARCHAR(255)      NOT NULL,
-    contact_info            VARCHAR(255)      NOT NULL,
-    address                 VARCHAR(255)      NOT NULL
+    name                    VARCHAR(255)       NOT NULL,
+    contact_info            VARCHAR(255)       UNIQUE NOT NULL,
+    address                 VARCHAR(255)       NOT NULL
 );
 
 CREATE TABLE dbo.report

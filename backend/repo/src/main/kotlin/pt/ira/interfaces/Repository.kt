@@ -1,4 +1,4 @@
-package interfaces
+package pt.ira.interfaces
 
 interface Repository<T> {
     fun findById(id: Int): T? // Get an entity by its ID

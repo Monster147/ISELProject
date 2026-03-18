@@ -1,5 +1,8 @@
+package pt.ira
+
 data class Intervenor(
-    val id: String,
+    val id: Int,
+    val idNumber: String,
     val idType: String,
     val name: String,
     val contactInfo: String,

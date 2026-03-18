@@ -1,3 +1,5 @@
+package pt.ira
+
 data class Evidence (
     val id: Int,
     val type: String,      // JSONB
