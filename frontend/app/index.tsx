@@ -1,21 +1,30 @@
 import {StyleSheet, Text, View, Image} from "react-native"
 import {Link} from 'expo-router'
 import Logo from '../assets/img/isel.png'
+import ThemedView from "../components/ThemedView";
+import Spacer from "../components/Spacer";
+import ThemedText from "../components/ThemedText";
 
 
 const Home = () =>{
     return (
-        <View style={styles.container}>
-            <Image source={Logo} style={styles.img}/>
-            <Image source={{uri: 'https://reactnative.dev/img/tiny_logo.png'}} style={styles.img}/>
-            <Text style={styles.title}>The Number 1</Text>
-            <Text style={{marginTop: 10, marginBottom: 30}}>The Number 2</Text>
-            <View style={styles.cart}>
-                <Text>This is a cart</Text>
-            </View>
-            <Link href="/about" style={styles.link}>About Page</Link>
-            <Link href="/contact" style={styles.link}>Contact Page</Link>
-        </View>
+        <ThemedView style={styles.container}>
+            <Image source={Logo}/>
+            <Spacer height={20}/>
+
+            <ThemedText style={styles.title} title={true}>The Number 1</ThemedText>
+
+            <Spacer height={10}/>
+            <ThemedText> Insurance Reporter App </ThemedText>
+            <Spacer/>
+
+            <Link href="/about" style={styles.link}>
+                <ThemedText>About Page</ThemedText>
+            </Link>
+            <Link href="/contact" style={styles.link}>
+                <ThemedText>Contact Page</ThemedText>
+            </Link>
+        </ThemedView>
     )
 }
 
@@ -37,11 +46,6 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 5,
         boxShadow: '4px 4px rgba(0,0,0,0.1)'
-    },
-    img: {
-        width: 150,
-        height: 150,
-        marginVertical: 20
     },
     link: {
         marginVertical: 10,
