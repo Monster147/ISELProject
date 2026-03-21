@@ -5,7 +5,7 @@ import Spacer from "../../components/Spacer";
 
 const Occurrence = () =>{
     return(
-        <ThemedView style={styles.container}>
+        <ThemedView style={styles.container} safe={true}>
             <Spacer />
             <ThemedText title={true} style={styles.heading}>
                 Occurence List
@@ -19,7 +19,6 @@ export default Occurrence
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'stretch',
     },
     heading:{

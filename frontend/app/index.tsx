@@ -21,7 +21,9 @@ const Home = () =>{
             <Link href="/login" style={styles.link}>
                 <ThemedText>Login Page</ThemedText>
             </Link>
-
+            <Link href="/register" style={styles.link}>
+                <ThemedText>Register Page</ThemedText>
+            </Link>
             <Link href="/about" style={styles.link}>
                 <ThemedText>About Page</ThemedText>
             </Link>

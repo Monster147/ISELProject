@@ -3,9 +3,9 @@ import ThemedText from "../../components/ThemedText";
 import ThemedView from "../../components/ThemedView";
 import Spacer from "../../components/Spacer";
 
-const Occurence = () =>{
+const Profile = () =>{
     return(
-        <ThemedView style={styles.container}>
+        <ThemedView style={styles.container} safe={true}>
             <Spacer />
             <ThemedText title={true} style={styles.heading}>
                 Your Profile
@@ -14,12 +14,11 @@ const Occurence = () =>{
     )
 }
 
-export default Occurence
+export default Profile
 
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'stretch',
     },
     heading:{
