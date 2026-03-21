@@ -1,8 +1,10 @@
 package pt.ira
 
+import com.fasterxml.jackson.databind.JsonNode
+
 data class Evidence (
     val id: Int,
-    val type: String,      // JSONB
+    val type: JsonNode,      // JSONB
     val filePath: String,
     val location: String,
     val description: String,
