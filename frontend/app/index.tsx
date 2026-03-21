@@ -18,11 +18,21 @@ const Home = () =>{
             <ThemedText> Insurance Reporter App </ThemedText>
             <Spacer/>
 
+            <Link href="/login" style={styles.link}>
+                <ThemedText>Login Page</ThemedText>
+            </Link>
+
             <Link href="/about" style={styles.link}>
                 <ThemedText>About Page</ThemedText>
             </Link>
             <Link href="/contact" style={styles.link}>
                 <ThemedText>Contact Page</ThemedText>
+            </Link>
+            <Link href="/profile" style={styles.link}>
+                <ThemedText>Profile Page</ThemedText>
+            </Link>
+            <Link href="/occurrence" style={styles.link}>
+                <ThemedText>Occurrence Page</ThemedText>
             </Link>
         </ThemedView>
     )
