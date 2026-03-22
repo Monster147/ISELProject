@@ -6,4 +6,5 @@ import pt.ira.User
 interface RepositoryRole: Repository<Role> {
    fun createRole(name: String): Role
    fun deleteRoleByName(name: String)
+   fun findByName(name: String): Role?
 }

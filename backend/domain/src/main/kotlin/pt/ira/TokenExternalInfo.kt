@@ -1,0 +1,8 @@
+package pt.ira
+
+import java.time.Instant
+
+data class TokenExternalInfo(
+    val tokenValue: String,
+    val tokenExpiration: Instant,
+)

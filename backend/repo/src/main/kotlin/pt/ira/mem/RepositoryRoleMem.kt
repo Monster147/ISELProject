@@ -16,6 +16,8 @@ class RepositoryRoleMem: RepositoryRole {
         roles.removeIf { it.displayName == name }
     }
 
+    override fun findByName(name: String): Role? = roles.find { it.displayName == name }
+
     override fun findById(id: Int): Role? {
         return roles.find { it.id == id }
     }

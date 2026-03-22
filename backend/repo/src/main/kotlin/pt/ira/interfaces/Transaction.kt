@@ -12,6 +12,7 @@ interface Transaction {
     val repoIntervenor: RepositoryIntervenor
     val repoReport: RepositoryReport
     val repoEvidence: RepositoryEvidence
+    val repoRole: RepositoryRole
 
     fun rollback()
 }
