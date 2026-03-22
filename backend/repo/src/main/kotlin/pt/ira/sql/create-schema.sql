@@ -16,6 +16,15 @@ CREATE TABLE dbo.users
     roles                   INT[]              NOT NULL,
 );
 
+create table dbo.Tokens
+(
+    token_validation VARCHAR(256) primary key,
+    user_id          int references dbo.Users (id),
+    created_at       bigint not null,
+    last_used_at     bigint not null
+);
+
+
 CREATE TYPE dbo.report_status AS ENUM ('submetido', 'aprovado', 'rejeitado', 'em edição');
 
 CREATE TABLE dbo.intervenor(
@@ -37,7 +46,9 @@ CREATE TABLE dbo.report
     type                    JSONB              NOT NULL,
     addons                  JSONB              NOT NULL,
     created_at              TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at              TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at              TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    editors                 INT[]              NOT NULL REFERENCES dbo.users (id) ON DELETE CASCADE,
+    intervenors             INT[]              NOT NULL REFERENCES dbo.intervenor (id) ON DELETE CASCADE
 );
 
 CREATE TABLE dbo.report_users(

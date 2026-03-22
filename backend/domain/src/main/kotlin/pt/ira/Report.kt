@@ -12,6 +12,6 @@ data class Report(
     val addons: JsonNode,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
-    val editors: List<User> = listOf(),
-    val intervenors: List<Intervenor> = listOf(),
+    val editors: List<Int> = listOf(),
+    val intervenors: List<Int> = listOf(),
 )

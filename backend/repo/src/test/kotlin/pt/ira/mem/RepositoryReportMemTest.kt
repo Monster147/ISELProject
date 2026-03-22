@@ -1,19 +1,17 @@
 package pt.ira.mem
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertNotNull
+import org.junit.jupiter.api.assertNull
 import pt.ira.Intervenor
 import pt.ira.PasswordValidationInfo
 import pt.ira.ReportStatus
-import pt.ira.Role
 import pt.ira.User
 import pt.ira.interfaces.RepositoryReport
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 class RepositoryReportMemTest {
 
@@ -56,9 +54,9 @@ class RepositoryReportMemTest {
     @Test
     fun `findByStatus returns correct reports`() {
         val r1 = repo.createReport(1, "R1", "D1", json("""{"t":"1"}"""), json("""{}"""))
-        val r2 = repo.createReport(1, "R2", "D2", json("""{"t":"2"}"""), json("""{}"""))
+        repo.createReport(1, "R2", "D2", json("""{"t":"2"}"""), json("""{}"""))
 
-        repo.updateStatus(r1.id, ReportStatus.APPROVED)
+        repo.updateStatus(r1, ReportStatus.APPROVED)
 
         val approved = repo.findByStatus(ReportStatus.APPROVED)
 
@@ -70,13 +68,12 @@ class RepositoryReportMemTest {
         val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
         val user = User(1, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
 
-        val result = repo.addEditor(report.id, user)
+        val updatedReport = repo.addEditor(report, user)
+        val updatedFromRepo = repo.findById(report.id)
 
-        val updated = repo.findById(report.id)
-
-        assertTrue(result)
-        assertNotNull(updated)
-        assertTrue(updated.editors.contains(user))
+        assertNotNull(updatedFromRepo)
+        assertTrue(updatedFromRepo.editors.contains(user.id))
+        assertEquals(updatedReport, updatedFromRepo)
     }
 
     @Test
@@ -84,10 +81,10 @@ class RepositoryReportMemTest {
         val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
         val user = User(1, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
 
-        repo.addEditor(report.id, user)
-        val result = repo.addEditor(report.id, user)
+        val once = repo.addEditor(report, user)
+        val twice = repo.addEditor(once, user)
 
-        assertFalse(result)
+        assertEquals(1, twice.editors.count { it == user.id })
     }
 
     @Test
@@ -95,33 +92,46 @@ class RepositoryReportMemTest {
         val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
         val user = User(1, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
 
-        repo.addEditor(report.id, user)
-        val removed = repo.removeEditor(report.id, user.id)
+        val withEditor = repo.addEditor(report, user)
+        val removed = repo.removeEditor(withEditor, user)
 
         val updated = repo.findById(report.id)
 
-        assertTrue(removed)
         assertNotNull(updated)
         assertTrue(updated.editors.isEmpty())
+        assertEquals(removed, updated)
+    }
+
+    @Test
+    fun `removeEditor does nothing if editor not present`() {
+        val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
+        val user = User(1, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
+
+        val removed = repo.removeEditor(report, user)
+
+        val updated = repo.findById(report.id)
+
+        assertNotNull(updated)
+        assertEquals(report, removed)
+        assertEquals(report, updated)
     }
 
     @Test
     fun `updateStatus changes report status`() {
         val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
 
-        val result = repo.updateStatus(report.id, ReportStatus.APPROVED)
+        val updatedReport = repo.updateStatus(report, ReportStatus.APPROVED)
+        val updatedFromRepo = repo.findById(report.id)
 
-        val updated = repo.findById(report.id)
-
-        assertTrue(result)
-        assertNotNull(updated)
-        assertEquals(ReportStatus.APPROVED, updated.status)
+        assertNotNull(updatedFromRepo)
+        assertEquals(ReportStatus.APPROVED, updatedFromRepo.status)
+        assertEquals(updatedReport, updatedFromRepo)
     }
 
     @Test
     fun `findByCreatorId returns correct reports`() {
         val r1 = repo.createReport(1, "R1", "D1", json("""{}"""), json("""{}"""))
-        val r2 = repo.createReport(2, "R2", "D2", json("""{}"""), json("""{}"""))
+        repo.createReport(2, "R2", "D2", json("""{}"""), json("""{}"""))
 
         val result = repo.findByCreatorId(1)
 
@@ -145,7 +155,7 @@ class RepositoryReportMemTest {
     fun `deleteById removes report`() {
         val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
 
-        val deleted = repo.deleteById(report.id)
+        repo.deleteById(report.id)
         val found = repo.findById(report.id)
 
         assertNull(found)
@@ -156,7 +166,6 @@ class RepositoryReportMemTest {
         val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
 
         val updated = report.copy(title = "Updated")
-
         repo.save(updated)
 
         val found = repo.findById(report.id)
@@ -180,13 +189,12 @@ class RepositoryReportMemTest {
         val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
         val intervenor = Intervenor(1, "159874598", "CC", "TestName", "958768396", "RUA TESTE")
 
-        val result = repo.addIntervenor(report.id, intervenor)
+        val updatedReport = repo.addIntervenor(report, intervenor)
+        val updatedFromRepo = repo.findById(report.id)
 
-        val updated = repo.findById(report.id)
-
-        assertTrue(result)
-        assertNotNull(updated)
-        assertTrue(updated.intervenors.contains(intervenor))
+        assertNotNull(updatedFromRepo)
+        assertTrue(updatedFromRepo.intervenors.contains(intervenor.id))
+        assertEquals(updatedReport, updatedFromRepo)
     }
 
     @Test
@@ -194,10 +202,10 @@ class RepositoryReportMemTest {
         val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
         val intervenor = Intervenor(1, "159874598", "CC", "TestName", "958768396", "RUA TESTE")
 
-        repo.addIntervenor(report.id, intervenor)
-        val result = repo.addIntervenor(report.id, intervenor)
+        val once = repo.addIntervenor(report, intervenor)
+        val twice = repo.addIntervenor(once, intervenor)
 
-        assertFalse(result)
+        assertEquals(1, twice.intervenors.count { it == intervenor.id })
     }
 
     @Test
@@ -205,45 +213,38 @@ class RepositoryReportMemTest {
         val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
         val intervenor = Intervenor(1, "159874598", "CC", "TestName", "958768396", "RUA TESTE")
 
-        repo.addIntervenor(report.id, intervenor)
-        val removed = repo.removeIntervenor(report.id, intervenor)
+        val withIntervenor = repo.addIntervenor(report, intervenor)
+        val removed = repo.removeIntervenor(withIntervenor, intervenor)
 
         val updated = repo.findById(report.id)
 
-        assertTrue(removed)
         assertNotNull(updated)
         assertTrue(updated.intervenors.isEmpty())
+        assertEquals(removed, updated)
     }
 
     @Test
-    fun `removeIntervenor returns false if not present`() {
+    fun `removeIntervenor does nothing if not present`() {
         val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
         val intervenor = Intervenor(1, "159874598", "CC", "TestName", "958768396", "RUA TESTE")
 
-        val result = repo.removeIntervenor(report.id, intervenor)
+        val removed = repo.removeIntervenor(report, intervenor)
+        val updated = repo.findById(report.id)
 
-        assertFalse(result)
+        assertNotNull(updated)
+        assertEquals(report, removed)
+        assertEquals(report, updated)
     }
 
     @Test
     fun `findByIntervenor returns correct reports`() {
         val intervenor = Intervenor(1, "159874598", "CC", "TestName", "958768396", "RUA TESTE")
-
         val r1 = repo.createReport(1, "R1", "D1", json("""{}"""), json("""{}"""))
 
-        repo.addIntervenor(r1.id, intervenor)
+        repo.addIntervenor(r1, intervenor)
 
         val result = repo.findByIntervenor(intervenor)
 
         assertEquals(listOf(repo.findById(r1.id)), result)
-    }
-
-    @Test
-    fun `addIntervenor returns false if report does not exist`() {
-        val intervenor = Intervenor(1, "159874598", "CC", "TestName", "958768396", "RUA TESTE")
-
-        val result = repo.addIntervenor(999, intervenor)
-
-        assertFalse(result)
     }
 }

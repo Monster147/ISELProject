@@ -14,7 +14,7 @@ class RepositoryReportMem: RepositoryReport {
     private val reports = mutableListOf<Report>()
 
     override fun createReport(
-        creatorId: Int?,
+        creatorId: Int,
         title: String,
         description: String,
         type: JsonNode,
@@ -36,55 +36,56 @@ class RepositoryReportMem: RepositoryReport {
 
     override fun findByEditor(userId: Int): List<Report> =
         reports.filter {
-            it.editors.any { editor -> editor.id == userId }
+            it.editors.any { editor -> editor == userId }
         }
 
-    override fun addEditor(reportId: Int, user: User): Boolean {
-        val report = findById(reportId) ?: return false
-        if (report.editors.any { it.id == user.id }) return false
-
-        return updateReport(reportId) {
-            it.copy(editors = it.editors + user)
-        }
+    override fun addEditor(report: Report, user: User): Report {
+        if (report.editors.any { it == user.id }) return report
+        val updatedReport = report.copy(editors = report.editors + user.id, updatedAt = System.currentTimeMillis())
+        save(updatedReport)
+        return updatedReport
     }
 
-    override fun removeEditor(reportId: Int, userId: Int): Boolean {
-        val report = findById(reportId) ?: return false
-        if (report.editors.none { it.id == userId }) return false
-
-        return updateReport(reportId) {
-            it.copy(editors = it.editors.filterNot { editor -> editor.id == userId })
-        }
+    override fun removeEditor(report: Report, user: User): Report {
+        if (report.editors.none { it == user.id }) return report
+        val updatedReport = report.copy(
+            editors = report.editors - user.id,
+            updatedAt = System.currentTimeMillis()
+        )
+        save(updatedReport)
+        return updatedReport
     }
 
-    override fun updateStatus(reportId: Int, status: ReportStatus): Boolean {
-        return updateReport(reportId) {
-            it.copy(status = status)
-        }
+    override fun updateStatus(report: Report, status: ReportStatus): Report{
+        val updatedReport = report.copy(status = status, updatedAt = System.currentTimeMillis())
+        save(updatedReport)
+        return updatedReport
     }
 
     override fun findByType(type: JsonNode): List<Report> =
         reports.filter { it.type == type }
 
     override fun findByIntervenor(intervenor: Intervenor): List<Report> =
-        reports.filter{ it.intervenors.contains(intervenor) }
+        reports.filter{ it.intervenors.contains(intervenor.id) }
 
-    override fun addIntervenor(reportId: Int, intervenor: Intervenor): Boolean {
-        val report = findById(reportId) ?: return false
-        if (report.intervenors.any { it.id == intervenor.id }) return false
-
-        return updateReport(reportId) {
-            it.copy(intervenors = it.intervenors + intervenor)
-        }
+    override fun addIntervenor(report: Report, intervenor: Intervenor): Report {
+        if (report.intervenors.any { it == intervenor.id }) return report
+        val updated = report.copy(
+            intervenors = report.intervenors + intervenor.id,
+            updatedAt = System.currentTimeMillis()
+        )
+        save(updated)
+        return updated
     }
 
-    override fun removeIntervenor(reportId: Int, intervenor: Intervenor): Boolean {
-        val report = findById(reportId) ?: return false
-        if (report.intervenors.none { it.id == intervenor.id }) return false
-
-        return updateReport(reportId) {
-            it.copy(intervenors = it.intervenors.filterNot { i -> i.id == intervenor.id })
-        }
+    override fun removeIntervenor(report: Report, intervenor: Intervenor): Report {
+        if (report.intervenors.none { it == intervenor.id }) return report
+        val updated = report.copy(
+            intervenors = report.intervenors - intervenor.id,
+            updatedAt = System.currentTimeMillis()
+        )
+        save(updated)
+        return updated
     }
 
     override fun findById(id: Int): Report? = reports.find { it.id == id }
@@ -102,15 +103,5 @@ class RepositoryReportMem: RepositoryReport {
 
     override fun clear() {
         reports.clear()
-    }
-
-    private fun updateReport(
-        reportId: Int,
-        updater: (Report) -> Report
-    ): Boolean {
-        val currReport = reports.find { it.id == reportId } ?: return false
-        val updatedReport = updater(currReport).copy(updatedAt = System.currentTimeMillis())
-        save(updatedReport)
-        return true
     }
 }

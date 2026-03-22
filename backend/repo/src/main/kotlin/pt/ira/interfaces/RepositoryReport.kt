@@ -8,7 +8,7 @@ import pt.ira.User
 
 interface RepositoryReport: Repository<Report> {
     fun createReport(
-        creatorId: Int?,
+        creatorId: Int,
         title: String,
         description: String,
         type: JsonNode,
@@ -22,31 +22,31 @@ interface RepositoryReport: Repository<Report> {
     fun findByEditor(userId: Int): List<Report>
 
     fun addEditor(
-        reportId: Int,
+        report: Report,
         user: User
-    ): Boolean
+    ) : Report
 
     fun removeEditor(
-        reportId: Int,
-        userId: Int
-    ): Boolean
+        report: Report,
+        user: User
+    ) : Report
 
     fun updateStatus(
-        reportId: Int,
+        report: Report,
         status: ReportStatus
-    ): Boolean
+    ) : Report
 
     fun findByType(type: JsonNode): List<Report>
 
     fun findByIntervenor(intervenor: Intervenor): List<Report>
 
     fun addIntervenor(
-        reportId: Int,
+        report: Report,
         intervenor: Intervenor
-    ): Boolean
+    ) : Report
 
     fun removeIntervenor(
-        reportId: Int,
+        report: Report,
         intervenor: Intervenor
-    ) : Boolean
+    ) : Report
 }
