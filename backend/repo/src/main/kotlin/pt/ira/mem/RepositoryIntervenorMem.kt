@@ -23,9 +23,9 @@ class RepositoryIntervenorMem: RepositoryIntervenor {
         intervenors.add(entity)
     }
 
-    override fun deleteById(id: Int): Boolean =
+    override fun deleteById(id: Int) {
         intervenors.removeIf { it.id == id }
-
+    }
 
     override fun clear() {
         intervenors.clear()

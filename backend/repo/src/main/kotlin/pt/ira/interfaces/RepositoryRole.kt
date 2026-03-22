@@ -1,0 +1,9 @@
+package pt.ira.interfaces
+
+import pt.ira.Role
+import pt.ira.User
+
+interface RepositoryRole: Repository<Role> {
+   fun createRole(name: String): Role
+   fun deleteRoleByName(name: String)
+}

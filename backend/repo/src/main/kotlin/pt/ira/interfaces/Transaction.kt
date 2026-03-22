@@ -9,6 +9,9 @@ package pt.ira.interfaces
  */
 interface Transaction {
     val repoUsers: RepositoryUser
+    val repoIntervenor: RepositoryIntervenor
+    val repoReport: RepositoryReport
+    val repoEvidence: RepositoryEvidence
 
     fun rollback()
 }

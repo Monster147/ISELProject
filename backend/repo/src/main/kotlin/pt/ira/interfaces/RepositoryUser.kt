@@ -12,7 +12,7 @@ interface RepositoryUser: Repository<User> {
         name: String,
         email: String,
         passwordValidation: PasswordValidationInfo,
-        roles: List<Role>,
+        roles: List<Int>,
     ): User
 
     fun findByEmail(email: String): User?
@@ -31,5 +31,8 @@ interface RepositoryUser: Repository<User> {
 
     fun removeTokenByValidationInfo(tokenValidationInfo: TokenValidationInfo): Int
 
-    fun findUsersByRole(role: Role): List<User>
+    fun findUsersByRole(role: Int): List<User>
+    fun addRole(user: User, roleId: Int) : User
+    fun removeRole(user: User, roleId: Int): User
+    fun setRoles(user: User, roleIds: List<Int>): User
 }

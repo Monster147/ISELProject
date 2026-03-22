@@ -41,7 +41,9 @@ class RepositoryEvidenceMem: RepositoryEvidence {
         evidences.add(entity)
     }
 
-    override fun deleteById(id: Int): Boolean = evidences.removeIf { it.id == id }
+    override fun deleteById(id: Int) {
+        evidences.removeIf { it.id == id }
+    }
 
     override fun clear() {
         evidences.clear()

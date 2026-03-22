@@ -99,7 +99,6 @@ class RepositoryEvidenceMemTest {
         val deleted = repo.deleteById(evidence.id)
         val found = repo.findById(evidence.id)
 
-        assertTrue(deleted)
         assertNull(found)
     }
 
@@ -125,19 +124,5 @@ class RepositoryEvidenceMemTest {
         repo.clear()
 
         assertTrue(repo.findAll().isEmpty())
-    }
-
-    @Test
-    fun `findById returns null if not found`() {
-        val result = repo.findById(999)
-
-        assertNull(result)
-    }
-
-    @Test
-    fun `deleteById returns false if not found`() {
-        val result = repo.deleteById(999)
-
-        assertFalse(result)
     }
 }

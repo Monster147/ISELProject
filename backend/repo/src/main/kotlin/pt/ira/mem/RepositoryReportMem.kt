@@ -96,7 +96,9 @@ class RepositoryReportMem: RepositoryReport {
         reports.add(entity)
     }
 
-    override fun deleteById(id: Int): Boolean = reports.removeIf { it.id == id }
+    override fun deleteById(id: Int) {
+        reports.removeIf { it.id == id }
+    }
 
     override fun clear() {
         reports.clear()

@@ -42,10 +42,9 @@ class RepositoryIntervenorMemTest {
         val intervenor = Intervenor(1, "ID123", "passport", "Alice", "alice@mail.com", "Street 1")
         repo.save(intervenor)
 
-        val deleted = repo.deleteById(1)
+        repo.deleteById(1)
         val found = repo.findById(1)
 
-        assertTrue(deleted)
         assertNull(found)
     }
 

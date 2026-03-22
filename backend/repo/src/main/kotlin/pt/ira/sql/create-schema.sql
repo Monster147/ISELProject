@@ -13,8 +13,7 @@ CREATE TABLE dbo.users
     name                    VARCHAR(255)       NOT NULL,
     email                   VARCHAR(255)       UNIQUE NOT NULL,
     password_validation     VARCHAR(255)       NOT NULL,
-    invitation_code         VARCHAR(255)       DEFAULT NULL,
-    role_id                 INT                REFERENCES dbo.roles (id) ON DELETE SET NULL
+    roles                   INT[]              NOT NULL,
 );
 
 CREATE TYPE dbo.report_status AS ENUM ('submetido', 'aprovado', 'rejeitado', 'em edição');
@@ -59,3 +58,5 @@ CREATE TABLE dbo.evidence
     created_at              TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at              TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+INSERT INTO dbo.roles (name) VALUES ('admin'), ('investigator'), ('supervisor');

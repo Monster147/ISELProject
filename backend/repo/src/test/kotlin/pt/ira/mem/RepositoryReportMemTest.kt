@@ -68,7 +68,7 @@ class RepositoryReportMemTest {
     @Test
     fun `addEditor adds editor correctly`() {
         val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
-        val user = User(1, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(Role.Admin))
+        val user = User(1, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
 
         val result = repo.addEditor(report.id, user)
 
@@ -82,7 +82,7 @@ class RepositoryReportMemTest {
     @Test
     fun `addEditor does not duplicate editor`() {
         val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
-        val user = User(1, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(Role.Admin))
+        val user = User(1, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
 
         repo.addEditor(report.id, user)
         val result = repo.addEditor(report.id, user)
@@ -93,7 +93,7 @@ class RepositoryReportMemTest {
     @Test
     fun `removeEditor removes editor`() {
         val report = repo.createReport(1, "R", "D", json("""{}"""), json("""{}"""))
-        val user = User(1, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(Role.Admin))
+        val user = User(1, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
 
         repo.addEditor(report.id, user)
         val removed = repo.removeEditor(report.id, user.id)
@@ -148,7 +148,6 @@ class RepositoryReportMemTest {
         val deleted = repo.deleteById(report.id)
         val found = repo.findById(report.id)
 
-        assertTrue(deleted)
         assertNull(found)
     }
 

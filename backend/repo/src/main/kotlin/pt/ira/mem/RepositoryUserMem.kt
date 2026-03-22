@@ -16,7 +16,7 @@ class RepositoryUserMem : RepositoryUser {
         name: String,
         email: String,
         passwordValidation: PasswordValidationInfo,
-        roles: List<Role>,
+        roles: List<Int>,
     ): User = User(users.size + 1, name, email, passwordValidation, roles).also {
         users.add(it)
     }
@@ -54,7 +54,25 @@ class RepositoryUserMem : RepositoryUser {
         return count
     }
 
-    override fun findUsersByRole(role: Role): List<User> = users.filter { it.roles.contains(role) }
+    override fun findUsersByRole(role: Int): List<User> = users.filter { it.roles.contains(role) }
+
+    override fun addRole(user: User, roleId: Int): User {
+        val updatedUser= user.copy(roles = user.roles + roleId)
+        save(updatedUser)
+        return updatedUser
+    }
+
+    override fun removeRole(user: User, roleId: Int): User {
+        val updateUser = user.copy(roles = user.roles - roleId)
+        save(updateUser)
+        return updateUser
+    }
+
+    override fun setRoles(user: User, roleIds: List<Int>): User {
+        val updatedUser = user.copy(roles = roleIds)
+        save(updatedUser)
+        return updatedUser
+    }
 
     override fun findById(id: Int): User? = users.find { it.id == id }
 
@@ -65,7 +83,9 @@ class RepositoryUserMem : RepositoryUser {
         users.add(entity)
     }
 
-    override fun deleteById(id: Int): Boolean = users.removeIf { it.id == id }
+    override fun deleteById(id: Int) {
+        users.removeIf { it.id == id }
+    }
 
     override fun clear() {
         users.clear()
