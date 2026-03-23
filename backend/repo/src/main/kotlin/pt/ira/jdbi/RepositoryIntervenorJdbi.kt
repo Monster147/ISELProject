@@ -3,7 +3,7 @@ package pt.ira.jdbi
 import org.jdbi.v3.core.Handle
 import pt.ira.Intervenor
 import pt.ira.interfaces.RepositoryIntervenor
-import pt.ira.interfaces.RepositoryUser
+import java.sql.ResultSet
 
 class RepositoryIntervenorJdbi(
     private val handle: Handle
@@ -15,7 +15,31 @@ class RepositoryIntervenorJdbi(
         contactInfo: String,
         address: String
     ): Intervenor {
-        TODO("Not yet implemented")
+        val id=
+            handle.createUpdate(
+                """
+                INSERT INTO dbo.intervenor (idNumber, id_type, name, contact_info, address) 
+                VALUES (:idNumber, :idType, :name, :contactInfo, :address)
+                RETURNING id
+                """.trimIndent(),
+            )
+                .bind("idNumber", idNumber)
+                .bind("idType", idType)
+                .bind("name", name)
+                .bind("contactInfo", contactInfo)
+                .bind("address", address)
+                .executeAndReturnGeneratedKeys()
+                .mapTo(Int::class.java)
+                .one()
+
+        return Intervenor(
+            id = id,
+            idNumber = idNumber,
+            idType = idType,
+            name = name,
+            contactInfo = contactInfo,
+            address = address
+        )
     }
 
     override fun updateIntervenor(
@@ -26,34 +50,109 @@ class RepositoryIntervenorJdbi(
         contactInfo: String?,
         address: String?
     ): Intervenor {
-        TODO("Not yet implemented")
+        val updatedIntervenor = intervenor.copy(
+            idNumber = idNumber ?: intervenor.idNumber,
+            idType = idType ?: intervenor.idType,
+            name = name ?: intervenor.name,
+            contactInfo = contactInfo ?: intervenor.contactInfo,
+            address = address ?: intervenor.address
+        )
+        save(updatedIntervenor)
+        return updatedIntervenor
     }
 
-    override fun findByIdNumber(idNumber: String): Intervenor? {
-        TODO("Not yet implemented")
-    }
+    override fun findByIdNumber(idNumber: String): Intervenor? =
+        handle.createQuery(
+            """
+            SELECT id, idNumber, id_type, name, contact_info, address
+            FROM dbo.report
+            WHERE idNumber = :idNumber
+            """.trimIndent(),
+        )
+            .bind("idNumber", idNumber)
+            .map { rs, _ -> mapRowToIntevenor(rs) }
+            .singleOrNull()
 
-    override fun findByContactInfo(contactInfo: String): Intervenor? {
-        TODO("Not yet implemented")
-    }
+    override fun findByContactInfo(contactInfo: String): Intervenor? =
+        handle.createQuery(
+            """
+            SELECT id, idNumber, id_type, name, contact_info, address
+            FROM dbo.report
+            WHERE contact_info = :contact_info
+            """.trimIndent(),
+        )
+            .bind("contact_info", contactInfo)
+            .map { rs, _ -> mapRowToIntevenor(rs) }
+            .singleOrNull()
 
-    override fun findById(id: Int): Intervenor? {
-        TODO("Not yet implemented")
-    }
+    override fun findById(id: Int): Intervenor? =
+        handle.createQuery(
+            """
+            SELECT id, idNumber, id_type, name, contact_info, address
+            FROM dbo.report
+            WHERE id = :id
+            """.trimIndent(),
+        )
+            .bind("id", id)
+            .map { rs, _ -> mapRowToIntevenor(rs) }
+            .singleOrNull()
 
-    override fun findAll(): List<Intervenor> {
-        TODO("Not yet implemented")
-    }
+    override fun findAll(): List<Intervenor> =
+        handle.createQuery(
+            """
+            SELECT id, idNumber, id_type, name, contact_info, address
+            FROM dbo.intervenor
+            ORDER BY id
+            """.trimIndent(),
+        )
+            .map { rs, _ -> mapRowToIntevenor(rs) }
+            .list()
 
     override fun save(entity: Intervenor) {
-        TODO("Not yet implemented")
+        handle.createUpdate(
+            """
+            UPDATE dbo.intervenor
+            SET idNumber = :creator_id,
+                id_type = :title,
+                name = :description,
+                contact_info = :status,
+                address = :type,
+            WHERE id = :id
+            """.trimIndent(),
+        )
+            .bind("id", entity.id)
+            .bind("idNumber", entity.idNumber)
+            .bind("id_type", entity.idType)
+            .bind("name", entity.name)
+            .bind("contact_info", entity.contactInfo)
+            .bind("address", entity.address)
+            .execute()
     }
-
     override fun deleteById(id: Int) {
-        TODO("Not yet implemented")
+        handle.createUpdate("DELETE FROM dbo.intervenor where id=$id")
+            .bind("id", id)
+            .execute()
     }
 
     override fun clear() {
-        TODO("Not yet implemented")
+        handle.createUpdate("DELETE FROM dbo.intervenor").execute()
+    }
+
+    private fun mapRowToIntevenor(rs: ResultSet): Intervenor {
+        val id = rs.getInt("id")
+        val idNumber = rs.getString("id")
+        val idType = rs.getString("id")
+        val name = rs.getString("name")
+        val contactInfo = rs.getString("contact_info")
+        val address = rs.getString("address")
+
+        return Intervenor(
+            id = id,
+            idNumber = idNumber,
+            idType = idType,
+            name = name,
+            contactInfo = contactInfo,
+            address = address
+        )
     }
 }

@@ -12,8 +12,8 @@ class RepositoryEvidenceMem: RepositoryEvidence {
         filePath: String,
         location: String,
         description: String,
-        reporterId: Int?,
-        reportId: Int?
+        reporterId: Int,
+        reportId: Int
     ): Evidence = Evidence(
         id = evidences.size + 1,
         type = type,

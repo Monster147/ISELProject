@@ -9,8 +9,8 @@ interface RepositoryEvidence : Repository<Evidence> {
         filePath: String,
         location: String,
         description: String,
-        reporterId: Int?,
-        reportId: Int?
+        reporterId: Int,
+        reportId: Int
     ): Evidence
 
     fun findByReportId(reportId: Int): List<Evidence>
