@@ -28,7 +28,7 @@ class RoleService(
 
     fun deleteRoleByName(name: String): Either<RoleError, Unit> {
         return trxManager.run {
-            if(repoRole.findByName(name) != null) return@run failure(RoleError.RoleNotFound)
+            if(repoRole.findByName(name) == null) return@run failure(RoleError.RoleNotFound)
             repoRole.deleteRoleByName(name)
             success(Unit)
         }
