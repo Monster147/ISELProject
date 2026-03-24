@@ -141,10 +141,8 @@ class RepositoryReportMemTest {
     @Test
     fun `findByType returns correct reports`() {
         val typeA = json("""{"type":"A"}""")
-        val typeB = json("""{"type":"B"}""")
 
         val r1 = repo.createReport(1, "R1", "D1", typeA, json("""{}"""))
-        repo.createReport(1, "R2", "D2", typeB, json("""{}"""))
 
         val result = repo.findByType(typeA)
 

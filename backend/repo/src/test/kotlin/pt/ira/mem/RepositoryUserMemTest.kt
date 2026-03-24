@@ -120,8 +120,7 @@ class RepositoryUserMemTest {
     @Test
     fun `findUsersByRole returns correct users`() {
         val user1 = repo.createUser("Grace", "grace@gmail.com", PasswordValidationInfo("hash7"), listOf(1))
-        val user2 =
-            repo.createUser("Heidi", "heidi@gmail.com", PasswordValidationInfo("hash8"), listOf(2))
+        val user2 = repo.createUser("Heidi", "heidi@gmail.com", PasswordValidationInfo("hash8"), listOf(2))
         val user3 = repo.createUser("Ivan", "ivan@gmail.com", PasswordValidationInfo("hash9"), listOf(3))
         val user4 = repo.createUser("André", "galvao@gmail.com", PasswordValidationInfo("hash10"), listOf(1,2, 3))
         val admins = repo.findUsersByRole(1)
