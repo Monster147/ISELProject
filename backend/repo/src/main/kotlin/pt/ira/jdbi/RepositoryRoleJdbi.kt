@@ -15,15 +15,18 @@ class RepositoryRoleJdbi(
                     VALUES (:name)
                     RETURNING id
                 """.trimIndent()
-        ).bind("name", name).executeAndReturnGeneratedKeys().mapTo(Int::class.java).one()
+        ).bind("name", name)
+            .executeAndReturnGeneratedKeys()
+            .mapTo(Int::class.java)
+            .one()
 
-        return Role(
-            id, name
-        )
+        return Role(id, name)
     }
 
     override fun deleteRoleByName(name: String) {
-        handle.createUpdate("DELETE FROM dbo.roles WHERE name = :name").bind("name", name).execute()
+        handle.createUpdate("DELETE FROM dbo.roles WHERE name = :name")
+            .bind("name", name)
+            .execute()
     }
 
     override fun findByName(name: String): Role? = handle.createQuery(
@@ -32,7 +35,9 @@ class RepositoryRoleJdbi(
             FROM dbo.roles 
             WHERE name = :name
             """.trimIndent()
-    ).bind("name", name).map { rs, _ -> mapRowToRole(rs) }.singleOrNull()
+    ).bind("name", name)
+        .map { rs, _ -> mapRowToRole(rs) }
+        .singleOrNull()
 
     override fun findById(id: Int): Role? = handle.createQuery(
         """
@@ -40,15 +45,18 @@ class RepositoryRoleJdbi(
             FROM dbo.roles 
             WHERE id = :id
             """.trimIndent()
-    ).bind("id", id).map { rs, _ -> mapRowToRole(rs) }.singleOrNull()
+    ).bind("id", id)
+        .map { rs, _ -> mapRowToRole(rs) }
+        .singleOrNull()
 
     override fun findAll(): List<Role> = handle.createQuery(
         """
-            SELECT id ,displayName
+            SELECT id ,name
             FROM dbo.roles
             ORDER BY id
         """.trimIndent()
-    ).map { rs, _ -> mapRowToRole(rs) }.list()
+    ).map { rs, _ -> mapRowToRole(rs) }
+        .list()
 
 
     override fun save(entity: Role) {
@@ -58,24 +66,26 @@ class RepositoryRoleJdbi(
            SET name=:displayName
            WHERE id=:id
         """.trimIndent()
-        ).bind("id", entity.id).bind("name", entity.displayName).execute()
+        ).bind("id", entity.id)
+            .bind("name", entity.displayName)
+            .execute()
     }
 
     override fun deleteById(id: Int) {
-        handle.createUpdate("DELETE FROM dbo.roles WHERE id = :role_id").bind("role_id", id).execute()
+        handle.createUpdate("DELETE FROM dbo.roles WHERE id = :role_id").bind("role_id", id)
+            .execute()
     }
 
     override fun clear() {
-        handle.createUpdate("DELETE FROM dbo.roles").execute()
+        handle.createUpdate("DELETE FROM dbo.roles")
+            .execute()
     }
 
     private fun mapRowToRole(rs: ResultSet): Role {
         val id = rs.getInt("id")
         val displayName = rs.getString("name")
 
-        return Role(
-            id, displayName
-        )
+        return Role(id, displayName)
     }
 
 }

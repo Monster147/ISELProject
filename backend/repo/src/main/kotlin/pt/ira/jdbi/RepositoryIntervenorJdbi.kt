@@ -65,7 +65,7 @@ class RepositoryIntervenorJdbi(
         handle.createQuery(
             """
             SELECT id, idNumber, id_type, name, contact_info, address
-            FROM dbo.report
+            FROM dbo.intervenor
             WHERE idNumber = :idNumber
             """.trimIndent(),
         )
@@ -77,7 +77,7 @@ class RepositoryIntervenorJdbi(
         handle.createQuery(
             """
             SELECT id, idNumber, id_type, name, contact_info, address
-            FROM dbo.report
+            FROM dbo.intervenor
             WHERE contact_info = :contact_info
             """.trimIndent(),
         )
@@ -89,7 +89,7 @@ class RepositoryIntervenorJdbi(
         handle.createQuery(
             """
             SELECT id, idNumber, id_type, name, contact_info, address
-            FROM dbo.report
+            FROM dbo.intervenor
             WHERE id = :id
             """.trimIndent(),
         )
@@ -112,24 +112,19 @@ class RepositoryIntervenorJdbi(
         handle.createUpdate(
             """
             UPDATE dbo.intervenor
-            SET idNumber = :creator_id,
-                id_type = :title,
-                name = :description,
-                contact_info = :status,
-                address = :type,
+            SET idNumber = :idNumber,
+                id_type = :idType,
+                name = :name,
+                contact_info = :contactInfo,
+                address = :address
             WHERE id = :id
             """.trimIndent(),
         )
-            .bind("id", entity.id)
-            .bind("idNumber", entity.idNumber)
-            .bind("id_type", entity.idType)
-            .bind("name", entity.name)
-            .bind("contact_info", entity.contactInfo)
-            .bind("address", entity.address)
+            .bindBean(entity)
             .execute()
     }
     override fun deleteById(id: Int) {
-        handle.createUpdate("DELETE FROM dbo.intervenor where id=$id")
+        handle.createUpdate("DELETE FROM dbo.intervenor where id=:id")
             .bind("id", id)
             .execute()
     }
@@ -140,8 +135,8 @@ class RepositoryIntervenorJdbi(
 
     private fun mapRowToIntevenor(rs: ResultSet): Intervenor {
         val id = rs.getInt("id")
-        val idNumber = rs.getString("id")
-        val idType = rs.getString("id")
+        val idNumber = rs.getString("idNumber")
+        val idType = rs.getString("id_type")
         val name = rs.getString("name")
         val contactInfo = rs.getString("contact_info")
         val address = rs.getString("address")

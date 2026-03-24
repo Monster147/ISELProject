@@ -1,0 +1,121 @@
+package pt.ira.jdbi
+
+import org.jdbi.v3.core.Jdbi
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.postgresql.ds.PGSimpleDataSource
+import pt.ira.Role
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
+class RepositoryRoleJdbiTest {
+
+    companion object {
+        private val jdbi: Jdbi =
+            Jdbi
+                .create(
+                    PGSimpleDataSource().apply {
+                        val url = Environment.getDbUrl()
+                        setURL(url)
+                    },
+                ).configureWithAppRequirements()
+
+        private val trxManager = TransactionManagerJdbi(jdbi)
+    }
+
+    @BeforeEach
+    fun setup() {
+        trxManager.run {
+            repoRole.clear()
+            repoRole.createRole("admin")
+            repoRole.createRole("investigator")
+            repoRole.createRole("supervisor")
+        }
+    }
+
+    @Test
+    fun `findAll returns seeded roles`() {
+        trxManager.run {
+            val roles = repoRole.findAll()
+            assertEquals(3, roles.size)
+            assertEquals(listOf("admin", "investigator", "supervisor"), roles.map { it.displayName })
+            assertEquals(listOf(4, 5, 6), roles.map { it.id })
+        }
+    }
+
+    @Test
+    fun `findById returns role when it exists and null otherwise`() {
+        trxManager.run {
+            val admin = repoRole.findById(7)
+            assertNotNull(admin)
+            assertEquals(Role(7, "admin"), admin)
+
+            assertNull(repoRole.findById(999))
+        }
+    }
+
+    @Test
+    fun `createRole adds a new role with next id`() {
+        trxManager.run {
+            val created = repoRole.createRole("gestor")
+
+            assertEquals(13, created.id)
+            assertEquals("gestor", created.displayName)
+
+            val all = repoRole.findAll()
+            assertEquals(4, all.size)
+            assertEquals(created, repoRole.findById(13))
+        }
+    }
+
+    @Test
+    fun `deleteRoleByName removes role`() {
+        trxManager.run {
+            repoRole.deleteRoleByName("investigator")
+
+            val all = repoRole.findAll()
+            assertEquals(2, all.size)
+            assertNull(repoRole.findById(15))
+            assertEquals(listOf("admin", "supervisor"), all.map { it.displayName })
+        }
+    }
+
+    @Test
+    fun `save replaces role with same id`() {
+        trxManager.run {
+            val original = repoRole.findById(19)
+            assertNotNull(original)
+            assertEquals("supervisor", original.displayName)
+
+            repoRole.save(Role(19, "manager"))
+
+            val updated = repoRole.findById(19)
+            assertNotNull(updated)
+            assertEquals(Role(19, "manager"), updated)
+
+            val all = repoRole.findAll()
+            assertEquals(3, all.size)
+            assertEquals(1, all.count { it.id == 19 })
+        }
+    }
+
+    @Test
+    fun `deleteById removes role`() {
+        trxManager.run {
+            repoRole.deleteById(20)
+            assertNull(repoRole.findById(20))
+            assertEquals(2, repoRole.findAll().size)
+        }
+    }
+
+    @Test
+    fun `clear removes all roles`() {
+        trxManager.run {
+            repoRole.clear()
+            assertTrue(repoRole.findAll().isEmpty())
+            assertNull(repoRole.findById(24))
+        }
+    }
+}

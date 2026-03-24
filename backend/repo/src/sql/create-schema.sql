@@ -25,7 +25,7 @@ create table dbo.Tokens
 );
 
 
-CREATE TYPE dbo.report_status AS ENUM ('submetido', 'aprovado', 'rejeitado', 'em edição');
+CREATE TYPE dbo.report_status AS ENUM ('SUBMITTED', 'APPROVED', 'REJECTED', 'EDITING');
 
 CREATE TABLE dbo.intervenor(
     id                      SERIAL             PRIMARY KEY,
@@ -42,13 +42,13 @@ CREATE TABLE dbo.report
     creator_id              INT                REFERENCES dbo.users (id) ON DELETE CASCADE,
     title                   VARCHAR(255)       NOT NULL,
     description             TEXT               NOT NULL,
-    status                  dbo.report_status  NOT NULL DEFAULT 'em edição',
+    status                  dbo.report_status  NOT NULL DEFAULT 'EDITING',
     type                    JSONB              NOT NULL,
     addons                  JSONB              NOT NULL,
-    created_at              TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at              TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    editors                 INT[]              NOT NULL,
-    intervenors             INT[]              NOT NULL
+    created_at              bigint             NOT NULL,
+    updated_at              bigint             NOT NULL,
+    editors                 INT[]              ,
+    intervenors             INT[]
 );
 
 CREATE TABLE dbo.report_users(
@@ -66,8 +66,8 @@ CREATE TABLE dbo.evidence
     description             TEXT               NOT NULL,
     reporter_id             INT                REFERENCES dbo.users (id) ON DELETE CASCADE,
     report_id               INT                REFERENCES dbo.report (id) ON DELETE CASCADE,
-    created_at              TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at              TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at              bigint             NOT NULL,
+    updated_at              bigint             NOT NULL
 );
 
 INSERT INTO dbo.roles (name) VALUES ('admin'), ('investigator'), ('supervisor');

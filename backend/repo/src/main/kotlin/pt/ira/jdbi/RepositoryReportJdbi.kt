@@ -1,6 +1,7 @@
 package pt.ira.jdbi
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import org.jdbi.v3.core.Handle
 import pt.ira.Intervenor
@@ -22,20 +23,25 @@ class RepositoryReportJdbi(
         type: JsonNode,
         addons: JsonNode
     ): Report {
+        val now = System.currentTimeMillis()
         val id=
             handle.createUpdate(
                 """
-                INSERT INTO dbo.report (creator_id, title, description, status, type, addons) 
-                VALUES (:creator_id, :title, :description, :status, :type, :addons)
+                INSERT INTO dbo.report (creator_id, title, description, status, type, addons, editors, intervenors, created_at, updated_at) 
+                VALUES (:creator_id, :title, :description, :status::dbo.report_status, :type::jsonb, :addons::jsonb, :editors, :intervenors, :created_at, :updated_at)
                 RETURNING id
                 """.trimIndent(),
             )
                 .bind("creator_id", creatorId)
                 .bind("title", title)
                 .bind("description", description)
-                .bind("status", ReportStatus.EDITING)
-                .bind("type", type.asText())
-                .bind("addons", addons.asText())
+                .bind("status", ReportStatus.EDITING.name)
+                .bind("type", type.toString())
+                .bind("addons", addons.toString())
+                .bind("editors", emptyArray<Int>())
+                .bind("intervenors", emptyArray<Int>())
+                .bind("created_at", now)
+                .bind("updated_at", now)
                 .executeAndReturnGeneratedKeys()
                 .mapTo(Int::class.java)
                 .one()
@@ -48,8 +54,8 @@ class RepositoryReportJdbi(
             status = ReportStatus.EDITING,
             type = type,
             addons = addons,
-            createdAt = System.currentTimeMillis(),
-            updatedAt = System.currentTimeMillis()
+            createdAt = now,
+            updatedAt = now
         )
     }
 
@@ -58,10 +64,10 @@ class RepositoryReportJdbi(
             """
             SELECT id, creator_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
             FROM dbo.report
-            WHERE status = :status
+            WHERE status = :status::dbo.report_status
             """.trimIndent(),
         )
-            .bind("status", status)
+            .bind("status", status.name)
             .map { rs, _ -> mapRowToReport(rs) }
             .toList()
 
@@ -73,7 +79,7 @@ class RepositoryReportJdbi(
             WHERE creator_id = :creatorId
             """.trimIndent(),
         )
-            .bind("creator_id", creatorId)
+            .bind("creatorId", creatorId)
             .map { rs, _ -> mapRowToReport(rs) }
             .toList()
 
@@ -121,10 +127,10 @@ class RepositoryReportJdbi(
             """
         SELECT id, creator_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
         FROM dbo.report
-        WHERE type = :type
+        WHERE type = :type::jsonb
         """.trimIndent()
         )
-            .bind("type", type.asText())
+            .bind("type", type.toString())
             .map { rs, _ -> mapRowToReport(rs) }
             .list()
 
@@ -187,33 +193,33 @@ class RepositoryReportJdbi(
         handle.createUpdate(
             """
             UPDATE dbo.report
-            SET creator_id = :creator_id,
+            SET creator_id = :creatorId,
                 title = :title,
                 description = :description,
-                status = :status,
-                type = :type,
-                addons = :addons,
-                updated_at = CURRENT_TIMESTAMP,
-                editors = :editors
+                status = :status::dbo.report_status,
+                type = :type::jsonb,
+                addons = :addons::jsonb,
+                updated_at = :updated_at,
+                editors = :editors,
                 intervenors = :intervenors
             WHERE id = :id
             """.trimIndent(),
         )
             .bind("id", entity.id)
-            .bind("creator_id", entity.creatorId)
+            .bind("creatorId", entity.creatorId)
             .bind("title", entity.title)
             .bind("description", entity.description)
             .bind("status", entity.status.name)
-            .bind("type", entity.type.asText())
-            .bind("addons", entity.addons.asText())
-            .bind("updated_at", entity.updatedAt)
+            .bind("type", entity.type.toString())
+            .bind("addons", entity.addons.toString())
             .bind("editors", entity.editors.toTypedArray())
             .bind("intervenors", entity.intervenors.toTypedArray())
+            .bind("updated_at", entity.updatedAt)
             .execute()
     }
 
     override fun deleteById(id: Int) {
-        handle.createUpdate("DELETE FROM dbo.report where id=$id")
+        handle.createUpdate("DELETE FROM dbo.report where id=:id")
             .bind("id", id)
             .execute()
     }
@@ -221,6 +227,8 @@ class RepositoryReportJdbi(
     override fun clear() {
         handle.createUpdate("DELETE FROM dbo.report").execute()
     }
+
+    private val objectMapper = ObjectMapper()
 
     private fun mapRowToReport(rs: ResultSet): Report {
         val id = rs.getInt("id")
@@ -230,14 +238,17 @@ class RepositoryReportJdbi(
         val status = rs.getString("status").let { ReportStatus.valueOf(it) }
         val type = rs.getString("type")
         val addons = rs.getString("addons")
-        val createdAt = rs.getTimestamp("created_at").time
-        val updatedAt = rs.getTimestamp("updated_at").time
+        val createdAt = rs.getLong("created_at")
+        val updatedAt = rs.getLong("updated_at")
         val editors = rs.getArray("editors")?.let { arr ->
             (arr.array as Array<*>).map { (it as Number).toInt() }
         } ?: emptyList()
-        val intervenors = rs.getArray("intervenor")?.let { arr ->
+        val intervenors = rs.getArray("intervenors")?.let { arr ->
             (arr.array as Array<*>).map { (it as Number).toInt() }
         } ?: emptyList()
+
+        val typeJson = objectMapper.readTree(type)
+        val addonsJson = objectMapper.readTree(addons)
 
         return Report(
             id = id,
@@ -245,8 +256,8 @@ class RepositoryReportJdbi(
             title = title,
             description = description,
             status = status,
-            type = JsonNodeFactory.instance.textNode(type),
-            addons = JsonNodeFactory.instance.textNode(addons),
+            type = typeJson,
+            addons = addonsJson,
             createdAt = createdAt,
             updatedAt = updatedAt,
             editors = editors,
