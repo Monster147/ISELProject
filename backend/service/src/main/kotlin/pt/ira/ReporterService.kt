@@ -1,8 +1,10 @@
 package pt.ira
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
 import pt.ira.interfaces.TransactionManager
+import kotlin.math.round
 
 sealed class ReportError {
     data object ReportNotFound : ReportError()
@@ -132,6 +134,30 @@ class ReportService(
 
             repoReport.deleteById(report.id)
             success(true)
+        }
+    }
+
+    fun getTypePercentagesByReporter(reporterId: Int): List<ReportTypePercentage> {
+        return trxManager.run {
+            val reports = repoReport.findByEditor(reporterId)
+            if (reports.isEmpty()) return@run emptyList()
+            val mapper = ObjectMapper()
+            val totalReports = reports.size.toDouble()
+            reports
+                .groupBy { it.type.toString() }
+                .map { (type, groupedReports) ->
+                    val rawPercentage = (groupedReports.size / totalReports) * 100
+                    val rounded = round(rawPercentage * 10) / 10
+                    ReportTypePercentage(
+                        type = mapper.readTree(type),
+                        count = groupedReports.size,
+                        percentage = rounded
+                    )
+                }
+                .sortedWith(
+                    compareByDescending<ReportTypePercentage> { it.count }
+                        .thenBy { it.type.toString() }
+                )
         }
     }
 }

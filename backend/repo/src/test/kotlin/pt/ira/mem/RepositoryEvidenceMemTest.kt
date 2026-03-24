@@ -84,10 +84,10 @@ class RepositoryEvidenceMemTest {
 
     @Test
     fun `findByLocation returns correct evidences`() {
-        val e1 = repo.createEvidence(json("""{}"""), "f1", "Lisbon", "d1", 1, 1)
+        val e1 = repo.createEvidence(json("""{}"""), "f1", "Lisboa", "d1", 1, 1)
         repo.createEvidence(json("""{}"""), "f2", "Porto", "d2", 1, 1)
 
-        val result = repo.findByLocation("Lisbon")
+        val result = repo.findByLocation("Lisboa")
 
         assertEquals(listOf(e1), result)
     }
@@ -96,7 +96,7 @@ class RepositoryEvidenceMemTest {
     fun `deleteById removes evidence`() {
         val evidence = repo.createEvidence(json("""{}"""), "f", "L", "d", 1, 1)
 
-        val deleted = repo.deleteById(evidence.id)
+        repo.deleteById(evidence.id)
         val found = repo.findById(evidence.id)
 
         assertNull(found)
