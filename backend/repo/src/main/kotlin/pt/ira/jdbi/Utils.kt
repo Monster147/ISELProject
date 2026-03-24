@@ -18,10 +18,6 @@ import pt.ira.jdbi.mapper.TokenValidationInfoMapper
 fun Jdbi.configureWithAppRequirements(): Jdbi {
     installPlugin(KotlinPlugin())
     installPlugin(PostgresPlugin())
-    registerRowMapper(ConstructorMapper.factory(User::class.java))
-    registerRowMapper(ConstructorMapper.factory(Report::class.java))
-    registerRowMapper(ConstructorMapper.factory(Evidence::class.java))
-    registerRowMapper(ConstructorMapper.factory(Intervenor::class.java))
     registerColumnMapper(PasswordValidationInfo::class.java, PasswordValidationInfoMapper())
     registerColumnMapper(TokenValidationInfo::class.java, TokenValidationInfoMapper())
     registerColumnMapper(IntListMapper())

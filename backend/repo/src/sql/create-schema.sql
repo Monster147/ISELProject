@@ -13,7 +13,7 @@ CREATE TABLE dbo.users
     name                    VARCHAR(255)       NOT NULL,
     email                   VARCHAR(255)       UNIQUE NOT NULL,
     password_validation     VARCHAR(255)       NOT NULL,
-    roles                   INT[]              NOT NULL,
+    roles                   INT[]              NOT NULL
 );
 
 create table dbo.Tokens
@@ -42,13 +42,13 @@ CREATE TABLE dbo.report
     creator_id              INT                REFERENCES dbo.users (id) ON DELETE CASCADE,
     title                   VARCHAR(255)       NOT NULL,
     description             TEXT               NOT NULL,
-    status                  report_status      NOT NULL DEFAULT 'em edição',
+    status                  dbo.report_status  NOT NULL DEFAULT 'em edição',
     type                    JSONB              NOT NULL,
     addons                  JSONB              NOT NULL,
     created_at              TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at              TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    editors                 INT[]              NOT NULL REFERENCES dbo.users (id) ON DELETE CASCADE,
-    intervenors             INT[]              NOT NULL REFERENCES dbo.intervenor (id) ON DELETE CASCADE
+    editors                 INT[]              NOT NULL,
+    intervenors             INT[]              NOT NULL
 );
 
 CREATE TABLE dbo.report_users(

@@ -89,9 +89,8 @@ class RepositoryUserJdbi(
                 SELECT users.id AS id,
                        users.name AS name,
                        users.email AS email,
-                       users.balance AS balance,
                        users.password_validation AS password_validation,
-                       users.invitation_code AS invitation_code,
+                       users.roles AS roles,
                        tokens.token_validation AS token_validation,
                        tokens.created_at AS created_at,
                        tokens.last_used_at AS last_used_at
@@ -187,8 +186,7 @@ class RepositoryUserJdbi(
             UPDATE dbo.users 
             SET name = :name,
                 email = :email,
-                balance = :balance,
-                invitation_code = :invitationCode
+                roles =:roles
             WHERE id = :id
             """,
             ).bindBean(entity)
