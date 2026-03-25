@@ -10,10 +10,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-import pt.ira.jdbi.configureWithAppRequirements
-import pt.ira.mem.TransactionManagerInMem
 import pt.ira.http.AuthenticatedUserArgumentResolver
 import pt.ira.http.AuthenticationInterceptor
+import pt.ira.jdbi.configureWithAppRequirements
+import pt.ira.mem.TransactionManagerInMem
 import java.time.Clock
 import java.time.Duration
 
@@ -51,8 +51,8 @@ class WebApp {
     @Bean
     fun clock(): Clock = Clock.systemUTC()
 
-    //@Bean
-    //fun trxManagerJdbi(jdbi: Jdbi): TransactionManagerJdbi = TransactionManagerJdbi(jdbi)
+    // @Bean
+    // fun trxManagerJdbi(jdbi: Jdbi): TransactionManagerJdbi = TransactionManagerJdbi(jdbi)
 
     @Bean
     fun trxManager(): TransactionManagerInMem = TransactionManagerInMem()

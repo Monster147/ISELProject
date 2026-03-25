@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component
 import pt.ira.AuthenticatedUser
 import pt.ira.UserService
 
-
 @Component
 class RequestTokenProcessor(
     val usersService: UserService,

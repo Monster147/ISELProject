@@ -2,8 +2,6 @@ plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
-    id("org.springframework.boot") version "3.5.6"
-    id("io.spring.dependency-management") version "1.1.7"
 }
 
 repositories {
@@ -12,7 +10,7 @@ repositories {
 
 dependencies {
     implementation("org.springframework:spring-webmvc:6.2.11")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
 
     // To use Servlet API
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
@@ -30,7 +28,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.2")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.5.6")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
     testImplementation(kotlin("test"))
 }

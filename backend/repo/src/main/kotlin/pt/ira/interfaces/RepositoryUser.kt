@@ -12,7 +12,7 @@ interface RepositoryUser: Repository<User> {
         name: String,
         email: String,
         passwordValidation: PasswordValidationInfo,
-        roles: List<Int>,
+        roles: List<Int> = listOf(2),
     ): User
 
     fun findByEmail(email: String): User?

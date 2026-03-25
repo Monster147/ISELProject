@@ -67,7 +67,7 @@ class RepositoryRoleJdbi(
            WHERE id=:id
         """.trimIndent()
         ).bind("id", entity.id)
-            .bind("name", entity.displayName)
+            .bind("displayName", entity.displayName)
             .execute()
     }
 

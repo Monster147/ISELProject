@@ -18,6 +18,8 @@ sealed class UserError {
     data object UserNotFound : UserError()
 
     data object RoleDoesntExist : UserError()
+
+    data object UserNotAdmin : UserError()
 }
 
 sealed class TokenCreationError {
@@ -84,11 +86,8 @@ class UserService(
 
     fun findUserByEmail(email: String): Either<UserError, User> = trxManager.run{
         val user = repoUsers.findByEmail(email)
-        if (user == null) {
-            failure(UserError.UserNotFound)
-        } else {
-            success(user)
-        }
+        if (user == null) failure(UserError.UserNotFound)
+        else success(user)
     }
 
     fun findUsersByRoles(roleId: Int): Either<UserError, List<User>> {
@@ -96,6 +95,12 @@ class UserService(
             val users = repoUsers.findUsersByRole(roleId)
             if (users.isEmpty()) failure(UserError.UserNotFound) else success(users)
         }
+    }
+
+    fun findUserById(userId: Int): Either<UserError, User> = trxManager.run {
+        val user = repoUsers.findById(userId)
+        if (user == null) failure(UserError.UserNotFound)
+        else success(user)
     }
 
     fun addRole(userId: Int, roleId: Int): Either<UserError, User> {

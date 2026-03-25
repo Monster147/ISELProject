@@ -2,8 +2,6 @@ plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
-    id("org.springframework.boot") version "3.5.6"
-    id("io.spring.dependency-management") version "1.1.7"
 }
 
 repositories {
@@ -14,7 +12,7 @@ dependencies {
     api(project(":backend:repo"))
     implementation("jakarta.inject:jakarta.inject-api:2.0.1")
     implementation("org.springframework:spring-webmvc:6.2.11")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
 
     // To get password encode
     implementation("org.springframework.security:spring-security-core:6.5.5")

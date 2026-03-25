@@ -82,6 +82,29 @@ class UserServiceTest {
     }
 
     @Test
+    fun `findUserById returns user`() {
+        val created = userService.createUser("André", "galvão@isel.pt", "password123").let {
+            check(it is Success)
+            it.value
+        }
+
+        val found = userService.findUserById(created.id).let {
+            check(it is Success)
+            it.value
+        }
+
+        assertEquals(created.id, found.id)
+    }
+
+    @Test
+    fun `findUserById fails if not found`() {
+        val result = userService.findUserById(999)
+
+        assertIs<Either.Left<*>>(result)
+        assertIs<UserError.UserNotFound>(result.value)
+    }
+
+    @Test
     fun `addRole adds role to user`() {
         val user = userService.createUser("Eve", "eve@isel.pt", "password123").let {
             check(it is Success)

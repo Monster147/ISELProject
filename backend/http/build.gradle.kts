@@ -9,13 +9,12 @@ repositories {
     mavenCentral()
 }
 
-
 dependencies {
     api(project(":backend:service"))
 
     // To use Spring MVC
     implementation("org.springframework:spring-webmvc:6.2.11")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
 
     // To mock services
     testImplementation("io.mockk:mockk:1.14.3")

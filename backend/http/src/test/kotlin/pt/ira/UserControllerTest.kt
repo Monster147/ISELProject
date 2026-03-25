@@ -1,4 +1,3 @@
 package pt.ira
 
-class UserControllerTest {
-}
+class UserControllerTest
