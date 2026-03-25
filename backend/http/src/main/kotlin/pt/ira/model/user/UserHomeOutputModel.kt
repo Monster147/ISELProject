@@ -1,4 +1,4 @@
-package pt.ira.model
+package pt.ira.model.user
 
 data class UserHomeOutputModel(
     val id: Int,

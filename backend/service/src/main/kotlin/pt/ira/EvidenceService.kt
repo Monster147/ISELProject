@@ -2,6 +2,7 @@ package pt.ira
 
 import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.stereotype.Component
+import pt.ira.evindence.Evidence
 import pt.ira.interfaces.TransactionManager
 
 sealed class EvidenceError {

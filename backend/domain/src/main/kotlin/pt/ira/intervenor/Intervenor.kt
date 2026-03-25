@@ -1,4 +1,4 @@
-package pt.ira
+package pt.ira.intervenor
 
 data class Intervenor(
     val id: Int,

@@ -1,7 +1,7 @@
 package pt.ira.jdbi
 
 import org.jdbi.v3.core.Handle
-import pt.ira.Intervenor
+import pt.ira.intervenor.Intervenor
 import pt.ira.interfaces.RepositoryIntervenor
 import java.sql.ResultSet
 

@@ -4,9 +4,9 @@ import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.postgresql.ds.PGSimpleDataSource
-import pt.ira.PasswordValidationInfo
-import pt.ira.Token
-import pt.ira.TokenValidationInfo
+import pt.ira.user.PasswordValidationInfo
+import pt.ira.token.Token
+import pt.ira.token.TokenValidationInfo
 import java.time.Instant
 import java.time.temporal.ChronoUnit.SECONDS
 import kotlin.test.assertEquals

@@ -3,7 +3,7 @@ package pt.ira.mem
 import pt.ira.interfaces.RepositoryIntervenor
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import pt.ira.Intervenor
+import pt.ira.intervenor.Intervenor
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull

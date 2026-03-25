@@ -1,4 +1,4 @@
-package pt.ira
+package pt.ira.user
 
 data class User(
     val id: Int,

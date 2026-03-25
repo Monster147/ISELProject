@@ -2,7 +2,7 @@ package pt.ira.mem
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import pt.ira.Role
+import pt.ira.role.Role
 import pt.ira.interfaces.RepositoryRole
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

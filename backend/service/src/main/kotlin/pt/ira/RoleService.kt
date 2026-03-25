@@ -2,6 +2,7 @@ package pt.ira
 
 import org.springframework.stereotype.Component
 import pt.ira.interfaces.TransactionManager
+import pt.ira.role.Role
 
 sealed class RoleError {
     data object RoleAlreadyExists : RoleError()

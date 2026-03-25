@@ -1,4 +1,4 @@
-package pt.ira
+package pt.ira.report
 
 import com.fasterxml.jackson.databind.JsonNode
 

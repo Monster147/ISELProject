@@ -14,6 +14,8 @@ import pt.ira.http.AuthenticatedUserArgumentResolver
 import pt.ira.http.AuthenticationInterceptor
 import pt.ira.jdbi.configureWithAppRequirements
 import pt.ira.mem.TransactionManagerInMem
+import pt.ira.token.Sha256TokenEncoder
+import pt.ira.user.UsersDomainConfig
 import java.time.Clock
 import java.time.Duration
 

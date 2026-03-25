@@ -1,4 +1,4 @@
-package pt.ira
+package pt.ira.user
 
 class AuthenticatedUser(
     val user: User,

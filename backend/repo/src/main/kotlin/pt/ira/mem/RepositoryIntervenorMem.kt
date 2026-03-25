@@ -1,6 +1,6 @@
 package pt.ira.mem
 
-import pt.ira.Intervenor
+import pt.ira.intervenor.Intervenor
 import pt.ira.interfaces.RepositoryIntervenor
 
 class RepositoryIntervenorMem: RepositoryIntervenor {

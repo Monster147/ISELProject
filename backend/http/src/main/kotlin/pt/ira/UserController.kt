@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pt.ira.model.Problem
-import pt.ira.model.RoleInput
-import pt.ira.model.RolesInput
-import pt.ira.model.UserCreateTokenInputModel
-import pt.ira.model.UserCreateTokenOutputModel
-import pt.ira.model.UserHomeOutputModel
-import pt.ira.model.UserInput
+import pt.ira.model.role.RoleInput
+import pt.ira.model.role.RolesInput
+import pt.ira.model.user.UserCreateTokenInputModel
+import pt.ira.model.user.UserCreateTokenOutputModel
+import pt.ira.model.user.UserHomeOutputModel
+import pt.ira.model.user.UserInput
+import pt.ira.user.AuthenticatedUser
+import pt.ira.user.User
 
 @RestController
 @RequestMapping("/api/user")
@@ -43,22 +45,17 @@ class UserController(
             is Failure ->
                 when (result.value) {
                     is UserError.AlreadyUsedEmailAddress ->
-                        ResponseEntity
-                            .status(HttpStatus.BAD_REQUEST)
-                            .header("Content-Type", "application/problem+json")
-                            .body(Unit)
-                    // Problem.EmailAlreadyInUse.response( HttpStatus.BAD_REQUEST, )
+                        Problem.EmailAlreadyInUse.response(
+                            HttpStatus.BAD_REQUEST,
+                        )
+
                     is UserError.InsecurePassword ->
-                        ResponseEntity
-                            .status(HttpStatus.BAD_REQUEST)
-                            .header("Content-Type", "application/problem+json")
-                            .body(Unit)
-                    // Problem.InsecurePassword.response( HttpStatus.BAD_REQUEST, )
-                    else -> ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .header("Content-Type", "application/problem+json")
-                        .body(Unit)
-                    // Problem.InternalServerError.response( HttpStatus.INTERNAL_SERVER_ERROR, )
+                        Problem.InsecurePassword.response(
+                            HttpStatus.BAD_REQUEST,
+                        )
+
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+
                 }
         }
     }
@@ -76,14 +73,11 @@ class UserController(
                 ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(UserCreateTokenOutputModel(result.value.tokenValue))
+
             is Failure ->
-                when(result.value) {
+                when (result.value) {
                     TokenCreationError.UserOrPasswordAreInvalid ->
-                        ResponseEntity
-                            .status(HttpStatus.BAD_REQUEST)
-                            .header("Content-Type", "application/problem+json")
-                            .body(Unit)
-                    // Problem.UserOrPasswordAreInvalid.response( HttpStatus.BAD_REQUEST, )
+                        Problem.UserOrPasswordAreInvalid.response(HttpStatus.BAD_REQUEST)
                 }
         }
     }
@@ -109,18 +103,13 @@ class UserController(
                             result.value.email
                         )
                     )
+
             is Failure ->
-                when (result.value){
-                    is UserError.UserNotFound -> ResponseEntity
-                        .status(HttpStatus.NOT_FOUND)
-                        .header("Content-Type", "application/problem+json")
-                        .body(Unit)
-                    // Problem.UserNotFound.response( HttpStatus.NOT_FOUND, )
-                    else -> ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .header("Content-Type", "application/problem+json")
-                        .body(Unit)
-                    // Problem.InternalServerError.response( HttpStatus.INTERNAL_SERVER_ERROR, )
+                when (result.value) {
+                    is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+
+
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
     }
@@ -133,28 +122,20 @@ class UserController(
             userId = roleInput.userId,
             roleId = roleInput.roleId,
         )
-        return when(result) {
+        return when (result) {
             is Success ->
                 ResponseEntity
                     .status(HttpStatus.OK)
                     .body("Role added successfully")
+
             is Failure ->
                 when (result.value) {
-                    is UserError.RoleDoesntExist -> ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .header("Content-Type", "application/problem+json")
-                        .body(Unit)
-                    // Problem.RoleDoesntExist.response( HttpStatus.BAD_REQUEST, )
-                    is UserError.UserNotFound -> ResponseEntity
-                        .status(HttpStatus.NOT_FOUND)
-                        .header("Content-Type", "application/problem+json")
-                        .body(Unit)
-                    // Problem.UserNotFound.response( HttpStatus.NOT_FOUND, )
-                     else -> ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .header("Content-Type", "application/problem+json")
-                        .body(Unit)
-                    // Problem.InternalServerError.response( HttpStatus.INTERNAL_SERVER_ERROR, )
+                    is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
+
+                    is UserError.UserNotFound ->  Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+
+                    else ->  Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+
                 }
         }
     }
@@ -167,33 +148,25 @@ class UserController(
             userId = roleInput.userId,
             roleId = roleInput.roleId,
         )
-        return when(result) {
+        return when (result) {
             is Success ->
                 ResponseEntity
                     .status(HttpStatus.OK)
                     .body("Role removed successfully")
+
             is Failure ->
                 when (result.value) {
-                    is UserError.RoleDoesntExist -> ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .header("Content-Type", "application/problem+json")
-                        .body(Unit)
-                    // Problem.RoleDoesntExist.response( HttpStatus.BAD_REQUEST, )
-                    is UserError.UserNotFound -> ResponseEntity
-                        .status(HttpStatus.NOT_FOUND)
-                        .header("Content-Type", "application/problem+json")
-                        .body(Unit)
-                    // Problem.UserNotFound.response( HttpStatus.NOT_FOUND, )
-                    else -> ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .header("Content-Type", "application/problem+json")
-                        .body(Unit)
-                    // Problem.InternalServerError.response( HttpStatus.INTERNAL_SERVER_ERROR, )
+                    is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
+
+                    is UserError.UserNotFound ->  Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+
                 }
         }
     }
 
-    @PostMapping("/roles/remove")
+    @PostMapping("/roles/set")
     fun setRoles(
         @RequestBody rolesInput: RolesInput,
     ): ResponseEntity<*> {
@@ -201,33 +174,25 @@ class UserController(
             userId = rolesInput.userId,
             roleIdList = rolesInput.rolesIds,
         )
-        return when(result) {
+        return when (result) {
             is Success ->
                 ResponseEntity
                     .status(HttpStatus.OK)
                     .body("Roles setted successfully")
+
             is Failure ->
                 when (result.value) {
-                    is UserError.RoleDoesntExist -> ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .header("Content-Type", "application/problem+json")
-                        .body(Unit)
-                    // Problem.RoleDoesntExist.response( HttpStatus.BAD_REQUEST, )
-                    is UserError.UserNotFound -> ResponseEntity
-                        .status(HttpStatus.NOT_FOUND)
-                        .header("Content-Type", "application/problem+json")
-                        .body(Unit)
-                    // Problem.UserNotFound.response( HttpStatus.NOT_FOUND, )
-                    else -> ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .header("Content-Type", "application/problem+json")
-                        .body(Unit)
-                    // Problem.InternalServerError.response( HttpStatus.INTERNAL_SERVER_ERROR, )
+                    is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
+
+                    is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+
                 }
         }
     }
 
-    @GetMapping("/by-role/{roleId}")
+    @GetMapping("/find/role/{roleId}")
     fun findUsersByRole(
         @PathVariable("roleId") roleId: Int,
     ): ResponseEntity<*> {
@@ -246,17 +211,10 @@ class UserController(
 
             is Failure ->
                 when (result.value) {
-                    is UserError.UserNotFound ->
-                        ResponseEntity
-                            .status(HttpStatus.NOT_FOUND)
-                            .header("Content-Type", "application/problem+json")
-                            .body(Unit)
+                    is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
 
-                    else ->
-                        ResponseEntity
-                            .status(HttpStatus.BAD_REQUEST)
-                            .header("Content-Type", "application/problem+json")
-                            .body(Unit)
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+
                 }
         }
     }

@@ -4,6 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
 import pt.ira.interfaces.TransactionManager
+import pt.ira.intervenor.Intervenor
+import pt.ira.report.Report
+import pt.ira.report.ReportStatus
+import pt.ira.report.ReportTypePercentage
 import kotlin.math.round
 
 sealed class ReportError {

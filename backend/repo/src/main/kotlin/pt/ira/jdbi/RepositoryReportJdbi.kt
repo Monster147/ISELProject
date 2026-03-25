@@ -2,15 +2,12 @@ package pt.ira.jdbi
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import org.jdbi.v3.core.Handle
-import pt.ira.Intervenor
-import pt.ira.Report
-import pt.ira.ReportStatus
-import pt.ira.Role
-import pt.ira.User
+import pt.ira.intervenor.Intervenor
+import pt.ira.report.Report
+import pt.ira.report.ReportStatus
+import pt.ira.user.User
 import pt.ira.interfaces.RepositoryReport
-import pt.ira.interfaces.RepositoryUser
 import java.sql.ResultSet
 
 class RepositoryReportJdbi(

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import pt.ira.interfaces.TransactionManager
+import pt.ira.report.ReportStatus
+import pt.ira.user.PasswordValidationInfo
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue

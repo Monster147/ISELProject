@@ -1,0 +1,269 @@
+openapi: 3.0.3
+info:
+  title: IRA API - User
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api
+
+paths:
+
+  /user:
+    post:
+      summary: Cria um novo utilizador
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: Utilizador criado com sucesso
+          headers:
+            Location:
+              description: URL do novo utilizador
+              schema:
+                type: string
+        '400':
+          description: Email já em uso ou password insegura
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':
+          description: Erro interno
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /user/token:
+    post:
+      summary: Gera um token de autenticação
+      operationId: createToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateTokenInput'
+      responses:
+        '201':
+          description: Token criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreateTokenOutput'
+        '400':
+          description: Email ou password inválidos
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /user/logout:
+    post:
+      summary: Termina a sessão do utilizador autenticado
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout efetuado
+
+  /user/{userId}:
+    get:
+      summary: Obtém utilizador por ID
+      operationId: findUserById
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Utilizador encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserHomeOutput'
+        '404':
+          description: Utilizador não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':
+          description: Erro interno
+
+  /user/roles/add:
+    post:
+      summary: Adiciona uma role ao utilizador
+      operationId: addRole
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleInput'
+      responses:
+        '200':
+          description: Role adicionada com sucesso
+        '404':
+          description: Role ou utilizador não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':
+          description: Erro interno
+
+  /user/roles/remove:
+    post:
+      summary: Remove uma role do utilizador
+      operationId: removeRole
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleInput'
+      responses:
+        '200':
+          description: Role removida com sucesso
+        '404':
+          description: Role ou utilizador não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':
+          description: Erro interno
+
+  /user/roles/set:
+    post:
+      summary: Define as roles do utilizador
+      operationId: setRoles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RolesInput'
+      responses:
+        '200':
+          description: Roles definidas com sucesso
+        '404':
+          description: Role ou utilizador não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':
+          description: Erro interno
+
+  /user/find/role/{roleId}:
+    get:
+      summary: Lista utilizadores por role
+      operationId: findUsersByRole
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de utilizadores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserHomeOutput'
+        '404':
+          description: Utilizadores não encontrados
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '500':
+          description: Erro interno
+
+components:
+  schemas:
+    UserInput:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - name
+        - email
+        - password
+
+    UserCreateTokenInput:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    UserCreateTokenOutput:
+      type: object
+      properties:
+        token:
+          type: string
+
+    UserHomeOutput:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+
+    RoleInput:
+      type: object
+      properties:
+        roleId:
+          type: integer
+        userId:
+          type: integer
+      required:
+        - roleId
+        - userId
+
+    RolesInput:
+      type: object
+      properties:
+        rolesIds:
+          type: array
+          items:
+            type: integer
+        userId:
+          type: integer
+      required:
+        - rolesIds
+        - userId
+
+    Problem:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string

@@ -1,4 +1,4 @@
-package pt.ira
+package pt.ira.user
 
 import java.time.Duration
 

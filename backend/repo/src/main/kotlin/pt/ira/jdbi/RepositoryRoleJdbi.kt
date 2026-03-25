@@ -1,7 +1,7 @@
 package pt.ira.jdbi
 
 import org.jdbi.v3.core.Handle
-import pt.ira.Role
+import pt.ira.role.Role
 import pt.ira.interfaces.RepositoryRole
 import java.sql.ResultSet
 

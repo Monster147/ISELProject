@@ -4,7 +4,7 @@ import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.postgresql.ds.PGSimpleDataSource
-import pt.ira.Intervenor
+import pt.ira.intervenor.Intervenor
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue

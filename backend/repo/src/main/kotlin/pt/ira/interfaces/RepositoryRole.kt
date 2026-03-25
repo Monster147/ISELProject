@@ -1,7 +1,6 @@
 package pt.ira.interfaces
 
-import pt.ira.Role
-import pt.ira.User
+import pt.ira.role.Role
 
 interface RepositoryRole: Repository<Role> {
    fun createRole(name: String): Role

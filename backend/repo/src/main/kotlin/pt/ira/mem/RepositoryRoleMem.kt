@@ -1,6 +1,6 @@
 package pt.ira.mem
 
-import pt.ira.Role
+import pt.ira.role.Role
 import pt.ira.interfaces.RepositoryRole
 
 class RepositoryRoleMem: RepositoryRole {

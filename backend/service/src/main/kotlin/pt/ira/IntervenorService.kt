@@ -2,6 +2,7 @@ package pt.ira
 
 import org.springframework.stereotype.Component
 import pt.ira.interfaces.TransactionManager
+import pt.ira.intervenor.Intervenor
 
 sealed class IntervenorError {
     data object IntervenorAlreadyExists : IntervenorError()

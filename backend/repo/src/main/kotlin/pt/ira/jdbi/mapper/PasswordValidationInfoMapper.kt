@@ -2,7 +2,7 @@ package pt.ira.jdbi.mapper
 
 import org.jdbi.v3.core.mapper.ColumnMapper
 import org.jdbi.v3.core.statement.StatementContext
-import pt.ira.PasswordValidationInfo
+import pt.ira.user.PasswordValidationInfo
 import java.sql.ResultSet
 import java.sql.SQLException
 

@@ -1,4 +1,4 @@
-package pt.ira
+package pt.ira.role
 
 data class Role (
     val id: Int,

@@ -1,10 +1,10 @@
 package pt.ira.interfaces
 
 import com.fasterxml.jackson.databind.JsonNode
-import pt.ira.Intervenor
-import pt.ira.Report
-import pt.ira.ReportStatus
-import pt.ira.User
+import pt.ira.intervenor.Intervenor
+import pt.ira.report.Report
+import pt.ira.report.ReportStatus
+import pt.ira.user.User
 
 interface RepositoryReport: Repository<Report> {
     fun createReport(

@@ -1,4 +1,4 @@
-package pt.ira.model
+package pt.ira.model.user
 
 data class UserCreateTokenInputModel(
     val email: String,

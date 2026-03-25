@@ -2,11 +2,10 @@ package pt.ira.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
-import pt.ira.PasswordValidationInfo
-import pt.ira.Role
-import pt.ira.Token
-import pt.ira.TokenValidationInfo
-import pt.ira.User
+import pt.ira.user.PasswordValidationInfo
+import pt.ira.token.Token
+import pt.ira.token.TokenValidationInfo
+import pt.ira.user.User
 import pt.ira.interfaces.RepositoryUser
 import java.sql.ResultSet
 import java.time.Instant

@@ -1,4 +1,4 @@
-package pt.ira
+package pt.ira.token
 
 /**
  * Strongly typed information of token hashed by a TokenEncoder.

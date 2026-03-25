@@ -1,4 +1,4 @@
-package pt.ira
+package pt.ira.token
 
 /**
  * Defines the contract for encoding tokens into a validation representation.

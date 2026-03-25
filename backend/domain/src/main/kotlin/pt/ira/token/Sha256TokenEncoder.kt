@@ -1,4 +1,4 @@
-package pt.ira
+package pt.ira.token
 
 import java.security.MessageDigest
 import java.util.Base64

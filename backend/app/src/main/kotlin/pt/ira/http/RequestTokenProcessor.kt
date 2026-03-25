@@ -1,7 +1,7 @@
 package pt.ira.http
 
 import org.springframework.stereotype.Component
-import pt.ira.AuthenticatedUser
+import pt.ira.user.AuthenticatedUser
 import pt.ira.UserService
 
 @Component

@@ -1,6 +1,6 @@
 package pt.ira.interfaces
 
-import pt.ira.Intervenor
+import pt.ira.intervenor.Intervenor
 
 interface RepositoryIntervenor : Repository<Intervenor> {
      fun createIntervenor(

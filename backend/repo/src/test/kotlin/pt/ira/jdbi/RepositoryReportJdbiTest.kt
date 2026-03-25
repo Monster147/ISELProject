@@ -5,10 +5,8 @@ import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.postgresql.ds.PGSimpleDataSource
-import pt.ira.Intervenor
-import pt.ira.PasswordValidationInfo
-import pt.ira.ReportStatus
-import pt.ira.User
+import pt.ira.user.PasswordValidationInfo
+import pt.ira.report.ReportStatus
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull

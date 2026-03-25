@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import org.jdbi.v3.core.Handle
-import pt.ira.Evidence
+import pt.ira.evindence.Evidence
 import pt.ira.interfaces.RepositoryEvidence
 import java.sql.ResultSet
 

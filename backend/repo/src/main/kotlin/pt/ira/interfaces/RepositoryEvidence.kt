@@ -1,7 +1,7 @@
 package pt.ira.interfaces
 
 import com.fasterxml.jackson.databind.JsonNode
-import pt.ira.Evidence
+import pt.ira.evindence.Evidence
 
 interface RepositoryEvidence : Repository<Evidence> {
     fun createEvidence(

@@ -6,10 +6,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertNull
-import pt.ira.Intervenor
-import pt.ira.PasswordValidationInfo
-import pt.ira.ReportStatus
-import pt.ira.User
+import pt.ira.intervenor.Intervenor
+import pt.ira.user.PasswordValidationInfo
+import pt.ira.report.ReportStatus
+import pt.ira.user.User
 import pt.ira.interfaces.RepositoryReport
 import kotlin.test.assertEquals
 

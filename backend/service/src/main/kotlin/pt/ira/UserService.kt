@@ -3,6 +3,12 @@ package pt.ira
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import pt.ira.interfaces.TransactionManager
+import pt.ira.token.Token
+import pt.ira.token.TokenEncoder
+import pt.ira.token.TokenExternalInfo
+import pt.ira.user.PasswordValidationInfo
+import pt.ira.user.User
+import pt.ira.user.UsersDomainConfig
 import java.security.SecureRandom
 import java.time.Clock
 import java.time.Duration

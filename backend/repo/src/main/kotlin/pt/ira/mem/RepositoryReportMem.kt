@@ -1,13 +1,10 @@
 package pt.ira.mem
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import pt.ira.Intervenor
-import pt.ira.PasswordValidationInfo
-import pt.ira.Report
-import pt.ira.ReportStatus
-import pt.ira.Role
-import pt.ira.User
+import pt.ira.intervenor.Intervenor
+import pt.ira.report.Report
+import pt.ira.report.ReportStatus
+import pt.ira.user.User
 import pt.ira.interfaces.RepositoryReport
 
 class RepositoryReportMem: RepositoryReport {
