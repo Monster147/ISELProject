@@ -33,6 +33,12 @@ sealed class Problem(
     data object UserNotFound : Problem(URI("${PROBLEM_URI_PATH}/user-not-found"))
 
     //role
-
     data object RoleNotFound : Problem(URI("${PROBLEM_URI_PATH}/role-not-found"))
+
+    data object RoleAlreadyExists : Problem(URI("${PROBLEM_URI_PATH}/role-already-exists"))
+
+    // intervenor
+    data object IntervenorAlreadyExists : Problem(URI("${PROBLEM_URI_PATH}/intervenor-already-exists"))
+
+    data object IntervenorNotFound : Problem(URI("${PROBLEM_URI_PATH}/intervenor-not-found"))
 }

@@ -107,8 +107,6 @@ class UserController(
             is Failure ->
                 when (result.value) {
                     is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-
-
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
@@ -131,11 +129,8 @@ class UserController(
             is Failure ->
                 when (result.value) {
                     is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
-
                     is UserError.UserNotFound ->  Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-
                     else ->  Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-
                 }
         }
     }
@@ -157,11 +152,8 @@ class UserController(
             is Failure ->
                 when (result.value) {
                     is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
-
                     is UserError.UserNotFound ->  Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-
                 }
         }
     }
@@ -183,11 +175,8 @@ class UserController(
             is Failure ->
                 when (result.value) {
                     is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
-
                     is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-
                 }
         }
     }
@@ -212,9 +201,7 @@ class UserController(
             is Failure ->
                 when (result.value) {
                     is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-
                 }
         }
     }

@@ -4,14 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertNotNull
-import org.junit.jupiter.api.assertNull
 import pt.ira.intervenor.Intervenor
 import pt.ira.user.PasswordValidationInfo
 import pt.ira.report.ReportStatus
 import pt.ira.user.User
 import pt.ira.interfaces.RepositoryReport
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class RepositoryReportMemTest {
 
