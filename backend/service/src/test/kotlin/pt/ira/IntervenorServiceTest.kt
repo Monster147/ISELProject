@@ -26,16 +26,17 @@ class IntervenorServiceTest {
 
     @Test
     fun `createIntervenor creates intervenor`() {
-        val intervenor = service.createIntervenor(
-            idNumber = "123",
-            idType = "CC",
-            name = "Alice",
-            contactInfo = "alice@mail.com",
-            address = "Lisboa"
-        ).let {
-            check(it is Success)
-            it.value
-        }
+        val intervenor =
+            service.createIntervenor(
+                idNumber = "123",
+                idType = "CC",
+                name = "Alice",
+                contactInfo = "alice@mail.com",
+                address = "Lisboa",
+            ).let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals("123", intervenor.idNumber)
         assertEquals("Alice", intervenor.name)
@@ -53,23 +54,30 @@ class IntervenorServiceTest {
 
     @Test
     fun `updateIntervenor updates fields`() {
-        val created = service.createIntervenor(
-            "234", "CC", "Alice", "alice@mail.com", "Lisboa"
-        ).let {
-            check(it is Success)
-            it.value
-        }
+        val created =
+            service.createIntervenor(
+                "234",
+                "CC",
+                "Alice",
+                "alice@mail.com",
+                "Lisboa",
+            ).let {
+                check(it is Success)
+                it.value
+            }
 
-        val updated = service.updateIntervenor(
-            intervenorId = created.id,
-            idNumber = null,
-            idType = null,
-            name = "Alice Updated",
-            contactInfo = null,
-            address = "Porto"
-        ).let {
-            check(it is Success); it.value
-        }
+        val updated =
+            service.updateIntervenor(
+                intervenorId = created.id,
+                idNumber = null,
+                idType = null,
+                name = "Alice Updated",
+                contactInfo = null,
+                address = "Porto",
+            ).let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals("Alice Updated", updated.name)
         assertEquals("Porto", updated.address)
@@ -78,14 +86,15 @@ class IntervenorServiceTest {
 
     @Test
     fun `updateIntervenor fails if not found`() {
-        val result = service.updateIntervenor(
-            intervenorId = 999,
-            idNumber = null,
-            idType = null,
-            name = "X",
-            contactInfo = null,
-            address = null
-        )
+        val result =
+            service.updateIntervenor(
+                intervenorId = 999,
+                idNumber = null,
+                idType = null,
+                name = "X",
+                contactInfo = null,
+                address = null,
+            )
 
         assertIs<Either.Left<*>>(result)
         assertIs<IntervenorError.IntervenorNotFound>(result.value)
@@ -115,17 +124,23 @@ class IntervenorServiceTest {
 
     @Test
     fun `findByIntervenorByIdNumber returns intervenor`() {
-        val created = service.createIntervenor(
-            "456", "CC", "Alice", "alice@mail.com", "Lisboa"
-        ).let {
-            check(it is Success)
-            it.value
-        }
+        val created =
+            service.createIntervenor(
+                "456",
+                "CC",
+                "Alice",
+                "alice@mail.com",
+                "Lisboa",
+            ).let {
+                check(it is Success)
+                it.value
+            }
 
-        val found = service.findByIntervenorByIdNumber("456").let {
-            check(it is Success)
-            it.value
-        }
+        val found =
+            service.findByIntervenorByIdNumber("456").let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals(created.id, found.id)
     }
@@ -140,17 +155,23 @@ class IntervenorServiceTest {
 
     @Test
     fun `findByIntervenorContactInfo returns intervenor`() {
-        val created = service.createIntervenor(
-            "567", "CC", "Alice", "alice@mail.com", "Lisboa"
-        ).let {
-            check(it is Success)
-            it.value
-        }
+        val created =
+            service.createIntervenor(
+                "567",
+                "CC",
+                "Alice",
+                "alice@mail.com",
+                "Lisboa",
+            ).let {
+                check(it is Success)
+                it.value
+            }
 
-        val found = service.findByIntervenorContactInfo("alice@mail.com").let {
-            check(it is Success)
-            it.value
-        }
+        val found =
+            service.findByIntervenorContactInfo("alice@mail.com").let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals(created.id, found.id)
     }
@@ -162,5 +183,4 @@ class IntervenorServiceTest {
         assertIs<Either.Left<*>>(result)
         assertIs<IntervenorError.IntervenorNotFound>(result.value)
     }
-
 }

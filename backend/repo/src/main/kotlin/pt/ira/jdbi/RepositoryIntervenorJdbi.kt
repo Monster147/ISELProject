@@ -1,21 +1,21 @@
 package pt.ira.jdbi
 
 import org.jdbi.v3.core.Handle
-import pt.ira.intervenor.Intervenor
 import pt.ira.interfaces.RepositoryIntervenor
+import pt.ira.intervenor.Intervenor
 import java.sql.ResultSet
 
 class RepositoryIntervenorJdbi(
-    private val handle: Handle
+    private val handle: Handle,
 ) : RepositoryIntervenor {
     override fun createIntervenor(
         idNumber: String,
         idType: String,
         name: String,
         contactInfo: String,
-        address: String
+        address: String,
     ): Intervenor {
-        val id=
+        val id =
             handle.createUpdate(
                 """
                 INSERT INTO dbo.intervenor (idNumber, id_type, name, contact_info, address) 
@@ -38,7 +38,7 @@ class RepositoryIntervenorJdbi(
             idType = idType,
             name = name,
             contactInfo = contactInfo,
-            address = address
+            address = address,
         )
     }
 
@@ -48,15 +48,16 @@ class RepositoryIntervenorJdbi(
         idType: String?,
         name: String?,
         contactInfo: String?,
-        address: String?
+        address: String?,
     ): Intervenor {
-        val updatedIntervenor = intervenor.copy(
-            idNumber = idNumber ?: intervenor.idNumber,
-            idType = idType ?: intervenor.idType,
-            name = name ?: intervenor.name,
-            contactInfo = contactInfo ?: intervenor.contactInfo,
-            address = address ?: intervenor.address
-        )
+        val updatedIntervenor =
+            intervenor.copy(
+                idNumber = idNumber ?: intervenor.idNumber,
+                idType = idType ?: intervenor.idType,
+                name = name ?: intervenor.name,
+                contactInfo = contactInfo ?: intervenor.contactInfo,
+                address = address ?: intervenor.address,
+            )
         save(updatedIntervenor)
         return updatedIntervenor
     }
@@ -123,6 +124,7 @@ class RepositoryIntervenorJdbi(
             .bindBean(entity)
             .execute()
     }
+
     override fun deleteById(id: Int) {
         handle.createUpdate("DELETE FROM dbo.intervenor where id=:id")
             .bind("id", id)
@@ -147,7 +149,7 @@ class RepositoryIntervenorJdbi(
             idType = idType,
             name = name,
             contactInfo = contactInfo,
-            address = address
+            address = address,
         )
     }
 }

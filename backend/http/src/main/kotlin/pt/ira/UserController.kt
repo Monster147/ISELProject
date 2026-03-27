@@ -26,13 +26,14 @@ class UserController(
 ) {
     @PostMapping
     fun createUser(
-        @RequestBody userInput: UserInput
+        @RequestBody userInput: UserInput,
     ): ResponseEntity<*> {
-        val result: Either<UserError, User> = userService.createUser(
-            name = userInput.name,
-            email = userInput.email,
-            password = userInput.password,
-        )
+        val result: Either<UserError, User> =
+            userService.createUser(
+                name = userInput.name,
+                email = userInput.email,
+                password = userInput.password,
+            )
 
         return when (result) {
             is Success ->
@@ -40,7 +41,7 @@ class UserController(
                     .status(HttpStatus.CREATED)
                     .header(
                         "Location",
-                        "/api/user/${result.value.id}"
+                        "/api/user/${result.value.id}",
                     ).build<Unit>()
 
             is Failure ->
@@ -56,19 +57,19 @@ class UserController(
                         )
 
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-
                 }
         }
     }
 
     @PostMapping("/token")
     fun token(
-        @RequestBody tokenInput: UserCreateTokenInputModel
+        @RequestBody tokenInput: UserCreateTokenInputModel,
     ): ResponseEntity<*> {
-        val result = userService.createToken(
-            tokenInput.email,
-            tokenInput.password,
-        )
+        val result =
+            userService.createToken(
+                tokenInput.email,
+                tokenInput.password,
+            )
         return when (result) {
             is Success ->
                 ResponseEntity
@@ -101,8 +102,8 @@ class UserController(
                         UserHomeOutputModel(
                             result.value.id,
                             result.value.name,
-                            result.value.email
-                        )
+                            result.value.email,
+                        ),
                     )
 
             is Failure ->
@@ -117,10 +118,11 @@ class UserController(
     fun addRole(
         @RequestBody roleInput: RoleInput,
     ): ResponseEntity<*> {
-        val result = userService.addRole(
-            userId = roleInput.userId,
-            roleId = roleInput.roleId,
-        )
+        val result =
+            userService.addRole(
+                userId = roleInput.userId,
+                roleId = roleInput.roleId,
+            )
         return when (result) {
             is Success ->
                 ResponseEntity
@@ -130,8 +132,8 @@ class UserController(
             is Failure ->
                 when (result.value) {
                     is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
-                    is UserError.UserNotFound ->  Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-                    else ->  Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+                    is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
     }
@@ -140,10 +142,11 @@ class UserController(
     fun removeRole(
         @RequestBody roleInput: RoleInput,
     ): ResponseEntity<*> {
-        val result = userService.removeRole(
-            userId = roleInput.userId,
-            roleId = roleInput.roleId,
-        )
+        val result =
+            userService.removeRole(
+                userId = roleInput.userId,
+                roleId = roleInput.roleId,
+            )
         return when (result) {
             is Success ->
                 ResponseEntity
@@ -153,7 +156,7 @@ class UserController(
             is Failure ->
                 when (result.value) {
                     is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
-                    is UserError.UserNotFound ->  Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+                    is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
@@ -163,10 +166,11 @@ class UserController(
     fun setRoles(
         @RequestBody rolesInput: RolesInput,
     ): ResponseEntity<*> {
-        val result = userService.setRole(
-            userId = rolesInput.userId,
-            roleIdList = rolesInput.rolesIds,
-        )
+        val result =
+            userService.setRole(
+                userId = rolesInput.userId,
+                roleIdList = rolesInput.rolesIds,
+            )
         return when (result) {
             is Success ->
                 ResponseEntity
@@ -191,13 +195,15 @@ class UserController(
             is Success ->
                 ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(result.value.map { user ->
-                        UserHomeOutputModel(
-                            user.id,
-                            user.name,
-                            user.email
-                        )
-                    })
+                    .body(
+                        result.value.map { user ->
+                            UserHomeOutputModel(
+                                user.id,
+                                user.name,
+                                user.email,
+                            )
+                        },
+                    )
 
             is Failure ->
                 when (result.value) {
@@ -208,8 +214,9 @@ class UserController(
     }
 
     @GetMapping("/percentages/{userId}")
-    fun getPercentages(@PathVariable userId: Int): ResponseEntity<List<ReportTypePercentage>> =
-        ResponseEntity.ok(userService.getTypePercentagesByReporter(userId))
+    fun getPercentages(
+        @PathVariable userId: Int,
+    ): ResponseEntity<List<ReportTypePercentage>> = ResponseEntity.ok(userService.getTypePercentagesByReporter(userId))
 
     /*private fun handleUserErrors(errors: UserError): ResponseEntity<*> =
         when(error) {

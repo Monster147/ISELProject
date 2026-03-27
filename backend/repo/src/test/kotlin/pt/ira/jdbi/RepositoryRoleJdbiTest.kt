@@ -1,6 +1,5 @@
 package pt.ira.jdbi
 
-import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -12,7 +11,6 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class RepositoryRoleJdbiTest {
-
     companion object {
         private val jdbi: Jdbi =
             Jdbi

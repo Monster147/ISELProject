@@ -12,17 +12,19 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class RepositoryEvidenceJdbiTest {
-
     companion object {
         private val jdbi: Jdbi =
-            Jdbi.create(PGSimpleDataSource().apply {
-                setURL(Environment.getDbUrl())
-            }).configureWithAppRequirements()
+            Jdbi.create(
+                PGSimpleDataSource().apply {
+                    setURL(Environment.getDbUrl())
+                },
+            ).configureWithAppRequirements()
 
         private val trxManager = TransactionManagerJdbi(jdbi)
     }
 
     private val mapper = ObjectMapper()
+
     private fun json(str: String) = mapper.readTree(str)
 
     @BeforeEach
@@ -38,22 +40,24 @@ class RepositoryEvidenceJdbiTest {
     fun `createEvidence and findById`() {
         trxManager.run {
             val user = repoUsers.createUser("Alice", "alice@isel.pt", PasswordValidationInfo("hash"), listOf(1))
-            val report = repoReport.createReport(
-                creatorId = user.id,
-                title = "Title",
-                description = "Desc",
-                type = json("""{"type":"R"}"""),
-                addons = json("""{}"""),
-            )
+            val report =
+                repoReport.createReport(
+                    creatorId = user.id,
+                    title = "Title",
+                    description = "Desc",
+                    type = json("""{"type":"R"}"""),
+                    addons = json("""{}"""),
+                )
 
-            val evidence = repoEvidence.createEvidence(
-                type = json("""{"type":"image"}"""),
-                filePath = "path/file.png",
-                location = "Lisbon",
-                description = "desc",
-                reporterId = user.id,
-                reportId = report.id,
-            )
+            val evidence =
+                repoEvidence.createEvidence(
+                    type = json("""{"type":"image"}"""),
+                    filePath = "path/file.png",
+                    location = "Lisbon",
+                    description = "desc",
+                    reporterId = user.id,
+                    reportId = report.id,
+                )
 
             val found = repoEvidence.findById(evidence.id)
             assertNotNull(found)

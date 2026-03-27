@@ -21,6 +21,7 @@ class ReportServiceTest {
     private lateinit var trxManager: TransactionManager
 
     private val objectMapper = ObjectMapper()
+
     private fun json(v: String) = objectMapper.readTree(v)
 
     @BeforeEach
@@ -34,19 +35,21 @@ class ReportServiceTest {
 
     @Test
     fun `createReport creates report`() {
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
-        val report = reportService.createReport(
-            creatorId = user.id,
-            title = "title",
-            description = "desc",
-            type = json("""{"t":"a"}"""),
-            addons = json("""{}""")
-        ).let {
-            check(it is Success)
-            it.value
-        }
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
+        val report =
+            reportService.createReport(
+                creatorId = user.id,
+                title = "title",
+                description = "desc",
+                type = json("""{"t":"a"}"""),
+                addons = json("""{}"""),
+            ).let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals("title", report.title)
         assertEquals(1, report.creatorId)
@@ -54,24 +57,27 @@ class ReportServiceTest {
 
     @Test
     fun `findById returns report`() {
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
-        val created = reportService.createReport(
-            user.id,
-            "t",
-            "d",
-            json("""{}"""),
-            json("""{}""")
-        ).let {
-            check(it is Success)
-            it.value
-        }
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
+        val created =
+            reportService.createReport(
+                user.id,
+                "t",
+                "d",
+                json("""{}"""),
+                json("""{}"""),
+            ).let {
+                check(it is Success)
+                it.value
+            }
 
-        val found = reportService.findById(created.id).let {
-            check(it is Success)
-            it.value
-        }
+        val found =
+            reportService.findById(created.id).let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals(created.id, found.id)
     }
@@ -86,9 +92,10 @@ class ReportServiceTest {
 
     @Test
     fun `findByCreatorId returns reports`() {
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
         reportService.createReport(user.id, "t1", "d", json("""{}"""), json("""{}"""))
         reportService.createReport(user.id, "t2", "d", json("""{}"""), json("""{}"""))
 
@@ -99,12 +106,14 @@ class ReportServiceTest {
 
     @Test
     fun `findAll returns reports`() {
-        val user1 = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
-        val user2 = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user1 =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
+        val user2 =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
         reportService.createReport(user1.id, "t1", "d", json("""{}"""), json("""{}"""))
         reportService.createReport(user2.id, "t2", "d", json("""{}"""), json("""{}"""))
 
@@ -115,23 +124,27 @@ class ReportServiceTest {
 
     @Test
     fun `findByStatus returns reports with given status`() {
-        val user1 = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
-        val user2 = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
-        val r1 = reportService.createReport(user1.id, "t1", "d", json("""{}"""), json("""{}"""))
-            .let {
-                check(it is Success)
-                it.value
+        val user1 =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
             }
+        val user2 =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
+        val r1 =
+            reportService.createReport(user1.id, "t1", "d", json("""{}"""), json("""{}"""))
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
-        val r2 = reportService.createReport(user2.id, "t2", "d", json("""{}"""), json("""{}"""))
-            .let {
-                check(it is Success)
-                it.value
-            }
+        val r2 =
+            reportService.createReport(user2.id, "t2", "d", json("""{}"""), json("""{}"""))
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         reportService.updateStatus(r1.id, ReportStatus.SUBMITED)
         reportService.updateStatus(r2.id, ReportStatus.EDITING)
@@ -144,21 +157,24 @@ class ReportServiceTest {
 
     @Test
     fun `findByEditor returns reports for editor`() {
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
-
-        val r1 = reportService.createReport(user.id, "t1", "d", json("""{}"""), json("""{}"""))
-            .let {
-                check(it is Success)
-                it.value
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
             }
 
-        val r2 = reportService.createReport(user.id, "t2", "d", json("""{}"""), json("""{}"""))
-            .let {
-                check(it is Success)
-                it.value
-            }
+        val r1 =
+            reportService.createReport(user.id, "t1", "d", json("""{}"""), json("""{}"""))
+                .let {
+                    check(it is Success)
+                    it.value
+                }
+
+        val r2 =
+            reportService.createReport(user.id, "t2", "d", json("""{}"""), json("""{}"""))
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         reportService.addEditor(r1.id, user.id)
 
@@ -173,12 +189,14 @@ class ReportServiceTest {
         val typeA = json("""{"t":"a"}""")
         val typeB = json("""{"t":"b"}""")
 
-        val user1 = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
-        val user2 = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user1 =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
+        val user2 =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
         reportService.createReport(user1.id, "t1", "d", typeA, json("""{}"""))
         reportService.createReport(user2.id, "t2", "d", typeB, json("""{}"""))
@@ -191,19 +209,22 @@ class ReportServiceTest {
 
     @Test
     fun `findByIntervenor returns reports for intervenor`() {
-        val intervenor = trxManager.run {
-            repoIntervenor.createIntervenor("123", "CC", "name", "contact", "addr")
-        }
-
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
-
-        val r1 = reportService.createReport(user.id, "t1", "d", json("""{}"""), json("""{}"""))
-            .let {
-                check(it is Success)
-                it.value
+        val intervenor =
+            trxManager.run {
+                repoIntervenor.createIntervenor("123", "CC", "name", "contact", "addr")
             }
+
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
+
+        val r1 =
+            reportService.createReport(user.id, "t1", "d", json("""{}"""), json("""{}"""))
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         reportService.addIntervenor(r1.id, intervenor.id)
 
@@ -215,37 +236,50 @@ class ReportServiceTest {
 
     @Test
     fun `addEditor adds editor to report`() {
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
-        val report = reportService.createReport(
-            user.id, "t", "d", json("""{}"""), json("""{}""")
-        ).let {
-            check(it is Success)
-            it.value
-        }
+        val report =
+            reportService.createReport(
+                user.id,
+                "t",
+                "d",
+                json("""{}"""),
+                json("""{}"""),
+            ).let {
+                check(it is Success)
+                it.value
+            }
 
-        val updated = reportService.addEditor(report.id, user.id).let {
-            check(it is Success)
-            it.value
-        }
+        val updated =
+            reportService.addEditor(report.id, user.id).let {
+                check(it is Success)
+                it.value
+            }
 
         assertTrue(updated.editors.contains(user.id))
     }
 
     @Test
     fun `addEditor fails if user not found`() {
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
-        val report = reportService.createReport(
-            user.id, "t", "d", json("""{}"""), json("""{}""")
-        ).let {
-            check(it is Success)
-            it.value
-        }
+        val report =
+            reportService.createReport(
+                user.id,
+                "t",
+                "d",
+                json("""{}"""),
+                json("""{}"""),
+            ).let {
+                check(it is Success)
+                it.value
+            }
 
         val result = reportService.addEditor(report.id, 999)
 
@@ -255,23 +289,26 @@ class ReportServiceTest {
 
     @Test
     fun `removeEditor removes editor from report`() {
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
-
-        val report = reportService.createReport(user.id, "t", "d", json("""{}"""), json("""{}"""))
-            .let {
-                check(it is Success)
-                it.value
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
             }
+
+        val report =
+            reportService.createReport(user.id, "t", "d", json("""{}"""), json("""{}"""))
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         reportService.addEditor(report.id, user.id)
 
-        val updated = reportService.removeEditor(report.id, user.id)
-            .let {
-                check(it is Success)
-                it.value
-            }
+        val updated =
+            reportService.removeEditor(report.id, user.id)
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         assertTrue(!updated.editors.contains(user.id))
     }
@@ -286,15 +323,17 @@ class ReportServiceTest {
 
     @Test
     fun `removeEditor fails if user not found`() {
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
-
-        val report = reportService.createReport(user.id, "t", "d", json("""{}"""), json("""{}"""))
-            .let {
-                check(it is Success)
-                it.value
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
             }
+
+        val report =
+            reportService.createReport(user.id, "t", "d", json("""{}"""), json("""{}"""))
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         val result = reportService.removeEditor(report.id, 999)
 
@@ -304,62 +343,83 @@ class ReportServiceTest {
 
     @Test
     fun `updateStatus updates report status`() {
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
-        val report = reportService.createReport(
-            user.id, "t", "d", json("""{}"""), json("""{}""")
-        ).let {
-            check(it is Success)
-            it.value
-        }
+        val report =
+            reportService.createReport(
+                user.id,
+                "t",
+                "d",
+                json("""{}"""),
+                json("""{}"""),
+            ).let {
+                check(it is Success)
+                it.value
+            }
 
-        val updated = reportService.updateStatus(report.id, ReportStatus.SUBMITED).let {
-            check(it is Success)
-            it.value
-        }
+        val updated =
+            reportService.updateStatus(report.id, ReportStatus.SUBMITED).let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals(ReportStatus.SUBMITED, updated.status)
     }
 
     @Test
     fun `addIntervenor adds intervenor`() {
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
-        val intervenor = trxManager.run {
-            repoIntervenor.createIntervenor("123", "CC", "name", "contact", "addr")
-        }
+        val intervenor =
+            trxManager.run {
+                repoIntervenor.createIntervenor("123", "CC", "name", "contact", "addr")
+            }
 
-        val report = reportService.createReport(
-            user.id, "t", "d", json("""{}"""), json("""{}""")
-        ).let {
-            check(it is Success)
-            it.value
-        }
+        val report =
+            reportService.createReport(
+                user.id,
+                "t",
+                "d",
+                json("""{}"""),
+                json("""{}"""),
+            ).let {
+                check(it is Success)
+                it.value
+            }
 
-        val updated = reportService.addIntervenor(report.id, intervenor.id).let {
-            check(it is Success)
-            it.value
-        }
+        val updated =
+            reportService.addIntervenor(report.id, intervenor.id).let {
+                check(it is Success)
+                it.value
+            }
 
         assertTrue(updated.intervenors.contains(intervenor.id))
     }
 
     @Test
     fun `addIntervenor fails if not found`() {
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
-        val report = reportService.createReport(
-            user.id, "t", "d", json("""{}"""), json("""{}""")
-        ).let {
-            check(it is Success)
-            it.value
-        }
+        val report =
+            reportService.createReport(
+                user.id,
+                "t",
+                "d",
+                json("""{}"""),
+                json("""{}"""),
+            ).let {
+                check(it is Success)
+                it.value
+            }
 
         val result = reportService.addIntervenor(report.id, 999)
 
@@ -369,27 +429,31 @@ class ReportServiceTest {
 
     @Test
     fun `removeIntervenor removes intervenor from report`() {
-        val intervenor = trxManager.run {
-            repoIntervenor.createIntervenor("123", "CC", "name", "contact", "addr")
-        }
-
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
-
-        val report = reportService.createReport(user.id, "t", "d", json("""{}"""), json("""{}"""))
-            .let {
-                check(it is Success)
-                it.value
+        val intervenor =
+            trxManager.run {
+                repoIntervenor.createIntervenor("123", "CC", "name", "contact", "addr")
             }
+
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
+
+        val report =
+            reportService.createReport(user.id, "t", "d", json("""{}"""), json("""{}"""))
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         reportService.addIntervenor(report.id, intervenor.id)
 
-        val updated = reportService.removeIntervenor(report.id, intervenor.id)
-            .let {
-                check(it is Success)
-                it.value
-            }
+        val updated =
+            reportService.removeIntervenor(report.id, intervenor.id)
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         assertTrue(!updated.intervenors.contains(intervenor.id))
     }
@@ -404,15 +468,17 @@ class ReportServiceTest {
 
     @Test
     fun `removeIntervenor fails if intervenor not found`() {
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
-
-        val report = reportService.createReport(user.id, "t", "d", json("""{}"""), json("""{}"""))
-            .let {
-                check(it is Success)
-                it.value
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
             }
+
+        val report =
+            reportService.createReport(user.id, "t", "d", json("""{}"""), json("""{}"""))
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         val result = reportService.removeIntervenor(report.id, 999)
 
@@ -422,16 +488,22 @@ class ReportServiceTest {
 
     @Test
     fun `deleteById removes report`() {
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
-        val created = reportService.createReport(
-            user.id, "t", "d", json("""{}"""), json("""{}""")
-        ).let {
-            check(it is Success)
-            it.value
-        }
+        val created =
+            reportService.createReport(
+                user.id,
+                "t",
+                "d",
+                json("""{}"""),
+                json("""{}"""),
+            ).let {
+                check(it is Success)
+                it.value
+            }
 
         val result = reportService.deleteById(created.id)
 

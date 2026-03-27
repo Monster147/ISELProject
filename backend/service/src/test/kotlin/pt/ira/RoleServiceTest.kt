@@ -16,10 +16,11 @@ class RoleServiceTest {
     fun `createRole creates new role`() {
         val result = roleService.createRole("analyst")
 
-        val role = result.let {
-            check(it is Success)
-            it.value
-        }
+        val role =
+            result.let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals("analyst", role.displayName)
     }
@@ -34,10 +35,11 @@ class RoleServiceTest {
 
     @Test
     fun `findByName returns role`() {
-        val role = roleService.findByName("admin").let {
-            check(it is Success)
-            it.value
-        }
+        val role =
+            roleService.findByName("admin").let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals("admin", role.displayName)
     }
@@ -52,10 +54,11 @@ class RoleServiceTest {
 
     @Test
     fun `findById returns role`() {
-        val role = roleService.findById(1).let {
-            check(it is Success)
-            it.value
-        }
+        val role =
+            roleService.findById(1).let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals(1, role.id)
     }

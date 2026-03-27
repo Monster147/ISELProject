@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import pt.ira.evindence.Evidence
 import pt.ira.interfaces.RepositoryEvidence
 
-class RepositoryEvidenceMem: RepositoryEvidence {
+class RepositoryEvidenceMem : RepositoryEvidence {
     private val evidences = mutableListOf<Evidence>()
 
     override fun createEvidence(
@@ -13,16 +13,17 @@ class RepositoryEvidenceMem: RepositoryEvidence {
         location: String,
         description: String,
         reporterId: Int,
-        reportId: Int
-    ): Evidence = Evidence(
-        id = evidences.size + 1,
-        type = type,
-        filePath = filePath,
-        location = location,
-        description = description,
-        reporterId = reporterId,
-        reportId = reportId
-    ).also { evidences.add(it) }
+        reportId: Int,
+    ): Evidence =
+        Evidence(
+            id = evidences.size + 1,
+            type = type,
+            filePath = filePath,
+            location = location,
+            description = description,
+            reporterId = reporterId,
+            reportId = reportId,
+        ).also { evidences.add(it) }
 
     override fun findByReportId(reportId: Int): List<Evidence> = evidences.filter { it.reportId == reportId }
 

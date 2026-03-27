@@ -1,10 +1,10 @@
 package pt.ira.mem
 
-import pt.ira.user.PasswordValidationInfo
+import pt.ira.interfaces.RepositoryUser
 import pt.ira.token.Token
 import pt.ira.token.TokenValidationInfo
+import pt.ira.user.PasswordValidationInfo
 import pt.ira.user.User
-import pt.ira.interfaces.RepositoryUser
 import java.time.Instant
 
 class RepositoryUserMem : RepositoryUser {
@@ -16,9 +16,10 @@ class RepositoryUserMem : RepositoryUser {
         email: String,
         passwordValidation: PasswordValidationInfo,
         roles: List<Int>,
-    ): User = User(users.size + 1, name, email, passwordValidation, roles).also {
-        users.add(it)
-    }
+    ): User =
+        User(users.size + 1, name, email, passwordValidation, roles).also {
+            users.add(it)
+        }
 
     override fun findByEmail(email: String): User? = users.find { it.email == email }
 
@@ -29,7 +30,10 @@ class RepositoryUserMem : RepositoryUser {
             user to it
         }
 
-    override fun createToken(token: Token, maxTokens: Int) {
+    override fun createToken(
+        token: Token,
+        maxTokens: Int,
+    ) {
         val nrOfTokens = tokens.count { it.userId == token.userId }
 
         // Remove the oldest token if we have achieved the maximum number of tokens
@@ -42,7 +46,10 @@ class RepositoryUserMem : RepositoryUser {
         tokens.add(token)
     }
 
-    override fun updateTokenLastUsed(token: Token, now: Instant) {
+    override fun updateTokenLastUsed(
+        token: Token,
+        now: Instant,
+    ) {
         tokens.removeIf { it.tokenValidationInfo == token.tokenValidationInfo }
         tokens.add(token)
     }
@@ -55,19 +62,28 @@ class RepositoryUserMem : RepositoryUser {
 
     override fun findUsersByRole(role: Int): List<User> = users.filter { it.roles.contains(role) }
 
-    override fun addRole(user: User, roleId: Int): User {
-        val updatedUser= user.copy(roles = user.roles + roleId)
+    override fun addRole(
+        user: User,
+        roleId: Int,
+    ): User {
+        val updatedUser = user.copy(roles = user.roles + roleId)
         save(updatedUser)
         return updatedUser
     }
 
-    override fun removeRole(user: User, roleId: Int): User {
+    override fun removeRole(
+        user: User,
+        roleId: Int,
+    ): User {
         val updateUser = user.copy(roles = user.roles - roleId)
         save(updateUser)
         return updateUser
     }
 
-    override fun setRoles(user: User, roleIds: List<Int>): User {
+    override fun setRoles(
+        user: User,
+        roleIds: List<Int>,
+    ): User {
         val updatedUser = user.copy(roles = roleIds)
         save(updatedUser)
         return updatedUser

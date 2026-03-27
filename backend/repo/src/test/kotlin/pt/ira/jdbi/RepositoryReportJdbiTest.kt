@@ -2,18 +2,17 @@ package pt.ira.jdbi
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.jdbi.v3.core.Jdbi
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.postgresql.ds.PGSimpleDataSource
-import pt.ira.user.PasswordValidationInfo
 import pt.ira.report.ReportStatus
+import pt.ira.user.PasswordValidationInfo
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import org.junit.jupiter.api.Assertions.assertTrue
 
 class RepositoryReportJdbiTest {
-
     companion object {
         private val jdbi: Jdbi =
             Jdbi
@@ -43,20 +42,22 @@ class RepositoryReportJdbiTest {
     @Test
     fun `createReport and findById`() {
         trxManager.run {
-            val creator = repoUsers.createUser(
-                "Creator",
-                "creator@mail.com",
-                PasswordValidationInfo("hash"),
-                listOf(1),
-            )
+            val creator =
+                repoUsers.createUser(
+                    "Creator",
+                    "creator@mail.com",
+                    PasswordValidationInfo("hash"),
+                    listOf(1),
+                )
 
-            val report = repoReport.createReport(
-                creatorId = creator.id,
-                title = "Title",
-                description = "Desc",
-                type = json("""{"type":"A"}"""),
-                addons = json("""{"extra":true}"""),
-            )
+            val report =
+                repoReport.createReport(
+                    creatorId = creator.id,
+                    title = "Title",
+                    description = "Desc",
+                    type = json("""{"type":"A"}"""),
+                    addons = json("""{"extra":true}"""),
+                )
 
             val found = repoReport.findById(report.id)
 
@@ -259,13 +260,14 @@ class RepositoryReportJdbiTest {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
 
-            val intervenor = repoIntervenor.createIntervenor(
-                idNumber = "159874598",
-                idType = "CC",
-                name = "TestName",
-                contactInfo = "958768396",
-                address = "RUA TESTE",
-            )
+            val intervenor =
+                repoIntervenor.createIntervenor(
+                    idNumber = "159874598",
+                    idType = "CC",
+                    name = "TestName",
+                    contactInfo = "958768396",
+                    address = "RUA TESTE",
+                )
 
             val updatedReport = repoReport.addIntervenor(report, intervenor)
             val updatedFromRepo = repoReport.findById(report.id)
@@ -281,13 +283,14 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
-            val intervenor = repoIntervenor.createIntervenor(
-                idNumber = "159874598",
-                idType = "CC",
-                name = "TestName",
-                contactInfo = "958768396",
-                address = "RUA TESTE",
-            )
+            val intervenor =
+                repoIntervenor.createIntervenor(
+                    idNumber = "159874598",
+                    idType = "CC",
+                    name = "TestName",
+                    contactInfo = "958768396",
+                    address = "RUA TESTE",
+                )
 
             val once = repoReport.addIntervenor(report, intervenor)
             val twice = repoReport.addIntervenor(once, intervenor)
@@ -301,13 +304,14 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
-            val intervenor = repoIntervenor.createIntervenor(
-                idNumber = "159874598",
-                idType = "CC",
-                name = "TestName",
-                contactInfo = "958768396",
-                address = "RUA TESTE",
-            )
+            val intervenor =
+                repoIntervenor.createIntervenor(
+                    idNumber = "159874598",
+                    idType = "CC",
+                    name = "TestName",
+                    contactInfo = "958768396",
+                    address = "RUA TESTE",
+                )
 
             val withIntervenor = repoReport.addIntervenor(report, intervenor)
             val removed = repoReport.removeIntervenor(withIntervenor, intervenor)
@@ -325,13 +329,14 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
-            val intervenor = repoIntervenor.createIntervenor(
-                idNumber = "159874598",
-                idType = "CC",
-                name = "TestName",
-                contactInfo = "958768396",
-                address = "RUA TESTE",
-            )
+            val intervenor =
+                repoIntervenor.createIntervenor(
+                    idNumber = "159874598",
+                    idType = "CC",
+                    name = "TestName",
+                    contactInfo = "958768396",
+                    address = "RUA TESTE",
+                )
 
             val removed = repoReport.removeIntervenor(report, intervenor)
             val updated = repoReport.findById(report.id)
@@ -348,13 +353,14 @@ class RepositoryReportJdbiTest {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val report = repoReport.createReport(creator.id, "R1", "D1", json("""{}"""), json("""{}"""))
 
-            val intervenor = repoIntervenor.createIntervenor(
-                idNumber = "159874598",
-                idType = "CC",
-                name = "TestName",
-                contactInfo = "958768396",
-                address = "RUA TESTE",
-            )
+            val intervenor =
+                repoIntervenor.createIntervenor(
+                    idNumber = "159874598",
+                    idType = "CC",
+                    name = "TestName",
+                    contactInfo = "958768396",
+                    address = "RUA TESTE",
+                )
 
             val withIntervenor = repoReport.addIntervenor(report, intervenor)
 

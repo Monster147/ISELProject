@@ -244,7 +244,11 @@ class ReportControllerTest {
     private fun createIntervenor(): Int =
         trxManager.run {
             repoIntervenor.createIntervenor(
-                "123", "CC", "name", "contact", "addr"
+                "123",
+                "CC",
+                "name",
+                "contact",
+                "addr",
             ).id
         }
 
@@ -260,6 +264,6 @@ class ReportControllerTest {
             title = "title",
             description = "desc",
             type = mapper.readTree("""{"t":"a"}"""),
-            addons = mapper.readTree("""{"a":"b"}""")
+            addons = mapper.readTree("""{"a":"b"}"""),
         )
 }

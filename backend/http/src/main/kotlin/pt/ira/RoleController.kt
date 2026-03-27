@@ -18,19 +18,19 @@ class RoleController(
 ) {
     @PostMapping
     fun createRole(
-        @RequestBody roleName: String
-    ) : ResponseEntity<*> {
+        @RequestBody roleName: String,
+    ): ResponseEntity<*> {
         val result = roleService.createRole(roleName)
-        return when(result) {
+        return when (result) {
             is Success ->
                 ResponseEntity
                     .status(201)
                     .header(
                         "Location",
-                        "/api/role/${result.value.id}"
+                        "/api/role/${result.value.id}",
                     ).build<Unit>()
             is Failure ->
-                when(result.value) {
+                when (result.value) {
                     is RoleError.RoleAlreadyExists ->
                         Problem.RoleAlreadyExists.response(HttpStatus.BAD_REQUEST)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -40,16 +40,16 @@ class RoleController(
 
     @DeleteMapping("/{roleName}")
     fun delete(
-        @PathVariable roleName: String
-    ) : ResponseEntity<*> {
+        @PathVariable roleName: String,
+    ): ResponseEntity<*> {
         val result = roleService.deleteRoleByName(roleName)
-        return when(result) {
+        return when (result) {
             is Success ->
                 ResponseEntity
                     .status(HttpStatus.NO_CONTENT)
                     .build<Unit>()
             is Failure ->
-                when(result.value) {
+                when (result.value) {
                     is RoleError.RoleNotFound ->
                         Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -59,8 +59,8 @@ class RoleController(
 
     @GetMapping("/byName/{roleName}")
     fun findByName(
-        @PathVariable roleName: String
-    ) : ResponseEntity<*> {
+        @PathVariable roleName: String,
+    ): ResponseEntity<*> {
         val result = roleService.findByName(roleName)
         return when (result) {
             is Success ->
@@ -80,8 +80,8 @@ class RoleController(
 
     @GetMapping("/byId/{id}")
     fun findById(
-        @PathVariable id: Int
-    ) : ResponseEntity<*> {
+        @PathVariable id: Int,
+    ): ResponseEntity<*> {
         val result = roleService.findById(id)
         return when (result) {
             is Success ->
@@ -100,7 +100,7 @@ class RoleController(
     }
 
     @GetMapping
-    fun findAll() : ResponseEntity<*> {
+    fun findAll(): ResponseEntity<*> {
         val result = roleService.findAllRoles()
         return ResponseEntity
             .status(HttpStatus.OK)

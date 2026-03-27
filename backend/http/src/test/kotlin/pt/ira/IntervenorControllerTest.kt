@@ -16,7 +16,6 @@ import kotlin.test.assertNotNull
 
 @SpringJUnitConfig(TestConfig::class)
 class IntervenorControllerTest {
-
     @Autowired
     private lateinit var controller: IntervenorController
 
@@ -33,13 +32,14 @@ class IntervenorControllerTest {
     @Test
     fun `create intervenor and find by idNumber`() {
         val idNumber = "123"
-        val input = IntervenorInput(
-            idNumber = idNumber,
-            idType = "CC",
-            name = "John Doe",
-            contactInfo = "john@mail.com",
-            address = "Lisbon"
-        )
+        val input =
+            IntervenorInput(
+                idNumber = idNumber,
+                idType = "CC",
+                name = "John Doe",
+                contactInfo = "john@mail.com",
+                address = "Lisbon",
+            )
 
         // create
         controller.createIntervenor(input).let { resp ->
@@ -72,13 +72,14 @@ class IntervenorControllerTest {
     fun `update intervenor`() {
         val id = createIntervenor("123")
 
-        val updateInput = IntervenorUpdateInput(
-            idNumber = null,
-            idType = null,
-            name = "Updated Name",
-            contactInfo = null,
-            address = null
-        )
+        val updateInput =
+            IntervenorUpdateInput(
+                idNumber = null,
+                idType = null,
+                name = "Updated Name",
+                contactInfo = null,
+                address = null,
+            )
 
         val resp = controller.updateIntervenor(updateInput, id)
 
@@ -90,9 +91,14 @@ class IntervenorControllerTest {
 
     @Test
     fun `update non existing intervenor returns error`() {
-        val updateInput = IntervenorUpdateInput(
-            null, null, "Name", null, null
-        )
+        val updateInput =
+            IntervenorUpdateInput(
+                null,
+                null,
+                "Name",
+                null,
+                null,
+            )
 
         val resp = controller.updateIntervenor(updateInput, 999)
 
@@ -141,7 +147,7 @@ class IntervenorControllerTest {
 
     private fun createIntervenor(
         idNumber: String,
-        contactInfo: String = "mail@test.com"
+        contactInfo: String = "mail@test.com",
     ): Int =
         controller.createIntervenor(
             IntervenorInput(
@@ -149,12 +155,13 @@ class IntervenorControllerTest {
                 idType = "CC",
                 name = "Test",
                 contactInfo = contactInfo,
-                address = "Addr"
-            )
+                address = "Addr",
+            ),
         ).let { resp ->
-            val location = requireNotNull(
-                resp.headers.getFirst(HttpHeaders.LOCATION)
-            ) { "Missing Location header" }
+            val location =
+                requireNotNull(
+                    resp.headers.getFirst(HttpHeaders.LOCATION),
+                ) { "Missing Location header" }
             location.split("/").last().toInt()
         }
 }

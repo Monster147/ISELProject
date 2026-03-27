@@ -1,11 +1,11 @@
 package pt.ira.mem
 
-import pt.ira.user.PasswordValidationInfo
-import pt.ira.token.Token
-import pt.ira.token.TokenValidationInfo
-import pt.ira.interfaces.RepositoryUser
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import pt.ira.interfaces.RepositoryUser
+import pt.ira.token.Token
+import pt.ira.token.TokenValidationInfo
+import pt.ira.user.PasswordValidationInfo
 import java.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -121,7 +121,7 @@ class RepositoryUserMemTest {
         val user1 = repo.createUser("Grace", "grace@gmail.com", PasswordValidationInfo("hash7"), listOf(1))
         val user2 = repo.createUser("Heidi", "heidi@gmail.com", PasswordValidationInfo("hash8"), listOf(2))
         val user3 = repo.createUser("Ivan", "ivan@gmail.com", PasswordValidationInfo("hash9"), listOf(3))
-        val user4 = repo.createUser("André", "galvao@gmail.com", PasswordValidationInfo("hash10"), listOf(1,2, 3))
+        val user4 = repo.createUser("André", "galvao@gmail.com", PasswordValidationInfo("hash10"), listOf(1, 2, 3))
         val admins = repo.findUsersByRole(1)
         val investigators = repo.findUsersByRole(2)
         val insuranceCos = repo.findUsersByRole(3)

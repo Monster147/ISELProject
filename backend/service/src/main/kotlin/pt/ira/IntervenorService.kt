@@ -25,13 +25,14 @@ class IntervenorService(
             if (repoIntervenor.findByIdNumber(idNumber) != null) {
                 return@run failure(IntervenorError.IntervenorAlreadyExists)
             }
-            val intervenor = repoIntervenor.createIntervenor(
-                idNumber = idNumber,
-                idType = idType,
-                name = name,
-                contactInfo = contactInfo,
-                address = address
-            )
+            val intervenor =
+                repoIntervenor.createIntervenor(
+                    idNumber = idNumber,
+                    idType = idType,
+                    name = name,
+                    contactInfo = contactInfo,
+                    address = address,
+                )
             success(intervenor)
         }
     }
@@ -46,20 +47,21 @@ class IntervenorService(
     ): Either<IntervenorError, Intervenor> {
         return trxManager.run {
             val intervenor = repoIntervenor.findById(intervenorId) ?: return@run failure(IntervenorError.IntervenorNotFound)
-            val updatedIntervenor = repoIntervenor.updateIntervenor(
-                intervenor = intervenor,
-                idNumber = idNumber,
-                idType = idType,
-                name = name,
-                contactInfo = contactInfo,
-                address = address
-            )
+            val updatedIntervenor =
+                repoIntervenor.updateIntervenor(
+                    intervenor = intervenor,
+                    idNumber = idNumber,
+                    idType = idType,
+                    name = name,
+                    contactInfo = contactInfo,
+                    address = address,
+                )
             success(updatedIntervenor)
         }
     }
 
     fun deleteIntervenorByIdNumber(idNumber: String): Either<IntervenorError, Boolean> {
-        return trxManager.run{
+        return trxManager.run {
             val intervenor = repoIntervenor.findByIdNumber(idNumber) ?: return@run failure(IntervenorError.IntervenorNotFound)
             repoIntervenor.deleteById(intervenor.id)
             success(true)
@@ -67,7 +69,7 @@ class IntervenorService(
     }
 
     fun findByIntervenorByIdNumber(idNumber: String): Either<IntervenorError, Intervenor> {
-        return trxManager.run{
+        return trxManager.run {
             val intervenor = repoIntervenor.findByIdNumber(idNumber) ?: return@run failure(IntervenorError.IntervenorNotFound)
             success(intervenor)
         }

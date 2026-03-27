@@ -10,7 +10,7 @@ interface RepositoryEvidence : Repository<Evidence> {
         location: String,
         description: String,
         reporterId: Int,
-        reportId: Int
+        reportId: Int,
     ): Evidence
 
     fun findByReportId(reportId: Int): List<Evidence>

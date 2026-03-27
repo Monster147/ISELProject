@@ -21,15 +21,16 @@ class ReportController(
 ) {
     @PostMapping
     fun createReport(
-        @RequestBody reportInput: CreateReportInput
+        @RequestBody reportInput: CreateReportInput,
     ): ResponseEntity<*> {
-        val result = reportService.createReport(
-            creatorId = reportInput.creatorId,
-            title = reportInput.title,
-            description = reportInput.description,
-            type = reportInput.type,
-            addons = reportInput.addons
-        )
+        val result =
+            reportService.createReport(
+                creatorId = reportInput.creatorId,
+                title = reportInput.title,
+                description = reportInput.description,
+                type = reportInput.type,
+                addons = reportInput.addons,
+            )
         return when (result) {
             is Success ->
                 ResponseEntity
@@ -37,7 +38,7 @@ class ReportController(
                     .header("Location", "/api/report/${result.value.id}")
                     .build<Unit>()
             is Failure ->
-                when(result.value){
+                when (result.value) {
                     ReportError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
@@ -46,13 +47,13 @@ class ReportController(
 
     @GetMapping("/{id}")
     fun findReportById(
-        @PathVariable id: Int
+        @PathVariable id: Int,
     ): ResponseEntity<*> {
         val result = reportService.findById(id)
         return when (result) {
             is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)
             is Failure ->
-                when (result.value){
+                when (result.value) {
                     ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
@@ -66,23 +67,24 @@ class ReportController(
     }
 
     @GetMapping("/byStatus/{status}")
-    fun findByStatus(@PathVariable status: String): ResponseEntity<List<Report>> =
-        ResponseEntity.ok(reportService.findByStatus(ReportStatus.valueOf(status)))
+    fun findByStatus(
+        @PathVariable status: String,
+    ): ResponseEntity<List<Report>> = ResponseEntity.ok(reportService.findByStatus(ReportStatus.valueOf(status)))
 
     @GetMapping("/byCreator/{creatorId}")
-    fun findByCreator(@PathVariable creatorId: Int): ResponseEntity<List<Report>> =
-        ResponseEntity.ok(reportService.findByCreatorId(creatorId))
-
+    fun findByCreator(
+        @PathVariable creatorId: Int,
+    ): ResponseEntity<List<Report>> = ResponseEntity.ok(reportService.findByCreatorId(creatorId))
 
     @DeleteMapping("/{id}")
     fun deleteReportById(
-        @PathVariable id: Int
+        @PathVariable id: Int,
     ): ResponseEntity<*> {
         val result = reportService.deleteById(id)
         return when (result) {
             is Success -> ResponseEntity.status(HttpStatus.NO_CONTENT).build<Unit>()
             is Failure ->
-                when (result.value){
+                when (result.value) {
                     ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
@@ -92,7 +94,7 @@ class ReportController(
     @PostMapping("/update-status/{id}")
     fun updateReportStatus(
         @PathVariable id: Int,
-        @RequestBody newStatus: String
+        @RequestBody newStatus: String,
     ): ResponseEntity<*> {
         val result = reportService.updateStatus(id, ReportStatus.valueOf(newStatus))
         return when (result) {
@@ -102,14 +104,13 @@ class ReportController(
                     ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
-
         }
     }
 
     @PostMapping("/{id}/editors")
     fun addEditor(
         @PathVariable id: Int,
-        @RequestBody userId: Int
+        @RequestBody userId: Int,
     ): ResponseEntity<*> {
         val result = reportService.addEditor(id, userId)
         return when (result) {
@@ -126,7 +127,7 @@ class ReportController(
     @DeleteMapping("/{id}/editors/")
     fun removeEditor(
         @PathVariable id: Int,
-        @RequestBody userId: Int
+        @RequestBody userId: Int,
     ): ResponseEntity<*> {
         val result = reportService.removeEditor(id, userId)
         return when (result) {
@@ -143,7 +144,7 @@ class ReportController(
     @PostMapping("/{id}/intervenors")
     fun addIntervenor(
         @PathVariable id: Int,
-        @RequestBody intervenorId: Int
+        @RequestBody intervenorId: Int,
     ): ResponseEntity<*> {
         val result = reportService.addIntervenor(id, intervenorId)
         return when (result) {
@@ -160,7 +161,7 @@ class ReportController(
     @DeleteMapping("/{id}/intervenors")
     fun removeIntervenor(
         @PathVariable id: Int,
-        @RequestBody intervenorId: Int
+        @RequestBody intervenorId: Int,
     ): ResponseEntity<*> {
         val result = reportService.removeIntervenor(id, intervenorId)
         return when (result) {

@@ -6,42 +6,46 @@ import pt.ira.evindence.Evidence
 import pt.ira.interfaces.TransactionManager
 
 sealed class EvidenceError {
-    data object EvidenceAlreadyExists : EvidenceError()
-
     data object EvidenceNotFound : EvidenceError()
+
+    data object ReportNotFound : EvidenceError()
+
+    data object ReporterNotFound : EvidenceError()
 }
 
 @Component
 class EvidenceService(
     private val trxManager: TransactionManager,
-)  {
-
+) {
     fun createEvidence(
         type: JsonNode,
         filePath: String,
         location: String,
         description: String,
         reporterId: Int,
-        reportId: Int
+        reportId: Int,
     ): Either<EvidenceError, Evidence> {
-        return trxManager.run{
-            // Tipo de Verificação?
-            val evidence = repoEvidence.createEvidence(
-                filePath = filePath,
-                location = location,
-                description = description,
-                reporterId = reporterId,
-                reportId = reportId,
-                type = type
-            )
+        return trxManager.run {
+            repoUsers.findById(reporterId) ?: return@run failure(EvidenceError.ReporterNotFound)
+            repoReport.findById(reportId) ?: return@run failure(EvidenceError.ReportNotFound)
+            val evidence =
+                repoEvidence.createEvidence(
+                    filePath = filePath,
+                    location = location,
+                    description = description,
+                    reporterId = reporterId,
+                    reportId = reportId,
+                    type = type,
+                )
             success(evidence)
         }
     }
 
     fun findById(id: Int): Either<EvidenceError, Evidence> {
         return trxManager.run {
-            val evidence = repoEvidence.findById(id)
-                ?: return@run failure(EvidenceError.EvidenceNotFound)
+            val evidence =
+                repoEvidence.findById(id)
+                    ?: return@run failure(EvidenceError.EvidenceNotFound)
             success(evidence)
         }
     }
@@ -78,8 +82,9 @@ class EvidenceService(
 
     fun deleteById(id: Int): Either<EvidenceError, Boolean> {
         return trxManager.run {
-            val evidence = repoEvidence.findById(id)
-                ?: return@run failure(EvidenceError.EvidenceNotFound)
+            val evidence =
+                repoEvidence.findById(id)
+                    ?: return@run failure(EvidenceError.EvidenceNotFound)
 
             repoEvidence.deleteById(evidence.id)
             success(true)

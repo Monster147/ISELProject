@@ -8,18 +8,15 @@ sealed class RoleError {
     data object RoleAlreadyExists : RoleError()
 
     data object RoleNotFound : RoleError()
-
 }
 
 @Component
 class RoleService(
     private val trxManager: TransactionManager,
 ) {
-    fun createRole(
-        name: String
-    ): Either<RoleError, Role> {
+    fun createRole(name: String): Either<RoleError, Role> {
         return trxManager.run {
-            if(repoRole.findByName(name) != null) {
+            if (repoRole.findByName(name) != null) {
                 return@run failure(RoleError.RoleAlreadyExists)
             }
             val role = repoRole.createRole(name)
@@ -29,7 +26,7 @@ class RoleService(
 
     fun deleteRoleByName(name: String): Either<RoleError, Unit> {
         return trxManager.run {
-            if(repoRole.findByName(name) == null) return@run failure(RoleError.RoleNotFound)
+            if (repoRole.findByName(name) == null) return@run failure(RoleError.RoleNotFound)
             repoRole.deleteRoleByName(name)
             success(Unit)
         }
@@ -43,7 +40,7 @@ class RoleService(
     }
 
     fun findById(id: Int): Either<RoleError, Role> {
-        return trxManager.run{
+        return trxManager.run {
             val role = repoRole.findById(id) ?: return@run failure(RoleError.RoleNotFound)
             success(role)
         }

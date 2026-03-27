@@ -4,9 +4,9 @@ import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.postgresql.ds.PGSimpleDataSource
-import pt.ira.user.PasswordValidationInfo
 import pt.ira.token.Token
 import pt.ira.token.TokenValidationInfo
+import pt.ira.user.PasswordValidationInfo
 import java.time.Instant
 import java.time.temporal.ChronoUnit.SECONDS
 import kotlin.test.assertEquals
@@ -14,7 +14,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class RepositoryJdbiUserTest {
-
     companion object {
         private val jdbi: Jdbi =
             Jdbi

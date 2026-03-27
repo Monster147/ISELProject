@@ -1,12 +1,12 @@
 package pt.ira.interfaces
 
-import pt.ira.user.PasswordValidationInfo
 import pt.ira.token.Token
-import pt.ira.user.User
 import pt.ira.token.TokenValidationInfo
+import pt.ira.user.PasswordValidationInfo
+import pt.ira.user.User
 import java.time.Instant
 
-interface RepositoryUser: Repository<User> {
+interface RepositoryUser : Repository<User> {
     fun createUser(
         name: String,
         email: String,
@@ -31,7 +31,19 @@ interface RepositoryUser: Repository<User> {
     fun removeTokenByValidationInfo(tokenValidationInfo: TokenValidationInfo): Int
 
     fun findUsersByRole(role: Int): List<User>
-    fun addRole(user: User, roleId: Int) : User
-    fun removeRole(user: User, roleId: Int): User
-    fun setRoles(user: User, roleIds: List<Int>): User
+
+    fun addRole(
+        user: User,
+        roleId: Int,
+    ): User
+
+    fun removeRole(
+        user: User,
+        roleId: Int,
+    ): User
+
+    fun setRoles(
+        user: User,
+        roleIds: List<Int>,
+    ): User
 }

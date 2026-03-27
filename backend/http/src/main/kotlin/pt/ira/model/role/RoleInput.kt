@@ -1,6 +1,6 @@
 package pt.ira.model.role
 
-data class RoleInput (
+data class RoleInput(
     val roleId: Int,
-    val userId: Int
+    val userId: Int,
 )

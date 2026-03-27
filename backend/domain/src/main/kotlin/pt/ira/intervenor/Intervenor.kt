@@ -6,5 +6,5 @@ data class Intervenor(
     val idType: String,
     val name: String,
     val contactInfo: String,
-    val address: String
+    val address: String,
 )

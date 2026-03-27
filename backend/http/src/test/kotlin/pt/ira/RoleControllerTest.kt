@@ -13,7 +13,6 @@ import kotlin.test.assertTrue
 
 @SpringJUnitConfig(TestConfig::class)
 class RoleControllerTest {
-
     @Autowired
     private lateinit var controller: RoleController
 
@@ -117,11 +116,11 @@ class RoleControllerTest {
 
     private fun createRole(name: String): Int =
         controller.createRole(name).let { resp ->
-            val location = requireNotNull(
-                resp.headers.getFirst(HttpHeaders.LOCATION)
-            ) { "Missing Location header" }
+            val location =
+                requireNotNull(
+                    resp.headers.getFirst(HttpHeaders.LOCATION),
+                ) { "Missing Location header" }
 
             location.substringAfterLast("/").toInt()
         }
-
 }

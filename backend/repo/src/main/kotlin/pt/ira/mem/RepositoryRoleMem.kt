@@ -1,16 +1,17 @@
 package pt.ira.mem
 
-import pt.ira.role.Role
 import pt.ira.interfaces.RepositoryRole
+import pt.ira.role.Role
 
-class RepositoryRoleMem: RepositoryRole {
-    private val roles = mutableListOf(
-        Role(1, "admin"),
-        Role(2, "investigator"),
-        Role(3, "supervisor")
-    )
+class RepositoryRoleMem : RepositoryRole {
+    private val roles =
+        mutableListOf(
+            Role(1, "admin"),
+            Role(2, "investigator"),
+            Role(3, "supervisor"),
+        )
 
-    override fun createRole(name: String): Role = Role(roles.size+1, name).also { roles.add(it) }
+    override fun createRole(name: String): Role = Role(roles.size + 1, name).also { roles.add(it) }
 
     override fun deleteRoleByName(name: String) {
         roles.removeIf { it.displayName == name }
@@ -31,11 +32,11 @@ class RepositoryRoleMem: RepositoryRole {
         roles.add(entity)
     }
 
-    override fun deleteById(id: Int){
-       roles.removeIf { it.id == id }
+    override fun deleteById(id: Int) {
+        roles.removeIf { it.id == id }
     }
 
     override fun clear() {
-       roles.clear()
+        roles.clear()
     }
 }

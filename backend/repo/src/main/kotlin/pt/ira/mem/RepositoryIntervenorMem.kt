@@ -1,24 +1,26 @@
 package pt.ira.mem
 
-import pt.ira.intervenor.Intervenor
 import pt.ira.interfaces.RepositoryIntervenor
+import pt.ira.intervenor.Intervenor
 
-class RepositoryIntervenorMem: RepositoryIntervenor {
+class RepositoryIntervenorMem : RepositoryIntervenor {
     private val intervenors = mutableListOf<Intervenor>()
+
     override fun createIntervenor(
         idNumber: String,
         idType: String,
         name: String,
         contactInfo: String,
-        address: String
-    ): Intervenor = Intervenor(
-        id = intervenors.size + 1,
-        idNumber = idNumber,
-        idType = idType,
-        name = name,
-        contactInfo = contactInfo,
-        address = address
-    ).also { intervenors.add(it) }
+        address: String,
+    ): Intervenor =
+        Intervenor(
+            id = intervenors.size + 1,
+            idNumber = idNumber,
+            idType = idType,
+            name = name,
+            contactInfo = contactInfo,
+            address = address,
+        ).also { intervenors.add(it) }
 
     override fun updateIntervenor(
         intervenor: Intervenor,
@@ -26,15 +28,16 @@ class RepositoryIntervenorMem: RepositoryIntervenor {
         idType: String?,
         name: String?,
         contactInfo: String?,
-        address: String?
+        address: String?,
     ): Intervenor {
-        val updatedIntervenor = intervenor.copy(
-            idNumber = idNumber ?: intervenor.idNumber,
-            idType = idType ?: intervenor.idType,
-            name = name ?: intervenor.name,
-            contactInfo = contactInfo ?: intervenor.contactInfo,
-            address = address ?: intervenor.address
-        )
+        val updatedIntervenor =
+            intervenor.copy(
+                idNumber = idNumber ?: intervenor.idNumber,
+                idType = idType ?: intervenor.idType,
+                name = name ?: intervenor.name,
+                contactInfo = contactInfo ?: intervenor.contactInfo,
+                address = address ?: intervenor.address,
+            )
         save(updatedIntervenor)
         return updatedIntervenor
     }

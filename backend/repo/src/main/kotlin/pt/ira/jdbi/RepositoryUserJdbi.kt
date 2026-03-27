@@ -2,22 +2,22 @@ package pt.ira.jdbi
 
 import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.kotlin.mapTo
-import pt.ira.user.PasswordValidationInfo
+import pt.ira.interfaces.RepositoryUser
 import pt.ira.token.Token
 import pt.ira.token.TokenValidationInfo
+import pt.ira.user.PasswordValidationInfo
 import pt.ira.user.User
-import pt.ira.interfaces.RepositoryUser
 import java.sql.ResultSet
 import java.time.Instant
 
 class RepositoryUserJdbi(
-    private val handle: Handle
+    private val handle: Handle,
 ) : RepositoryUser {
     override fun createUser(
         name: String,
         email: String,
         passwordValidation: PasswordValidationInfo,
-        roles: List<Int>
+        roles: List<Int>,
     ): User {
         val id =
             handle
@@ -54,28 +54,37 @@ class RepositoryUserJdbi(
         handle
             .createQuery(
                 """
-            SELECT *
-            FROM dbo.users
-            WHERE :roleId = ANY(roles)
-            """.trimIndent()
+                SELECT *
+                FROM dbo.users
+                WHERE :roleId = ANY(roles)
+                """.trimIndent(),
             )
             .bind("roleId", role)
             .map { rs, _ -> mapRow(rs) }
             .list()
 
-    override fun addRole(user: User, roleId: Int): User {
+    override fun addRole(
+        user: User,
+        roleId: Int,
+    ): User {
         val updatedUser = user.copy(roles = user.roles + roleId)
         save(updatedUser)
         return updatedUser
     }
 
-    override fun removeRole(user: User, roleId: Int): User {
+    override fun removeRole(
+        user: User,
+        roleId: Int,
+    ): User {
         val updateUser = user.copy(roles = user.roles - roleId)
         save(updateUser)
         return updateUser
     }
 
-    override fun setRoles(user: User, roleIds: List<Int>): User {
+    override fun setRoles(
+        user: User,
+        roleIds: List<Int>,
+    ): User {
         val updatedUser = user.copy(roles = roleIds)
         save(updatedUser)
         return updatedUser
@@ -103,7 +112,10 @@ class RepositoryUserJdbi(
             .singleOrNull()
             ?.userAndToken
 
-    override fun createToken(token: Token, maxTokens: Int) {
+    override fun createToken(
+        token: Token,
+        maxTokens: Int,
+    ) {
         val deletions =
             handle
                 .createUpdate(
@@ -132,7 +144,10 @@ class RepositoryUserJdbi(
             .execute()
     }
 
-    override fun updateTokenLastUsed(token: Token, now: Instant) {
+    override fun updateTokenLastUsed(
+        token: Token,
+        now: Instant,
+    ) {
         handle
             .createUpdate(
                 """
@@ -166,7 +181,6 @@ class RepositoryUserJdbi(
             }
             .findOne()
             .orElse(null)
-
 
     override fun findAll(): List<User> =
         handle

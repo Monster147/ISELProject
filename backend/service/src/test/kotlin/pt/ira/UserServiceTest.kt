@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
-import pt.ira.Success
 import pt.ira.interfaces.TransactionManager
 import pt.ira.user.PasswordValidationInfo
 import java.time.Instant
@@ -18,9 +17,10 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @SpringJUnitConfig(TestConfig::class)
-class UserServiceTest{
+class UserServiceTest {
     @Autowired
     private lateinit var userService: UserService
+
     @Autowired
     private lateinit var passwordEncoder: PasswordEncoder
 
@@ -28,6 +28,7 @@ class UserServiceTest{
     private lateinit var trxManager: TransactionManager
 
     private val objectMapper = ObjectMapper()
+
     private fun json(v: String) = objectMapper.readTree(v)
 
     @BeforeEach
@@ -41,10 +42,11 @@ class UserServiceTest{
 
     @Test
     fun `createUser stores user and encodes password`() {
-        val user = userService.createUser("Alice", "alice@isel.pt", "password123").let {
-            check(it is Success)
-            it.value
-        }
+        val user =
+            userService.createUser("Alice", "alice@isel.pt", "password123").let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals("Alice", user.name)
         assertEquals("alice@isel.pt", user.email)
@@ -79,15 +81,17 @@ class UserServiceTest{
 
     @Test
     fun `findUserByEmail returns user`() {
-        val created = userService.createUser("Dave", "dave@isel.pt", "password123").let {
-            check(it is Success)
-            it.value
-        }
+        val created =
+            userService.createUser("Dave", "dave@isel.pt", "password123").let {
+                check(it is Success)
+                it.value
+            }
 
-        val found = userService.findUserByEmail("dave@isel.pt").let {
-            check(it is Success)
-            it.value
-        }
+        val found =
+            userService.findUserByEmail("dave@isel.pt").let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals(created.id, found.id)
     }
@@ -102,15 +106,17 @@ class UserServiceTest{
 
     @Test
     fun `findUserById returns user`() {
-        val created = userService.createUser("André", "galvão@isel.pt", "password123").let {
-            check(it is Success)
-            it.value
-        }
+        val created =
+            userService.createUser("André", "galvão@isel.pt", "password123").let {
+                check(it is Success)
+                it.value
+            }
 
-        val found = userService.findUserById(created.id).let {
-            check(it is Success)
-            it.value
-        }
+        val found =
+            userService.findUserById(created.id).let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals(created.id, found.id)
     }
@@ -125,15 +131,17 @@ class UserServiceTest{
 
     @Test
     fun `addRole adds role to user`() {
-        val user = userService.createUser("Eve", "eve@isel.pt", "password123").let {
-            check(it is Success)
-            it.value
-        }
+        val user =
+            userService.createUser("Eve", "eve@isel.pt", "password123").let {
+                check(it is Success)
+                it.value
+            }
 
-        val updated = userService.addRole(user.id, 1).let {
-            check(it is Success)
-            it.value
-        }
+        val updated =
+            userService.addRole(user.id, 1).let {
+                check(it is Success)
+                it.value
+            }
 
         assertTrue(updated.roles.contains(1))
     }
@@ -148,9 +156,11 @@ class UserServiceTest{
 
     @Test
     fun `addRole fails if role does not exist`() {
-        val user = userService.createUser("Frank", "frank@isel.pt", "password123").let {
-            check(it is Success); it.value
-        }
+        val user =
+            userService.createUser("Frank", "frank@isel.pt", "password123").let {
+                check(it is Success)
+                it.value
+            }
 
         val result = userService.addRole(user.id, 999)
 
@@ -160,30 +170,34 @@ class UserServiceTest{
 
     @Test
     fun `removeRole removes role from user`() {
-        val user = userService.createUser("Gina", "gina@isel.pt", "password123", listOf(1)).let {
-            check(it is Success)
-            it.value
-        }
+        val user =
+            userService.createUser("Gina", "gina@isel.pt", "password123", listOf(1)).let {
+                check(it is Success)
+                it.value
+            }
 
-        val updated = userService.removeRole(user.id, 1).let {
-            check(it is Success)
-            it.value
-        }
+        val updated =
+            userService.removeRole(user.id, 1).let {
+                check(it is Success)
+                it.value
+            }
 
         assertFalse(updated.roles.contains(1))
     }
 
     @Test
     fun `setRole replaces roles`() {
-        val user = userService.createUser("Henry", "henry@isel.pt", "password123", listOf(1)).let {
-            check(it is Success)
-            it.value
-        }
+        val user =
+            userService.createUser("Henry", "henry@isel.pt", "password123", listOf(1)).let {
+                check(it is Success)
+                it.value
+            }
 
-        val updated = userService.setRole(user.id, listOf(2)).let {
-            check(it is Success)
-            it.value
-        }
+        val updated =
+            userService.setRole(user.id, listOf(2)).let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals(listOf(2), updated.roles)
     }
@@ -192,10 +206,11 @@ class UserServiceTest{
     fun `findUsersByRoles returns users`() {
         userService.createUser("Ivy", "ivy@isel.pt", "password123", listOf(1))
 
-        val users = userService.findUsersByRoles(1).let {
-            check(it is Success)
-            it.value
-        }
+        val users =
+            userService.findUsersByRoles(1).let {
+                check(it is Success)
+                it.value
+            }
 
         assertTrue(users.isNotEmpty())
     }
@@ -212,10 +227,11 @@ class UserServiceTest{
     fun `createToken returns token for valid credentials`() {
         userService.createUser("Jack", "jack@isel.pt", "password123")
 
-        val tokenInfo = userService.createToken("jack@isel.pt", "password123").let {
-            check(it is Success)
-            it.value
-        }
+        val tokenInfo =
+            userService.createToken("jack@isel.pt", "password123").let {
+                check(it is Success)
+                it.value
+            }
 
         assertTrue(tokenInfo.tokenValue.isNotEmpty())
         assertTrue(tokenInfo.tokenExpiration.isAfter(Instant.now()))
@@ -223,15 +239,17 @@ class UserServiceTest{
 
     @Test
     fun `getUserByToken returns user for valid token`() {
-        val user = userService.createUser("Kate", "kate@isel.pt", "password123").let {
-            check(it is Success)
-            it.value
-        }
+        val user =
+            userService.createUser("Kate", "kate@isel.pt", "password123").let {
+                check(it is Success)
+                it.value
+            }
 
-        val token = userService.createToken("kate@isel.pt", "password123").let {
-            check(it is Success)
-            it.value
-        }
+        val token =
+            userService.createToken("kate@isel.pt", "password123").let {
+                check(it is Success)
+                it.value
+            }
 
         val found = userService.getUserByToken(token.tokenValue)
 
@@ -243,10 +261,11 @@ class UserServiceTest{
     fun `revokeToken removes token`() {
         userService.createUser("Leo", "leo@isel.pt", "password123")
 
-        val token = userService.createToken("leo@isel.pt", "password123").let {
-            check(it is Success)
-            it.value
-        }
+        val token =
+            userService.createToken("leo@isel.pt", "password123").let {
+                check(it is Success)
+                it.value
+            }
 
         assertTrue(userService.revokeToken(token.tokenValue))
 
@@ -282,9 +301,10 @@ class UserServiceTest{
     fun `getTypePercentagesByReporter returns 100 percent for single type`() {
         val typeA = json("""{"t":"a"}""")
 
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
         repeat(3) {
             trxManager.run {
@@ -307,13 +327,15 @@ class UserServiceTest{
     fun `getTypePercentagesByReporter only considers reports where user is editor`() {
         val typeA = json("""{"t":"a"}""")
 
-        val user1 = trxManager.run {
-            repoUsers.createUser("u1", "u1@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user1 =
+            trxManager.run {
+                repoUsers.createUser("u1", "u1@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
-        val user2 = trxManager.run {
-            repoUsers.createUser("u2", "u2@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user2 =
+            trxManager.run {
+                repoUsers.createUser("u2", "u2@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
         trxManager.run {
             val report1 = repoReport.createReport(user1.id, "t1", "d", typeA, json("""{}"""))
@@ -336,9 +358,10 @@ class UserServiceTest{
         val typeA = json("""{"t":"a"}""")
         val typeB = json("""{"t":"b"}""")
 
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
         repeat(2) {
             trxManager.run {
@@ -373,9 +396,10 @@ class UserServiceTest{
         val typeA = json("""{"t":"a"}""")
         val typeB = json("""{"t":"b"}""")
 
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
         repeat(3) {
             trxManager.run {
@@ -402,15 +426,15 @@ class UserServiceTest{
         val typeA = json("""{"t":"a"}""")
         val typeB = json("""{"t":"b"}""")
 
-        val user = trxManager.run {
-            repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
         trxManager.run {
             val report1 = repoReport.createReport(user.id, "a", "d", typeA, json("""{}"""))
             repoReport.addEditor(report1, user)
         }
-
 
         trxManager.run {
             val report2 = repoReport.createReport(user.id, "b", "d", typeB, json("""{}"""))

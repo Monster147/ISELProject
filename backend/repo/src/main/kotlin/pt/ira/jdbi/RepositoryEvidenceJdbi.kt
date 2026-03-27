@@ -2,25 +2,24 @@ package pt.ira.jdbi
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import org.jdbi.v3.core.Handle
 import pt.ira.evindence.Evidence
 import pt.ira.interfaces.RepositoryEvidence
 import java.sql.ResultSet
 
-class RepositoryEvidenceJdbi (
-    private val handle: Handle
-) : RepositoryEvidence{
+class RepositoryEvidenceJdbi(
+    private val handle: Handle,
+) : RepositoryEvidence {
     override fun createEvidence(
         type: JsonNode,
         filePath: String,
         location: String,
         description: String,
         reporterId: Int,
-        reportId: Int
+        reportId: Int,
     ): Evidence {
         val now = System.currentTimeMillis()
-        val id=
+        val id =
             handle.createUpdate(
                 """
                 INSERT INTO dbo.evidence (type, file_path, location, description, reporter_id, report_id, created_at, updated_at)
@@ -49,7 +48,7 @@ class RepositoryEvidenceJdbi (
             reporterId = reporterId,
             reportId = reportId,
             createdAt = now,
-            updatedAt = now
+            updatedAt = now,
         )
     }
 
@@ -113,7 +112,6 @@ class RepositoryEvidenceJdbi (
             .map { rs, _ -> mapRowToEvidence(rs) }
             .singleOrNull()
 
-
     override fun findAll(): List<Evidence> =
         handle.createQuery(
             """
@@ -124,7 +122,6 @@ class RepositoryEvidenceJdbi (
         )
             .map { rs, _ -> mapRowToEvidence(rs) }
             .list()
-
 
     override fun save(entity: Evidence) {
         handle.createUpdate(
@@ -156,7 +153,6 @@ class RepositoryEvidenceJdbi (
             .bind("id", id)
             .execute()
     }
-
 
     override fun clear() {
         handle.createUpdate("DELETE FROM dbo.evidence").execute()

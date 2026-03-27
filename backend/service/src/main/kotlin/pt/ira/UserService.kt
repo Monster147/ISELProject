@@ -41,8 +41,8 @@ class UserService(
     private val tokenEncoder: TokenEncoder,
     private val config: UsersDomainConfig,
     private val trxManager: TransactionManager,
-    private val clock: Clock
-){
+    private val clock: Clock,
+) {
     fun validatePassword(
         password: String,
         validationInfo: PasswordValidationInfo,
@@ -57,16 +57,6 @@ class UserService(
         )
 
     fun isSafePassword(password: String) = password.length > 4
-    // isto prob deve ser diferente, em baixo tá a minha versão de DAW
-    /*
-    const val SPECIAL_CHARACTERS = "!@#\$%^&*()-_=+[]{}|\\:;\"'<>,.?/"
-    fun isSafePassword(password: String) =
-        password.length >= 8 &&
-                password.any { it.isDigit() } &&
-                password.any { it.isLowerCase() } &&
-                password.any { it.isUpperCase() } &&
-                password.any { SPECIAL_CHARACTERS.contains(it) }
-    */
 
     fun createUser(
         name: String,
@@ -93,11 +83,15 @@ class UserService(
         }
     }
 
-    fun findUserByEmail(email: String): Either<UserError, User> = trxManager.run{
-        val user = repoUsers.findByEmail(email)
-        if (user == null) failure(UserError.UserNotFound)
-        else success(user)
-    }
+    fun findUserByEmail(email: String): Either<UserError, User> =
+        trxManager.run {
+            val user = repoUsers.findByEmail(email)
+            if (user == null) {
+                failure(UserError.UserNotFound)
+            } else {
+                success(user)
+            }
+        }
 
     fun findUsersByRoles(roleId: Int): Either<UserError, List<User>> {
         return trxManager.run {
@@ -106,31 +100,44 @@ class UserService(
         }
     }
 
-    fun findUserById(userId: Int): Either<UserError, User> = trxManager.run {
-        val user = repoUsers.findById(userId)
-        if (user == null) failure(UserError.UserNotFound)
-        else success(user)
-    }
+    fun findUserById(userId: Int): Either<UserError, User> =
+        trxManager.run {
+            val user = repoUsers.findById(userId)
+            if (user == null) {
+                failure(UserError.UserNotFound)
+            } else {
+                success(user)
+            }
+        }
 
-    fun addRole(userId: Int, roleId: Int): Either<UserError, User> {
+    fun addRole(
+        userId: Int,
+        roleId: Int,
+    ): Either<UserError, User> {
         return trxManager.run {
             val user = repoUsers.findById(userId) ?: return@run failure(UserError.UserNotFound)
-            if(repoRole.findById(roleId) == null) return@run failure(UserError.RoleDoesntExist)
+            if (repoRole.findById(roleId) == null) return@run failure(UserError.RoleDoesntExist)
             val updatedUser = repoUsers.addRole(user, roleId)
             success(updatedUser)
         }
     }
 
-    fun removeRole(userId: Int, roleId: Int): Either<UserError, User> {
+    fun removeRole(
+        userId: Int,
+        roleId: Int,
+    ): Either<UserError, User> {
         return trxManager.run {
             val user = repoUsers.findById(userId) ?: return@run failure(UserError.UserNotFound)
-            if(repoRole.findById(roleId) == null) return@run failure(UserError.RoleDoesntExist)
+            if (repoRole.findById(roleId) == null) return@run failure(UserError.RoleDoesntExist)
             val updatedUser = repoUsers.removeRole(user, roleId)
             success(updatedUser)
         }
     }
 
-    fun setRole(userId: Int, roleIdList: List<Int>): Either<UserError, User> {
+    fun setRole(
+        userId: Int,
+        roleIdList: List<Int>,
+    ): Either<UserError, User> {
         return trxManager.run {
             val user = repoUsers.findById(userId) ?: return@run failure(UserError.UserNotFound)
             if (roleIdList.any { repoRole.findById(it) == null }) {
@@ -155,7 +162,7 @@ class UserService(
                     ReportTypePercentage(
                         type = mapper.readTree(type),
                         count = groupedReports.size,
-                        percentage = rounded
+                        percentage = rounded,
                     )
                 }
         }
@@ -231,8 +238,8 @@ class UserService(
     ): Boolean {
         val now = clock.instant()
         return token.createdAt <= now &&
-                Duration.between(now, token.createdAt) <= config.tokenTtl &&
-                Duration.between(now, token.lastUsedAt) <= config.tokenRollingTtl
+            Duration.between(now, token.createdAt) <= config.tokenTtl &&
+            Duration.between(now, token.lastUsedAt) <= config.tokenRollingTtl
     }
 
     private fun generateTokenValue(): String =

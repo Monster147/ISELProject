@@ -21,15 +21,16 @@ class IntervenorController(
 ) {
     @PostMapping
     fun createIntervenor(
-        @RequestBody intervenorInput: IntervenorInput
+        @RequestBody intervenorInput: IntervenorInput,
     ): ResponseEntity<*> {
-        val result: Either<IntervenorError, Intervenor> = intervenorService.createIntervenor(
-            idNumber = intervenorInput.idNumber,
-            idType = intervenorInput.idType,
-            name = intervenorInput.name,
-            contactInfo = intervenorInput.contactInfo,
-            address = intervenorInput.address
-        )
+        val result: Either<IntervenorError, Intervenor> =
+            intervenorService.createIntervenor(
+                idNumber = intervenorInput.idNumber,
+                idType = intervenorInput.idType,
+                name = intervenorInput.name,
+                contactInfo = intervenorInput.contactInfo,
+                address = intervenorInput.address,
+            )
 
         return when (result) {
             is Success ->
@@ -37,7 +38,7 @@ class IntervenorController(
                     .status(HttpStatus.CREATED)
                     .header(
                         "Location",
-                        "/api/intervenor/${result.value.id}"
+                        "/api/intervenor/${result.value.id}",
                     ).build<Unit>()
 
             is Failure ->
@@ -52,26 +53,28 @@ class IntervenorController(
     @PostMapping("/update/{intervenorId}")
     fun updateIntervenor(
         @RequestBody intervenorUpdateInput: IntervenorUpdateInput,
-        @PathVariable intervenorId: Int
-    ) : ResponseEntity<*> {
-        val result = intervenorService.updateIntervenor(
-            intervenorId = intervenorId,
-            idNumber = intervenorUpdateInput.idNumber,
-            idType = intervenorUpdateInput.idType,
-            name = intervenorUpdateInput.name,
-            contactInfo = intervenorUpdateInput.contactInfo,
-            address = intervenorUpdateInput.address,
-        )
+        @PathVariable intervenorId: Int,
+    ): ResponseEntity<*> {
+        val result =
+            intervenorService.updateIntervenor(
+                intervenorId = intervenorId,
+                idNumber = intervenorUpdateInput.idNumber,
+                idType = intervenorUpdateInput.idType,
+                name = intervenorUpdateInput.name,
+                contactInfo = intervenorUpdateInput.contactInfo,
+                address = intervenorUpdateInput.address,
+            )
 
         return when (result) {
-            is Success -> ResponseEntity
-                .status(HttpStatus.OK)
-                .header(
-                    "Location",
-                    "/api/intervenor/${result.value.id}"
-                ).body(
-                    result.value
-                )
+            is Success ->
+                ResponseEntity
+                    .status(HttpStatus.OK)
+                    .header(
+                        "Location",
+                        "/api/intervenor/${result.value.id}",
+                    ).body(
+                        result.value,
+                    )
 
             is Failure ->
                 when (result.value) {
@@ -85,15 +88,17 @@ class IntervenorController(
     @DeleteMapping("/delete/byIdNumber/{idNumber}")
     fun deleteIntervenorByIdNumber(
         @PathVariable idNumber: String,
-    ) : ResponseEntity<*> {
-        val result = intervenorService.deleteIntervenorByIdNumber(
-            idNumber = idNumber,
-        )
+    ): ResponseEntity<*> {
+        val result =
+            intervenorService.deleteIntervenorByIdNumber(
+                idNumber = idNumber,
+            )
 
         return when (result) {
-            is Success -> ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build<Any>()
+            is Success ->
+                ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .build<Any>()
 
             is Failure ->
                 when (result.value) {
@@ -108,9 +113,10 @@ class IntervenorController(
     fun findIntervenorByIdNumber(
         @PathVariable idNumber: String,
     ): ResponseEntity<*> {
-        val result = intervenorService.findByIntervenorByIdNumber(
-            idNumber = idNumber,
-        )
+        val result =
+            intervenorService.findByIntervenorByIdNumber(
+                idNumber = idNumber,
+            )
 
         return when (result) {
             is Success ->
@@ -131,9 +137,10 @@ class IntervenorController(
     fun findIntervenorByContactInfo(
         @PathVariable contactInfo: String,
     ): ResponseEntity<*> {
-        val result = intervenorService.findByIntervenorContactInfo(
-            contactInfo = contactInfo,
-        )
+        val result =
+            intervenorService.findByIntervenorContactInfo(
+                contactInfo = contactInfo,
+            )
         return when (result) {
             is Success ->
                 ResponseEntity

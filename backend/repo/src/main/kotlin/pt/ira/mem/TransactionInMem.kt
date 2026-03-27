@@ -12,7 +12,7 @@ class TransactionInMem(
     override val repoIntervenor: RepositoryIntervenor,
     override val repoReport: RepositoryReport,
     override val repoEvidence: RepositoryEvidence,
-    override val repoRole: RepositoryRole
+    override val repoRole: RepositoryRole,
 ) : Transaction {
     override fun rollback(): Unit = throw UnsupportedOperationException()
 }

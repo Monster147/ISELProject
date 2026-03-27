@@ -14,15 +14,13 @@ import pt.ira.model.user.UserCreateTokenOutputModel
 import pt.ira.model.user.UserHomeOutputModel
 import pt.ira.model.user.UserInput
 import pt.ira.report.ReportTypePercentage
-import pt.ira.user.AuthenticatedUser
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @SpringJUnitConfig(TestConfig::class)
-class UserControllerTest{
-
+class UserControllerTest {
     @Autowired
     private lateinit var controllerUser: UserController
 
@@ -30,8 +28,8 @@ class UserControllerTest{
     private lateinit var trxManager: TransactionManagerInMem
 
     @BeforeEach
-    fun cleanup(){
-        trxManager.run{
+    fun cleanup() {
+        trxManager.run {
             repoUsers.clear()
         }
     }
@@ -43,30 +41,32 @@ class UserControllerTest{
         val password = "babaYaga"
 
         // create user
-        val userId = controllerUser.createUser(UserInput(name, email, password)).let { resp ->
-            assertEquals(HttpStatus.CREATED, resp.statusCode)
+        val userId =
+            controllerUser.createUser(UserInput(name, email, password)).let { resp ->
+                assertEquals(HttpStatus.CREATED, resp.statusCode)
 
-            val location = resp.headers.getFirst(HttpHeaders.LOCATION)
-            assertNotNull(location)
-            assertTrue(location.startsWith("/api/user"))
+                val location = resp.headers.getFirst(HttpHeaders.LOCATION)
+                assertNotNull(location)
+                assertTrue(location.startsWith("/api/user"))
 
-            location.split("/").last().toInt()
-        }
+                location.split("/").last().toInt()
+            }
 
         // create token
-        val token = controllerUser.token(UserCreateTokenInputModel(email, password)).let { resp ->
-            assertEquals(HttpStatus.CREATED, resp.statusCode)
-            assertIs<UserCreateTokenOutputModel>(resp.body)
+        val token =
+            controllerUser.token(UserCreateTokenInputModel(email, password)).let { resp ->
+                assertEquals(HttpStatus.CREATED, resp.statusCode)
+                assertIs<UserCreateTokenOutputModel>(resp.body)
 
-            (resp.body as UserCreateTokenOutputModel).token
-        }
+                (resp.body as UserCreateTokenOutputModel).token
+            }
 
         // find user by id
         controllerUser.findUserById(userId).also { resp ->
             assertEquals(HttpStatus.OK, resp.statusCode)
             assertEquals(
-                 UserHomeOutputModel(userId, name, email),
-                resp.body
+                UserHomeOutputModel(userId, name, email),
+                resp.body,
             )
         }
     }
@@ -83,9 +83,10 @@ class UserControllerTest{
 
     @Test
     fun `create user with insecure password returns bad request`() {
-        val resp = controllerUser.createUser(
-            UserInput("John", "john@mail.com", "123") // weak password
-        )
+        val resp =
+            controllerUser.createUser(
+                UserInput("John", "john@mail.com", "123"),
+            )
 
         assertEquals(HttpStatus.BAD_REQUEST, resp.statusCode)
     }
@@ -94,9 +95,10 @@ class UserControllerTest{
     fun `token with wrong credentials returns bad request`() {
         controllerUser.createUser(UserInput("A", "a@mail.com", "123456"))
 
-        val resp = controllerUser.token(
-            UserCreateTokenInputModel("a@mail.com", "wrong")
-        )
+        val resp =
+            controllerUser.token(
+                UserCreateTokenInputModel("a@mail.com", "wrong"),
+            )
 
         assertEquals(HttpStatus.BAD_REQUEST, resp.statusCode)
     }
@@ -110,15 +112,16 @@ class UserControllerTest{
 
     @Test
     fun `add role to user`() {
-        val userId = controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
-            assertEquals(HttpStatus.CREATED, resp.statusCode)
+        val userId =
+            controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
+                assertEquals(HttpStatus.CREATED, resp.statusCode)
 
-            val location = resp.headers.getFirst(HttpHeaders.LOCATION)
-            assertNotNull(location)
-            assertTrue(location.startsWith("/api/user"))
+                val location = resp.headers.getFirst(HttpHeaders.LOCATION)
+                assertNotNull(location)
+                assertTrue(location.startsWith("/api/user"))
 
-            location.split("/").last().toInt()
-        }
+                location.split("/").last().toInt()
+            }
 
         val roleId = 1 // Already have roles in memory repo, so we can use one of them
 
@@ -129,15 +132,16 @@ class UserControllerTest{
 
     @Test
     fun `remove role from user`() {
-        val userId = controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
-            assertEquals(HttpStatus.CREATED, resp.statusCode)
+        val userId =
+            controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
+                assertEquals(HttpStatus.CREATED, resp.statusCode)
 
-            val location = resp.headers.getFirst(HttpHeaders.LOCATION)
-            assertNotNull(location)
-            assertTrue(location.startsWith("/api/user"))
+                val location = resp.headers.getFirst(HttpHeaders.LOCATION)
+                assertNotNull(location)
+                assertTrue(location.startsWith("/api/user"))
 
-            location.split("/").last().toInt()
-        }
+                location.split("/").last().toInt()
+            }
 
         val roleId = 1 // Already have roles in memory repo, so we can use one of them
 
@@ -150,9 +154,10 @@ class UserControllerTest{
 
     @Test
     fun `remove role that does not exist returns 404`() {
-        val userId = controllerUser.createUser(UserInput("A", "a@mail.com", "123456"))
-            .headers.getFirst(HttpHeaders.LOCATION)!!
-            .split("/").last().toInt()
+        val userId =
+            controllerUser.createUser(UserInput("A", "a@mail.com", "123456"))
+                .headers.getFirst(HttpHeaders.LOCATION)!!
+                .split("/").last().toInt()
 
         val resp = controllerUser.removeRole(RoleInput(roleId = 999, userId = userId))
 
@@ -161,15 +166,16 @@ class UserControllerTest{
 
     @Test
     fun `set roles for user`() {
-        val userId = controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
-            assertEquals(HttpStatus.CREATED, resp.statusCode)
+        val userId =
+            controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
+                assertEquals(HttpStatus.CREATED, resp.statusCode)
 
-            val location = resp.headers.getFirst(HttpHeaders.LOCATION)
-            assertNotNull(location)
-            assertTrue(location.startsWith("/api/user"))
+                val location = resp.headers.getFirst(HttpHeaders.LOCATION)
+                assertNotNull(location)
+                assertTrue(location.startsWith("/api/user"))
 
-            location.split("/").last().toInt()
-        }
+                location.split("/").last().toInt()
+            }
 
         val rolesIds = listOf(1, 2) // Already have roles in memory repo, so we can use one of them
 
@@ -180,15 +186,16 @@ class UserControllerTest{
 
     @Test
     fun `add role with invalid role returns 404`() {
-        val userId = controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
-            assertEquals(HttpStatus.CREATED, resp.statusCode)
+        val userId =
+            controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
+                assertEquals(HttpStatus.CREATED, resp.statusCode)
 
-            val location = resp.headers.getFirst(HttpHeaders.LOCATION)
-            assertNotNull(location)
-            assertTrue(location.startsWith("/api/user"))
+                val location = resp.headers.getFirst(HttpHeaders.LOCATION)
+                assertNotNull(location)
+                assertTrue(location.startsWith("/api/user"))
 
-            location.split("/").last().toInt()
-        }
+                location.split("/").last().toInt()
+            }
 
         val roleId = 999 // Invalid role id
 
@@ -206,15 +213,16 @@ class UserControllerTest{
 
     @Test
     fun `find users by role`() {
-        val userId = controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
-            assertEquals(HttpStatus.CREATED, resp.statusCode)
+        val userId =
+            controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
+                assertEquals(HttpStatus.CREATED, resp.statusCode)
 
-            val location = resp.headers.getFirst(HttpHeaders.LOCATION)
-            assertNotNull(location)
-            assertTrue(location.startsWith("/api/user"))
+                val location = resp.headers.getFirst(HttpHeaders.LOCATION)
+                assertNotNull(location)
+                assertTrue(location.startsWith("/api/user"))
 
-            location.split("/").last().toInt()
-        }
+                location.split("/").last().toInt()
+            }
 
         val roleId = 1
         controllerUser.addRole(RoleInput(roleId, userId))
@@ -230,9 +238,10 @@ class UserControllerTest{
 
     @Test
     fun `get report type percentages for user`() {
-        val userId = controllerUser.createUser(UserInput("A", "a@mail.com", "123456"))
-            .headers.getFirst(HttpHeaders.LOCATION)!!
-            .split("/").last().toInt()
+        val userId =
+            controllerUser.createUser(UserInput("A", "a@mail.com", "123456"))
+                .headers.getFirst(HttpHeaders.LOCATION)!!
+                .split("/").last().toInt()
 
         val resp = controllerUser.getPercentages(userId)
 

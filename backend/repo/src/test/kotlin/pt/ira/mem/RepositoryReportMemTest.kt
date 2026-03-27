@@ -4,17 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import pt.ira.intervenor.Intervenor
-import pt.ira.user.PasswordValidationInfo
-import pt.ira.report.ReportStatus
-import pt.ira.user.User
 import pt.ira.interfaces.RepositoryReport
+import pt.ira.intervenor.Intervenor
+import pt.ira.report.ReportStatus
+import pt.ira.user.PasswordValidationInfo
+import pt.ira.user.User
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class RepositoryReportMemTest {
-
     private lateinit var repo: RepositoryReport
     private val mapper = ObjectMapper()
 
@@ -27,13 +26,14 @@ class RepositoryReportMemTest {
 
     @Test
     fun `createReport and findById`() {
-        val report = repo.createReport(
-            1,
-            "Title",
-            "Desc",
-            json("""{"type":"A"}"""),
-            json("""{"extra":true}""")
-        )
+        val report =
+            repo.createReport(
+                1,
+                "Title",
+                "Desc",
+                json("""{"type":"A"}"""),
+                json("""{"extra":true}"""),
+            )
 
         val found = repo.findById(report.id)
 

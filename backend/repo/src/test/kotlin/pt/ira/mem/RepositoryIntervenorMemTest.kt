@@ -1,16 +1,14 @@
 package pt.ira.mem
 
-import pt.ira.interfaces.RepositoryIntervenor
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import pt.ira.intervenor.Intervenor
+import pt.ira.interfaces.RepositoryIntervenor
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class RepositoryIntervenorMemTest {
-
     private lateinit var repo: RepositoryIntervenor
 
     @BeforeEach
@@ -20,13 +18,14 @@ class RepositoryIntervenorMemTest {
 
     @Test
     fun `createIntervenor and findById`() {
-        val report = repo.createIntervenor(
-            "ID123",
-            "passport",
-            "Alice",
-            "alice@mail.com",
-            "Street 1"
-        )
+        val report =
+            repo.createIntervenor(
+                "ID123",
+                "passport",
+                "Alice",
+                "alice@mail.com",
+                "Street 1",
+            )
 
         val found = repo.findById(report.id)
 

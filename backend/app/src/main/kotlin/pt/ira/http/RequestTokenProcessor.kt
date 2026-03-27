@@ -1,8 +1,8 @@
 package pt.ira.http
 
 import org.springframework.stereotype.Component
-import pt.ira.user.AuthenticatedUser
 import pt.ira.UserService
+import pt.ira.user.AuthenticatedUser
 
 @Component
 class RequestTokenProcessor(

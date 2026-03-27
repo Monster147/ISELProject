@@ -5,13 +5,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import pt.ira.interfaces.RepositoryEvidence
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class RepositoryEvidenceMemTest {
-
     private lateinit var repo: RepositoryEvidence
     private val mapper = ObjectMapper()
 
@@ -24,14 +22,15 @@ class RepositoryEvidenceMemTest {
 
     @Test
     fun `createEvidence and findById`() {
-        val evidence = repo.createEvidence(
-            json("""{"type":"image"}"""),
-            "path/file.png",
-            "Lisbon",
-            "desc",
-            1,
-            10
-        )
+        val evidence =
+            repo.createEvidence(
+                json("""{"type":"image"}"""),
+                "path/file.png",
+                "Lisbon",
+                "desc",
+                1,
+                10,
+            )
 
         val found = repo.findById(evidence.id)
 

@@ -1,16 +1,12 @@
-package pt.ira.evindence
+package pt.ira.model.evidence
 
 import com.fasterxml.jackson.databind.JsonNode
 
-data class Evidence(
-    val id: Int,
-    // JSONB
+data class CreateEvidenceInput(
     val type: JsonNode,
     val filePath: String,
     val location: String,
     val description: String,
     val reporterId: Int,
     val reportId: Int,
-    val createdAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long = System.currentTimeMillis(),
 )

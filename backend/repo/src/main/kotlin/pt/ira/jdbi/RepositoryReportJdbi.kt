@@ -3,25 +3,25 @@ package pt.ira.jdbi
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.jdbi.v3.core.Handle
+import pt.ira.interfaces.RepositoryReport
 import pt.ira.intervenor.Intervenor
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
 import pt.ira.user.User
-import pt.ira.interfaces.RepositoryReport
 import java.sql.ResultSet
 
 class RepositoryReportJdbi(
-    private val handle: Handle
+    private val handle: Handle,
 ) : RepositoryReport {
     override fun createReport(
         creatorId: Int,
         title: String,
         description: String,
         type: JsonNode,
-        addons: JsonNode
+        addons: JsonNode,
     ): Report {
         val now = System.currentTimeMillis()
-        val id=
+        val id =
             handle.createUpdate(
                 """
                 INSERT INTO dbo.report (creator_id, title, description, status, type, addons, editors, intervenors, created_at, updated_at) 
@@ -52,7 +52,7 @@ class RepositoryReportJdbi(
             type = type,
             addons = addons,
             createdAt = now,
-            updatedAt = now
+            updatedAt = now,
         )
     }
 
@@ -92,28 +92,38 @@ class RepositoryReportJdbi(
             .map { rs, _ -> mapRowToReport(rs) }
             .toList()
 
-    override fun addEditor(report: Report, user: User) : Report {
+    override fun addEditor(
+        report: Report,
+        user: User,
+    ): Report {
         if (report.editors.any { it == user.id }) return report
-        val updated = report.copy(
-            editors = report.editors + user.id,
-            updatedAt = System.currentTimeMillis()
-        )
+        val updated =
+            report.copy(
+                editors = report.editors + user.id,
+                updatedAt = System.currentTimeMillis(),
+            )
         save(updated)
         return updated
     }
 
-
-    override fun removeEditor(report: Report, user: User): Report {
+    override fun removeEditor(
+        report: Report,
+        user: User,
+    ): Report {
         if (report.editors.none { it == user.id }) return report
-        val updatedReport = report.copy(
-            editors = report.editors - user.id,
-            updatedAt = System.currentTimeMillis()
-        )
+        val updatedReport =
+            report.copy(
+                editors = report.editors - user.id,
+                updatedAt = System.currentTimeMillis(),
+            )
         save(updatedReport)
         return updatedReport
     }
 
-    override fun updateStatus(report: Report, status: ReportStatus): Report{
+    override fun updateStatus(
+        report: Report,
+        status: ReportStatus,
+    ): Report {
         val updatedReport = report.copy(status = status, updatedAt = System.currentTimeMillis())
         save(updatedReport)
         return updatedReport
@@ -122,10 +132,10 @@ class RepositoryReportJdbi(
     override fun findByType(type: JsonNode): List<Report> =
         handle.createQuery(
             """
-        SELECT id, creator_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
-        FROM dbo.report
-        WHERE type = :type::jsonb
-        """.trimIndent()
+            SELECT id, creator_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
+            FROM dbo.report
+            WHERE type = :type::jsonb
+            """.trimIndent(),
         )
             .bind("type", type.toString())
             .map { rs, _ -> mapRowToReport(rs) }
@@ -134,31 +144,39 @@ class RepositoryReportJdbi(
     override fun findByIntervenor(intervenor: Intervenor): List<Report> =
         handle.createQuery(
             """
-        SELECT id, creator_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
-        FROM dbo.report
-        WHERE :intervenorId = ANY(intervenors)
-        """.trimIndent()
+            SELECT id, creator_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
+            FROM dbo.report
+            WHERE :intervenorId = ANY(intervenors)
+            """.trimIndent(),
         )
             .bind("intervenorId", intervenor.id)
             .map { rs, _ -> mapRowToReport(rs) }
             .list()
 
-    override fun addIntervenor(report: Report, intervenor: Intervenor): Report {
+    override fun addIntervenor(
+        report: Report,
+        intervenor: Intervenor,
+    ): Report {
         if (report.intervenors.any { it == intervenor.id }) return report
-        val updated = report.copy(
-            intervenors = report.intervenors + intervenor.id,
-            updatedAt = System.currentTimeMillis()
-        )
+        val updated =
+            report.copy(
+                intervenors = report.intervenors + intervenor.id,
+                updatedAt = System.currentTimeMillis(),
+            )
         save(updated)
         return updated
     }
 
-    override fun removeIntervenor(report: Report, intervenor: Intervenor): Report {
+    override fun removeIntervenor(
+        report: Report,
+        intervenor: Intervenor,
+    ): Report {
         if (report.intervenors.none { it == intervenor.id }) return report
-        val updated = report.copy(
-            intervenors = report.intervenors - intervenor.id,
-            updatedAt = System.currentTimeMillis()
-        )
+        val updated =
+            report.copy(
+                intervenors = report.intervenors - intervenor.id,
+                updatedAt = System.currentTimeMillis(),
+            )
         save(updated)
         return updated
     }
@@ -237,12 +255,14 @@ class RepositoryReportJdbi(
         val addons = rs.getString("addons")
         val createdAt = rs.getLong("created_at")
         val updatedAt = rs.getLong("updated_at")
-        val editors = rs.getArray("editors")?.let { arr ->
-            (arr.array as Array<*>).map { (it as Number).toInt() }
-        } ?: emptyList()
-        val intervenors = rs.getArray("intervenors")?.let { arr ->
-            (arr.array as Array<*>).map { (it as Number).toInt() }
-        } ?: emptyList()
+        val editors =
+            rs.getArray("editors")?.let { arr ->
+                (arr.array as Array<*>).map { (it as Number).toInt() }
+            } ?: emptyList()
+        val intervenors =
+            rs.getArray("intervenors")?.let { arr ->
+                (arr.array as Array<*>).map { (it as Number).toInt() }
+            } ?: emptyList()
 
         val typeJson = objectMapper.readTree(type)
         val addonsJson = objectMapper.readTree(addons)
