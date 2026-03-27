@@ -96,7 +96,7 @@ class IntervenorControllerTest {
 
         val resp = controller.updateIntervenor(updateInput, 999)
 
-        assertEquals(HttpStatus.BAD_REQUEST, resp.statusCode)
+        assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
 
     @Test
@@ -109,14 +109,14 @@ class IntervenorControllerTest {
         assertEquals(HttpStatus.NO_CONTENT, resp.statusCode)
 
         val findResp = controller.findIntervenorByIdNumber(idNumber)
-        assertEquals(HttpStatus.BAD_REQUEST, findResp.statusCode)
+        assertEquals(HttpStatus.NOT_FOUND, findResp.statusCode)
     }
 
     @Test
     fun `delete non existing intervenor returns error`() {
         val resp = controller.deleteIntervenorByIdNumber("999")
 
-        assertEquals(HttpStatus.BAD_REQUEST, resp.statusCode)
+        assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
 
     @Test
@@ -136,7 +136,7 @@ class IntervenorControllerTest {
     fun `find by contact info not found`() {
         val resp = controller.findIntervenorByContactInfo("nope")
 
-        assertEquals(HttpStatus.BAD_REQUEST, resp.statusCode)
+        assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
 
     private fun createIntervenor(

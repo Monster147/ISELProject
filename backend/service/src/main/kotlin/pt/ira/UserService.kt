@@ -1,8 +1,10 @@
 package pt.ira
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import pt.ira.interfaces.TransactionManager
+import pt.ira.report.ReportTypePercentage
 import pt.ira.token.Token
 import pt.ira.token.TokenEncoder
 import pt.ira.token.TokenExternalInfo
@@ -15,6 +17,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.Base64.getUrlDecoder
 import java.util.Base64.getUrlEncoder
+import kotlin.math.round
 
 sealed class UserError {
     data object AlreadyUsedEmailAddress : UserError()
@@ -135,6 +138,26 @@ class UserService(
             }
             val updatedUser = repoUsers.setRoles(user, roleIdList)
             success(updatedUser)
+        }
+    }
+
+    fun getTypePercentagesByReporter(reporterId: Int): List<ReportTypePercentage> {
+        return trxManager.run {
+            val reports = repoReport.findByEditor(reporterId)
+            if (reports.isEmpty()) return@run emptyList()
+            val mapper = ObjectMapper()
+            val totalReports = reports.size.toDouble()
+            reports
+                .groupBy { it.type.toString() }
+                .map { (type, groupedReports) ->
+                    val rawPercentage = (groupedReports.size / totalReports) * 100
+                    val rounded = round(rawPercentage * 10) / 10
+                    ReportTypePercentage(
+                        type = mapper.readTree(type),
+                        count = groupedReports.size,
+                        percentage = rounded
+                    )
+                }
         }
     }
 

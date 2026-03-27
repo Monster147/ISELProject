@@ -20,10 +20,10 @@ sealed class Problem(
             .header("Content-Type", MEDIA_TYPE)
             .body(this)
 
-    //server
+    // server
     data object InternalError : Problem(URI("${PROBLEM_URI_PATH}/internal-error"))
 
-    //user
+    // user
     data object EmailAlreadyInUse : Problem(URI("${PROBLEM_URI_PATH}/email-already-in-use"))
 
     data object InsecurePassword : Problem(URI("${PROBLEM_URI_PATH}/insecure-password"))
@@ -32,7 +32,7 @@ sealed class Problem(
 
     data object UserNotFound : Problem(URI("${PROBLEM_URI_PATH}/user-not-found"))
 
-    //role
+    // role
     data object RoleNotFound : Problem(URI("${PROBLEM_URI_PATH}/role-not-found"))
 
     data object RoleAlreadyExists : Problem(URI("${PROBLEM_URI_PATH}/role-already-exists"))
@@ -41,4 +41,7 @@ sealed class Problem(
     data object IntervenorAlreadyExists : Problem(URI("${PROBLEM_URI_PATH}/intervenor-already-exists"))
 
     data object IntervenorNotFound : Problem(URI("${PROBLEM_URI_PATH}/intervenor-not-found"))
+
+    // report
+    data object ReportNotFound : Problem(URI("${PROBLEM_URI_PATH}/report-not-found"))
 }

@@ -13,6 +13,8 @@ import pt.ira.model.user.UserCreateTokenInputModel
 import pt.ira.model.user.UserCreateTokenOutputModel
 import pt.ira.model.user.UserHomeOutputModel
 import pt.ira.model.user.UserInput
+import pt.ira.report.ReportTypePercentage
+import pt.ira.user.AuthenticatedUser
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
@@ -80,6 +82,15 @@ class UserControllerTest{
     }
 
     @Test
+    fun `create user with insecure password returns bad request`() {
+        val resp = controllerUser.createUser(
+            UserInput("John", "john@mail.com", "123") // weak password
+        )
+
+        assertEquals(HttpStatus.BAD_REQUEST, resp.statusCode)
+    }
+
+    @Test
     fun `token with wrong credentials returns bad request`() {
         controllerUser.createUser(UserInput("A", "a@mail.com", "123456"))
 
@@ -138,6 +149,17 @@ class UserControllerTest{
     }
 
     @Test
+    fun `remove role that does not exist returns 404`() {
+        val userId = controllerUser.createUser(UserInput("A", "a@mail.com", "123456"))
+            .headers.getFirst(HttpHeaders.LOCATION)!!
+            .split("/").last().toInt()
+
+        val resp = controllerUser.removeRole(RoleInput(roleId = 999, userId = userId))
+
+        assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
+    }
+
+    @Test
     fun `set roles for user`() {
         val userId = controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
             assertEquals(HttpStatus.CREATED, resp.statusCode)
@@ -176,6 +198,13 @@ class UserControllerTest{
     }
 
     @Test
+    fun `add role to non existing user returns 404`() {
+        val resp = controllerUser.addRole(RoleInput(roleId = 1, userId = 999))
+
+        assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
+    }
+
+    @Test
     fun `find users by role`() {
         val userId = controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
             assertEquals(HttpStatus.CREATED, resp.statusCode)
@@ -197,5 +226,17 @@ class UserControllerTest{
 
         println(body)
         assertEquals(1, body.size)
+    }
+
+    @Test
+    fun `get report type percentages for user`() {
+        val userId = controllerUser.createUser(UserInput("A", "a@mail.com", "123456"))
+            .headers.getFirst(HttpHeaders.LOCATION)!!
+            .split("/").last().toInt()
+
+        val resp = controllerUser.getPercentages(userId)
+
+        assertEquals(HttpStatus.OK, resp.statusCode)
+        assertIs<List<ReportTypePercentage>>(resp.body)
     }
 }

@@ -15,6 +15,7 @@ import pt.ira.model.user.UserCreateTokenInputModel
 import pt.ira.model.user.UserCreateTokenOutputModel
 import pt.ira.model.user.UserHomeOutputModel
 import pt.ira.model.user.UserInput
+import pt.ira.report.ReportTypePercentage
 import pt.ira.user.AuthenticatedUser
 import pt.ira.user.User
 
@@ -183,7 +184,7 @@ class UserController(
 
     @GetMapping("/find/role/{roleId}")
     fun findUsersByRole(
-        @PathVariable("roleId") roleId: Int,
+        @PathVariable roleId: Int,
     ): ResponseEntity<*> {
         val result = userService.findUsersByRoles(roleId)
         return when (result) {
@@ -205,6 +206,10 @@ class UserController(
                 }
         }
     }
+
+    @GetMapping("/percentages/{userId}")
+    fun getPercentages(@PathVariable userId: Int): ResponseEntity<List<ReportTypePercentage>> =
+        ResponseEntity.ok(userService.getTypePercentagesByReporter(userId))
 
     /*private fun handleUserErrors(errors: UserError): ResponseEntity<*> =
         when(error) {

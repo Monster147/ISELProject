@@ -28,6 +28,7 @@ class ReportService(
         addons: JsonNode
     ) : Either<ReportError, Report> {
         return trxManager.run {
+            repoUsers.findById(creatorId) ?: return@run failure(ReportError.UserNotFound)
             val report = repoReport.createReport(
                 creatorId = creatorId,
                 title = title,
@@ -35,10 +36,6 @@ class ReportService(
                 type = type,
                 addons = addons
             )
-            /*report.editors.forEach { editorId ->
-                val editor = repoUsers.findById(editorId) ?: return@run failure(ReportError.UserNotFound)
-                repoReport.addEditor(report, editor)
-            }*/
             success(report)
         }
     }
@@ -138,30 +135,6 @@ class ReportService(
 
             repoReport.deleteById(report.id)
             success(true)
-        }
-    }
-
-    fun getTypePercentagesByReporter(reporterId: Int): List<ReportTypePercentage> {
-        return trxManager.run {
-            val reports = repoReport.findByEditor(reporterId)
-            if (reports.isEmpty()) return@run emptyList()
-            val mapper = ObjectMapper()
-            val totalReports = reports.size.toDouble()
-            reports
-                .groupBy { it.type.toString() }
-                .map { (type, groupedReports) ->
-                    val rawPercentage = (groupedReports.size / totalReports) * 100
-                    val rounded = round(rawPercentage * 10) / 10
-                    ReportTypePercentage(
-                        type = mapper.readTree(type),
-                        count = groupedReports.size,
-                        percentage = rounded
-                    )
-                }
-                .sortedWith(
-                    compareByDescending<ReportTypePercentage> { it.count }
-                        .thenBy { it.type.toString() }
-                )
         }
     }
 }

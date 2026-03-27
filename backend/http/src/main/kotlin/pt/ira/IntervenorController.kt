@@ -52,7 +52,7 @@ class IntervenorController(
     @PostMapping("/update/{intervenorId}")
     fun updateIntervenor(
         @RequestBody intervenorUpdateInput: IntervenorUpdateInput,
-        @PathVariable("intervenorId") intervenorId: Int
+        @PathVariable intervenorId: Int
     ) : ResponseEntity<*> {
         val result = intervenorService.updateIntervenor(
             intervenorId = intervenorId,
@@ -76,15 +76,15 @@ class IntervenorController(
             is Failure ->
                 when (result.value) {
                     is IntervenorError.IntervenorNotFound ->
-                        Problem.IntervenorNotFound.response(HttpStatus.BAD_REQUEST)
+                        Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
     }
 
-    @DeleteMapping("/delete/byIdNumber")
+    @DeleteMapping("/delete/byIdNumber/{idNumber}")
     fun deleteIntervenorByIdNumber(
-        @RequestBody idNumber: String,
+        @PathVariable idNumber: String,
     ) : ResponseEntity<*> {
         val result = intervenorService.deleteIntervenorByIdNumber(
             idNumber = idNumber,
@@ -98,15 +98,15 @@ class IntervenorController(
             is Failure ->
                 when (result.value) {
                     is IntervenorError.IntervenorNotFound ->
-                        Problem.IntervenorNotFound.response(HttpStatus.BAD_REQUEST)
+                        Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
     }
 
-    @GetMapping("/byIdNumber/")
+    @GetMapping("/byIdNumber/{idNumber}")
     fun findIntervenorByIdNumber(
-        @RequestBody idNumber: String,
+        @PathVariable idNumber: String,
     ): ResponseEntity<*> {
         val result = intervenorService.findByIntervenorByIdNumber(
             idNumber = idNumber,
@@ -121,15 +121,15 @@ class IntervenorController(
             is Failure ->
                 when (result.value) {
                     is IntervenorError.IntervenorNotFound ->
-                        Problem.IntervenorNotFound.response(HttpStatus.BAD_REQUEST)
+                        Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
     }
 
-    @GetMapping("/byContactInfo/")
+    @GetMapping("/byContactInfo/{contactInfo}")
     fun findIntervenorByContactInfo(
-        @RequestBody contactInfo: String,
+        @PathVariable contactInfo: String,
     ): ResponseEntity<*> {
         val result = intervenorService.findByIntervenorContactInfo(
             contactInfo = contactInfo,
@@ -143,7 +143,7 @@ class IntervenorController(
             is Failure ->
                 when (result.value) {
                     is IntervenorError.IntervenorNotFound ->
-                        Problem.IntervenorNotFound.response(HttpStatus.BAD_REQUEST)
+                        Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
