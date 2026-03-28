@@ -16,15 +16,17 @@ import {CreateEvidenceInput} from "../models/evidence/CreateEvidenceInput";
 import {Evidence} from "../models/evidence/Evidence";
 import {Json} from "../models/utils/Json";
 import {Report} from "../models/report/Report";
+import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
 
-class ApiError extends Error {
+export class ApiError extends Error {
     constructor(public status: number, message: string) {
         super(message);
     }
 }
 
-export function getAuthHeaders(): HeadersInit {
-    const token = localStorage.getItem("token");
+export async function getAuthHeaders(): Promise<HeadersInit> {
+    const authInfo = await authInfoRepo.getAuthInfo();
+    const token = authInfo?.token;
     return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -78,7 +80,13 @@ export const api = {
     async logout(): Promise<void> {
         return fetchApi<void>("/user/logout", {
             method: "POST",
-            headers: getAuthHeaders(),
+            headers: await getAuthHeaders(),
+        });
+    },
+
+    async userHome(): Promise<UserHomeOutputModel> {
+        return fetchApi<UserHomeOutputModel>("/user/me", {
+            headers: await getAuthHeaders(),
         });
     },
 

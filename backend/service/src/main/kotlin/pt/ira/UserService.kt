@@ -62,7 +62,7 @@ class UserService(
         name: String,
         email: String,
         password: String,
-        roles: List<Int> = listOf(),
+        roles: List<Int> = listOf(2),
     ): Either<UserError, User> {
         if (!isSafePassword(password)) {
             return failure(UserError.InsecurePassword)

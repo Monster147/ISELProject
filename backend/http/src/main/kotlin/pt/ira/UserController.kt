@@ -89,6 +89,19 @@ class UserController(
         userService.revokeToken(user.token)
     }
 
+    @GetMapping("me")
+    fun userHome(userAuthenticatedUser: AuthenticatedUser): ResponseEntity<UserHomeOutputModel> =
+        ResponseEntity
+            .status(HttpStatus.OK)
+            .body(
+                UserHomeOutputModel(
+                    userAuthenticatedUser.user.id,
+                    userAuthenticatedUser.user.name,
+                    userAuthenticatedUser.user.email,
+                    userAuthenticatedUser.user.roles,
+                ),
+            )
+
     @GetMapping("/{userId}")
     fun findUserById(
         @PathVariable("userId") userId: Int,
@@ -103,6 +116,7 @@ class UserController(
                             result.value.id,
                             result.value.name,
                             result.value.email,
+                            result.value.roles,
                         ),
                     )
 
@@ -201,6 +215,7 @@ class UserController(
                                 user.id,
                                 user.name,
                                 user.email,
+                                user.roles,
                             )
                         },
                     )

@@ -17,7 +17,7 @@ const DashboardLayout = () => {
                     height:90,
                 },
                 tabBarActiveTintColor: theme.iconColorFocused,
-                tabBarInactiveTintColor: theme.iconColor
+                tabBarInactiveTintColor: theme.iconColor,
             }}
         >
             <Tabs.Screen

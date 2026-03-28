@@ -65,7 +65,7 @@ class UserControllerTest {
         controllerUser.findUserById(userId).also { resp ->
             assertEquals(HttpStatus.OK, resp.statusCode)
             assertEquals(
-                UserHomeOutputModel(userId, name, email),
+                UserHomeOutputModel(userId, name, email, listOf(2)),
                 resp.body,
             )
         }

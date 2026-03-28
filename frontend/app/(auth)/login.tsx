@@ -2,7 +2,7 @@ import {StyleSheet, Pressable, Text, TextInput, TouchableWithoutFeedback, Keyboa
 import ThemedView from "../../components/ThemedView";
 import ThemedText from "../../components/ThemedText";
 import Spacer from "../../components/Spacer";
-import {Link} from "expo-router";
+import {Link, router} from "expo-router";
 import {Colors} from "../../constants/Colors";
 import ThemedButton from "../../components/ThemedButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
@@ -12,13 +12,32 @@ import {useAuth} from "../../hooks/useAuth";
 const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const {token} = useAuth()
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = () => {
-        console.log('Login')
-        console.log(email)
-        console.log(password)
-        console.log(token)
+    const {login} = useAuth()
+
+    const checkErrors = (): boolean =>{
+        if (email.trim() === '') {
+            setError("Email cannot be empty")
+            return true
+        }
+        if (password.trim() === '') {
+            setError("Password cannot be empty")
+            return true
+        }
+        return false
+    }
+
+    const handleSubmit = async () => {
+        setError(null)
+        if(checkErrors()) return
+        try {
+            await login(email, password)
+            router.replace("/profile");
+        } catch (err: any) {
+            if (err instanceof Error) setError(err.message);
+            else setError(String(err));
+        }
     }
 
     return (
@@ -47,6 +66,11 @@ const Login = () => {
                 <ThemedButton onPress={handleSubmit}>
                     <Text style={{color: 'f2f2f2'}}>Login</Text>
                 </ThemedButton>
+
+                <Spacer/>
+
+                {error && <Text style={styles.error}>{error}</Text> }
+
                 <Spacer height={100}/>
                 <Link href='/register'>
                     <ThemedText style={{textAlign: 'center'}}>
@@ -78,4 +102,13 @@ const styles = StyleSheet.create({
     pressed: {
         opacity: 0.9
     },
+    error:{
+        color: Colors.warning,
+        padding: 10,
+        backgroundColor: '#f5c1c8',
+        borderColor: Colors.warning,
+        borderWidth: 1,
+        borderRadius: 6,
+        marginHorizontal: 10,
+    }
 })

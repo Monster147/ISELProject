@@ -2,20 +2,52 @@ import {Keyboard, StyleSheet, Text, TouchableWithoutFeedback} from "react-native
 import ThemedView from "../../components/ThemedView";
 import ThemedText from "../../components/ThemedText";
 import Spacer from "../../components/Spacer";
-import {Link} from "expo-router";
+import {Link, router} from "expo-router";
 import ThemedButton from "../../components/ThemedButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import {useState} from "react";
+import {useAuth} from "../../hooks/useAuth";
+import {Colors} from "../../constants/Colors";
 
 const Register = () => {
+    const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = () => {
-        console.log('Register')
-        console.log(email)
-        console.log(password)
+    const {register} = useAuth()
+
+    const checkErrors = ():boolean =>{
+        if (name.trim() === '') {
+            setError("Name cannot be empty")
+            return true
+        }
+        if (email.trim() === '') {
+            setError("Email cannot be empty")
+            return true
+        }
+        if (password.trim() === '') {
+            setError("Password cannot be empty")
+            return true
+        }
+        if (password !== confirmPassword) {
+            setError("Passwords do not match")
+            return true
+        }
+        return false
+    }
+
+    const handleSubmit = async () => {
+        setError(null)
+        if(checkErrors()) return
+        try {
+            await register(name, email, password)
+            router.replace("/profile");
+        } catch (err) {
+            if (err instanceof Error) setError(err.message);
+            else setError(String(err));
+        }
     }
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -25,6 +57,12 @@ const Register = () => {
                     Register For an Account
                 </ThemedText>
 
+                <ThemedTextInput
+                    style={{width: '80%', margin: 20}}
+                    placeholder={"Name"}
+                    onChangeText={setName}
+                    value={name}
+                />
 
                 <ThemedTextInput
                     style={{width: '80%', margin: 20}}
@@ -51,6 +89,11 @@ const Register = () => {
                 <ThemedButton onPress={handleSubmit}>
                     <Text style={{color: 'f2f2f2'}}>Register</Text>
                 </ThemedButton>
+
+                <Spacer/>
+
+                {error && <Text style={styles.error}>{error}</Text> }
+
                 <Spacer height={100}/>
                 <Link href='/login'>
                     <ThemedText style={{textAlign: 'center'}}>
@@ -74,4 +117,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'purple'
     },
+    error:{
+        color: Colors.warning,
+        padding: 10,
+        backgroundColor: '#f5c1c8',
+        borderColor: Colors.warning,
+        borderWidth: 1,
+        borderRadius: 6,
+        marginHorizontal: 10,
+    }
 })

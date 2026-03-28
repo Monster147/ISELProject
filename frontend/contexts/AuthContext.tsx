@@ -1,26 +1,72 @@
-import {createContext, useState} from "react";
+import {createContext, useEffect, useMemo, useState} from "react";
+import {api, ApiError, fetchApi, getAuthHeaders} from "../api/api";
+import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
+import {User} from "../models/user/User";
 
-export const AuthContext = createContext()
+type AuthContextValue = {
+    token: string | null;
+    isAuthLoading: boolean;
+    login: (email: string, password: string) => Promise<void>;
+    register: (name: string, email: string, password: string) => Promise<void>;
+    logout: () => Promise<void>;
+};
+
+export const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 export function AuthProvider({children}) {
-    const [token, setToken] =  useState(null)
+    const [token, setToken] = useState<string | null>(null)
+    const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-    async function login(email, password){
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                const info = await authInfoRepo.getAuthInfo();
+                if (cancelled) return;
+                setToken(info?.token ?? null);
+            } finally {
+                if (!cancelled) setIsAuthLoading(false);
+            }
+        })();
 
+        return () => {
+            cancelled = true
+        };
+    }, []);
+
+    async function login(email: string, password: string){
+        try {
+            const response = await api.createToken({email, password})
+            await authInfoRepo.saveAuthInfo({ token: response.token })
+            setToken(response.token)
+        } catch (err : any) {
+            throw Error(err.message)
+        }
     }
 
-
-    async function register(email, password) {
-
+    async function register(name: string,email : string, password: string) {
+        try {
+            await api.createUser({name, email, password})
+            const response = await api.createToken({email, password})
+            await authInfoRepo.saveAuthInfo({ token: response.token })
+            setToken(response.token)
+        } catch (err: any) {
+            throw Error(err.message)
+        }
     }
-
 
     async function logout(){
-
+        try {
+            await api.logout()
+            await authInfoRepo.clearAuthInfo()
+            setToken(null)
+        } catch (err: any) {
+            throw Error(err.message)
+        }
     }
     return (
-        <AuthContext value={{login, register, logout, token}}>
+        <AuthContext.Provider value={{login, register, logout, token, isAuthLoading}}>
             {children}
-        </AuthContext>
+        </AuthContext.Provider>
     )
 }
