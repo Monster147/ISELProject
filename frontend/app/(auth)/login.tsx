@@ -1,4 +1,12 @@
-import {StyleSheet, Pressable, Text, TextInput, TouchableWithoutFeedback, Keyboard} from "react-native";
+import {
+    StyleSheet,
+    Pressable,
+    Text,
+    TextInput,
+    TouchableWithoutFeedback,
+    Keyboard,
+    ActivityIndicator
+} from "react-native";
 import ThemedView from "../../components/ThemedView";
 import ThemedText from "../../components/ThemedText";
 import Spacer from "../../components/Spacer";
@@ -8,6 +16,7 @@ import ThemedButton from "../../components/ThemedButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import {useState} from "react";
 import {useAuth} from "../../hooks/useAuth";
+import ThemedLoader from "../../components/ThemedLoader";
 
 const Login = () => {
     const [email, setEmail] = useState('')
@@ -77,6 +86,15 @@ const Login = () => {
                         Register instead
                     </ThemedText>
                 </Link>
+
+                <Spacer height={100}/>
+
+                <Link href='/home'>
+                    <ThemedText style={{textAlign: 'center'}}>
+                        Go to Home page
+                    </ThemedText>
+                </Link>
+
             </ThemedView>
         </TouchableWithoutFeedback>
     )

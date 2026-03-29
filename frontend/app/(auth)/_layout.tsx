@@ -1,7 +1,9 @@
-import {StatusBar, StyleSheet, Text, useColorScheme, View} from "react-native";
+import {StyleSheet, Text, useColorScheme, View} from "react-native";
 import {Stack} from "expo-router";
 import {Colors} from "../../constants/Colors";
 import GuestOnly from "../../components/auth/GuestOnly";
+import ThemedView from "../../components/ThemedView";
+
 
 const AuthLayout = () => {
     const colorScheme = useColorScheme()
@@ -9,16 +11,17 @@ const AuthLayout = () => {
 
     return (
         <GuestOnly>
-            <StatusBar value="auto"/>
-            <Stack screenOptions={{
-                headerStyle: {backgroundColor: theme.navBackground},
-                headerTintColor: theme.title,
-                contentStyle: {backgroundColor: theme.background},
-                animation: "slide_from_right",
-            }}>
-                <Stack.Screen name="login" options={{title: 'Login'}}/>
-                <Stack.Screen name="register" options={{title: 'Register'}}/>
-            </Stack>
+            <ThemedView style={{flex: 1}}>
+                <Stack screenOptions={{
+                    headerStyle: {backgroundColor: theme.navBackground},
+                    headerTintColor: theme.title,
+                    contentStyle: {backgroundColor: theme.background},
+                    animation: "none",
+                }}>
+                    <Stack.Screen name="login" options={{title: 'Login'}}/>
+                    <Stack.Screen name="register" options={{title: 'Register'}}/>
+                </Stack>
+            </ThemedView>
         </GuestOnly>
     )
 }
