@@ -7,7 +7,7 @@ const About = () =>{
     return(
         <ThemedView style={styles.container}>
             <ThemedText style={styles.title} title={true}>About Page</ThemedText>
-            <Link href={"/"} style={styles.link}>
+            <Link href={"/home"} style={styles.link}>
                 <ThemedText>Back Home</ThemedText>
             </Link>
         </ThemedView>

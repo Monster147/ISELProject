@@ -12,7 +12,6 @@ const Profile = () =>{
 
     const handleLogout = async () => {
         await logout();
-        router.replace("/home");
     };
 
     return(
