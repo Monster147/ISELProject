@@ -36,10 +36,22 @@ CREATE TABLE dbo.intervenor(
     address                 VARCHAR(255)       NOT NULL
 );
 
+CREATE TYPE dbo.occurrence_type AS ENUM ('NORMAL','URGENT','CRITICAL');
+
+CREATE TABLE dbo.occurrence
+(
+    id                      SERIAL               PRIMARY KEY,
+    initDate                DATE                 NOT NULL,
+    endDate                 DATE                 NOT NULL,
+    reporter_id             INT[]                ,
+    importance              dbo.occurrence_type  NOT NULL DEFAULT 'NORMAL'
+);
+
 CREATE TABLE dbo.report
 (
     id                      SERIAL             PRIMARY KEY,
     creator_id              INT                REFERENCES dbo.users (id) ON DELETE CASCADE,
+    occurrence_id           INT                REFERENCES dbo.occurrence (id) ON DELETE CASCADE,
     title                   VARCHAR(255)       NOT NULL,
     description             TEXT               NOT NULL,
     status                  dbo.report_status  NOT NULL DEFAULT 'EDITING',

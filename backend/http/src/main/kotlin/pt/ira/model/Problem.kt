@@ -49,4 +49,9 @@ sealed class Problem(
     data object ReporterNotFound : Problem(URI("${PROBLEM_URI_PATH}/report-not-found"))
 
     data object EvidenceNotFound : Problem(URI("${PROBLEM_URI_PATH}/evidence-not-found"))
+
+    //occurrence
+    data object OccurrenceNotFound : Problem(URI("${PROBLEM_URI_PATH}/occurrence-not-found"))
+    data object OccurrenceNotAssignedToUser : Problem(URI("${PROBLEM_URI_PATH}/occurrence-not-assigned-to-user"))
+
 }

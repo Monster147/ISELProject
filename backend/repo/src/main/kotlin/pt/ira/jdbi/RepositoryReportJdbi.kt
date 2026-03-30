@@ -15,6 +15,7 @@ class RepositoryReportJdbi(
 ) : RepositoryReport {
     override fun createReport(
         creatorId: Int,
+        occurrenceId: Int,
         title: String,
         description: String,
         type: JsonNode,
@@ -24,12 +25,13 @@ class RepositoryReportJdbi(
         val id =
             handle.createUpdate(
                 """
-                INSERT INTO dbo.report (creator_id, title, description, status, type, addons, editors, intervenors, created_at, updated_at) 
-                VALUES (:creator_id, :title, :description, :status::dbo.report_status, :type::jsonb, :addons::jsonb, :editors, :intervenors, :created_at, :updated_at)
+                INSERT INTO dbo.report (creator_id, occurrence_id ,title, description, status, type, addons, editors, intervenors, created_at, updated_at) 
+                VALUES (:creator_id, :occurrence_id, :title, :description, :status::dbo.report_status, :type::jsonb, :addons::jsonb, :editors, :intervenors, :created_at, :updated_at)
                 RETURNING id
                 """.trimIndent(),
             )
                 .bind("creator_id", creatorId)
+                .bind("occurrence_id", occurrenceId)
                 .bind("title", title)
                 .bind("description", description)
                 .bind("status", ReportStatus.EDITING.name)
@@ -46,6 +48,7 @@ class RepositoryReportJdbi(
         return Report(
             id = id,
             creatorId = creatorId,
+            occurrenceId = occurrenceId,
             title = title,
             description = description,
             status = ReportStatus.EDITING,
@@ -59,7 +62,7 @@ class RepositoryReportJdbi(
     override fun findByStatus(status: ReportStatus): List<Report> =
         handle.createQuery(
             """
-            SELECT id, creator_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
+            SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
             FROM dbo.report
             WHERE status = :status::dbo.report_status
             """.trimIndent(),
@@ -71,7 +74,7 @@ class RepositoryReportJdbi(
     override fun findByCreatorId(creatorId: Int): List<Report> =
         handle.createQuery(
             """
-            SELECT id, creator_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
+            SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
             FROM dbo.report
             WHERE creator_id = :creatorId
             """.trimIndent(),
@@ -83,7 +86,7 @@ class RepositoryReportJdbi(
     override fun findByEditor(userId: Int): List<Report> =
         handle.createQuery(
             """
-            SELECT id, creator_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
+            SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
             FROM dbo.report
              WHERE :editors = ANY(editors)
             """.trimIndent(),
@@ -132,7 +135,7 @@ class RepositoryReportJdbi(
     override fun findByType(type: JsonNode): List<Report> =
         handle.createQuery(
             """
-            SELECT id, creator_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
+            SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
             FROM dbo.report
             WHERE type = :type::jsonb
             """.trimIndent(),
@@ -144,7 +147,7 @@ class RepositoryReportJdbi(
     override fun findByIntervenor(intervenor: Intervenor): List<Report> =
         handle.createQuery(
             """
-            SELECT id, creator_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
+            SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
             FROM dbo.report
             WHERE :intervenorId = ANY(intervenors)
             """.trimIndent(),
@@ -184,7 +187,7 @@ class RepositoryReportJdbi(
     override fun findById(id: Int): Report? =
         handle.createQuery(
             """
-            SELECT id, creator_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
+            SELECT id, creator_id, occurrence_id,title, description, status, type, addons, created_at, updated_at, editors, intervenors
             FROM dbo.report
             WHERE id = :id
             """.trimIndent(),
@@ -196,7 +199,7 @@ class RepositoryReportJdbi(
     override fun findAll(): List<Report> =
         handle.createQuery(
             """
-            SELECT id, creator_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
+            SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
             FROM dbo.report
             ORDER BY id
             """.trimIndent(),
@@ -209,6 +212,7 @@ class RepositoryReportJdbi(
             """
             UPDATE dbo.report
             SET creator_id = :creatorId,
+                occurrence_id = :occurrence_id,
                 title = :title,
                 description = :description,
                 status = :status::dbo.report_status,
@@ -222,6 +226,7 @@ class RepositoryReportJdbi(
         )
             .bind("id", entity.id)
             .bind("creatorId", entity.creatorId)
+            .bind("occurrence_id", entity.occurrenceId)
             .bind("title", entity.title)
             .bind("description", entity.description)
             .bind("status", entity.status.name)
@@ -248,6 +253,7 @@ class RepositoryReportJdbi(
     private fun mapRowToReport(rs: ResultSet): Report {
         val id = rs.getInt("id")
         val creatorId = rs.getInt("creator_id")
+        val occurrenceId = rs.getInt("occurrence_id")
         val title = rs.getString("title")
         val description = rs.getString("description")
         val status = rs.getString("status").let { ReportStatus.valueOf(it) }
@@ -270,6 +276,7 @@ class RepositoryReportJdbi(
         return Report(
             id = id,
             creatorId = creatorId,
+            occurrenceId = occurrenceId,
             title = title,
             description = description,
             status = status,

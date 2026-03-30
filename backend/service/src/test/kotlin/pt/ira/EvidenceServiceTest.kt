@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import pt.ira.interfaces.TransactionManager
+import pt.ira.occurrence.OccurrenceType
 import pt.ira.user.PasswordValidationInfo
+import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
@@ -29,6 +31,7 @@ class EvidenceServiceTest {
             repoEvidence.clear()
             repoUsers.clear()
             repoReport.clear()
+            repoOccurrence.clear()
         }
     }
 
@@ -42,9 +45,16 @@ class EvidenceServiceTest {
                     roles = emptyList(),
                 )
 
+            val occurrence = repoOccurrence.createOccurrence(
+                endDate = LocalDate.of(2030, 3, 30),
+                reporterId = listOf(user.id),
+                importance = OccurrenceType.NORMAL
+            )
+
             val report =
                 repoReport.createReport(
                     creatorId = user.id,
+                    occurrenceId = occurrence.id,
                     title = "title",
                     description = "desc",
                     type = json("""{"type":"base"}"""),

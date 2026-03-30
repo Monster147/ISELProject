@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.postgresql.ds.PGSimpleDataSource
+import pt.ira.occurrence.OccurrenceType
 import pt.ira.report.ReportStatus
 import pt.ira.user.PasswordValidationInfo
+import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -36,6 +38,7 @@ class RepositoryReportJdbiTest {
             repoReport.clear()
             repoUsers.clear()
             repoIntervenor.clear()
+            repoOccurrence.clear()
         }
     }
 
@@ -50,9 +53,17 @@ class RepositoryReportJdbiTest {
                     listOf(1),
                 )
 
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = listOf(1),
+                    importance = OccurrenceType.NORMAL
+                )
+
             val report =
                 repoReport.createReport(
                     creatorId = creator.id,
+                    occurrenceId = occurrence.id,
                     title = "Title",
                     description = "Desc",
                     type = json("""{"type":"A"}"""),
@@ -71,8 +82,11 @@ class RepositoryReportJdbiTest {
             val creator1 = repoUsers.createUser("C1", "c1@mail.com", PasswordValidationInfo("h1"), listOf(1))
             val creator2 = repoUsers.createUser("C2", "c2@mail.com", PasswordValidationInfo("h2"), listOf(1))
 
-            val r1 = repoReport.createReport(creator1.id, "R1", "D1", json("""{"t":"1"}"""), json("""{}"""))
-            val r2 = repoReport.createReport(creator2.id, "R2", "D2", json("""{"t":"2"}"""), json("""{}"""))
+            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), listOf(2), OccurrenceType.NORMAL)
+
+            val r1 = repoReport.createReport(creator1.id, occurrence1.id,"R1", "D1", json("""{"t":"1"}"""), json("""{}"""))
+            val r2 = repoReport.createReport(creator2.id, occurrence2.id,"R2", "D2", json("""{"t":"2"}"""), json("""{}"""))
 
             val all = repoReport.findAll()
 
@@ -86,8 +100,11 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator = repoUsers.createUser("C", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
 
-            val r1 = repoReport.createReport(creator.id, "R1", "D1", json("""{"t":"1"}"""), json("""{}"""))
-            repoReport.createReport(creator.id, "R2", "D2", json("""{"t":"2"}"""), json("""{}"""))
+            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), listOf(2), OccurrenceType.NORMAL)
+
+            val r1 = repoReport.createReport(creator.id, occurrence1.id,"R1", "D1", json("""{"t":"1"}"""), json("""{}"""))
+            repoReport.createReport(creator.id, occurrence2.id,"R2", "D2", json("""{"t":"2"}"""), json("""{}"""))
 
             val r1Approved = repoReport.updateStatus(r1, ReportStatus.APPROVED)
             val approved = repoReport.findByStatus(ReportStatus.APPROVED)
@@ -102,7 +119,9 @@ class RepositoryReportJdbiTest {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val editor = repoUsers.createUser("User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
 
-            val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
+            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+
+            val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             val updatedReport = repoReport.addEditor(report, editor)
             val updatedFromRepo = repoReport.findById(report.id)
@@ -118,8 +137,9 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val editor = repoUsers.createUser("User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
+            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
 
-            val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
+            val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             val once = repoReport.addEditor(report, editor)
             val twice = repoReport.addEditor(once, editor)
@@ -133,8 +153,9 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val editor = repoUsers.createUser("User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
+            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
 
-            val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
+            val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             val withEditor = repoReport.addEditor(report, editor)
             val removed = repoReport.removeEditor(withEditor, editor)
@@ -152,8 +173,9 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val editor = repoUsers.createUser("User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
+            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
 
-            val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
+            val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             val removed = repoReport.removeEditor(report, editor)
             val updated = repoReport.findById(report.id)
@@ -168,7 +190,9 @@ class RepositoryReportJdbiTest {
     fun `updateStatus changes report status`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
+            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+
+            val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             val updatedReport = repoReport.updateStatus(report, ReportStatus.APPROVED)
             val updatedFromRepo = repoReport.findById(report.id)
@@ -184,9 +208,11 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator1 = repoUsers.createUser("C1", "c1@mail.com", PasswordValidationInfo("h1"), listOf(1))
             val creator2 = repoUsers.createUser("C2", "c2@mail.com", PasswordValidationInfo("h2"), listOf(1))
+            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), listOf(2), OccurrenceType.NORMAL)
 
-            val r1 = repoReport.createReport(creator1.id, "R1", "D1", json("""{}"""), json("""{}"""))
-            repoReport.createReport(creator2.id, "R2", "D2", json("""{}"""), json("""{}"""))
+            val r1 = repoReport.createReport(creator1.id, occurrence1.id,"R1", "D1", json("""{}"""), json("""{}"""))
+            repoReport.createReport(creator2.id, occurrence2.id,"R2", "D2", json("""{}"""), json("""{}"""))
 
             val result = repoReport.findByCreatorId(creator1.id)
 
@@ -200,9 +226,12 @@ class RepositoryReportJdbiTest {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val typeA = json("""{"type":"A"}""")
             val typeB = json("""{"type":"B"}""")
+            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), listOf(2), OccurrenceType.NORMAL)
 
-            val r1 = repoReport.createReport(creator.id, "R1", "D1", typeA, json("""{}"""))
-            repoReport.createReport(creator.id, "R2", "D2", typeB, json("""{}"""))
+
+            val r1 = repoReport.createReport(creator.id, occurrence1.id,"R1", "D1", typeA, json("""{}"""))
+            repoReport.createReport(creator.id, occurrence2.id,"R2", "D2", typeB, json("""{}"""))
 
             val result = repoReport.findByType(typeA)
 
@@ -214,7 +243,9 @@ class RepositoryReportJdbiTest {
     fun `deleteById removes report`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
+            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+
+            val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             repoReport.deleteById(report.id)
             val found = repoReport.findById(report.id)
@@ -227,7 +258,9 @@ class RepositoryReportJdbiTest {
     fun `save updates existing report`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
+            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+
+            val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             val updated = report.copy(title = "Updated")
             repoReport.save(updated)
@@ -244,9 +277,12 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator1 = repoUsers.createUser("C1", "c1@mail.com", PasswordValidationInfo("h1"), listOf(1))
             val creator2 = repoUsers.createUser("C2", "c2@mail.com", PasswordValidationInfo("h2"), listOf(1))
+            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), listOf(2), OccurrenceType.NORMAL)
 
-            repoReport.createReport(creator1.id, "R1", "D1", json("""{}"""), json("""{}"""))
-            repoReport.createReport(creator2.id, "R2", "D2", json("""{}"""), json("""{}"""))
+
+            repoReport.createReport(creator1.id, occurrence1.id,"R1", "D1", json("""{}"""), json("""{}"""))
+            repoReport.createReport(creator2.id, occurrence2.id,"R2", "D2", json("""{}"""), json("""{}"""))
 
             repoReport.clear()
 
@@ -258,7 +294,9 @@ class RepositoryReportJdbiTest {
     fun `addIntervenor adds intervenor correctly`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
+            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+
+            val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             val intervenor =
                 repoIntervenor.createIntervenor(
@@ -282,7 +320,9 @@ class RepositoryReportJdbiTest {
     fun `addIntervenor does not duplicate intervenor`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
+            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+
+            val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
             val intervenor =
                 repoIntervenor.createIntervenor(
                     idNumber = "159874598",
@@ -303,7 +343,9 @@ class RepositoryReportJdbiTest {
     fun `removeIntervenor removes intervenor`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
+            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+
+            val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
             val intervenor =
                 repoIntervenor.createIntervenor(
                     idNumber = "159874598",
@@ -328,7 +370,9 @@ class RepositoryReportJdbiTest {
     fun `removeIntervenor does nothing if not present`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val report = repoReport.createReport(creator.id, "R", "D", json("""{}"""), json("""{}"""))
+            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+
+            val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
             val intervenor =
                 repoIntervenor.createIntervenor(
                     idNumber = "159874598",
@@ -351,7 +395,9 @@ class RepositoryReportJdbiTest {
     fun `findByIntervenor returns correct reports`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val report = repoReport.createReport(creator.id, "R1", "D1", json("""{}"""), json("""{}"""))
+            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+
+            val report = repoReport.createReport(creator.id, occurrence.id,"R1", "D1", json("""{}"""), json("""{}"""))
 
             val intervenor =
                 repoIntervenor.createIntervenor(

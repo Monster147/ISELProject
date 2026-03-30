@@ -13,6 +13,10 @@ sealed class ReportError {
     data object UserNotFound : ReportError()
 
     data object IntervenorNotFound : ReportError()
+
+    data object OccurrenceNotFound : ReportError()
+
+    data object OccurrenceNotAssignedToUser : ReportError()
 }
 
 @Component
@@ -21,6 +25,7 @@ class ReportService(
 ) {
     fun createReport(
         creatorId: Int,
+        occurrenceId: Int,
         title: String,
         description: String,
         type: JsonNode,
@@ -28,9 +33,14 @@ class ReportService(
     ): Either<ReportError, Report> {
         return trxManager.run {
             repoUsers.findById(creatorId) ?: return@run failure(ReportError.UserNotFound)
+            val userOccurrence = repoOccurrence.findById(occurrenceId) ?: return@run failure(ReportError.OccurrenceNotFound)
+            if (!userOccurrence.reporterId.contains(creatorId)) {
+                return@run failure(ReportError.OccurrenceNotAssignedToUser)
+            }
             val report =
                 repoReport.createReport(
                     creatorId = creatorId,
+                    occurrenceId = occurrenceId,
                     title = title,
                     description = description,
                     type = type,

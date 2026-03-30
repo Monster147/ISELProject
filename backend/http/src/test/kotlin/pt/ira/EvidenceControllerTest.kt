@@ -11,7 +11,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import pt.ira.evindence.Evidence
 import pt.ira.interfaces.TransactionManager
 import pt.ira.model.evidence.CreateEvidenceInput
+import pt.ira.occurrence.OccurrenceType
 import pt.ira.user.PasswordValidationInfo
+import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
@@ -38,7 +40,8 @@ class EvidenceControllerTest {
     @Test
     fun `create evidence success`() {
         val userId = createUser()
-        val reportId = createReport(userId)
+        val occurrenceId = createOccurrenceForUser(userId)
+        val reportId = createReport(userId, occurrenceId)
 
         val input = createEvidenceInput(userId, reportId)
 
@@ -50,7 +53,10 @@ class EvidenceControllerTest {
 
     @Test
     fun `create evidence reporter not found`() {
-        val reportId = createReport(createUser())
+        val userId = createUser()
+        val occurrenceId = createOccurrenceForUser(userId)
+        val reportId = createReport(userId, occurrenceId)
+
 
         val input = createEvidenceInput(999, reportId)
 
@@ -102,7 +108,8 @@ class EvidenceControllerTest {
     @Test
     fun `find by report id`() {
         val userId = createUser()
-        val reportId = createReport(userId)
+        val occurrenceId = createOccurrenceForUser(userId)
+        val reportId = createReport(userId, occurrenceId)
 
         createEvidence(userId, reportId)
 
@@ -115,7 +122,8 @@ class EvidenceControllerTest {
     @Test
     fun `find by reporter id`() {
         val userId = createUser()
-        val reportId = createReport(userId)
+        val occurrenceId = createOccurrenceForUser(userId)
+        val reportId = createReport(userId, occurrenceId)
 
         createEvidence(userId, reportId)
 
@@ -128,7 +136,9 @@ class EvidenceControllerTest {
     @Test
     fun `find by location`() {
         val userId = createUser()
-        val reportId = createReport(userId)
+
+        val occurrenceId = createOccurrenceForUser(userId)
+        val reportId = createReport(userId, occurrenceId)
 
         createEvidence(userId, reportId, location = "Lisbon")
 
@@ -141,7 +151,9 @@ class EvidenceControllerTest {
     @Test
     fun `find by type`() {
         val userId = createUser()
-        val reportId = createReport(userId)
+
+        val occurrenceId = createOccurrenceForUser(userId)
+        val reportId = createReport(userId, occurrenceId)
 
         val type = mapper.readTree("""{"t":"A"}""")
 
@@ -162,10 +174,11 @@ class EvidenceControllerTest {
             ).id
         }
 
-    private fun createReport(userId: Int): Int =
+    private fun createReport(userId: Int, occurrenceId: Int): Int =
         trxManager.run {
             repoReport.createReport(
                 creatorId = userId,
+                occurrenceId = occurrenceId,
                 title = "title",
                 description = "desc",
                 type = mapper.readTree("""{"t":"x"}"""),
@@ -173,9 +186,18 @@ class EvidenceControllerTest {
             ).id
         }
 
+    private fun createOccurrenceForUser(userId: Int) =
+        trxManager.run {
+            repoOccurrence.createOccurrence(
+                endDate = LocalDate.of(2030, 3, 30),
+                reporterId = listOf(userId),
+                importance = OccurrenceType.NORMAL
+            ).id
+        }
+
     private fun createEvidence(
         userId: Int = createUser(),
-        reportId: Int = createReport(userId),
+        reportId: Int = createReport(userId, createOccurrenceForUser(userId)),
         location: String = "loc",
         type: JsonNode = mapper.readTree("""{"t":"x"}"""),
     ): Int =

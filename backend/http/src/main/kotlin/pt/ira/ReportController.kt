@@ -26,6 +26,7 @@ class ReportController(
         val result =
             reportService.createReport(
                 creatorId = reportInput.creatorId,
+                occurrenceId = reportInput.occurrenceId,
                 title = reportInput.title,
                 description = reportInput.description,
                 type = reportInput.type,

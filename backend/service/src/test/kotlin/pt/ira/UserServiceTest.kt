@@ -7,17 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import pt.ira.interfaces.TransactionManager
+import pt.ira.occurrence.OccurrenceType
 import pt.ira.user.PasswordValidationInfo
 import java.time.Instant
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import java.time.LocalDate
+import kotlin.test.*
 
 @SpringJUnitConfig(TestConfig::class)
 class UserServiceTest {
+
     @Autowired
     private lateinit var userService: UserService
 
@@ -31,12 +29,22 @@ class UserServiceTest {
 
     private fun json(v: String) = objectMapper.readTree(v)
 
+    private fun createOccurrenceForUser(userId: Int) =
+        trxManager.run {
+            repoOccurrence.createOccurrence(
+                endDate = LocalDate.of(2030, 3, 30),
+                reporterId = listOf(userId),
+                importance = OccurrenceType.NORMAL
+            )
+        }
+
     @BeforeEach
     fun reset() {
         trxManager.run {
             repoReport.clear()
             repoUsers.clear()
             repoIntervenor.clear()
+            repoOccurrence.clear()
         }
     }
 
@@ -107,7 +115,7 @@ class UserServiceTest {
     @Test
     fun `findUserById returns user`() {
         val created =
-            userService.createUser("André", "galvão@isel.pt", "password123").let {
+            userService.createUser("André", "galvao@isel.pt", "password123").let {
                 check(it is Success)
                 it.value
             }
@@ -293,12 +301,12 @@ class UserServiceTest {
     @Test
     fun `getTypePercentagesByReporter returns empty list when no reports`() {
         val result = userService.getTypePercentagesByReporter(999)
-
         assertTrue(result.isEmpty())
     }
 
     @Test
     fun `getTypePercentagesByReporter returns 100 percent for single type`() {
+
         val typeA = json("""{"t":"a"}""")
 
         val user =
@@ -308,7 +316,16 @@ class UserServiceTest {
 
         repeat(3) {
             trxManager.run {
-                val report = repoReport.createReport(user.id, "t$it", "d", typeA, json("""{}"""))
+                val occ = createOccurrenceForUser(user.id)
+                val report =
+                    repoReport.createReport(
+                        user.id,
+                        occ.id,
+                        "t$it",
+                        "d",
+                        typeA,
+                        json("""{}""")
+                    )
                 repoReport.addEditor(report, user)
             }
         }
@@ -325,6 +342,7 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter only considers reports where user is editor`() {
+
         val typeA = json("""{"t":"a"}""")
 
         val user1 =
@@ -338,13 +356,15 @@ class UserServiceTest {
             }
 
         trxManager.run {
-            val report1 = repoReport.createReport(user1.id, "t1", "d", typeA, json("""{}"""))
-            repoReport.addEditor(report1, user1)
+            val occ = createOccurrenceForUser(user1.id)
+            val report = repoReport.createReport(user1.id, occ.id, "t1", "d", typeA, json("""{}"""))
+            repoReport.addEditor(report, user1)
         }
 
         trxManager.run {
-            val report2 = repoReport.createReport(user2.id, "t2", "d", typeA, json("""{}"""))
-            repoReport.addEditor(report2, user2)
+            val occ = createOccurrenceForUser(user2.id)
+            val report = repoReport.createReport(user2.id, occ.id, "t2", "d", typeA, json("""{}"""))
+            repoReport.addEditor(report, user2)
         }
 
         val result = userService.getTypePercentagesByReporter(user1.id)
@@ -355,6 +375,7 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter calculates correct percentages`() {
+
         val typeA = json("""{"t":"a"}""")
         val typeB = json("""{"t":"b"}""")
 
@@ -365,14 +386,16 @@ class UserServiceTest {
 
         repeat(2) {
             trxManager.run {
-                val report = repoReport.createReport(user.id, "a$it", "d", typeA, json("""{}"""))
+                val occ = createOccurrenceForUser(user.id)
+                val report = repoReport.createReport(user.id, occ.id, "a$it", "d", typeA, json("""{}"""))
                 repoReport.addEditor(report, user)
             }
         }
 
         repeat(1) {
             trxManager.run {
-                val report = repoReport.createReport(user.id, "b$it", "d", typeB, json("""{}"""))
+                val occ = createOccurrenceForUser(user.id)
+                val report = repoReport.createReport(user.id, occ.id, "b$it", "d", typeB, json("""{}"""))
                 repoReport.addEditor(report, user)
             }
         }
@@ -393,6 +416,7 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter sorts by count descending`() {
+
         val typeA = json("""{"t":"a"}""")
         val typeB = json("""{"t":"b"}""")
 
@@ -403,16 +427,16 @@ class UserServiceTest {
 
         repeat(3) {
             trxManager.run {
-                val report = repoReport.createReport(user.id, "a$it", "d", typeA, json("""{}"""))
+                val occ = createOccurrenceForUser(user.id)
+                val report = repoReport.createReport(user.id, occ.id, "a$it", "d", typeA, json("""{}"""))
                 repoReport.addEditor(report, user)
             }
         }
 
-        repeat(1) {
-            trxManager.run {
-                val report = repoReport.createReport(user.id, "b$it", "d", typeB, json("""{}"""))
-                repoReport.addEditor(report, user)
-            }
+        trxManager.run {
+            val occ = createOccurrenceForUser(user.id)
+            val report = repoReport.createReport(user.id, occ.id, "b", "d", typeB, json("""{}"""))
+            repoReport.addEditor(report, user)
         }
 
         val result = userService.getTypePercentagesByReporter(user.id)
@@ -423,6 +447,7 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter sorts by type when counts equal`() {
+
         val typeA = json("""{"t":"a"}""")
         val typeB = json("""{"t":"b"}""")
 
@@ -432,20 +457,20 @@ class UserServiceTest {
             }
 
         trxManager.run {
-            val report1 = repoReport.createReport(user.id, "a", "d", typeA, json("""{}"""))
+            val occ = createOccurrenceForUser(user.id)
+            val report1 = repoReport.createReport(user.id, occ.id, "a", "d", typeA, json("""{}"""))
             repoReport.addEditor(report1, user)
         }
 
         trxManager.run {
-            val report2 = repoReport.createReport(user.id, "b", "d", typeB, json("""{}"""))
+            val occ = createOccurrenceForUser(user.id)
+            val report2 = repoReport.createReport(user.id, occ.id, "b", "d", typeB, json("""{}"""))
             repoReport.addEditor(report2, user)
         }
 
         val result = userService.getTypePercentagesByReporter(user.id)
 
         assertEquals(2, result.size)
-
-        // since counts equal, sorted by type.toString()
         assertTrue(result[0].type.toString() <= result[1].type.toString())
     }
 }

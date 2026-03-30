@@ -9,6 +9,7 @@ import pt.ira.user.User
 interface RepositoryReport : Repository<Report> {
     fun createReport(
         creatorId: Int,
+        occurrenceId: Int,
         title: String,
         description: String,
         type: JsonNode,

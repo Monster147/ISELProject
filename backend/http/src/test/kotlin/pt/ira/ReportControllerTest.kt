@@ -9,9 +9,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import pt.ira.interfaces.TransactionManager
 import pt.ira.model.report.CreateReportInput
+import pt.ira.occurrence.OccurrenceType
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
 import pt.ira.user.PasswordValidationInfo
+import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
@@ -41,7 +43,8 @@ class ReportControllerTest {
     fun `create report success`() {
         val userId = createUser()
 
-        val input = createReportInput(userId)
+        val occurrenceId = createOccurrenceForUser(userId)
+        val input = createReportInput(userId, occurrenceId)
 
         val resp = controller.createReport(input)
 
@@ -51,7 +54,7 @@ class ReportControllerTest {
 
     @Test
     fun `create report with invalid user returns 404`() {
-        val input = createReportInput(999)
+        val input = createReportInput(999, 1)
 
         val resp = controller.createReport(input)
 
@@ -241,6 +244,15 @@ class ReportControllerTest {
             repoUsers.createUser("user", "u@mail.com", PasswordValidationInfo("123")).id
         }
 
+    private fun createOccurrenceForUser(userId: Int) =
+        trxManager.run {
+            repoOccurrence.createOccurrence(
+                endDate = LocalDate.of(2030, 3, 30),
+                reporterId = listOf(userId),
+                importance = OccurrenceType.NORMAL
+            ).id
+        }
+
     private fun createIntervenor(): Int =
         trxManager.run {
             repoIntervenor.createIntervenor(
@@ -252,15 +264,16 @@ class ReportControllerTest {
             ).id
         }
 
-    private fun createReport(creatorId: Int = createUser()): Int =
-        controller.createReport(createReportInput(creatorId)).let { resp ->
+    private fun createReport(creatorId: Int = createUser(), occurrenceId:Int=createOccurrenceForUser(creatorId)): Int =
+        controller.createReport(createReportInput(creatorId, occurrenceId)).let { resp ->
             val location = requireNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
             location.substringAfterLast("/").toInt()
         }
 
-    private fun createReportInput(userId: Int) =
+    private fun createReportInput(userId: Int, occurrenceId: Int) =
         CreateReportInput(
             creatorId = userId,
+            occurrenceId = occurrenceId,
             title = "title",
             description = "desc",
             type = mapper.readTree("""{"t":"a"}"""),

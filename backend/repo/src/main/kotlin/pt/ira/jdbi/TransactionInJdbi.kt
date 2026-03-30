@@ -11,6 +11,7 @@ class TransactionInJdbi(
     override val repoReport = RepositoryReportJdbi(handle)
     override val repoEvidence = RepositoryEvidenceJdbi(handle)
     override val repoRole = RepositoryRoleJdbi(handle)
+    override val repoOccurrence = RepositoryOccurrenceJdbi(handle)
 
     override fun rollback() {
         handle.rollback()

@@ -12,6 +12,7 @@ class RepositoryReportMem : RepositoryReport {
 
     override fun createReport(
         creatorId: Int,
+        occurrenceId: Int,
         title: String,
         description: String,
         type: JsonNode,
@@ -20,6 +21,7 @@ class RepositoryReportMem : RepositoryReport {
         Report(
             id = reports.size + 1,
             creatorId = creatorId,
+            occurrenceId = occurrenceId,
             title = title,
             description = description,
             type = type,

@@ -2,6 +2,7 @@ import {Json} from "../utils/Json";
 
 export interface CreateReportInput{
     creatorId: number;
+    occurrenceId: number;
     title: string;
     description: string;
     type: Json;
