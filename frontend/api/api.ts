@@ -93,8 +93,8 @@ export const api = {
         });
     },
 
-    async findUserById(): Promise<UserHomeOutputModel> {
-        return fetchApi<UserHomeOutputModel>("/user/{userId}", {
+    async findUserById(userId:number): Promise<UserHomeOutputModel> {
+        return fetchApi<UserHomeOutputModel>(`/user/${userId}`, {
             method: "GET",
         });
     },
@@ -120,14 +120,14 @@ export const api = {
         });
     },
 
-    async findUsersByRole(): Promise<UserHomeOutputModel[]>{
-        return fetchApi<UserHomeOutputModel[]>("/user/find/role/{roleId}", {
+    async findUsersByRole(roleId: number): Promise<UserHomeOutputModel[]>{
+        return fetchApi<UserHomeOutputModel[]>(`/user/find/role/${roleId}`, {
             method: "GET",
         });
     },
 
-    async getPercentages(): Promise<ReportTypePercentage[]>{
-        return fetchApi<ReportTypePercentage[]>("/user/percentages/{userId}", {
+    async getPercentages(userId:number): Promise<ReportTypePercentage[]>{
+        return fetchApi<ReportTypePercentage[]>(`/user/percentages/${userId}`, {
             method: "GET",
         });
     },
@@ -141,20 +141,20 @@ export const api = {
         });
     },
 
-    async deleteRole(): Promise<void> {
-        return fetchApi<void>("/role/{roleName}", {
+    async deleteRole(roleName:string): Promise<void> {
+        return fetchApi<void>(`/role/${roleName}`, {
             method: "DELETE",
         });
     },
 
-    async findRoleByName(): Promise<Role> {
-        return fetchApi<Role>("/role/byName/{roleName}", {
+    async findRoleByName(roleName:string): Promise<Role> {
+        return fetchApi<Role>(`/role/byName/${roleName}`, {
             method: "GET",
         });
     },
 
-    async findRoleById(): Promise<Role> {
-        return fetchApi<Role>("/role/byId/{id}", {
+    async findRoleById(id:number): Promise<Role> {
+        return fetchApi<Role>(`/role/byId/${id}`, {
             method: "GET",
         });
     },
@@ -174,66 +174,66 @@ export const api = {
         });
     },
 
-    async findReportById(): Promise<Report> {
-        return fetchApi<Report>("/report/{id}", {
+    async findReportById(id:number): Promise<Report> {
+        return fetchApi<Report>(`/report/${id}`, {
             method: "GET",
         });
     },
 
     async findAllReports(): Promise<Report[]> {
-        return fetchApi<Report[]>("/report/{id}", {
+        return fetchApi<Report[]>("/report", {
             method: "GET",
         });
     },
 
-    async findByStatus(): Promise<Report[]> {
-        return fetchApi<Report[]>("/report/byStatus/{status}", {
+    async findByStatus(status:string): Promise<Report[]> {
+        return fetchApi<Report[]>(`/report/byStatus/${status}`, {
             method: "GET",
         });
     },
 
-    async findByCreator(): Promise<Report[]> {
-        return fetchApi<Report[]>("/report/byCreator/{creatorId}", {
+    async findByCreator(creatorId:number): Promise<Report[]> {
+        return fetchApi<Report[]>(`/report/byCreator/${creatorId}`, {
             method: "GET",
         });
     },
 
-    async deleteReportById(): Promise<void> {
-        return fetchApi<void>("/report/{id}", {
+    async deleteReportById(id:number): Promise<void> {
+        return fetchApi<void>(`/report/${id}`, {
             method: "DELETE",
         });
     },
 
-    async updateReportStatus(input: string): Promise<Report> {
-        return fetchApi<Report>("/report/update-status/{id}", {
+    async updateReportStatus(input: string, id:number): Promise<Report> {
+        return fetchApi<Report>(`/report/update-status/${id}`, {
             method: "POST",
             body: JSON.stringify(input),
         });
     },
 
-    async addEditor(input: number): Promise<Report> {
-        return fetchApi<Report>("/report/{id}/editors", {
+    async addEditor(input: number,id:number): Promise<Report> {
+        return fetchApi<Report>(`/report/${id}/editors`, {
             method: "POST",
             body: JSON.stringify(input),
         });
     },
 
-    async removeEditor(input: number): Promise<Report> {
-        return fetchApi<Report>("/report/{id}/editors/", {
+    async removeEditor(input: number, id:number): Promise<Report> {
+        return fetchApi<Report>(`/report/${id}/editors/`, {
             method: "DELETE",
             body: JSON.stringify(input),
         });
     },
 
-    async addIntervenor(input: number): Promise<Report> {
-        return fetchApi<Report>("/report/{id}/intervenors", {
+    async addIntervenor(input: number, id:number): Promise<Report> {
+        return fetchApi<Report>(`/report/${id}/intervenors`, {
             method: "POST",
             body: JSON.stringify(input),
         });
     },
 
-    async removeIntervenor(input: number): Promise<Report> {
-        return fetchApi<Report>("/report/{id}/intervenors", {
+    async removeIntervenor(input: number, id:number): Promise<Report> {
+        return fetchApi<Report>(`/report/${id}/intervenors`, {
             method: "DELETE",
             body: JSON.stringify(input),
         });
@@ -248,27 +248,27 @@ export const api = {
         });
     },
 
-    async updateIntervenor(input: IntervenorUpdateInput): Promise<Intervenor> {
-        return fetchApi<Intervenor>("/intervenor/update/{intervenorId}", {
+    async updateIntervenor(input: IntervenorUpdateInput, intervenorId:number): Promise<Intervenor> {
+        return fetchApi<Intervenor>(`/intervenor/update/${intervenorId}`, {
             method: "POST",
             body: JSON.stringify(input),
         });
     },
 
-    async deleteIntervenorByIdNumber(): Promise<void> {
-        return fetchApi<void>("/intervenor/delete/byIdNumber/{idNumber}", {
+    async deleteIntervenorByIdNumber(idNumber:string): Promise<void> {
+        return fetchApi<void>(`/intervenor/delete/byIdNumber/${idNumber}`, {
             method: "DELETE",
         });
     },
 
-    async findIntervenorByIdNumber(): Promise<Intervenor> {
-        return fetchApi<Intervenor>("/intervenor/byIdNumber/{idNumber}", {
+    async findIntervenorByIdNumber(idNumber:string): Promise<Intervenor> {
+        return fetchApi<Intervenor>(`/intervenor/byIdNumber/${idNumber}`, {
             method: "GET",
         });
     },
 
-    async findIntervenorByContactInfo(): Promise<Intervenor> {
-        return fetchApi<Intervenor>("/intervenor/byContactInfo/{contactInfo}", {
+    async findIntervenorByContactInfo(contactInfo:string): Promise<Intervenor> {
+        return fetchApi<Intervenor>(`/intervenor/byContactInfo/${contactInfo}`, {
             method: "GET",
         });
     },
@@ -282,20 +282,22 @@ export const api = {
         });
     },
 
-    async findEvidenceById(): Promise<Evidence> {
-        return fetchApi<Evidence>("/evidence/{id}", {
+    async findEvidenceById(id:number): Promise<Evidence> {
+        return fetchApi<Evidence>(`/evidence/${id}`, {
             method: "GET",
         });
     },
 
-    async findEvidenceByReportId(): Promise<Evidence> {
-        return fetchApi<Evidence>("/evidence/byReport/{reportId}", {
+    //async downloadEvidence(id:number): Promise<Resource>
+
+    async findEvidenceByReportId(reportId:number): Promise<Evidence> {
+        return fetchApi<Evidence>(`/evidence/byReport/${reportId}`, {
             method: "GET",
         });
     },
 
-    async findEvidenceByReporterId(): Promise<Evidence> {
-        return fetchApi<Evidence>("/evidence/byReporter/{reporterId}", {
+    async findEvidenceByReporterId(reportId:number): Promise<Evidence> {
+        return fetchApi<Evidence>(`/evidence/byReporter/${reporterId}`, {
             method: "GET",
         });
     },
@@ -307,8 +309,8 @@ export const api = {
         });
     },
 
-    async findEvidenceByLocation(): Promise<Evidence> {
-        return fetchApi<Evidence>("/evidence//byLocation/{location}", {
+    async findEvidenceByLocation(location:string): Promise<Evidence> {
+        return fetchApi<Evidence>(`/evidence//byLocation/${location}`, {
             method: "GET",
         });
     },
@@ -319,8 +321,8 @@ export const api = {
         });
     },
 
-    async deleteEvidence(): Promise<void> {
-        return fetchApi<void>("/evidence/{id}", {
+    async deleteEvidence(id:number): Promise<void> {
+        return fetchApi<void>(`/evidence/${id}`, {
             method: "DELETE",
         });
     },
@@ -334,8 +336,8 @@ export const api = {
         });
     },
 
-    async findOccurrenceById(): Promise<Occurrence> {
-        return fetchApi<Occurrence>("/occurrence/{occurrenceId}", {
+    async findOccurrenceById(occurrenceId:number): Promise<Occurrence> {
+        return fetchApi<Occurrence>(`/occurrence/${occurrenceId}`, {
             method: "GET",
         });
     },
@@ -346,20 +348,20 @@ export const api = {
         });
     },
 
-    async findOccurrencesByImportance(): Promise<Occurrence[]> {
-        return fetchApi<Occurrence[]>("/occurrence/importance/{importance}", {
+    async findOccurrencesByImportance(importance:string): Promise<Occurrence[]> {
+        return fetchApi<Occurrence[]>(`/occurrence/importance/${importance}`, {
             method: "GET",
         });
     },
 
-    async findOccurrencesByReporterId(): Promise<Occurrence[]> {
-        return fetchApi<Occurrence[]>("/occurrence/reporter/{reporterId}", {
+    async findOccurrencesByReporterId(reporterId:number): Promise<Occurrence[]> {
+        return fetchApi<Occurrence[]>(`/occurrence/reporter/${reporterId}`, {
             method: "GET",
         });
     },
 
-    async deleteOccurrenceById(): Promise<void> {
-        return fetchApi<void>("/occurrence/{occurrenceId}", {
+    async deleteOccurrenceById(occurrenceId:number): Promise<void> {
+        return fetchApi<void>(`/occurrence/${occurrenceId}`, {
             method: "DELETE",
         });
     },

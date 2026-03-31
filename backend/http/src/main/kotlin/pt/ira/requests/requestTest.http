@@ -1,0 +1,37 @@
+@token_user = Y35iRhJ9qBLkzILXIU3AaBqT2TKVKx1EyPQklV9dOhE=
+
+###  Create User
+POST http://localhost:8080/api/user
+Content-Type: application/json
+
+{
+  "name": "USER1",
+  "email": "user1@gmail.com",
+  "password": "user12"
+}
+
+### Create Token
+POST http://localhost:8080/api/user/token
+Content-Type: application/json
+
+{
+  "email": "user1@gmail.com",
+  "password": "user12"
+}
+
+###Create occurrence
+POST http://localhost:8080/api/occurrence
+Content-Type: application/json
+Authorization: Bearer {{token_user}}
+
+{
+  "usersId": [1],
+  "endDate": "2030-12-31",
+  "importance": "NORMAL"
+}
+
+### 6) List all occurrences
+GET http://localhost:8080/api/occurrence
+
+### 7) List occurrences by reporterId
+GET http://localhost:8080/api/occurrence/reporter/1

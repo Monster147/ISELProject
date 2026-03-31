@@ -8,10 +8,14 @@ import {router} from "expo-router";
 import React from "react";
 
 const Profile = () =>{
-    const {logout, token} = useAuth()
+    const {logout, token, user} = useAuth()
 
     const handleLogout = async () => {
+        console.log(user)
+        console.log(token)
         await logout();
+        console.log(user)
+        console.log(token)
     };
 
     return(
@@ -20,6 +24,10 @@ const Profile = () =>{
             <ThemedText title={true} style={styles.heading}>
                 Your Profile
             </ThemedText>
+
+            <ThemedText style={styles.heading}>Name:{user?.name }</ThemedText>
+            <ThemedText style={styles.heading}>Email:{user?.email}</ThemedText>
+
 
             <Spacer />
 

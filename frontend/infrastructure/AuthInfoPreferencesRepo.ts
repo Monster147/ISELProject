@@ -5,6 +5,13 @@ const storage = new MMKV()
 */
 import * as SecureStore from 'expo-secure-store'
 
+export interface UserInfo{
+    id: number;
+    name: string;
+    email: string;
+    roles: number[];
+}
+
 export interface AuthInfo {
     token: string
 }
