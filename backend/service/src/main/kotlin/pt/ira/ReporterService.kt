@@ -6,6 +6,7 @@ import pt.ira.interfaces.TransactionManager
 import pt.ira.intervenor.Intervenor
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
+import pt.ira.storage.StorageService
 
 sealed class ReportError {
     data object ReportNotFound : ReportError()
@@ -22,6 +23,7 @@ sealed class ReportError {
 @Component
 class ReportService(
     private val trxManager: TransactionManager,
+    private val storageService: StorageService,
 ) {
     fun createReport(
         creatorId: Int,
@@ -164,6 +166,7 @@ class ReportService(
                     ?: return@run failure(ReportError.ReportNotFound)
 
             repoReport.deleteById(report.id)
+            storageService.deleteReportEvidences(report.id)
             success(true)
         }
     }

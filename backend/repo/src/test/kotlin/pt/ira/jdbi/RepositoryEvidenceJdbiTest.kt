@@ -5,7 +5,9 @@ import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.postgresql.ds.PGSimpleDataSource
+import pt.ira.occurrence.OccurrenceType
 import pt.ira.user.PasswordValidationInfo
+import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -40,10 +42,16 @@ class RepositoryEvidenceJdbiTest {
     fun `createEvidence and findById`() {
         trxManager.run {
             val user = repoUsers.createUser("Alice", "alice@isel.pt", PasswordValidationInfo("hash"), listOf(1))
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = listOf(1),
+                    importance = OccurrenceType.NORMAL
+                )
             val report =
                 repoReport.createReport(
                     creatorId = user.id,
-                    occurrenceId = 1,
+                    occurrenceId = occurrence.id,
                     title = "Title",
                     description = "Desc",
                     type = json("""{"type":"R"}"""),
@@ -72,8 +80,11 @@ class RepositoryEvidenceJdbiTest {
             val u1 = repoUsers.createUser("U1", "u1@isel.pt", PasswordValidationInfo("hash"), listOf(1))
             val u2 = repoUsers.createUser("U2", "u2@isel.pt", PasswordValidationInfo("hash"), listOf(1))
 
-            val r1 = repoReport.createReport(u1.id, 1,"R1", "Desc1", json("""{}"""), json("""{}"""))
-            val r2 = repoReport.createReport(u2.id, 2,"R2", "Desc2", json("""{}"""), json("""{}"""))
+            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), listOf(2), OccurrenceType.NORMAL)
+
+            val r1 = repoReport.createReport(u1.id, occurrence1.id,"R1", "Desc1", json("""{}"""), json("""{}"""))
+            val r2 = repoReport.createReport(u2.id, occurrence2.id,"R2", "Desc2", json("""{}"""), json("""{}"""))
 
             val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, r1.id)
             val e2 = repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, r2.id)
@@ -87,8 +98,12 @@ class RepositoryEvidenceJdbiTest {
     fun `findByReportId returns correct evidences`() {
         trxManager.run {
             val user = repoUsers.createUser("U", "u@isel.pt", PasswordValidationInfo("hash"), listOf(1))
-            val r1 = repoReport.createReport(user.id, 1,"R1", "Desc", json("""{}"""), json("""{}"""))
-            val r2 = repoReport.createReport(user.id, 2,"R2", "Desc", json("""{}"""), json("""{}"""))
+
+            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), listOf(2), OccurrenceType.NORMAL)
+
+            val r1 = repoReport.createReport(user.id, occurrence1.id,"R1", "Desc", json("""{}"""), json("""{}"""))
+            val r2 = repoReport.createReport(user.id, occurrence2.id,"R2", "Desc", json("""{}"""), json("""{}"""))
 
             val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", user.id, r1.id)
             repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", user.id, r2.id)
@@ -104,7 +119,14 @@ class RepositoryEvidenceJdbiTest {
             val u1 = repoUsers.createUser("U1", "u1@isel.pt", PasswordValidationInfo("hash"), listOf(1))
             val u2 = repoUsers.createUser("U2", "u2@isel.pt", PasswordValidationInfo("hash"), listOf(1))
 
-            val report = repoReport.createReport(u1.id, 1,"Shared", "Desc", json("""{}"""), json("""{}"""))
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = listOf(1),
+                    importance = OccurrenceType.NORMAL
+                )
+
+            val report = repoReport.createReport(u1.id, occurrence.id,"Shared", "Desc", json("""{}"""), json("""{}"""))
 
             val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, report.id)
             repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, report.id)
@@ -118,7 +140,15 @@ class RepositoryEvidenceJdbiTest {
     fun `findByType returns correct evidences`() {
         trxManager.run {
             val user = repoUsers.createUser("U", "u@isel.pt", PasswordValidationInfo("hash"), listOf(1))
-            val report = repoReport.createReport(user.id, 1,"R", "Desc", json("""{}"""), json("""{}"""))
+
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = listOf(1),
+                    importance = OccurrenceType.NORMAL
+                )
+
+            val report = repoReport.createReport(user.id, occurrence.id,"R", "Desc", json("""{}"""), json("""{}"""))
 
             val typeA = json("""{"type":"A"}""")
             val typeB = json("""{"type":"B"}""")
@@ -135,7 +165,15 @@ class RepositoryEvidenceJdbiTest {
     fun `findByLocation returns correct evidences`() {
         trxManager.run {
             val user = repoUsers.createUser("U", "u@isel.pt", PasswordValidationInfo("hash"), listOf(1))
-            val report = repoReport.createReport(user.id, 1,"R", "Desc", json("""{}"""), json("""{}"""))
+
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = listOf(1),
+                    importance = OccurrenceType.NORMAL
+                )
+
+            val report = repoReport.createReport(user.id, occurrence.id,"R", "Desc", json("""{}"""), json("""{}"""))
 
             val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "Lisbon", "d1", user.id, report.id)
             repoEvidence.createEvidence(json("""{}"""), "f2", "Porto", "d2", user.id, report.id)
@@ -149,7 +187,13 @@ class RepositoryEvidenceJdbiTest {
     fun `deleteById removes evidence`() {
         trxManager.run {
             val user = repoUsers.createUser("U", "u@isel.pt", PasswordValidationInfo("hash"), listOf(1))
-            val report = repoReport.createReport(user.id, 1,"R", "Desc", json("""{}"""), json("""{}"""))
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = listOf(1),
+                    importance = OccurrenceType.NORMAL
+                )
+            val report = repoReport.createReport(user.id, occurrence.id,"R", "Desc", json("""{}"""), json("""{}"""))
 
             val e = repoEvidence.createEvidence(json("""{}"""), "f", "L", "d", user.id, report.id)
             repoEvidence.deleteById(e.id)
@@ -161,7 +205,13 @@ class RepositoryEvidenceJdbiTest {
     fun `save updates existing evidence`() {
         trxManager.run {
             val user = repoUsers.createUser("U", "u@isel.pt", PasswordValidationInfo("hash"), listOf(1))
-            val report = repoReport.createReport(user.id, 1,"R", "Desc", json("""{}"""), json("""{}"""))
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = listOf(1),
+                    importance = OccurrenceType.NORMAL
+                )
+            val report = repoReport.createReport(user.id, occurrence.id,"R", "Desc", json("""{}"""), json("""{}"""))
 
             val e = repoEvidence.createEvidence(json("""{}"""), "f", "L", "d", user.id, report.id)
             val updated = e.copy(description = "updated")
@@ -176,8 +226,11 @@ class RepositoryEvidenceJdbiTest {
             val u1 = repoUsers.createUser("U1", "u1@isel.pt", PasswordValidationInfo("hash"), listOf(1))
             val u2 = repoUsers.createUser("U2", "u2@isel.pt", PasswordValidationInfo("hash"), listOf(1))
 
-            val r1 = repoReport.createReport(u1.id, 1,"R1", "Desc1", json("""{}"""), json("""{}"""))
-            val r2 = repoReport.createReport(u2.id, 2,"R2", "Desc2", json("""{}"""), json("""{}"""))
+            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), listOf(2), OccurrenceType.NORMAL)
+
+            val r1 = repoReport.createReport(u1.id, occurrence1.id,"R1", "Desc1", json("""{}"""), json("""{}"""))
+            val r2 = repoReport.createReport(u2.id, occurrence2.id,"R2", "Desc2", json("""{}"""), json("""{}"""))
 
             repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, r1.id)
             repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, r2.id)

@@ -52,6 +52,10 @@ sealed class Problem(
 
     data object EvidenceNotFound : Problem(URI("${PROBLEM_URI_PATH}/evidence-not-found"))
 
+    data object InvalidFile : Problem(URI("${PROBLEM_URI_PATH}/invalid-file"))
+
+    data object FileNotFound : Problem(URI("${PROBLEM_URI_PATH}/file-not-found"))
+
     //occurrence
     data object OccurrenceNotFound : Problem(URI("${PROBLEM_URI_PATH}/occurrence-not-found"))
 

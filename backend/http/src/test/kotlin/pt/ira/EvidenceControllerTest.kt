@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import pt.ira.evindence.Evidence
 import pt.ira.interfaces.TransactionManager
@@ -37,6 +38,15 @@ class EvidenceControllerTest {
         }
     }
 
+    private fun createFile(): MockMultipartFile =
+        MockMultipartFile(
+            "file",
+            "file.jpg",
+            "image/jpeg",
+            "dummyContent".toByteArray()
+        )
+
+
     @Test
     fun `create evidence success`() {
         val userId = createUser()
@@ -44,10 +54,11 @@ class EvidenceControllerTest {
         val reportId = createReport(userId, occurrenceId)
 
         val input = createEvidenceInput(userId, reportId)
+        val file = createFile()
 
-        val resp = controller.createEvidence(input)
+        val resp = controller.createEvidence(file, input)
 
-        assertEquals(HttpStatus.OK, resp.statusCode)
+        assertEquals(HttpStatus.CREATED, resp.statusCode)
         assertNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
     }
 
@@ -59,8 +70,9 @@ class EvidenceControllerTest {
 
 
         val input = createEvidenceInput(999, reportId)
+        val file = createFile()
 
-        val resp = controller.createEvidence(input)
+        val resp = controller.createEvidence(file, input)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -70,8 +82,9 @@ class EvidenceControllerTest {
         val userId = createUser()
 
         val input = createEvidenceInput(userId, 999)
+        val file = createFile()
 
-        val resp = controller.createEvidence(input)
+        val resp = controller.createEvidence(file, input)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -200,13 +213,16 @@ class EvidenceControllerTest {
         reportId: Int = createReport(userId, createOccurrenceForUser(userId)),
         location: String = "loc",
         type: JsonNode = mapper.readTree("""{"t":"x"}"""),
-    ): Int =
-        controller.createEvidence(
+    ): Int {
+        val file = createFile()
+        return controller.createEvidence(
+            file,
             createEvidenceInput(userId, reportId, location, type),
         ).let { resp ->
             val locationHeader = requireNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
             locationHeader.substringAfterLast("/").toInt()
         }
+    }
 
     private fun createEvidenceInput(
         userId: Int,
@@ -215,7 +231,6 @@ class EvidenceControllerTest {
         type: JsonNode = mapper.readTree("""{"t":"x"}"""),
     ) = CreateEvidenceInput(
         type = type,
-        filePath = "/tmp/file",
         location = location,
         description = "desc",
         reporterId = userId,

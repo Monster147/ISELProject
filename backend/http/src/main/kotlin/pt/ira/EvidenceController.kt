@@ -2,6 +2,7 @@ package pt.ira
 
 import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -9,7 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 import pt.ira.model.Problem
 import pt.ira.model.evidence.CreateEvidenceInput
 
@@ -18,23 +22,24 @@ import pt.ira.model.evidence.CreateEvidenceInput
 class EvidenceController(
     private val evidenceService: EvidenceService,
 ) {
-    @PostMapping
+    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createEvidence(
-        @RequestBody evidenceInput: CreateEvidenceInput,
+        @RequestPart("file") file: MultipartFile,
+        @RequestPart("data") data: CreateEvidenceInput
     ): ResponseEntity<*> {
         val result =
             evidenceService.createEvidence(
-                evidenceInput.type,
-                evidenceInput.filePath,
-                evidenceInput.location,
-                evidenceInput.description,
-                evidenceInput.reporterId,
-                evidenceInput.reportId,
+                data.type,
+                file,
+                data.location,
+                data.description,
+                data.reporterId,
+                data.reportId,
             )
         return when (result) {
             is Success ->
                 ResponseEntity
-                    .status(HttpStatus.OK)
+                    .status(HttpStatus.CREATED)
                     .header(
                         "Location",
                         "/api/evidence/${result.value.id}",
@@ -45,13 +50,17 @@ class EvidenceController(
                         Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
                     is EvidenceError.ReporterNotFound ->
                         Problem.ReporterNotFound.response(HttpStatus.NOT_FOUND)
+                    is EvidenceError.InvalidFile ->
+                        Problem.InvalidFile.response(HttpStatus.BAD_REQUEST)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
     }
 
     @GetMapping("/{id}")
-    fun findById(id: Int): ResponseEntity<*> {
+    fun findById(
+        @PathVariable id: Int
+    ): ResponseEntity<*> {
         val result = evidenceService.findById(id)
         return when (result) {
             is Success ->
@@ -63,6 +72,37 @@ class EvidenceController(
                 when (result.value) {
                     is EvidenceError.EvidenceNotFound ->
                         Problem.EvidenceNotFound.response(HttpStatus.NOT_FOUND)
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+                }
+        }
+    }
+
+    @GetMapping("/{id}/download")
+    fun downloadEvidence(
+        @PathVariable id: Int
+    ): ResponseEntity<*> {
+        val result = evidenceService.downloadEvidence(id)
+        return when (result) {
+            is Success -> {
+                val (evidence, resource) = result.value
+
+                val filename = evidence.filePath.substringAfterLast("/")
+
+                ResponseEntity.ok()
+                    .header(
+                        "Content-Disposition",
+                        "attachment; filename=\"$filename\""
+                    )
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource)
+            }
+
+            is Failure ->
+                when (result.value) {
+                    is EvidenceError.EvidenceNotFound ->
+                        Problem.EvidenceNotFound.response(HttpStatus.NOT_FOUND)
+                    is EvidenceError.FileNotFound ->
+                        Problem.FileNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
