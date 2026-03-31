@@ -147,6 +147,7 @@ class UserController(
                 when (result.value) {
                     is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
                     is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+                    is UserError.UserNotAdmin -> Problem.UserNotAdmin.response(HttpStatus.FORBIDDEN)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
@@ -171,6 +172,7 @@ class UserController(
                 when (result.value) {
                     is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
                     is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+                    is UserError.UserNotAdmin -> Problem.UserNotAdmin.response(HttpStatus.FORBIDDEN)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
@@ -195,6 +197,7 @@ class UserController(
                 when (result.value) {
                     is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
                     is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+                    is UserError.UserNotAdmin -> Problem.UserNotAdmin.response(HttpStatus.FORBIDDEN)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }

@@ -117,6 +117,7 @@ class UserService(
         return trxManager.run {
             val user = repoUsers.findById(userId) ?: return@run failure(UserError.UserNotFound)
             if (repoRole.findById(roleId) == null) return@run failure(UserError.RoleDoesntExist)
+            if(!user.roles.contains(1)) return@run failure(UserError.UserNotAdmin)
             val updatedUser = repoUsers.addRole(user, roleId)
             success(updatedUser)
         }
@@ -129,6 +130,7 @@ class UserService(
         return trxManager.run {
             val user = repoUsers.findById(userId) ?: return@run failure(UserError.UserNotFound)
             if (repoRole.findById(roleId) == null) return@run failure(UserError.RoleDoesntExist)
+            if(!user.roles.contains(1)) return@run failure(UserError.UserNotAdmin)
             val updatedUser = repoUsers.removeRole(user, roleId)
             success(updatedUser)
         }
@@ -143,6 +145,7 @@ class UserService(
             if (roleIdList.any { repoRole.findById(it) == null }) {
                 return@run failure(UserError.RoleDoesntExist)
             }
+            if(!user.roles.contains(1)) return@run failure(UserError.UserNotAdmin)
             val updatedUser = repoUsers.setRoles(user, roleIdList)
             success(updatedUser)
         }

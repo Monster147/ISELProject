@@ -140,18 +140,18 @@ class UserServiceTest {
     @Test
     fun `addRole adds role to user`() {
         val user =
-            userService.createUser("Eve", "eve@isel.pt", "password123").let {
+            userService.createUser("Eve", "eve@isel.pt", "password123", listOf(1,2)).let {
                 check(it is Success)
                 it.value
             }
 
         val updated =
-            userService.addRole(user.id, 1).let {
+            userService.addRole(user.id, 3).let {
                 check(it is Success)
                 it.value
             }
 
-        assertTrue(updated.roles.contains(1))
+        assertTrue(updated.roles.contains(3))
     }
 
     @Test

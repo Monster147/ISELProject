@@ -32,6 +32,8 @@ sealed class Problem(
 
     data object UserNotFound : Problem(URI("${PROBLEM_URI_PATH}/user-not-found"))
 
+    data object UserNotAdmin : Problem(URI("${PROBLEM_URI_PATH}/user-not-admin"))
+
     // role
     data object RoleNotFound : Problem(URI("${PROBLEM_URI_PATH}/role-not-found"))
 
@@ -52,6 +54,11 @@ sealed class Problem(
 
     //occurrence
     data object OccurrenceNotFound : Problem(URI("${PROBLEM_URI_PATH}/occurrence-not-found"))
+
     data object OccurrenceNotAssignedToUser : Problem(URI("${PROBLEM_URI_PATH}/occurrence-not-assigned-to-user"))
+
+    data object EndDateNotValid : Problem(URI("${PROBLEM_URI_PATH}/end-date-not-valid"))
+
+    data object DuplicateUsersIds : Problem(URI("${PROBLEM_URI_PATH}/duplicate-users-ids"))
 
 }

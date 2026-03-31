@@ -17,6 +17,9 @@ import {Evidence} from "../models/evidence/Evidence";
 import {Json} from "../models/utils/Json";
 import {Report} from "../models/report/Report";
 import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
+import {OccurrenceCreateInput} from "../models/occurrence/OccurrenceCreateInput";
+import {OccurrenceType} from "../models/occurrence/OccurrenceType";
+import {Occurrence} from "../models/occurrence/Occurrence";
 
 export class ApiError extends Error {
     constructor(public status: number, message: string) {
@@ -321,4 +324,44 @@ export const api = {
             method: "DELETE",
         });
     },
+
+    //Occurrence
+
+    async createOccurrence(input: OccurrenceCreateInput): Promise<void> {
+        return fetchApi<void>("/occurrence", {
+            method: "POST",
+            body: JSON.stringify(input),
+        });
+    },
+
+    async findOccurrenceById(): Promise<Occurrence> {
+        return fetchApi<Occurrence>("/occurrence/{occurrenceId}", {
+            method: "GET",
+        });
+    },
+
+    async findAllOccurrences(): Promise<Occurrence[]> {
+        return fetchApi<Occurrence[]>("/occurrence", {
+            method: "GET",
+        });
+    },
+
+    async findOccurrencesByImportance(): Promise<Occurrence[]> {
+        return fetchApi<Occurrence[]>("/occurrence/importance/{importance}", {
+            method: "GET",
+        });
+    },
+
+    async findOccurrencesByReporterId(): Promise<Occurrence[]> {
+        return fetchApi<Occurrence[]>("/occurrence/reporter/{reporterId}", {
+            method: "GET",
+        });
+    },
+
+    async deleteOccurrenceById(): Promise<void> {
+        return fetchApi<void>("/occurrence/{occurrenceId}", {
+            method: "DELETE",
+        });
+    },
+
 }
