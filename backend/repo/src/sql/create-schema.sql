@@ -43,8 +43,10 @@ CREATE TABLE dbo.occurrence
     id                      SERIAL               PRIMARY KEY,
     initDate                DATE                 NOT NULL,
     endDate                 DATE                 NOT NULL,
-    reporter_id             INT[]                ,
-    importance              dbo.occurrence_type  NOT NULL DEFAULT 'NORMAL'
+    reporter_id             INT                  REFERENCES dbo.users (id) ON DELETE CASCADE,
+    importance              dbo.occurrence_type  NOT NULL DEFAULT 'NORMAL',
+    occur_type              JSONB                NOT NULL,
+    occur_info              JSONB                NOT NULL
 );
 
 CREATE TABLE dbo.report

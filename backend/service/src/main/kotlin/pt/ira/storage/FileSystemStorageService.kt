@@ -5,6 +5,7 @@ import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.UUID
 
@@ -27,14 +28,21 @@ class FileSystemStorageService : StorageService {
             ?.substringAfterLast('.', "")
             ?.let { ".$it" } ?: ""
 
-        val filename = "${UUID.randomUUID()}$extension"
-        val destination = reportDir.resolve(filename)
+        val destination = generateUniquePath(reportDir, extension)
 
         file.inputStream.use {
             Files.copy(it, destination)
         }
 
         return root.relativize(destination).toString()
+    }
+
+    private fun generateUniquePath(
+        dir: Path,
+        extension: String
+    ): Path {
+        val path = dir.resolve("${UUID.randomUUID()}$extension")
+        return if (!Files.exists(path)) path else generateUniquePath(dir, extension)
     }
 
     override fun load(path: String): Resource? {

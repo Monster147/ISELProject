@@ -25,7 +25,15 @@ class EvidenceService(
     private val trxManager: TransactionManager,
     private val storageService: StorageService,
 ) {
-    private val allowedExtensions = listOf("image/jpg", "image/jpeg", "image/png", "application/pdf")
+    private val allowedExtensions =
+        listOf(
+            "image/jpg",
+            "image/jpeg",
+            "image/png",
+            "image/heic",
+            "application/pdf",
+            "video/mp4",
+            )
 
     fun createEvidence(
         type: JsonNode,
