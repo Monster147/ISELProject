@@ -15,6 +15,7 @@ import pt.ira.model.evidence.CreateEvidenceInput
 import pt.ira.occurrence.OccurrenceType
 import pt.ira.user.PasswordValidationInfo
 import java.time.LocalDate
+import kotlin.run
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
@@ -203,8 +204,10 @@ class EvidenceControllerTest {
         trxManager.run {
             repoOccurrence.createOccurrence(
                 endDate = LocalDate.of(2030, 3, 30),
-                reporterId = listOf(userId),
-                importance = OccurrenceType.NORMAL
+                reporterId = userId,
+                importance = OccurrenceType.NORMAL,
+                occurrenceType = mapper.readTree("""{"type":"base"}"""),
+                occurrenceInfo = mapper.readTree("""{}"""),
             ).id
         }
 

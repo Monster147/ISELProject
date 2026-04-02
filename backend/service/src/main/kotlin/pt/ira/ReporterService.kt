@@ -36,7 +36,7 @@ class ReportService(
         return trxManager.run {
             repoUsers.findById(creatorId) ?: return@run failure(ReportError.UserNotFound)
             val userOccurrence = repoOccurrence.findById(occurrenceId) ?: return@run failure(ReportError.OccurrenceNotFound)
-            if (!userOccurrence.reporterId.contains(creatorId)) {
+            if (userOccurrence.reporterId != creatorId) {
                 return@run failure(ReportError.OccurrenceNotAssignedToUser)
             }
             val report =

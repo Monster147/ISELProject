@@ -1,5 +1,6 @@
 package pt.ira.mem
 
+import com.fasterxml.jackson.databind.JsonNode
 import pt.ira.interfaces.RepositoryOccurrence
 import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
@@ -11,8 +12,10 @@ class RepositoryOccurrenceMem: RepositoryOccurrence {
 
     override fun createOccurrence(
         endDate: LocalDate,
-        reporterId: List<Int>,
-        importance: OccurrenceType
+        reporterId: Int,
+        importance: OccurrenceType,
+        occurrenceType: JsonNode,
+        occurrenceInfo: JsonNode
     ): Occurrence =
         Occurrence(
             id = occurrences.size + 1,
@@ -20,11 +23,13 @@ class RepositoryOccurrenceMem: RepositoryOccurrence {
             endDate = endDate,
             reporterId = reporterId,
             importance = importance,
+            occurrenceType = occurrenceType,
+            occurrenceInfo = occurrenceInfo,
         ).also { occurrences.add(it) }
 
     override fun findByImportance(importance: OccurrenceType): List<Occurrence> = occurrences.filter { it.importance == importance }
 
-    override fun findOccurrenceByReporterId(reporterId: Int): List<Occurrence> = occurrences.filter { it.reporterId.contains(reporterId)}
+    override fun findOccurrenceByReporterId(reporterId: Int): List<Occurrence> = occurrences.filter { it.reporterId == reporterId }
 
     override fun findById(id: Int): Occurrence? = occurrences.find { it.id == id }
 

@@ -1,5 +1,6 @@
 package pt.ira
 
+import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.stereotype.Component
 import pt.ira.interfaces.TransactionManager
 import pt.ira.occurrence.Occurrence
@@ -16,6 +17,7 @@ sealed class OccurrenceError {
     data object UserNotFound : OccurrenceError()
 
     data object DuplicateUsersIds : OccurrenceError()
+
 }
 
 @Component
@@ -23,21 +25,22 @@ class OccurrenceService(
     private val trxManager: TransactionManager,
 ) {
     fun createOccurrence(
-        usersId: List<Int>,
+        usersId: Int,
         endDate: LocalDate,
-        importance: OccurrenceType = OccurrenceType.NORMAL
+        importance: OccurrenceType = OccurrenceType.NORMAL,
+        occurrenceType: JsonNode,
+        occurrenceInfo: JsonNode,
     ): Either<OccurrenceError, Occurrence> {
         return trxManager.run {
             if (endDate.isBefore(LocalDate.now())) return@run failure(OccurrenceError.EndDateNotValid)
-            if (usersId.distinct().size != usersId.size) return@run failure(OccurrenceError.DuplicateUsersIds)
-            val allExist = usersId.all { id -> repoUsers.findById(id) != null }
-            if (!allExist) return@run failure(OccurrenceError.UserNotFound)
-
+            repoUsers.findById(usersId) ?: return@run failure(OccurrenceError.UserNotFound)
             val occurrence =
                 repoOccurrence.createOccurrence(
                     endDate = endDate,
                     reporterId = usersId,
-                    importance = importance
+                    importance = importance,
+                    occurrenceType = occurrenceType,
+                    occurrenceInfo = occurrenceInfo,
                 )
             success(occurrence)
         }

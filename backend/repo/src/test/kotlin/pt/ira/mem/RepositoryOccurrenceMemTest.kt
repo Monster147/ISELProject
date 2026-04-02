@@ -1,10 +1,10 @@
 package pt.ira.mem
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import pt.ira.interfaces.RepositoryOccurrence
 import pt.ira.occurrence.OccurrenceType
-import java.sql.Date
 import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -12,7 +12,9 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class RepositoryOccurrenceMemTest {
+
     private lateinit var repo: RepositoryOccurrence
+    private val mapper = ObjectMapper()
 
     @BeforeEach
     fun setup() {
@@ -22,9 +24,11 @@ class RepositoryOccurrenceMemTest {
     @Test
     fun `createOccurrence and findById`() {
         val created = repo.createOccurrence(
-            endDate = LocalDate.parse("2030-03-30"),
-            reporterId = listOf(1),
+            endDate = LocalDate.of(2030, 3, 30),
+            reporterId = 1,
             importance = OccurrenceType.NORMAL,
+            occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+            occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
         )
 
         val found = repo.findById(created.id)
@@ -34,20 +38,27 @@ class RepositoryOccurrenceMemTest {
         assertEquals(created.endDate, found.endDate)
         assertEquals(created.reporterId, found.reporterId)
         assertEquals(created.importance, found.importance)
+        assertEquals(created.occurrenceType, found.occurrenceType)
+        assertEquals(created.occurrenceInfo, found.occurrenceInfo)
         assertTrue(found.initDate <= found.endDate)
     }
 
     @Test
     fun `findAll returns all occurrences`() {
         val o1 = repo.createOccurrence(
-            endDate = LocalDate.parse("2030-03-30"),
-            reporterId = listOf(1),
-            importance = OccurrenceType.NORMAL,
+            LocalDate.of(2030, 3, 30),
+            1,
+            OccurrenceType.NORMAL,
+            mapper.readTree("""{"t":"a"}"""),
+            mapper.readTree("""{"i":"a"}""")
         )
+
         val o2 = repo.createOccurrence(
-            endDate = LocalDate.parse("2030-04-01"),
-            reporterId = listOf(2, 3),
-            importance = OccurrenceType.URGENT,
+            LocalDate.of(2030, 4, 1),
+            2,
+            OccurrenceType.URGENT,
+            mapper.readTree("""{"t":"b"}"""),
+            mapper.readTree("""{"i":"b"}""")
         )
 
         val all = repo.findAll()
@@ -59,19 +70,27 @@ class RepositoryOccurrenceMemTest {
     @Test
     fun `findByImportance returns only matches`() {
         val o1 = repo.createOccurrence(
-            endDate = LocalDate.parse("2030-03-30"),
-            reporterId = listOf(1),
-            importance = OccurrenceType.NORMAL,
+            LocalDate.of(2030, 3, 30),
+            1,
+            OccurrenceType.NORMAL,
+            mapper.readTree("""{"t":"a"}"""),
+            mapper.readTree("""{"i":"a"}""")
         )
+
         repo.createOccurrence(
-            endDate = LocalDate.parse("2030-04-01"),
-            reporterId = listOf(2),
-            importance = OccurrenceType.URGENT,
+            LocalDate.of(2030, 4, 1),
+            2,
+            OccurrenceType.URGENT,
+            mapper.readTree("""{"t":"b"}"""),
+            mapper.readTree("""{"i":"b"}""")
         )
+
         val o3 = repo.createOccurrence(
-            endDate = LocalDate.parse("2030-04-02"),
-            reporterId = listOf(3),
-            importance = OccurrenceType.NORMAL,
+            LocalDate.of(2030, 4, 2),
+            3,
+            OccurrenceType.NORMAL,
+            mapper.readTree("""{"t":"c"}"""),
+            mapper.readTree("""{"i":"c"}""")
         )
 
         val normals = repo.findByImportance(OccurrenceType.NORMAL)
@@ -82,53 +101,67 @@ class RepositoryOccurrenceMemTest {
     @Test
     fun `findOccurrenceByReporterId returns only occurrences that contain that reporter`() {
         val o1 = repo.createOccurrence(
-            endDate = LocalDate.parse("2030-03-30"),
-            reporterId = listOf(1, 2),
-            importance = OccurrenceType.NORMAL,
+            LocalDate.of(2030, 3, 30),
+            1,
+            OccurrenceType.NORMAL,
+            mapper.readTree("""{"t":"a"}"""),
+            mapper.readTree("""{"i":"a"}""")
         )
+
         val o2 = repo.createOccurrence(
-            endDate = LocalDate.parse("2030-04-01"),
-            reporterId = listOf(2, 3),
-            importance = OccurrenceType.URGENT,
+            LocalDate.of(2030, 4, 1),
+            1,
+            OccurrenceType.URGENT,
+            mapper.readTree("""{"t":"b"}"""),
+            mapper.readTree("""{"i":"b"}""")
         )
+
         repo.createOccurrence(
-            endDate = LocalDate.parse("2030-04-02"),
-            reporterId = listOf(4),
-            importance = OccurrenceType.CRITICAL,
+            LocalDate.of(2030, 4, 2),
+            3,
+            OccurrenceType.CRITICAL,
+            mapper.readTree("""{"t":"c"}"""),
+            mapper.readTree("""{"i":"c"}""")
         )
 
-        val by2 = repo.findOccurrenceByReporterId(2)
+        val by1 = repo.findOccurrenceByReporterId(1)
 
-        assertEquals(listOf(o1, o2), by2)
+        assertEquals(listOf(o1, o2), by1)
     }
 
     @Test
     fun `save updates an existing occurrence`() {
         val created = repo.createOccurrence(
-            endDate = LocalDate.parse("2030-03-30"),
-            reporterId = listOf(1),
-            importance = OccurrenceType.NORMAL,
+            LocalDate.of(2030, 3, 30),
+            1,
+            OccurrenceType.NORMAL,
+            mapper.readTree("""{"t":"a"}"""),
+            mapper.readTree("""{"i":"a"}""")
         )
 
-        val updated =
-            created.copy(
-                endDate = LocalDate.parse("2030-04-10"),
-                reporterId = listOf(1, 5),
-                importance = OccurrenceType.CRITICAL,
-            )
+        val updated = created.copy(
+            endDate = LocalDate.of(2030, 4, 10),
+            reporterId = 5,
+            importance = OccurrenceType.CRITICAL,
+            occurrenceType = mapper.readTree("""{"t":"updated"}"""),
+            occurrenceInfo = mapper.readTree("""{"i":"updated"}""")
+        )
 
         repo.save(updated)
 
         val found = repo.findById(created.id)
+
         assertEquals(updated, found)
     }
 
     @Test
     fun `deleteById removes occurrence`() {
         val created = repo.createOccurrence(
-            endDate = LocalDate.parse("2030-03-30"),
-            reporterId = listOf(1),
-            importance = OccurrenceType.NORMAL,
+            LocalDate.of(2030, 3, 30),
+            1,
+            OccurrenceType.NORMAL,
+            mapper.readTree("""{"t":"a"}"""),
+            mapper.readTree("""{"i":"a"}""")
         )
 
         repo.deleteById(created.id)
@@ -139,8 +172,21 @@ class RepositoryOccurrenceMemTest {
 
     @Test
     fun `clear removes all occurrences`() {
-        repo.createOccurrence(LocalDate.parse("2030-03-30"), listOf(1), OccurrenceType.NORMAL)
-        repo.createOccurrence(LocalDate.parse("2030-04-01"), listOf(2), OccurrenceType.URGENT)
+        repo.createOccurrence(
+            LocalDate.of(2030, 3, 30),
+            1,
+            OccurrenceType.NORMAL,
+            mapper.readTree("""{"t":"a"}"""),
+            mapper.readTree("""{"i":"a"}""")
+        )
+
+        repo.createOccurrence(
+            LocalDate.of(2030, 4, 1),
+            2,
+            OccurrenceType.URGENT,
+            mapper.readTree("""{"t":"b"}"""),
+            mapper.readTree("""{"i":"b"}""")
+        )
 
         repo.clear()
 

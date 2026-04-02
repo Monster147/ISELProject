@@ -1,5 +1,6 @@
 package pt.ira
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,6 +24,9 @@ class OccurrenceControllerTest {
     @Autowired
     private lateinit var trxManager: TransactionManager
 
+    private val mapper = ObjectMapper()
+    private fun json(v: String) = mapper.readTree(v)
+
     @BeforeEach
     fun cleanup() {
         trxManager.run {
@@ -37,9 +41,11 @@ class OccurrenceControllerTest {
 
         val input =
             OccurrenceCreateInput(
-                usersId = listOf(userId),
+                usersId = userId,
                 endDate = LocalDate.of(2030, 3, 30),
-                importance = OccurrenceType.NORMAL
+                importance = OccurrenceType.NORMAL,
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             )
 
         val resp = controller.createOccurrence(input)
@@ -52,9 +58,11 @@ class OccurrenceControllerTest {
     fun `create occurrence user not found returns 404`() {
         val input =
             OccurrenceCreateInput(
-                usersId = listOf(999),
+                usersId = 999,
                 endDate = LocalDate.of(2030, 3, 30),
-                importance = OccurrenceType.NORMAL
+                importance = OccurrenceType.NORMAL,
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             )
 
         val resp = controller.createOccurrence(input)
@@ -68,25 +76,11 @@ class OccurrenceControllerTest {
 
         val input =
             OccurrenceCreateInput(
-                usersId = listOf(userId),
+                usersId = userId,
                 endDate = LocalDate.now().minusDays(1),
-                importance = OccurrenceType.NORMAL
-            )
-
-        val resp = controller.createOccurrence(input)
-
-        assertEquals(HttpStatus.BAD_REQUEST, resp.statusCode)
-    }
-
-    @Test
-    fun `create occurrence duplicate users returns bad request`() {
-        val userId = createUser()
-
-        val input =
-            OccurrenceCreateInput(
-                usersId = listOf(userId, userId),
-                endDate = LocalDate.of(2030, 3, 30),
-                importance = OccurrenceType.NORMAL
+                importance = OccurrenceType.NORMAL,
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             )
 
         val resp = controller.createOccurrence(input)
@@ -131,8 +125,10 @@ class OccurrenceControllerTest {
         trxManager.run {
             repoOccurrence.createOccurrence(
                 endDate = LocalDate.of(2030, 3, 30),
-                reporterId = listOf(userId),
-                importance = OccurrenceType.CRITICAL
+                reporterId = userId,
+                importance = OccurrenceType.CRITICAL,
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             )
         }
 
@@ -150,8 +146,10 @@ class OccurrenceControllerTest {
         trxManager.run {
             repoOccurrence.createOccurrence(
                 endDate = LocalDate.of(2030, 3, 30),
-                reporterId = listOf(userId),
-                importance = OccurrenceType.NORMAL
+                reporterId = userId,
+                importance = OccurrenceType.NORMAL,
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             )
         }
 
@@ -159,7 +157,7 @@ class OccurrenceControllerTest {
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         assertEquals(1, resp.body.size)
-        assertEquals(userId, resp.body[0].reporterId.first())
+        assertEquals(userId, resp.body[0].reporterId)
     }
 
     @Test
@@ -181,7 +179,6 @@ class OccurrenceControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
 
-
     private fun createUser(): Int =
         trxManager.run {
             repoUsers.createUser(
@@ -196,9 +193,11 @@ class OccurrenceControllerTest {
     ): Int =
         controller.createOccurrence(
             OccurrenceCreateInput(
-                usersId = listOf(userId),
+                usersId = userId,
                 endDate = LocalDate.of(2030, 3, 30),
-                importance = OccurrenceType.NORMAL
+                importance = OccurrenceType.NORMAL,
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             )
         ).let { resp ->
             val location =

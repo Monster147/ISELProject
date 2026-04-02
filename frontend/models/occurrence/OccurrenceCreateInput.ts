@@ -1,7 +1,10 @@
 import {OccurrenceType} from "./OccurrenceType";
+import {Json} from "../utils/Json";
 
 export interface OccurrenceCreateInput{
-    usersId: number[],
+    usersId: number,
     date: string;
-    importance: OccurrenceType
+    importance: OccurrenceType;
+    occurrenceType: Json;
+    occurrenceInfo: Json;
 }

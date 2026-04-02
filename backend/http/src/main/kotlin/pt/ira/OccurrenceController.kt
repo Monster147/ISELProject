@@ -30,7 +30,9 @@ class OccurrenceController(
             occurrenceService.createOccurrence(
                 usersId = occurrenceInput.usersId,
                 endDate = occurrenceInput.endDate,
-                importance = occurrenceInput.importance
+                importance = occurrenceInput.importance,
+                occurrenceType = occurrenceInput.occurrenceType,
+                occurrenceInfo = occurrenceInput.occurrenceInfo,
             )
         return when (result) {
             is Success ->

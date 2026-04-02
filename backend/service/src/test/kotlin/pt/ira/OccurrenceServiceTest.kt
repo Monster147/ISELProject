@@ -1,5 +1,6 @@
 package pt.ira
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,6 +13,9 @@ import kotlin.test.*
 
 @SpringJUnitConfig(TestConfig::class)
 class OccurrenceServiceTest {
+
+    private val objectMapper = ObjectMapper()
+    private fun json(v: String) = objectMapper.readTree(v)
 
     @Autowired
     private lateinit var occurrenceService: OccurrenceService
@@ -46,15 +50,17 @@ class OccurrenceServiceTest {
 
         val occurrence =
             occurrenceService.createOccurrence(
-                usersId = listOf(user.id),
+                usersId = user.id,
                 endDate = LocalDate.now().plusDays(5),
-                importance = OccurrenceType.CRITICAL
+                importance = OccurrenceType.CRITICAL,
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
                 it.value
             }
 
-        assertEquals(listOf(user.id), occurrence.reporterId)
+        assertEquals(user.id, occurrence.reporterId)
         assertEquals(OccurrenceType.CRITICAL, occurrence.importance)
     }
 
@@ -65,9 +71,11 @@ class OccurrenceServiceTest {
 
         val result =
             occurrenceService.createOccurrence(
-                usersId = listOf(user.id),
+                usersId = user.id,
                 endDate = LocalDate.now().minusDays(1),
-                importance = OccurrenceType.NORMAL
+                importance = OccurrenceType.NORMAL,
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             )
 
         assertIs<Either.Left<*>>(result)
@@ -75,27 +83,14 @@ class OccurrenceServiceTest {
     }
 
     @Test
-    fun `createOccurrence fails when duplicate users ids`() {
-
-        val user = createUser("u", "u@mail")
-
-        val result =
-            occurrenceService.createOccurrence(
-                usersId = listOf(user.id, user.id),
-                endDate = LocalDate.now().plusDays(3)
-            )
-
-        assertIs<Either.Left<*>>(result)
-        assertIs<OccurrenceError.DuplicateUsersIds>(result.value)
-    }
-
-    @Test
     fun `createOccurrence fails when user does not exist`() {
 
         val result =
             occurrenceService.createOccurrence(
-                usersId = listOf(999),
-                endDate = LocalDate.now().plusDays(3)
+                usersId = 999,
+                endDate = LocalDate.now().plusDays(3),
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             )
 
         assertIs<Either.Left<*>>(result)
@@ -109,8 +104,10 @@ class OccurrenceServiceTest {
 
         val created =
             occurrenceService.createOccurrence(
-                listOf(user.id),
-                LocalDate.now().plusDays(3)
+                usersId = user.id,
+                endDate = LocalDate.now().plusDays(3),
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
                 it.value
@@ -140,9 +137,11 @@ class OccurrenceServiceTest {
         val user = createUser("u", "u@mail")
 
         occurrenceService.createOccurrence(
-            listOf(user.id),
-            LocalDate.now().plusDays(3),
-            OccurrenceType.URGENT
+            usersId = user.id,
+            endDate = LocalDate.now().plusDays(3),
+            importance = OccurrenceType.URGENT,
+            occurrenceType = json("""{"type":"base"}"""),
+            occurrenceInfo = json("""{}"""),
         )
 
         val result = occurrenceService.findByImportance(OccurrenceType.URGENT)
@@ -157,14 +156,16 @@ class OccurrenceServiceTest {
         val user = createUser("u", "u@mail")
 
         occurrenceService.createOccurrence(
-            listOf(user.id),
-            LocalDate.now().plusDays(3)
+            usersId = user.id,
+            endDate = LocalDate.now().plusDays(3),
+            occurrenceType = json("""{"type":"base"}"""),
+            occurrenceInfo = json("""{}"""),
         )
 
         val result = occurrenceService.findOccurrenceByReporterId(user.id)
 
         assertEquals(1, result.size)
-        assertEquals(user.id, result.first().reporterId.first())
+        assertEquals(user.id, result.first().reporterId)
     }
 
     @Test
@@ -182,13 +183,17 @@ class OccurrenceServiceTest {
         val user2 = createUser("u2", "u2@mail")
 
         occurrenceService.createOccurrence(
-            listOf(user1.id),
-            LocalDate.now().plusDays(3)
+            usersId = user1.id,
+            endDate = LocalDate.now().plusDays(3),
+            occurrenceType = json("""{"type":"base"}"""),
+            occurrenceInfo = json("""{}"""),
         )
 
         occurrenceService.createOccurrence(
-            listOf(user2.id),
-            LocalDate.now().plusDays(4)
+            usersId = user2.id,
+            endDate = LocalDate.now().plusDays(4),
+            occurrenceType = json("""{"type":"base"}"""),
+            occurrenceInfo = json("""{}"""),
         )
 
         val result = occurrenceService.findAll()
@@ -210,9 +215,11 @@ class OccurrenceServiceTest {
 
         val created =
             occurrenceService.createOccurrence(
-                usersId = listOf(user.id),
+                usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
-                importance = OccurrenceType.NORMAL
+                importance = OccurrenceType.NORMAL,
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
                 it.value
@@ -227,7 +234,6 @@ class OccurrenceServiceTest {
         assertIs<Either.Left<*>>(find)
         assertIs<OccurrenceError.OccurrenceNotFound>(find.value)
     }
-
 
     @Test
     fun `deleteById fails if not found`() {

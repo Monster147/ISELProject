@@ -248,8 +248,10 @@ class ReportControllerTest {
         trxManager.run {
             repoOccurrence.createOccurrence(
                 endDate = LocalDate.of(2030, 3, 30),
-                reporterId = listOf(userId),
-                importance = OccurrenceType.NORMAL
+                reporterId = userId,
+                importance = OccurrenceType.NORMAL,
+                occurrenceType = mapper.readTree("""{"type":"base"}"""),
+                occurrenceInfo = mapper.readTree("""{}"""),
             ).id
         }
 

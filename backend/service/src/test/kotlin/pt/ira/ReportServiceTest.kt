@@ -41,8 +41,10 @@ class ReportServiceTest {
         trxManager.run {
             repoOccurrence.createOccurrence(
                 endDate = LocalDate.of(2030, 3, 30),
-                reporterId = listOf(userId),
-                importance = OccurrenceType.NORMAL
+                reporterId = userId,
+                importance = OccurrenceType.NORMAL,
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             )
         }
 

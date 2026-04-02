@@ -56,8 +56,10 @@ class RepositoryReportJdbiTest {
             val occurrence =
                 repoOccurrence.createOccurrence(
                     endDate = LocalDate.of(2030, 3, 30),
-                    reporterId = listOf(1),
-                    importance = OccurrenceType.NORMAL
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
                 )
 
             val report =
@@ -82,8 +84,10 @@ class RepositoryReportJdbiTest {
             val creator1 = repoUsers.createUser("C1", "c1@mail.com", PasswordValidationInfo("h1"), listOf(1))
             val creator2 = repoUsers.createUser("C2", "c2@mail.com", PasswordValidationInfo("h2"), listOf(1))
 
-            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), listOf(2), OccurrenceType.NORMAL)
+            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), creator1.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
+            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), creator2.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
 
             val r1 = repoReport.createReport(creator1.id, occurrence1.id,"R1", "D1", json("""{"t":"1"}"""), json("""{}"""))
             val r2 = repoReport.createReport(creator2.id, occurrence2.id,"R2", "D2", json("""{"t":"2"}"""), json("""{}"""))
@@ -98,13 +102,16 @@ class RepositoryReportJdbiTest {
     @Test
     fun `findByStatus returns correct reports`() {
         trxManager.run {
-            val creator = repoUsers.createUser("C", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
+            val creator1 = repoUsers.createUser("C1", "c1@mail.com", PasswordValidationInfo("h1"), listOf(1))
+            val creator2 = repoUsers.createUser("C2", "c2@mail.com", PasswordValidationInfo("h2"), listOf(1))
 
-            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), listOf(2), OccurrenceType.NORMAL)
+            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), creator1.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
+            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), creator2.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
 
-            val r1 = repoReport.createReport(creator.id, occurrence1.id,"R1", "D1", json("""{"t":"1"}"""), json("""{}"""))
-            repoReport.createReport(creator.id, occurrence2.id,"R2", "D2", json("""{"t":"2"}"""), json("""{}"""))
+            val r1 = repoReport.createReport(creator1.id, occurrence1.id,"R1", "D1", json("""{"t":"1"}"""), json("""{}"""))
+            repoReport.createReport(creator2.id, occurrence2.id,"R2", "D2", json("""{"t":"2"}"""), json("""{}"""))
 
             val r1Approved = repoReport.updateStatus(r1, ReportStatus.APPROVED)
             val approved = repoReport.findByStatus(ReportStatus.APPROVED)
@@ -119,7 +126,14 @@ class RepositoryReportJdbiTest {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val editor = repoUsers.createUser("User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
 
-            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
+                )
 
             val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
@@ -137,8 +151,14 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val editor = repoUsers.createUser("User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
-            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
+                )
             val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             val once = repoReport.addEditor(report, editor)
@@ -153,8 +173,14 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val editor = repoUsers.createUser("User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
-            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
+                )
             val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             val withEditor = repoReport.addEditor(report, editor)
@@ -173,8 +199,14 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
             val editor = repoUsers.createUser("User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
-            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
+                )
             val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             val removed = repoReport.removeEditor(report, editor)
@@ -190,8 +222,14 @@ class RepositoryReportJdbiTest {
     fun `updateStatus changes report status`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
+                )
             val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             val updatedReport = repoReport.updateStatus(report, ReportStatus.APPROVED)
@@ -208,9 +246,10 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator1 = repoUsers.createUser("C1", "c1@mail.com", PasswordValidationInfo("h1"), listOf(1))
             val creator2 = repoUsers.createUser("C2", "c2@mail.com", PasswordValidationInfo("h2"), listOf(1))
-            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), listOf(2), OccurrenceType.NORMAL)
-
+            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), creator1.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
+            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), creator2.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
             val r1 = repoReport.createReport(creator1.id, occurrence1.id,"R1", "D1", json("""{}"""), json("""{}"""))
             repoReport.createReport(creator2.id, occurrence2.id,"R2", "D2", json("""{}"""), json("""{}"""))
 
@@ -223,15 +262,17 @@ class RepositoryReportJdbiTest {
     @Test
     fun `findByType returns correct reports`() {
         trxManager.run {
-            val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
+            val creator1 = repoUsers.createUser("C1", "c1@mail.com", PasswordValidationInfo("h1"), listOf(1))
+            val creator2 = repoUsers.createUser("C2", "c2@mail.com", PasswordValidationInfo("h2"), listOf(1))
             val typeA = json("""{"type":"A"}""")
             val typeB = json("""{"type":"B"}""")
-            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), listOf(2), OccurrenceType.NORMAL)
+            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), creator1.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
+            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), creator2.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
 
-
-            val r1 = repoReport.createReport(creator.id, occurrence1.id,"R1", "D1", typeA, json("""{}"""))
-            repoReport.createReport(creator.id, occurrence2.id,"R2", "D2", typeB, json("""{}"""))
+            val r1 = repoReport.createReport(creator1.id, occurrence1.id,"R1", "D1", typeA, json("""{}"""))
+            repoReport.createReport(creator2.id, occurrence2.id,"R2", "D2", typeB, json("""{}"""))
 
             val result = repoReport.findByType(typeA)
 
@@ -243,8 +284,14 @@ class RepositoryReportJdbiTest {
     fun `deleteById removes report`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
+                )
             val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             repoReport.deleteById(report.id)
@@ -258,8 +305,14 @@ class RepositoryReportJdbiTest {
     fun `save updates existing report`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
+                )
             val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             val updated = report.copy(title = "Updated")
@@ -277,8 +330,10 @@ class RepositoryReportJdbiTest {
         trxManager.run {
             val creator1 = repoUsers.createUser("C1", "c1@mail.com", PasswordValidationInfo("h1"), listOf(1))
             val creator2 = repoUsers.createUser("C2", "c2@mail.com", PasswordValidationInfo("h2"), listOf(1))
-            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), listOf(2), OccurrenceType.NORMAL)
+            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), creator1.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
+            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), creator2.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
 
 
             repoReport.createReport(creator1.id, occurrence1.id,"R1", "D1", json("""{}"""), json("""{}"""))
@@ -294,8 +349,14 @@ class RepositoryReportJdbiTest {
     fun `addIntervenor adds intervenor correctly`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
+                )
             val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
 
             val intervenor =
@@ -320,8 +381,14 @@ class RepositoryReportJdbiTest {
     fun `addIntervenor does not duplicate intervenor`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
+                )
             val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
             val intervenor =
                 repoIntervenor.createIntervenor(
@@ -343,8 +410,14 @@ class RepositoryReportJdbiTest {
     fun `removeIntervenor removes intervenor`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
+                )
             val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
             val intervenor =
                 repoIntervenor.createIntervenor(
@@ -370,8 +443,14 @@ class RepositoryReportJdbiTest {
     fun `removeIntervenor does nothing if not present`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
+                )
             val report = repoReport.createReport(creator.id, occurrence.id,"R", "D", json("""{}"""), json("""{}"""))
             val intervenor =
                 repoIntervenor.createIntervenor(
@@ -395,8 +474,14 @@ class RepositoryReportJdbiTest {
     fun `findByIntervenor returns correct reports`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
-            val occurrence = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), listOf(1), OccurrenceType.NORMAL)
-
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
+                )
             val report = repoReport.createReport(creator.id, occurrence.id,"R1", "D1", json("""{}"""), json("""{}"""))
 
             val intervenor =

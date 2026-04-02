@@ -56,8 +56,10 @@ class EvidenceServiceTest {
 
             val occurrence = repoOccurrence.createOccurrence(
                 endDate = LocalDate.of(2030, 3, 30),
-                reporterId = listOf(user.id),
-                importance = OccurrenceType.NORMAL
+                reporterId = user.id,
+                importance = OccurrenceType.NORMAL,
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             )
 
             val report =
