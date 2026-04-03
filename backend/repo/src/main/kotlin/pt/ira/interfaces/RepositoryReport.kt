@@ -16,6 +16,8 @@ interface RepositoryReport : Repository<Report> {
         addons: JsonNode,
     ): Report
 
+    fun findByOccurrenceId(occurrenceId: Int): Report?
+
     fun findByStatus(status: ReportStatus): List<Report>
 
     fun findByCreatorId(creatorId: Int): List<Report>

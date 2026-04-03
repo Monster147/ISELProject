@@ -18,6 +18,8 @@ sealed class ReportError {
     data object OccurrenceNotFound : ReportError()
 
     data object OccurrenceNotAssignedToUser : ReportError()
+
+    data object OccurrenceAlreadyHasReport : ReportError()
 }
 
 @Component
@@ -30,13 +32,16 @@ class ReportService(
         occurrenceId: Int,
         title: String,
         description: String,
-        type: JsonNode,
         addons: JsonNode,
     ): Either<ReportError, Report> {
         return trxManager.run {
             repoUsers.findById(creatorId) ?: return@run failure(ReportError.UserNotFound)
-            val userOccurrence = repoOccurrence.findById(occurrenceId) ?: return@run failure(ReportError.OccurrenceNotFound)
-            if (userOccurrence.reporterId != creatorId) {
+            val occurrence = repoOccurrence.findById(occurrenceId) ?: return@run failure(ReportError.OccurrenceNotFound)
+            val existingReport = repoReport.findByOccurrenceId(occurrenceId)
+            if (existingReport != null) {
+                return@run failure(ReportError.OccurrenceAlreadyHasReport)
+            }
+            if (occurrence.reporterId != creatorId) {
                 return@run failure(ReportError.OccurrenceNotAssignedToUser)
             }
             val report =
@@ -45,7 +50,7 @@ class ReportService(
                     occurrenceId = occurrenceId,
                     title = title,
                     description = description,
-                    type = type,
+                    type = occurrence.occurrenceType,
                     addons = addons,
                 )
             success(report)

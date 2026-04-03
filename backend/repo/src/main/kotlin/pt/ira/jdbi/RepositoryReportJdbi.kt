@@ -59,6 +59,18 @@ class RepositoryReportJdbi(
         )
     }
 
+    override fun findByOccurrenceId(occurrenceId: Int): Report? =
+        handle.createQuery(
+            """
+            SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
+            FROM dbo.report
+            WHERE occurrence_id = :occurrenceId
+            """.trimIndent(),
+        )
+            .bind("occurrenceId", occurrenceId)
+            .map { rs, _ -> mapRowToReport(rs) }
+            .singleOrNull()
+
     override fun findByStatus(status: ReportStatus): List<Report> =
         handle.createQuery(
             """

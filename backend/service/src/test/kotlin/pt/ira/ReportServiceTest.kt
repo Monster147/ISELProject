@@ -63,7 +63,6 @@ class ReportServiceTest {
                 occurrence.id,
                 "title",
                 "desc",
-                json("""{"t":"a"}"""),
                 json("""{}"""),
             ).let {
                 check(it is Success)
@@ -72,6 +71,7 @@ class ReportServiceTest {
 
         assertEquals("title", report.title)
         assertEquals(user.id, report.creatorId)
+        assertEquals(occurrence.occurrenceType, report.type)
     }
 
     @Test
@@ -89,7 +89,6 @@ class ReportServiceTest {
                 occurrence.id,
                 "t",
                 "d",
-                json("""{}"""),
                 json("""{}"""),
             ).let {
                 check(it is Success)
@@ -123,8 +122,8 @@ class ReportServiceTest {
         val occurrence1 = createOccurrenceForUser(user.id)
         val occurrence2 = createOccurrenceForUser(user.id)
 
-        reportService.createReport(user.id, occurrence1.id, "t1", "d", json("""{}"""), json("""{}"""))
-        reportService.createReport(user.id, occurrence2.id, "t2", "d", json("""{}"""), json("""{}"""))
+        reportService.createReport(user.id, occurrence1.id, "t1", "d", json("""{}"""))
+        reportService.createReport(user.id, occurrence2.id, "t2", "d", json("""{}"""))
 
         val result = reportService.findByCreatorId(user.id)
 
@@ -146,8 +145,8 @@ class ReportServiceTest {
         val occurrence1 = createOccurrenceForUser(user1.id)
         val occurrence2 = createOccurrenceForUser(user2.id)
 
-        reportService.createReport(user1.id, occurrence1.id, "t1", "d", json("""{}"""), json("""{}"""))
-        reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""), json("""{}"""))
+        reportService.createReport(user1.id, occurrence1.id, "t1", "d", json("""{}"""))
+        reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""))
 
         val result = reportService.findAll()
 
@@ -170,11 +169,11 @@ class ReportServiceTest {
         val occurrence2 = createOccurrenceForUser(user2.id)
 
         val r1 =
-            reportService.createReport(user1.id, occurrence1.id, "t1", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user1.id, occurrence1.id, "t1", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
         val r2 =
-            reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
         reportService.updateStatus(r1.id, ReportStatus.SUBMITED)
@@ -193,13 +192,14 @@ class ReportServiceTest {
                 repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
             }
 
-        val occurrence = createOccurrenceForUser(user.id)
+        val occurrence1 = createOccurrenceForUser(user.id)
+        val occurrence2 = createOccurrenceForUser(user.id)
 
         val r1 =
-            reportService.createReport(user.id, occurrence.id, "t1", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user.id, occurrence1.id, "t1", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
-        reportService.createReport(user.id, occurrence.id, "t2", "d", json("""{}"""), json("""{}"""))
+        reportService.createReport(user.id, occurrence2.id, "t2", "d", json("""{}"""))
 
         reportService.addEditor(r1.id, user.id)
 
@@ -211,9 +211,6 @@ class ReportServiceTest {
 
     @Test
     fun `findByType returns reports with matching type`() {
-        val typeA = json("""{"t":"a"}""")
-        val typeB = json("""{"t":"b"}""")
-
         val user1 =
             trxManager.run {
                 repoUsers.createUser("u1", "u1@mail", PasswordValidationInfo("x"), listOf(1))
@@ -227,13 +224,16 @@ class ReportServiceTest {
         val occurrence1 = createOccurrenceForUser(user1.id)
         val occurrence2 = createOccurrenceForUser(user2.id)
 
-        reportService.createReport(user1.id, occurrence1.id, "t1", "d", typeA, json("""{}"""))
-        reportService.createReport(user2.id, occurrence2.id, "t2", "d", typeB, json("""{}"""))
+        val r1 =
+            reportService.createReport(user1.id, occurrence1.id, "t1", "d", json("""{}"""))
+                .let { check(it is Success); it.value }
 
-        val result = reportService.findByType(typeA)
+        reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""))
 
-        assertEquals(1, result.size)
-        assertEquals("t1", result.first().title)
+        val result = reportService.findByType(json("""{"type":"base"}"""))
+
+        assertTrue(result.any { it.id == r1.id })
+        assertTrue(result.any { it.title == "t1" })
     }
 
     @Test
@@ -251,7 +251,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val r1 =
-            reportService.createReport(user.id, occurrence.id, "t1", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t1", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
         reportService.addIntervenor(r1.id, intervenor.id)
@@ -272,7 +272,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
         val updated =
@@ -292,7 +292,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
         val result = reportService.addEditor(report.id, 999)
@@ -311,7 +311,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
         reportService.addEditor(report.id, user.id)
@@ -341,7 +341,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
         val result = reportService.removeEditor(report.id, 999)
@@ -360,7 +360,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
         val updated =
@@ -385,7 +385,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
         val updated =
@@ -405,7 +405,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
         val result = reportService.addIntervenor(report.id, 999)
@@ -429,7 +429,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
         reportService.addIntervenor(report.id, intervenor.id)
@@ -459,7 +459,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
         val result = reportService.removeIntervenor(report.id, 999)
@@ -478,7 +478,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val created =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
                 .let { check(it is Success); it.value }
 
         val result = reportService.deleteById(created.id)

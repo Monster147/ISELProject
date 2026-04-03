@@ -278,7 +278,6 @@ class ReportControllerTest {
             occurrenceId = occurrenceId,
             title = "title",
             description = "desc",
-            type = mapper.readTree("""{"t":"a"}"""),
             addons = mapper.readTree("""{"a":"b"}"""),
         )
 }

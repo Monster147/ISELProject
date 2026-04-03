@@ -246,4 +246,22 @@ class RepositoryReportMemTest {
 
         assertEquals(listOf(repo.findById(r1.id)), result)
     }
+    @Test
+    fun `findByOccurrenceId returns report for occurrence`() {
+        val r1 =  repo.createReport(1, 1,"R1", "D1", json("""{}"""), json("""{}"""))
+
+        repo.createReport(1, 2,"R1", "D1", json("""{}"""), json("""{}"""))
+
+        val found = repo.findByOccurrenceId(1)
+
+        assertNotNull(found)
+        assertEquals(r1, found)
+    }
+
+    @Test
+    fun `findByOccurrenceId returns null when no report exists for occurrence`() {
+        val found = repo.findByOccurrenceId(999)
+        assertNull(found)
+    }
+
 }

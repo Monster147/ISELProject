@@ -10,6 +10,7 @@ import pt.ira.occurrence.OccurrenceType
 import pt.ira.report.ReportStatus
 import pt.ira.user.PasswordValidationInfo
 import java.time.LocalDate
+import kotlin.run
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -500,4 +501,55 @@ class RepositoryReportJdbiTest {
             assertEquals(listOf(withIntervenor), result)
         }
     }
+    @Test
+    fun `findByOccurrenceId returns report for occurrence`() {
+        trxManager.run {
+            val creator = repoUsers.createUser("Creator", "creator@mail.com", PasswordValidationInfo("hash"), listOf(1),)
+
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
+                )
+
+            val created =
+                repoReport.createReport(
+                    creatorId = creator.id,
+                    occurrenceId = occurrence.id,
+                    title = "Title",
+                    description = "Desc",
+                    type = json("""{"type":"A"}"""),
+                    addons = json("""{"extra":true}"""),
+                )
+
+            val found = repoReport.findByOccurrenceId(occurrence.id)
+
+            assertNotNull(found)
+            assertEquals(created.copy(createdAt = found.createdAt, updatedAt = found.updatedAt), found)
+        }
+    }
+
+    @Test
+    fun `findByOccurrenceId returns null when no report exists for occurrence`() {
+        trxManager.run {
+            val creator = repoUsers.createUser("Creator", "creator@mail.com", PasswordValidationInfo("hash"), listOf(1),)
+
+            val occurrenceWithoutReport =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = creator.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
+                )
+
+            val found = repoReport.findByOccurrenceId(occurrenceWithoutReport.id)
+
+            assertNull(found)
+        }
+    }
+
 }

@@ -7,6 +7,5 @@ data class CreateReportInput(
     val occurrenceId: Int,
     val title: String,
     val description: String,
-    val type: JsonNode,
     val addons: JsonNode,
 )

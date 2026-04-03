@@ -29,7 +29,6 @@ class ReportController(
                 occurrenceId = reportInput.occurrenceId,
                 title = reportInput.title,
                 description = reportInput.description,
-                type = reportInput.type,
                 addons = reportInput.addons,
             )
         return when (result) {

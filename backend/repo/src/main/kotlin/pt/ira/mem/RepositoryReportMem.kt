@@ -28,6 +28,8 @@ class RepositoryReportMem : RepositoryReport {
             addons = addons,
         ).also { reports.add(it) }
 
+    override fun findByOccurrenceId(occurrenceId: Int): Report? = reports.find { it.occurrenceId == occurrenceId }
+
     override fun findByStatus(status: ReportStatus): List<Report> = reports.filter { it.status == status }
 
     override fun findByCreatorId(creatorId: Int): List<Report> = reports.filter { it.creatorId == creatorId }

@@ -5,6 +5,5 @@ export interface CreateReportInput{
     occurrenceId: number;
     title: string;
     description: string;
-    type: Json;
     addons: Json;
 }
