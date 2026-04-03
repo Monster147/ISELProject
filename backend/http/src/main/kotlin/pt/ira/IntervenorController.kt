@@ -155,4 +155,24 @@ class IntervenorController(
                 }
         }
     }
+    @GetMapping("/{id}")
+    fun findIntervenorByContactInfo(
+        @PathVariable id: Int,
+    ): ResponseEntity<*> {
+        val result = intervenorService.findByID(id)
+        return when (result) {
+            is Success ->
+                ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(result.value)
+
+            is Failure ->
+                when (result.value) {
+                    is IntervenorError.IntervenorNotFound ->
+                        Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+                }
+        }
+    }
+
 }

@@ -43,7 +43,7 @@ const Register = () => {
         if(checkErrors()) return
         try {
             await register(name, email, password)
-            router.replace("/profile");
+            router.replace("/occurrence");
         } catch (err) {
             if (err instanceof Error) setError(err.message);
             else setError(String(err));

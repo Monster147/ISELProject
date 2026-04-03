@@ -273,6 +273,12 @@ export const api = {
         });
     },
 
+    async findIntervenorById(id:number): Promise<Intervenor> {
+        return fetchApi<Intervenor>(`/intervenor/${id}`, {
+            method: "GET",
+        });
+    },
+
     // Evidence
 
     async createEvidence(input: CreateEvidenceInput): Promise<void> {

@@ -37,3 +37,16 @@ GET http://localhost:8080/api/occurrence
 
 ### 7) List occurrences by reporterId
 GET http://localhost:8080/api/occurrence/reporter/1
+
+### 8) Create intervenor
+POST http://localhost:8080/api/intervenor
+Content-Type: application/json
+Authorization: Bearer {{token_user}}
+
+{
+  "idNumber": "123456789",
+  "idType": "NIF",
+  "name": "Teste",
+  "contactInfo": "912345678",
+  "address": "Rua Teste, 123"
+}

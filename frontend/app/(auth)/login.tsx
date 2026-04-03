@@ -42,7 +42,7 @@ const Login = () => {
         if(checkErrors()) return
         try {
             await login(email, password)
-            router.replace("/profile");
+            router.replace("/occurrence");
         } catch (err: any) {
             if (err instanceof Error) setError(err.message);
             else setError(String(err));

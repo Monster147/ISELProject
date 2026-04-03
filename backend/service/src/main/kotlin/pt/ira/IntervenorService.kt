@@ -81,4 +81,11 @@ class IntervenorService(
             success(intervenor)
         }
     }
+
+    fun findByID(id: Int): Either<IntervenorError, Intervenor> {
+        return trxManager.run {
+            val intervenor = repoIntervenor.findById(id) ?: return@run failure(IntervenorError.IntervenorNotFound)
+            success(intervenor)
+        }
+    }
 }

@@ -1,0 +1,77 @@
+import {createContext, useEffect, useMemo, useState} from "react";
+import {api, ApiError, fetchApi, getAuthHeaders} from "../api/api";
+import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
+import {User} from "../models/user/User";
+import {userInfoRepo} from "../infrastructure/UserInfoPreferencesRepo";
+import {Intervenor} from "../models/intervenor/Intervenor";
+
+type IntervenorContextValue = {
+    createIntervenor: (idNumber: string, idType: string, name: string, contactInfo: string, address: string) => Promise<void>;
+    updateIntervenor: (intervenorId:number, idNumber: string | null, idType: string | null, name: string | null, contactInfo: string | null, address: string | null) => Promise<void>;
+    deleteIntervenorByIdNumber: (intervenorId:string) => Promise<void>;
+    getIntervenorByIdNumber: (idNumber:string) => Promise<any>;
+    findIntervenorByContactInfo: (contactInfo:string) => Promise<any>;
+    findIntervenorById: (id:number) => Promise<Intervenor>;
+};
+
+export const IntervenorContext = createContext<IntervenorContextValue | undefined>(undefined)
+
+export function IntervenorProvider({children}) {
+
+    async function createIntervenor(idNumber: string, idType: string, name: string, contactInfo: string, address: string){
+        try {
+            await api.createIntervenor({idNumber, idType, name, contactInfo, address})
+        }catch (err: any) {
+            throw Error(err.message)
+        }
+    }
+
+    async function updateIntervenor(intervenorId:number,idNumber: string | null, idType: string | null, name: string | null, contactInfo: string | null, address: string | null){
+        try {
+            await api.updateIntervenor({idNumber, idType, name, contactInfo, address}, intervenorId)
+        }catch (err: any) {
+            throw Error(err.message)
+        }
+    }
+
+    async function deleteIntervenorByIdNumber(intervenorId:string){
+        try {
+            await api.deleteIntervenorByIdNumber(intervenorId)
+        }catch (err: any) {
+            throw Error(err.message)
+        }
+    }
+
+    async function getIntervenorByIdNumber(idNumber:string){
+        try {
+            const response = await api.findIntervenorByIdNumber(idNumber)
+            return response
+        }catch (err: any) {
+            throw Error(err.message)
+        }
+    }
+
+    async function findIntervenorByContactInfo(contactInfo:string){
+        try {
+            const response = await api.findIntervenorByContactInfo(contactInfo)
+            return response
+        }catch (err: any) {
+            throw Error(err.message)
+        }
+    }
+
+    async function findIntervenorById(id:number){
+        try {
+            const response = await api.findIntervenorById(id)
+            return response
+        }catch (err: any) {
+            throw Error(err.message)
+        }
+    }
+
+    return (
+        <IntervenorContext.Provider value={{createIntervenor, updateIntervenor, deleteIntervenorByIdNumber, getIntervenorByIdNumber, findIntervenorByContactInfo, findIntervenorById}}>
+            {children}
+        </IntervenorContext.Provider>
+    )
+}

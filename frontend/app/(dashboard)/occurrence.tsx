@@ -55,7 +55,8 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     list: {
-        marginTop: 40
+        marginTop: 40,
+        paddingBottom: 20,
     },
     card: {
         width: "90%",
