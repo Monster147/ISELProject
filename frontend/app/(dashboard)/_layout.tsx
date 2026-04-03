@@ -23,6 +23,17 @@ const DashboardLayout = () => {
                 }}
             >
                 <Tabs.Screen
+                    name="occurrence"
+                    options={{
+                        title: 'Occurrence',
+                        tabBarIcon: ({focused}) =>
+                            <Ionicons
+                                size={24}
+                                name={focused ? 'alert-circle' : 'alert-circle-outline'}
+                                color={focused ? theme.iconColorFocused : theme.iconColor}
+                            />
+                    }}/>
+                <Tabs.Screen
                     name="profile"
                     options={{
                         title: 'Profile',
@@ -34,16 +45,9 @@ const DashboardLayout = () => {
                             />
                     }}/>
                 <Tabs.Screen
-                    name="occurrence"
-                    options={{
-                        title: 'Occurrence',
-                        tabBarIcon: ({focused}) =>
-                            <Ionicons
-                                size={24}
-                                name={focused ? 'alert-circle' : 'alert-circle-outline'}
-                                color={focused ? theme.iconColorFocused : theme.iconColor}
-                            />
-                    }}/>
+                    name="occurrences/[id]"
+                    options={{href: null}}
+                />
             </Tabs>
         </UserOnly>
     )

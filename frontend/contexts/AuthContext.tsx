@@ -69,12 +69,13 @@ export function AuthProvider({children}) {
     async function logout(){
         try {
             await api.logout()
+        } catch (err: any) {
+            throw Error(err.message)
+        }finally {
             await authInfoRepo.clearAuthInfo()
             setToken(null)
             await userInfoRepo.clearUserInfo()
             setUser(null)
-        } catch (err: any) {
-            throw Error(err.message)
         }
     }
     return (

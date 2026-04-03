@@ -1,4 +1,4 @@
-@token_user = Y35iRhJ9qBLkzILXIU3AaBqT2TKVKx1EyPQklV9dOhE=
+@token_user = qf7gtzj-vqpffYWNxOannhFVIF8mzNPHbpK5Muwr4FA=
 
 ###  Create User
 POST http://localhost:8080/api/user
@@ -25,9 +25,11 @@ Content-Type: application/json
 Authorization: Bearer {{token_user}}
 
 {
-  "usersId": [1],
+  "usersId": 1,
   "endDate": "2030-12-31",
-  "importance": "NORMAL"
+  "importance": "NORMAL",
+  "occurrenceType": { "type": "fire", "sub": { "a": 1 } },
+  "occurrenceInfo": { "location": "Lisbon", "people": [1,2,3] }
 }
 
 ### 6) List all occurrences

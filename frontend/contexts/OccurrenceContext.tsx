@@ -10,6 +10,7 @@ import {useAuth} from "../hooks/useAuth";
 type OccurrenceContextValue = {
     listOccurrences: () => Promise<void>;
     occurrence: Occurrence[];
+    getOccurrence: (id:number) => Promise<Occurrence>;
 };
 
 export const OccurrenceContext = createContext<OccurrenceContextValue | undefined>(undefined)
@@ -36,8 +37,18 @@ export function OccurrenceProvider({children}) {
         }
     }
 
+    async function getOccurrence(id:number){
+        try {
+            if (!user) return;
+            const response = await api.findOccurrenceById(id)
+            return response
+        }catch (err: any) {
+            throw Error(err.message)
+        }
+    }
+
     return (
-        <OccurrenceContext.Provider value={{occurrence, listOccurrences}}>
+        <OccurrenceContext.Provider value={{occurrence, listOccurrences, getOccurrence}}>
             {children}
         </OccurrenceContext.Provider>
     )

@@ -41,7 +41,7 @@ const LoadingScreen = ()=> {
     const finished = !isAuthLoading && animationDone;
 
     if (finished) {
-        if (token) return <Redirect href="/profile" />;
+        if (token) return <Redirect href="/occurrence" />;
         return <Redirect href="/home" />;
     }
 

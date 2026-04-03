@@ -7,15 +7,17 @@ import {useAuth} from "../../hooks/useAuth";
 import {useEffect} from "react";
 import {Colors} from "../../constants/Colors";
 import ThemedCard from "../../components/ThemedCard";
+import {useRouter} from "expo-router";
 
 const Occurrence = () =>{
     const {occurrence} = useOccurrence()
+    const router = useRouter()
 
     return(
         <ThemedView style={styles.container} safe={true}>
             <Spacer />
             <ThemedText title={true} style={styles.heading}>
-                Occurence List
+                Occurrence List
             </ThemedText>
 
             <Spacer />
@@ -25,7 +27,7 @@ const Occurrence = () =>{
                 keyExtractor={(item)=> item.id.toString()}
                 contentContainerStyle={styles.list}
                 renderItem={({item}) =>(
-                    <Pressable>
+                    <Pressable onPress={()=> router.push(`/occurrences/${item.id}`)}>
                         <ThemedCard style={styles.card}>
                             <ThemedText style={styles.title}>Initial Date:{item.initDate}</ThemedText>
                             <ThemedText style={styles.title}>End Date:{item.endDate}</ThemedText>

@@ -32,7 +32,7 @@ const Profile = () =>{
             <Spacer />
 
             <ThemedButton onPress={handleLogout}>
-                <Text style={{color: '#f2f2f2'}}>Logout</Text>
+                <ThemedText style={{color: '#f2f2f2'}}>Logout</ThemedText>
             </ThemedButton>
 
         </ThemedView>
