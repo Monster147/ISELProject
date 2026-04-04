@@ -111,41 +111,47 @@ class UserService(
         }
 
     fun addRole(
+        adminId: Int,
         userId: Int,
         roleId: Int,
     ): Either<UserError, User> {
         return trxManager.run {
+            val admin = repoUsers.findById(adminId) ?: return@run failure(UserError.UserNotFound)
             val user = repoUsers.findById(userId) ?: return@run failure(UserError.UserNotFound)
             if (repoRole.findById(roleId) == null) return@run failure(UserError.RoleDoesntExist)
-            if(!user.roles.contains(1)) return@run failure(UserError.UserNotAdmin)
+            if (!admin.roles.contains(1)) return@run failure(UserError.UserNotAdmin)
             val updatedUser = repoUsers.addRole(user, roleId)
             success(updatedUser)
         }
     }
 
     fun removeRole(
+        adminId: Int,
         userId: Int,
         roleId: Int,
     ): Either<UserError, User> {
         return trxManager.run {
+            val admin = repoUsers.findById(adminId) ?: return@run failure(UserError.UserNotFound)
             val user = repoUsers.findById(userId) ?: return@run failure(UserError.UserNotFound)
             if (repoRole.findById(roleId) == null) return@run failure(UserError.RoleDoesntExist)
-            if(!user.roles.contains(1)) return@run failure(UserError.UserNotAdmin)
+            if (!admin.roles.contains(1)) return@run failure(UserError.UserNotAdmin)
             val updatedUser = repoUsers.removeRole(user, roleId)
             success(updatedUser)
         }
     }
 
     fun setRole(
+        adminId: Int,
         userId: Int,
         roleIdList: List<Int>,
     ): Either<UserError, User> {
         return trxManager.run {
+            val admin = repoUsers.findById(adminId) ?: return@run failure(UserError.UserNotFound)
             val user = repoUsers.findById(userId) ?: return@run failure(UserError.UserNotFound)
             if (roleIdList.any { repoRole.findById(it) == null }) {
                 return@run failure(UserError.RoleDoesntExist)
             }
-            if(!user.roles.contains(1)) return@run failure(UserError.UserNotAdmin)
+            if (!admin.roles.contains(1)) return@run failure(UserError.UserNotAdmin)
             val updatedUser = repoUsers.setRoles(user, roleIdList)
             success(updatedUser)
         }

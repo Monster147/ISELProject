@@ -193,52 +193,6 @@ class ReportControllerTest {
         assertFalse(body.editors.contains(userId))
     }
 
-    @Test
-    fun `add intervenor success`() {
-        val reportId = createReport()
-        val intervenorId = createIntervenor()
-
-        val resp = controller.addIntervenor(reportId, intervenorId)
-
-        assertEquals(HttpStatus.OK, resp.statusCode)
-
-        val body = resp.body as Report
-        assertTrue(body.intervenors.contains(intervenorId))
-    }
-
-    @Test
-    fun `add intervenor report not found`() {
-        val intervenorId = createIntervenor()
-
-        val resp = controller.addIntervenor(999, intervenorId)
-
-        assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
-    }
-
-    @Test
-    fun `add intervenor not found`() {
-        val reportId = createReport()
-
-        val resp = controller.addIntervenor(reportId, 999)
-
-        assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
-    }
-
-    @Test
-    fun `remove intervenor success`() {
-        val reportId = createReport()
-        val intervenorId = createIntervenor()
-
-        controller.addIntervenor(reportId, intervenorId)
-
-        val resp = controller.removeIntervenor(reportId, intervenorId)
-
-        assertEquals(HttpStatus.OK, resp.statusCode)
-
-        val body = resp.body as Report
-        assertFalse(body.intervenors.contains(intervenorId))
-    }
-
     private fun createUser(): Int =
         trxManager.run {
             repoUsers.createUser("user", "u@mail.com", PasswordValidationInfo("123")).id
@@ -255,29 +209,23 @@ class ReportControllerTest {
             ).id
         }
 
-    private fun createIntervenor(): Int =
-        trxManager.run {
-            repoIntervenor.createIntervenor(
-                "123",
-                "CC",
-                "name",
-                "contact",
-                "addr",
-            ).id
-        }
-
-    private fun createReport(creatorId: Int = createUser(), occurrenceId:Int=createOccurrenceForUser(creatorId)): Int =
+    private fun createReport(
+        creatorId: Int = createUser(),
+        occurrenceId: Int = createOccurrenceForUser(creatorId),
+    ): Int =
         controller.createReport(createReportInput(creatorId, occurrenceId)).let { resp ->
             val location = requireNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
             location.substringAfterLast("/").toInt()
         }
 
-    private fun createReportInput(userId: Int, occurrenceId: Int) =
-        CreateReportInput(
-            creatorId = userId,
-            occurrenceId = occurrenceId,
-            title = "title",
-            description = "desc",
-            addons = mapper.readTree("""{"a":"b"}"""),
-        )
+    private fun createReportInput(
+        userId: Int,
+        occurrenceId: Int,
+    ) = CreateReportInput(
+        creatorId = userId,
+        occurrenceId = occurrenceId,
+        title = "title",
+        description = "desc",
+        addons = mapper.readTree("""{"a":"b"}"""),
+    )
 }

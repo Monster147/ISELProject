@@ -3,11 +3,10 @@ package pt.ira
 import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.stereotype.Component
 import pt.ira.interfaces.TransactionManager
+import pt.ira.intervenor.Intervenor
 import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
-import pt.ira.report.Report
 import java.time.LocalDate
-import kotlin.run
 
 sealed class OccurrenceError {
     data object OccurrenceNotFound : OccurrenceError()
@@ -18,6 +17,7 @@ sealed class OccurrenceError {
 
     data object DuplicateUsersIds : OccurrenceError()
 
+    data object IntervenorNotFound : OccurrenceError()
 }
 
 @Component
@@ -57,7 +57,50 @@ class OccurrenceService(
 
     fun findByImportance(importance: OccurrenceType): List<Occurrence> = trxManager.run { repoOccurrence.findByImportance(importance) }
 
-    fun findOccurrenceByReporterId(reporterId: Int): List<Occurrence> = trxManager.run { repoOccurrence.findOccurrenceByReporterId(reporterId) }
+    fun findOccurrenceByReporterId(reporterId: Int): List<Occurrence> =
+        trxManager.run {
+            repoOccurrence.findOccurrenceByReporterId(
+                reporterId,
+            )
+        }
+
+    fun findByIntervenor(intervenor: Intervenor): List<Occurrence> = trxManager.run { repoOccurrence.findByIntervenor(intervenor) }
+
+    fun addIntervenor(
+        occurrenceId: Int,
+        intervenorId: Int,
+    ): Either<OccurrenceError, Occurrence> {
+        return trxManager.run {
+            val occurrence =
+                repoOccurrence.findById(occurrenceId)
+                    ?: return@run failure(OccurrenceError.OccurrenceNotFound)
+
+            val intervenor =
+                repoIntervenor.findById(intervenorId)
+                    ?: return@run failure(OccurrenceError.IntervenorNotFound)
+
+            val updated = repoOccurrence.addIntervenor(occurrence, intervenor)
+            success(updated)
+        }
+    }
+
+    fun removeIntervenor(
+        occurrenceId: Int,
+        intervenorId: Int,
+    ): Either<OccurrenceError, Occurrence> {
+        return trxManager.run {
+            val occurrence =
+                repoOccurrence.findById(occurrenceId)
+                    ?: return@run failure(OccurrenceError.OccurrenceNotFound)
+
+            val intervenor =
+                repoIntervenor.findById(intervenorId)
+                    ?: return@run failure(OccurrenceError.IntervenorNotFound)
+
+            val updated = repoOccurrence.removeIntervenor(occurrence, intervenor)
+            success(updated)
+        }
+    }
 
     fun findAll(): List<Occurrence> = trxManager.run { repoOccurrence.findAll() }
 

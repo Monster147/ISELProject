@@ -17,16 +17,21 @@ class FileSystemStorageService : StorageService {
         Files.createDirectories(root)
     }
 
-    override fun save(reportId: Int, file: MultipartFile): String {
-        val reportDir = root
-            .resolve("reports")
-            .resolve(reportId.toString())
-            .resolve("evidences")
+    override fun save(
+        reportId: Int,
+        file: MultipartFile,
+    ): String {
+        val reportDir =
+            root
+                .resolve("reports")
+                .resolve(reportId.toString())
+                .resolve("evidences")
         Files.createDirectories(reportDir)
 
-        val extension = file.originalFilename
-            ?.substringAfterLast('.', "")
-            ?.let { ".$it" } ?: ""
+        val extension =
+            file.originalFilename
+                ?.substringAfterLast('.', "")
+                ?.let { ".$it" } ?: ""
 
         val destination = generateUniquePath(reportDir, extension)
 
@@ -39,7 +44,7 @@ class FileSystemStorageService : StorageService {
 
     private fun generateUniquePath(
         dir: Path,
-        extension: String
+        extension: String,
     ): Path {
         val path = dir.resolve("${UUID.randomUUID()}$extension")
         return if (!Files.exists(path)) path else generateUniquePath(dir, extension)
@@ -47,7 +52,7 @@ class FileSystemStorageService : StorageService {
 
     override fun load(path: String): Resource? {
         val filePath = root.resolve(path).normalize()
-        if(!filePath.startsWith(root)) return null
+        if (!filePath.startsWith(root)) return null
         val resource = UrlResource(filePath.toUri())
         return if (resource.exists() || resource.isReadable) {
             resource
@@ -58,7 +63,7 @@ class FileSystemStorageService : StorageService {
 
     override fun deleteEvidence(path: String): Boolean {
         val filePath = root.resolve(path).normalize()
-        if(!filePath.startsWith(root)) return false
+        if (!filePath.startsWith(root)) return false
         return try {
             Files.deleteIfExists(filePath)
         } catch (e: Exception) {
@@ -67,10 +72,11 @@ class FileSystemStorageService : StorageService {
     }
 
     override fun deleteReportEvidences(reportId: Int): Boolean {
-        val reportDir = root
-            .resolve("reports")
-            .resolve(reportId.toString())
-            .normalize()
+        val reportDir =
+            root
+                .resolve("reports")
+                .resolve(reportId.toString())
+                .normalize()
         if (!reportDir.startsWith(root)) return false
 
         return try {

@@ -13,11 +13,14 @@ import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
 import pt.ira.user.PasswordValidationInfo
 import java.time.LocalDate
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @SpringJUnitConfig(TestConfig::class)
 class OccurrenceControllerTest {
-
     @Autowired
     private lateinit var controller: OccurrenceController
 
@@ -25,6 +28,7 @@ class OccurrenceControllerTest {
     private lateinit var trxManager: TransactionManager
 
     private val mapper = ObjectMapper()
+
     private fun json(v: String) = mapper.readTree(v)
 
     @BeforeEach
@@ -106,6 +110,52 @@ class OccurrenceControllerTest {
     }
 
     @Test
+    fun `add intervenor success`() {
+        val occurrenceId = createOccurrence()
+        val intervenorId = createIntervenor()
+
+        val resp = controller.addIntervenor(occurrenceId, intervenorId)
+
+        assertEquals(HttpStatus.OK, resp.statusCode)
+
+        val body = resp.body as Occurrence
+        assertTrue(body.intervenors.contains(intervenorId))
+    }
+
+    @Test
+    fun `add intervenor report not found`() {
+        val intervenorId = createIntervenor()
+
+        val resp = controller.addIntervenor(999, intervenorId)
+
+        assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
+    }
+
+    @Test
+    fun `add intervenor not found`() {
+        val occurrenceId = createOccurrence()
+
+        val resp = controller.addIntervenor(occurrenceId, 999)
+
+        assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
+    }
+
+    @Test
+    fun `remove intervenor success`() {
+        val occurrenceId = createOccurrence()
+        val intervenorId = createIntervenor()
+
+        controller.addIntervenor(occurrenceId, intervenorId)
+
+        val resp = controller.removeIntervenor(occurrenceId, intervenorId)
+
+        assertEquals(HttpStatus.OK, resp.statusCode)
+
+        val body = resp.body as Occurrence
+        assertFalse(body.intervenors.contains(intervenorId))
+    }
+
+    @Test
     fun `find all occurrences`() {
         createOccurrence()
         createOccurrence()
@@ -184,13 +234,11 @@ class OccurrenceControllerTest {
             repoUsers.createUser(
                 "user",
                 "u@mail.com",
-                PasswordValidationInfo("123")
+                PasswordValidationInfo("123"),
             ).id
         }
 
-    private fun createOccurrence(
-        userId: Int = createUser()
-    ): Int =
+    private fun createOccurrence(userId: Int = createUser()): Int =
         controller.createOccurrence(
             OccurrenceCreateInput(
                 usersId = userId,
@@ -198,10 +246,21 @@ class OccurrenceControllerTest {
                 importance = OccurrenceType.NORMAL,
                 occurrenceType = json("""{"type":"base"}"""),
                 occurrenceInfo = json("""{}"""),
-            )
+            ),
         ).let { resp ->
             val location =
                 requireNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
             location.substringAfterLast("/").toInt()
+        }
+
+    private fun createIntervenor(): Int =
+        trxManager.run {
+            repoIntervenor.createIntervenor(
+                "123",
+                "CC",
+                "name",
+                "contact",
+                "addr",
+            ).id
         }
 }

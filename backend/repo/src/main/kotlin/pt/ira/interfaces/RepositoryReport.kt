@@ -1,7 +1,6 @@
 package pt.ira.interfaces
 
 import com.fasterxml.jackson.databind.JsonNode
-import pt.ira.intervenor.Intervenor
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
 import pt.ira.user.User
@@ -40,16 +39,4 @@ interface RepositoryReport : Repository<Report> {
     ): Report
 
     fun findByType(type: JsonNode): List<Report>
-
-    fun findByIntervenor(intervenor: Intervenor): List<Report>
-
-    fun addIntervenor(
-        report: Report,
-        intervenor: Intervenor,
-    ): Report
-
-    fun removeIntervenor(
-        report: Report,
-        intervenor: Intervenor,
-    ): Report
 }

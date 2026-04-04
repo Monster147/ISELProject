@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -25,7 +24,7 @@ class EvidenceController(
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createEvidence(
         @RequestPart("file") file: MultipartFile,
-        @RequestPart("data") data: CreateEvidenceInput
+        @RequestPart("data") data: CreateEvidenceInput,
     ): ResponseEntity<*> {
         val result =
             evidenceService.createEvidence(
@@ -59,7 +58,7 @@ class EvidenceController(
 
     @GetMapping("/{id}")
     fun findById(
-        @PathVariable id: Int
+        @PathVariable id: Int,
     ): ResponseEntity<*> {
         val result = evidenceService.findById(id)
         return when (result) {
@@ -79,7 +78,7 @@ class EvidenceController(
 
     @GetMapping("/{id}/download")
     fun downloadEvidence(
-        @PathVariable id: Int
+        @PathVariable id: Int,
     ): ResponseEntity<*> {
         val result = evidenceService.downloadEvidence(id)
         return when (result) {
@@ -91,7 +90,7 @@ class EvidenceController(
                 ResponseEntity.ok()
                     .header(
                         "Content-Disposition",
-                        "attachment; filename=\"$filename\""
+                        "attachment; filename=\"$filename\"",
                     )
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(resource)

@@ -9,12 +9,14 @@ import pt.ira.interfaces.TransactionManager
 import pt.ira.occurrence.OccurrenceType
 import pt.ira.user.PasswordValidationInfo
 import java.time.LocalDate
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 @SpringJUnitConfig(TestConfig::class)
 class OccurrenceServiceTest {
-
     private val objectMapper = ObjectMapper()
+
     private fun json(v: String) = objectMapper.readTree(v)
 
     @Autowired
@@ -33,19 +35,31 @@ class OccurrenceServiceTest {
         }
     }
 
-    private fun createUser(name: String, email: String) =
+    private fun createOccurrenceForUser(userId: Int) =
         trxManager.run {
-            repoUsers.createUser(
-                name,
-                email,
-                PasswordValidationInfo("hash"),
-                listOf(1)
+            repoOccurrence.createOccurrence(
+                endDate = LocalDate.of(2030, 3, 30),
+                reporterId = userId,
+                importance = OccurrenceType.NORMAL,
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
             )
         }
 
+    private fun createUser(
+        name: String,
+        email: String,
+    ) = trxManager.run {
+        repoUsers.createUser(
+            name,
+            email,
+            PasswordValidationInfo("hash"),
+            listOf(1),
+        )
+    }
+
     @Test
     fun `createOccurrence creates occurrence successfully`() {
-
         val user = createUser("u", "u@mail")
 
         val occurrence =
@@ -66,7 +80,6 @@ class OccurrenceServiceTest {
 
     @Test
     fun `createOccurrence fails when endDate is in the past`() {
-
         val user = createUser("u", "u@mail")
 
         val result =
@@ -84,7 +97,6 @@ class OccurrenceServiceTest {
 
     @Test
     fun `createOccurrence fails when user does not exist`() {
-
         val result =
             occurrenceService.createOccurrence(
                 usersId = 999,
@@ -99,7 +111,6 @@ class OccurrenceServiceTest {
 
     @Test
     fun `findById returns occurrence`() {
-
         val user = createUser("u", "u@mail")
 
         val created =
@@ -124,7 +135,6 @@ class OccurrenceServiceTest {
 
     @Test
     fun `findById fails when occurrence not found`() {
-
         val result = occurrenceService.findById(999)
 
         assertIs<Either.Left<*>>(result)
@@ -133,7 +143,6 @@ class OccurrenceServiceTest {
 
     @Test
     fun `findByImportance returns occurrences`() {
-
         val user = createUser("u", "u@mail")
 
         occurrenceService.createOccurrence(
@@ -152,7 +161,6 @@ class OccurrenceServiceTest {
 
     @Test
     fun `findOccurrenceByReporterId returns occurrences`() {
-
         val user = createUser("u", "u@mail")
 
         occurrenceService.createOccurrence(
@@ -170,15 +178,168 @@ class OccurrenceServiceTest {
 
     @Test
     fun `findOccurrenceByReporterId returns empty list when none`() {
-
         val result = occurrenceService.findOccurrenceByReporterId(999)
 
         assertTrue(result.isEmpty())
     }
 
     @Test
-    fun `findAll returns all occurrences`() {
+    fun `findByIntervenor returns reports for intervenor`() {
+        val intervenor =
+            trxManager.run {
+                repoIntervenor.createIntervenor("123", "CC", "name", "contact", "addr")
+            }
 
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
+
+        val occurrence =
+            occurrenceService.createOccurrence(
+                usersId = user.id,
+                endDate = LocalDate.now().plusDays(3),
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
+            ).let {
+                check(it is Success)
+                it.value
+            }
+
+        occurrenceService.addIntervenor(occurrence.id, intervenor.id)
+
+        val result = occurrenceService.findByIntervenor(intervenor)
+
+        assertEquals(1, result.size)
+        assertEquals(occurrence.id, result.first().id)
+    }
+
+    @Test
+    fun `addIntervenor adds intervenor`() {
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
+
+        val intervenor =
+            trxManager.run {
+                repoIntervenor.createIntervenor("123", "CC", "name", "contact", "addr")
+            }
+
+        val occurrence =
+            occurrenceService.createOccurrence(
+                usersId = user.id,
+                endDate = LocalDate.now().plusDays(3),
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
+            ).let {
+                check(it is Success)
+                it.value
+            }
+
+        val updated =
+            occurrenceService.addIntervenor(occurrence.id, intervenor.id)
+                .let {
+                    check(it is Success)
+                    it.value
+                }
+
+        assertTrue(updated.intervenors.contains(intervenor.id))
+    }
+
+    @Test
+    fun `addIntervenor fails if not found`() {
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
+
+        val occurrence =
+            occurrenceService.createOccurrence(
+                usersId = user.id,
+                endDate = LocalDate.now().plusDays(3),
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
+            ).let {
+                check(it is Success)
+                it.value
+            }
+
+        val result = occurrenceService.addIntervenor(occurrence.id, 999)
+
+        assertIs<Either.Left<*>>(result)
+        assertIs<OccurrenceError.IntervenorNotFound>(result.value)
+    }
+
+    @Test
+    fun `removeIntervenor removes intervenor from report`() {
+        val intervenor =
+            trxManager.run {
+                repoIntervenor.createIntervenor("123", "CC", "name", "contact", "addr")
+            }
+
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
+
+        val occurrence =
+            occurrenceService.createOccurrence(
+                usersId = user.id,
+                endDate = LocalDate.now().plusDays(3),
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
+            ).let {
+                check(it is Success)
+                it.value
+            }
+
+        occurrenceService.addIntervenor(occurrence.id, intervenor.id)
+
+        val updated =
+            occurrenceService.removeIntervenor(occurrence.id, intervenor.id)
+                .let {
+                    check(it is Success)
+                    it.value
+                }
+
+        assertTrue(!updated.intervenors.contains(intervenor.id))
+    }
+
+    @Test
+    fun `removeIntervenor fails if report not found`() {
+        val result = occurrenceService.removeIntervenor(999, 1)
+
+        assertIs<Either.Left<*>>(result)
+        assertIs<OccurrenceError.OccurrenceNotFound>(result.value)
+    }
+
+    @Test
+    fun `removeIntervenor fails if intervenor not found`() {
+        val user =
+            trxManager.run {
+                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
+            }
+
+        val occurrence =
+            occurrenceService.createOccurrence(
+                usersId = user.id,
+                endDate = LocalDate.now().plusDays(3),
+                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceInfo = json("""{}"""),
+            ).let {
+                check(it is Success)
+                it.value
+            }
+
+        val result = occurrenceService.removeIntervenor(occurrence.id, 999)
+
+        assertIs<Either.Left<*>>(result)
+        assertIs<OccurrenceError.IntervenorNotFound>(result.value)
+    }
+
+    @Test
+    fun `findAll returns all occurrences`() {
         val user1 = createUser("u1", "u1@mail")
         val user2 = createUser("u2", "u2@mail")
 
@@ -203,7 +364,6 @@ class OccurrenceServiceTest {
 
     @Test
     fun `findAll returns empty list when none`() {
-
         val result = occurrenceService.findAll()
 
         assertTrue(result.isEmpty())

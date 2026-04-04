@@ -3,7 +3,6 @@ package pt.ira
 import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.stereotype.Component
 import pt.ira.interfaces.TransactionManager
-import pt.ira.intervenor.Intervenor
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
 import pt.ira.storage.StorageService
@@ -74,8 +73,6 @@ class ReportService(
 
     fun findByType(type: JsonNode): List<Report> = trxManager.run { repoReport.findByType(type) }
 
-    fun findByIntervenor(intervenor: Intervenor): List<Report> = trxManager.run { repoReport.findByIntervenor(intervenor) }
-
     fun findAll(): List<Report> = trxManager.run { repoReport.findAll() }
 
     fun addEditor(
@@ -124,42 +121,6 @@ class ReportService(
                     ?: return@run failure(ReportError.ReportNotFound)
 
             val updated = repoReport.updateStatus(report, status)
-            success(updated)
-        }
-    }
-
-    fun addIntervenor(
-        reportId: Int,
-        intervenorId: Int,
-    ): Either<ReportError, Report> {
-        return trxManager.run {
-            val report =
-                repoReport.findById(reportId)
-                    ?: return@run failure(ReportError.ReportNotFound)
-
-            val intervenor =
-                repoIntervenor.findById(intervenorId)
-                    ?: return@run failure(ReportError.IntervenorNotFound)
-
-            val updated = repoReport.addIntervenor(report, intervenor)
-            success(updated)
-        }
-    }
-
-    fun removeIntervenor(
-        reportId: Int,
-        intervenorId: Int,
-    ): Either<ReportError, Report> {
-        return trxManager.run {
-            val report =
-                repoReport.findById(reportId)
-                    ?: return@run failure(ReportError.ReportNotFound)
-
-            val intervenor =
-                repoIntervenor.findById(intervenorId)
-                    ?: return@run failure(ReportError.IntervenorNotFound)
-
-            val updated = repoReport.removeIntervenor(report, intervenor)
             success(updated)
         }
     }

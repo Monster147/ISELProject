@@ -2,12 +2,12 @@ package pt.ira.mem
 
 import com.fasterxml.jackson.databind.JsonNode
 import pt.ira.interfaces.RepositoryOccurrence
+import pt.ira.intervenor.Intervenor
 import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
-import java.sql.Date
 import java.time.LocalDate
 
-class RepositoryOccurrenceMem: RepositoryOccurrence {
+class RepositoryOccurrenceMem : RepositoryOccurrence {
     val occurrences = mutableListOf<Occurrence>()
 
     override fun createOccurrence(
@@ -15,7 +15,7 @@ class RepositoryOccurrenceMem: RepositoryOccurrence {
         reporterId: Int,
         importance: OccurrenceType,
         occurrenceType: JsonNode,
-        occurrenceInfo: JsonNode
+        occurrenceInfo: JsonNode,
     ): Occurrence =
         Occurrence(
             id = occurrences.size + 1,
@@ -30,6 +30,34 @@ class RepositoryOccurrenceMem: RepositoryOccurrence {
     override fun findByImportance(importance: OccurrenceType): List<Occurrence> = occurrences.filter { it.importance == importance }
 
     override fun findOccurrenceByReporterId(reporterId: Int): List<Occurrence> = occurrences.filter { it.reporterId == reporterId }
+
+    override fun findByIntervenor(intervenor: Intervenor): List<Occurrence> = occurrences.filter { it.intervenors.contains(intervenor.id) }
+
+    override fun addIntervenor(
+        occurrence: Occurrence,
+        intervenor: Intervenor,
+    ): Occurrence {
+        if (occurrence.intervenors.any { it == intervenor.id }) return occurrence
+        val updated =
+            occurrence.copy(
+                intervenors = occurrence.intervenors + intervenor.id,
+            )
+        save(updated)
+        return updated
+    }
+
+    override fun removeIntervenor(
+        occurrence: Occurrence,
+        intervenor: Intervenor,
+    ): Occurrence {
+        if (occurrence.intervenors.none { it == intervenor.id }) return occurrence
+        val updated =
+            occurrence.copy(
+                intervenors = occurrence.intervenors - intervenor.id,
+            )
+        save(updated)
+        return updated
+    }
 
     override fun findById(id: Int): Occurrence? = occurrences.find { it.id == id }
 

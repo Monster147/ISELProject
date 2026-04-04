@@ -56,7 +56,7 @@ sealed class Problem(
 
     data object FileNotFound : Problem(URI("${PROBLEM_URI_PATH}/file-not-found"))
 
-    //occurrence
+    // occurrence
     data object OccurrenceNotFound : Problem(URI("${PROBLEM_URI_PATH}/occurrence-not-found"))
 
     data object OccurrenceNotAssignedToUser : Problem(URI("${PROBLEM_URI_PATH}/occurrence-not-assigned-to-user"))
@@ -64,5 +64,4 @@ sealed class Problem(
     data object EndDateNotValid : Problem(URI("${PROBLEM_URI_PATH}/end-date-not-valid"))
 
     data object DuplicateUsersIds : Problem(URI("${PROBLEM_URI_PATH}/duplicate-users-ids"))
-
 }

@@ -11,11 +11,15 @@ import pt.ira.occurrence.OccurrenceType
 import pt.ira.user.PasswordValidationInfo
 import java.time.Instant
 import java.time.LocalDate
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @SpringJUnitConfig(TestConfig::class)
 class UserServiceTest {
-
     @Autowired
     private lateinit var userService: UserService
 
@@ -142,13 +146,13 @@ class UserServiceTest {
     @Test
     fun `addRole adds role to user`() {
         val user =
-            userService.createUser("Eve", "eve@isel.pt", "password123", listOf(1,2)).let {
+            userService.createUser("Eve", "eve@isel.pt", "password123", listOf(1, 2)).let {
                 check(it is Success)
                 it.value
-            }
+            } // user has admin role so it can add roles
 
         val updated =
-            userService.addRole(user.id, 3).let {
+            userService.addRole(user.id, user.id, 3).let {
                 check(it is Success)
                 it.value
             }
@@ -158,7 +162,12 @@ class UserServiceTest {
 
     @Test
     fun `addRole fails if user does not exist`() {
-        val result = userService.addRole(999, 1)
+        val adminId =
+            userService.createUser("Eve", "eve@isel.pt", "password123", listOf(1)).let {
+                check(it is Success)
+                it.value.id
+            }
+        val result = userService.addRole(adminId, 999, 1)
 
         assertIs<Either.Left<*>>(result)
         assertIs<UserError.UserNotFound>(result.value)
@@ -166,13 +175,18 @@ class UserServiceTest {
 
     @Test
     fun `addRole fails if role does not exist`() {
+        val adminId =
+            userService.createUser("Eve", "eve@isel.pt", "password123", listOf(1)).let {
+                check(it is Success)
+                it.value.id
+            }
         val user =
             userService.createUser("Frank", "frank@isel.pt", "password123").let {
                 check(it is Success)
                 it.value
             }
 
-        val result = userService.addRole(user.id, 999)
+        val result = userService.addRole(adminId, user.id, 999)
 
         assertIs<Either.Left<*>>(result)
         assertIs<UserError.RoleDoesntExist>(result.value)
@@ -180,6 +194,11 @@ class UserServiceTest {
 
     @Test
     fun `removeRole removes role from user`() {
+        val adminId =
+            userService.createUser("Eve", "eve@isel.pt", "password123", listOf(1)).let {
+                check(it is Success)
+                it.value.id
+            }
         val user =
             userService.createUser("Gina", "gina@isel.pt", "password123", listOf(1)).let {
                 check(it is Success)
@@ -187,7 +206,7 @@ class UserServiceTest {
             }
 
         val updated =
-            userService.removeRole(user.id, 1).let {
+            userService.removeRole(adminId, user.id, 1).let {
                 check(it is Success)
                 it.value
             }
@@ -197,6 +216,11 @@ class UserServiceTest {
 
     @Test
     fun `setRole replaces roles`() {
+        val adminId =
+            userService.createUser("Eve", "eve@isel.pt", "password123", listOf(1)).let {
+                check(it is Success)
+                it.value.id
+            }
         val user =
             userService.createUser("Henry", "henry@isel.pt", "password123", listOf(1)).let {
                 check(it is Success)
@@ -204,7 +228,7 @@ class UserServiceTest {
             }
 
         val updated =
-            userService.setRole(user.id, listOf(2)).let {
+            userService.setRole(adminId, user.id, listOf(2)).let {
                 check(it is Success)
                 it.value
             }
@@ -308,7 +332,6 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter returns 100 percent for single type`() {
-
         val typeA = json("""{"t":"a"}""")
 
         val user =
@@ -326,7 +349,7 @@ class UserServiceTest {
                         "t$it",
                         "d",
                         typeA,
-                        json("""{}""")
+                        json("""{}"""),
                     )
                 repoReport.addEditor(report, user)
             }
@@ -344,7 +367,6 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter only considers reports where user is editor`() {
-
         val typeA = json("""{"t":"a"}""")
 
         val user1 =
@@ -377,7 +399,6 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter calculates correct percentages`() {
-
         val typeA = json("""{"t":"a"}""")
         val typeB = json("""{"t":"b"}""")
 
@@ -418,7 +439,6 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter sorts by count descending`() {
-
         val typeA = json("""{"t":"a"}""")
         val typeB = json("""{"t":"b"}""")
 
@@ -449,7 +469,6 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter sorts by type when counts equal`() {
-
         val typeA = json("""{"t":"a"}""")
         val typeB = json("""{"t":"b"}""")
 

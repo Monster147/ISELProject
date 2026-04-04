@@ -29,7 +29,7 @@ class EvidenceServiceTest {
     private fun file(
         name: String = "file.jpg",
         contentType: String = "image/jpeg",
-        content: ByteArray = "dummy".toByteArray()
+        content: ByteArray = "dummy".toByteArray(),
     ): MockMultipartFile {
         return MockMultipartFile("file", name, contentType, content)
     }
@@ -54,13 +54,14 @@ class EvidenceServiceTest {
                     roles = emptyList(),
                 )
 
-            val occurrence = repoOccurrence.createOccurrence(
-                endDate = LocalDate.of(2030, 3, 30),
-                reporterId = user.id,
-                importance = OccurrenceType.NORMAL,
-                occurrenceType = json("""{"type":"base"}"""),
-                occurrenceInfo = json("""{}"""),
-            )
+            val occurrence =
+                repoOccurrence.createOccurrence(
+                    endDate = LocalDate.of(2030, 3, 30),
+                    reporterId = user.id,
+                    importance = OccurrenceType.NORMAL,
+                    occurrenceType = json("""{"type":"base"}"""),
+                    occurrenceInfo = json("""{}"""),
+                )
 
             val report =
                 repoReport.createReport(

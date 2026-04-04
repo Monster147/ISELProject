@@ -8,7 +8,16 @@ import pt.ira.user.User
 import java.time.Instant
 
 class RepositoryUserMem : RepositoryUser {
-    private val users = mutableListOf<User>()
+    private val users =
+        mutableListOf<User>(
+            User(
+                id = 1,
+                "Admin",
+                "admin@gmail.com",
+                PasswordValidationInfo("\$2a\$10\$Qocu8dzhoaDmwTRMtJCvfuW4HD9RLBTWZ.pGYLlxvmmF/k2BfmX1C"),
+                listOf(1),
+            ),
+        )
     private val tokens = mutableListOf<Token>()
 
     override fun createUser(
@@ -100,6 +109,7 @@ class RepositoryUserMem : RepositoryUser {
 
     override fun deleteById(id: Int) {
         users.removeIf { it.id == id }
+        tokens.removeIf { it.userId == id }
     }
 
     override fun clear() {

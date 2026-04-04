@@ -13,18 +13,15 @@ import pt.ira.model.Problem
 import pt.ira.model.occurrence.OccurrenceCreateInput
 import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
-import pt.ira.report.ReportStatus
-import java.time.LocalDate
 
 @RestController
 @RequestMapping("/api/occurrence")
 class OccurrenceController(
-    private val occurrenceService: OccurrenceService
+    private val occurrenceService: OccurrenceService,
 ) {
-
     @PostMapping
     fun createOccurrence(
-        @RequestBody occurrenceInput: OccurrenceCreateInput
+        @RequestBody occurrenceInput: OccurrenceCreateInput,
     ): ResponseEntity<*> {
         val result =
             occurrenceService.createOccurrence(
@@ -40,7 +37,7 @@ class OccurrenceController(
                     .status(HttpStatus.CREATED)
                     .header(
                         "Location",
-                        "/api/occurrence/${result.value.id}"
+                        "/api/occurrence/${result.value.id}",
                     ).build<Unit>()
             is Failure ->
                 when (result.value) {
@@ -54,7 +51,7 @@ class OccurrenceController(
 
     @GetMapping("/{occurrenceId}")
     fun findById(
-        @PathVariable occurrenceId: Int
+        @PathVariable occurrenceId: Int,
     ): ResponseEntity<*> {
         val result = occurrenceService.findById(occurrenceId)
         return when (result) {
@@ -78,17 +75,17 @@ class OccurrenceController(
 
     @GetMapping("/importance/{importance}")
     fun findByImportance(
-        @PathVariable importance: String
-    ): ResponseEntity<List<Occurrence>> =ResponseEntity.ok(occurrenceService.findByImportance(OccurrenceType.valueOf(importance)))
+        @PathVariable importance: String,
+    ): ResponseEntity<List<Occurrence>> = ResponseEntity.ok(occurrenceService.findByImportance(OccurrenceType.valueOf(importance)))
 
     @GetMapping("/reporter/{reporterId}")
     fun findByReporterId(
-        @PathVariable reporterId: Int
-    ): ResponseEntity<List<Occurrence>> =ResponseEntity.ok(occurrenceService.findOccurrenceByReporterId(reporterId))
+        @PathVariable reporterId: Int,
+    ): ResponseEntity<List<Occurrence>> = ResponseEntity.ok(occurrenceService.findOccurrenceByReporterId(reporterId))
 
     @DeleteMapping("/{occurrenceId}")
     fun deleteById(
-        @PathVariable occurrenceId: Int
+        @PathVariable occurrenceId: Int,
     ): ResponseEntity<*> {
         val result = occurrenceService.deleteById(occurrenceId)
         return when (result) {
@@ -99,6 +96,40 @@ class OccurrenceController(
             is Failure ->
                 when (result.value) {
                     OccurrenceError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+                }
+        }
+    }
+
+    @PostMapping("/{id}/intervenors")
+    fun addIntervenor(
+        @PathVariable id: Int,
+        @RequestBody intervenorId: Int,
+    ): ResponseEntity<*> {
+        val result = occurrenceService.addIntervenor(id, intervenorId)
+        return when (result) {
+            is Success -> ResponseEntity.ok(result.value)
+            is Failure ->
+                when (result.value) {
+                    is OccurrenceError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
+                    is OccurrenceError.IntervenorNotFound -> Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+                }
+        }
+    }
+
+    @DeleteMapping("/{id}/intervenors")
+    fun removeIntervenor(
+        @PathVariable id: Int,
+        @RequestBody intervenorId: Int,
+    ): ResponseEntity<*> {
+        val result = occurrenceService.removeIntervenor(id, intervenorId)
+        return when (result) {
+            is Success -> ResponseEntity.ok(result.value)
+            is Failure ->
+                when (result.value) {
+                    is OccurrenceError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
+                    is OccurrenceError.IntervenorNotFound -> Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }

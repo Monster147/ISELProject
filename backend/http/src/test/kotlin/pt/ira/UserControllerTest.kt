@@ -14,6 +14,9 @@ import pt.ira.model.user.UserCreateTokenOutputModel
 import pt.ira.model.user.UserHomeOutputModel
 import pt.ira.model.user.UserInput
 import pt.ira.report.ReportTypePercentage
+import pt.ira.user.AuthenticatedUser
+import pt.ira.user.PasswordValidationInfo
+import pt.ira.user.User
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
@@ -32,6 +35,47 @@ class UserControllerTest {
         trxManager.run {
             repoUsers.clear()
         }
+    }
+
+    private fun getAdminAuth(): AuthenticatedUser {
+        val name = "admin"
+        val email = "admin@gmail.com"
+        val password = "123456"
+        val userId =
+            controllerUser.createUser(UserInput(name, email, password)).let { resp ->
+                assertEquals(HttpStatus.CREATED, resp.statusCode)
+
+                val location = resp.headers.getFirst(HttpHeaders.LOCATION)
+                assertNotNull(location)
+                assertTrue(location.startsWith("/api/user"))
+
+                location.split("/").last().toInt()
+            }
+        trxManager.run {
+            val user =
+                repoUsers.findById(userId).let {
+                    check(it != null)
+                    it
+                }
+            repoUsers.addRole(user, 1)
+        }
+        val token =
+            controllerUser.token(
+                UserCreateTokenInputModel(
+                    email = email,
+                    password = password,
+                ),
+            ).body as UserCreateTokenOutputModel
+        return AuthenticatedUser(
+            User(
+                id = 1,
+                name = name,
+                email = email,
+                passwordValidation = PasswordValidationInfo(password),
+                roles = listOf(1),
+            ),
+            token.token,
+        )
     }
 
     @Test
@@ -112,6 +156,8 @@ class UserControllerTest {
 
     @Test
     fun `add role to user`() {
+        val admin = getAdminAuth()
+
         val userId =
             controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
                 assertEquals(HttpStatus.CREATED, resp.statusCode)
@@ -125,13 +171,14 @@ class UserControllerTest {
 
         val roleId = 1 // Already have roles in memory repo, so we can use one of them
 
-        val resp = controllerUser.addRole(RoleInput(roleId, userId))
+        val resp = controllerUser.addRole(admin, RoleInput(roleId, userId))
 
         assertEquals(HttpStatus.OK, resp.statusCode)
     }
 
     @Test
     fun `remove role from user`() {
+        val admin = getAdminAuth()
         val userId =
             controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
                 assertEquals(HttpStatus.CREATED, resp.statusCode)
@@ -145,27 +192,29 @@ class UserControllerTest {
 
         val roleId = 1 // Already have roles in memory repo, so we can use one of them
 
-        val respAddRole = controllerUser.addRole(RoleInput(roleId, userId))
+        val respAddRole = controllerUser.addRole(admin, RoleInput(roleId, userId))
         assertEquals(HttpStatus.OK, respAddRole.statusCode)
 
-        val respRemoveRole = controllerUser.removeRole(RoleInput(roleId, userId))
+        val respRemoveRole = controllerUser.removeRole(admin, RoleInput(roleId, userId))
         assertEquals(HttpStatus.OK, respRemoveRole.statusCode)
     }
 
     @Test
     fun `remove role that does not exist returns 404`() {
+        val admin = getAdminAuth()
         val userId =
             controllerUser.createUser(UserInput("A", "a@mail.com", "123456"))
                 .headers.getFirst(HttpHeaders.LOCATION)!!
                 .split("/").last().toInt()
 
-        val resp = controllerUser.removeRole(RoleInput(roleId = 999, userId = userId))
+        val resp = controllerUser.removeRole(admin, RoleInput(roleId = 999, userId = userId))
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
 
     @Test
     fun `set roles for user`() {
+        val admin = getAdminAuth()
         val userId =
             controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
                 assertEquals(HttpStatus.CREATED, resp.statusCode)
@@ -179,13 +228,14 @@ class UserControllerTest {
 
         val rolesIds = listOf(1, 2) // Already have roles in memory repo, so we can use one of them
 
-        val resp = controllerUser.setRoles(RolesInput(rolesIds, userId))
+        val resp = controllerUser.setRoles(admin, RolesInput(rolesIds, userId))
 
         assertEquals(HttpStatus.OK, resp.statusCode)
     }
 
     @Test
     fun `add role with invalid role returns 404`() {
+        val admin = getAdminAuth()
         val userId =
             controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
                 assertEquals(HttpStatus.CREATED, resp.statusCode)
@@ -199,20 +249,22 @@ class UserControllerTest {
 
         val roleId = 999 // Invalid role id
 
-        val resp = controllerUser.addRole(RoleInput(roleId, userId))
+        val resp = controllerUser.addRole(admin, RoleInput(roleId, userId))
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
 
     @Test
     fun `add role to non existing user returns 404`() {
-        val resp = controllerUser.addRole(RoleInput(roleId = 1, userId = 999))
+        val admin = getAdminAuth()
+        val resp = controllerUser.addRole(admin, RoleInput(roleId = 1, userId = 999))
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
 
     @Test
     fun `find users by role`() {
+        val admin = getAdminAuth()
         val userId =
             controllerUser.createUser(UserInput("A", "a@mail.com", "123456")).let { resp ->
                 assertEquals(HttpStatus.CREATED, resp.statusCode)
@@ -225,7 +277,7 @@ class UserControllerTest {
             }
 
         val roleId = 1
-        controllerUser.addRole(RoleInput(roleId, userId))
+        controllerUser.addRole(admin, RoleInput(roleId, userId))
 
         val resp = controllerUser.findUsersByRole(roleId)
 
@@ -233,7 +285,7 @@ class UserControllerTest {
         val body = resp.body as List<*>
 
         println(body)
-        assertEquals(1, body.size)
+        assertEquals(2, body.size)
     }
 
     @Test

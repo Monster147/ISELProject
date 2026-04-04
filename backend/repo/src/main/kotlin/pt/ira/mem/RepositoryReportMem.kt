@@ -2,7 +2,6 @@ package pt.ira.mem
 
 import com.fasterxml.jackson.databind.JsonNode
 import pt.ira.interfaces.RepositoryReport
-import pt.ira.intervenor.Intervenor
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
 import pt.ira.user.User
@@ -73,36 +72,6 @@ class RepositoryReportMem : RepositoryReport {
     }
 
     override fun findByType(type: JsonNode): List<Report> = reports.filter { it.type == type }
-
-    override fun findByIntervenor(intervenor: Intervenor): List<Report> = reports.filter { it.intervenors.contains(intervenor.id) }
-
-    override fun addIntervenor(
-        report: Report,
-        intervenor: Intervenor,
-    ): Report {
-        if (report.intervenors.any { it == intervenor.id }) return report
-        val updated =
-            report.copy(
-                intervenors = report.intervenors + intervenor.id,
-                updatedAt = System.currentTimeMillis(),
-            )
-        save(updated)
-        return updated
-    }
-
-    override fun removeIntervenor(
-        report: Report,
-        intervenor: Intervenor,
-    ): Report {
-        if (report.intervenors.none { it == intervenor.id }) return report
-        val updated =
-            report.copy(
-                intervenors = report.intervenors - intervenor.id,
-                updatedAt = System.currentTimeMillis(),
-            )
-        save(updated)
-        return updated
-    }
 
     override fun findById(id: Int): Report? = reports.find { it.id == id }
 

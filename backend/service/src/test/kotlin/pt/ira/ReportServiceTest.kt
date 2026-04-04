@@ -16,7 +16,6 @@ import kotlin.test.assertTrue
 
 @SpringJUnitConfig(TestConfig::class)
 class ReportServiceTest {
-
     @Autowired
     private lateinit var reportService: ReportService
 
@@ -170,11 +169,17 @@ class ReportServiceTest {
 
         val r1 =
             reportService.createReport(user1.id, occurrence1.id, "t1", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         val r2 =
             reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         reportService.updateStatus(r1.id, ReportStatus.SUBMITED)
         reportService.updateStatus(r2.id, ReportStatus.EDITING)
@@ -197,7 +202,10 @@ class ReportServiceTest {
 
         val r1 =
             reportService.createReport(user.id, occurrence1.id, "t1", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         reportService.createReport(user.id, occurrence2.id, "t2", "d", json("""{}"""))
 
@@ -226,7 +234,10 @@ class ReportServiceTest {
 
         val r1 =
             reportService.createReport(user1.id, occurrence1.id, "t1", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""))
 
@@ -234,32 +245,6 @@ class ReportServiceTest {
 
         assertTrue(result.any { it.id == r1.id })
         assertTrue(result.any { it.title == "t1" })
-    }
-
-    @Test
-    fun `findByIntervenor returns reports for intervenor`() {
-        val intervenor =
-            trxManager.run {
-                repoIntervenor.createIntervenor("123", "CC", "name", "contact", "addr")
-            }
-
-        val user =
-            trxManager.run {
-                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-            }
-
-        val occurrence = createOccurrenceForUser(user.id)
-
-        val r1 =
-            reportService.createReport(user.id, occurrence.id, "t1", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
-
-        reportService.addIntervenor(r1.id, intervenor.id)
-
-        val result = reportService.findByIntervenor(intervenor)
-
-        assertEquals(1, result.size)
-        assertEquals(r1.id, result.first().id)
     }
 
     @Test
@@ -273,11 +258,17 @@ class ReportServiceTest {
 
         val report =
             reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         val updated =
             reportService.addEditor(report.id, user.id)
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         assertTrue(updated.editors.contains(user.id))
     }
@@ -293,7 +284,10 @@ class ReportServiceTest {
 
         val report =
             reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         val result = reportService.addEditor(report.id, 999)
 
@@ -312,13 +306,19 @@ class ReportServiceTest {
 
         val report =
             reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         reportService.addEditor(report.id, user.id)
 
         val updated =
             reportService.removeEditor(report.id, user.id)
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         assertTrue(!updated.editors.contains(user.id))
     }
@@ -342,7 +342,10 @@ class ReportServiceTest {
 
         val report =
             reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         val result = reportService.removeEditor(report.id, 999)
 
@@ -361,111 +364,19 @@ class ReportServiceTest {
 
         val report =
             reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         val updated =
             reportService.updateStatus(report.id, ReportStatus.SUBMITED)
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         assertEquals(ReportStatus.SUBMITED, updated.status)
-    }
-
-    @Test
-    fun `addIntervenor adds intervenor`() {
-        val user =
-            trxManager.run {
-                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-            }
-
-        val intervenor =
-            trxManager.run {
-                repoIntervenor.createIntervenor("123", "CC", "name", "contact", "addr")
-            }
-
-        val occurrence = createOccurrenceForUser(user.id)
-
-        val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
-
-        val updated =
-            reportService.addIntervenor(report.id, intervenor.id)
-                .let { check(it is Success); it.value }
-
-        assertTrue(updated.intervenors.contains(intervenor.id))
-    }
-
-    @Test
-    fun `addIntervenor fails if not found`() {
-        val user =
-            trxManager.run {
-                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-            }
-
-        val occurrence = createOccurrenceForUser(user.id)
-
-        val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
-
-        val result = reportService.addIntervenor(report.id, 999)
-
-        assertIs<Either.Left<*>>(result)
-        assertIs<ReportError.IntervenorNotFound>(result.value)
-    }
-
-    @Test
-    fun `removeIntervenor removes intervenor from report`() {
-        val intervenor =
-            trxManager.run {
-                repoIntervenor.createIntervenor("123", "CC", "name", "contact", "addr")
-            }
-
-        val user =
-            trxManager.run {
-                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-            }
-
-        val occurrence = createOccurrenceForUser(user.id)
-
-        val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
-
-        reportService.addIntervenor(report.id, intervenor.id)
-
-        val updated =
-            reportService.removeIntervenor(report.id, intervenor.id)
-                .let { check(it is Success); it.value }
-
-        assertTrue(!updated.intervenors.contains(intervenor.id))
-    }
-
-    @Test
-    fun `removeIntervenor fails if report not found`() {
-        val result = reportService.removeIntervenor(999, 1)
-
-        assertIs<Either.Left<*>>(result)
-        assertIs<ReportError.ReportNotFound>(result.value)
-    }
-
-    @Test
-    fun `removeIntervenor fails if intervenor not found`() {
-        val user =
-            trxManager.run {
-                repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
-            }
-
-        val occurrence = createOccurrenceForUser(user.id)
-
-        val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
-
-        val result = reportService.removeIntervenor(report.id, 999)
-
-        assertIs<Either.Left<*>>(result)
-        assertIs<ReportError.IntervenorNotFound>(result.value)
     }
 
     @Test
@@ -479,7 +390,10 @@ class ReportServiceTest {
 
         val created =
             reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         val result = reportService.deleteById(created.id)
 

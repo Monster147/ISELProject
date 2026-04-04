@@ -140,38 +140,4 @@ class ReportController(
                 }
         }
     }
-
-    @PostMapping("/{id}/intervenors")
-    fun addIntervenor(
-        @PathVariable id: Int,
-        @RequestBody intervenorId: Int,
-    ): ResponseEntity<*> {
-        val result = reportService.addIntervenor(id, intervenorId)
-        return when (result) {
-            is Success -> ResponseEntity.ok(result.value)
-            is Failure ->
-                when (result.value) {
-                    is ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
-                    is ReportError.IntervenorNotFound -> Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
-        }
-    }
-
-    @DeleteMapping("/{id}/intervenors")
-    fun removeIntervenor(
-        @PathVariable id: Int,
-        @RequestBody intervenorId: Int,
-    ): ResponseEntity<*> {
-        val result = reportService.removeIntervenor(id, intervenorId)
-        return when (result) {
-            is Success -> ResponseEntity.ok(result.value)
-            is Failure ->
-                when (result.value) {
-                    is ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
-                    is ReportError.IntervenorNotFound -> Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
-        }
-    }
 }

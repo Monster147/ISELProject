@@ -130,10 +130,12 @@ class UserController(
 
     @PostMapping("/roles/add")
     fun addRole(
+        user: AuthenticatedUser,
         @RequestBody roleInput: RoleInput,
     ): ResponseEntity<*> {
         val result =
             userService.addRole(
+                adminId = user.user.id,
                 userId = roleInput.userId,
                 roleId = roleInput.roleId,
             )
@@ -155,10 +157,12 @@ class UserController(
 
     @PostMapping("/roles/remove")
     fun removeRole(
+        user: AuthenticatedUser,
         @RequestBody roleInput: RoleInput,
     ): ResponseEntity<*> {
         val result =
             userService.removeRole(
+                adminId = user.user.id,
                 userId = roleInput.userId,
                 roleId = roleInput.roleId,
             )
@@ -180,10 +184,12 @@ class UserController(
 
     @PostMapping("/roles/set")
     fun setRoles(
+        user: AuthenticatedUser,
         @RequestBody rolesInput: RolesInput,
     ): ResponseEntity<*> {
         val result =
             userService.setRole(
+                adminId = user.user.id,
                 userId = rolesInput.userId,
                 roleIdList = rolesInput.rolesIds,
             )

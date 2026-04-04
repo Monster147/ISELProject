@@ -155,6 +155,7 @@ class IntervenorController(
                 }
         }
     }
+
     @GetMapping("/{id}")
     fun findIntervenorByContactInfo(
         @PathVariable id: Int,
@@ -174,5 +175,4 @@ class IntervenorController(
                 }
         }
     }
-
 }

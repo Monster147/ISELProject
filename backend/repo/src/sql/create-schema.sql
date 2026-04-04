@@ -46,7 +46,9 @@ CREATE TABLE dbo.occurrence
     reporter_id             INT                  REFERENCES dbo.users (id) ON DELETE CASCADE,
     importance              dbo.occurrence_type  NOT NULL DEFAULT 'NORMAL',
     occur_type              JSONB                NOT NULL,
-    occur_info              JSONB                NOT NULL
+    occur_info              JSONB                NOT NULL,
+    evidences               INT[]                ,
+    intervenors             INT[]
 );
 
 CREATE TABLE dbo.report
@@ -61,8 +63,7 @@ CREATE TABLE dbo.report
     addons                  JSONB              NOT NULL,
     created_at              bigint             NOT NULL,
     updated_at              bigint             NOT NULL,
-    editors                 INT[]              ,
-    intervenors             INT[]
+    editors                 INT[]
 );
 
 CREATE TABLE dbo.report_users(

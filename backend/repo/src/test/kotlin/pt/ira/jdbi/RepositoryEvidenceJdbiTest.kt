@@ -48,7 +48,7 @@ class RepositoryEvidenceJdbiTest {
                     reporterId = user.id,
                     importance = OccurrenceType.NORMAL,
                     occurrenceType = mapper.readTree("""{"type":"fire"}"""),
-                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}""")
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
             val report =
                 repoReport.createReport(
@@ -82,13 +82,25 @@ class RepositoryEvidenceJdbiTest {
             val u1 = repoUsers.createUser("U1", "u1@isel.pt", PasswordValidationInfo("hash"), listOf(1))
             val u2 = repoUsers.createUser("U2", "u2@isel.pt", PasswordValidationInfo("hash"), listOf(1))
 
-            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), u1.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
-                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
-            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), u2.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
-                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
+            val occurrence1 =
+                repoOccurrence.createOccurrence(
+                    LocalDate.of(2030, 3, 30),
+                    u1.id,
+                    OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
+                )
+            val occurrence2 =
+                repoOccurrence.createOccurrence(
+                    LocalDate.of(2030, 4, 1),
+                    u2.id,
+                    OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
+                )
 
-            val r1 = repoReport.createReport(u1.id, occurrence1.id,"R1", "Desc1", json("""{}"""), json("""{}"""))
-            val r2 = repoReport.createReport(u2.id, occurrence2.id,"R2", "Desc2", json("""{}"""), json("""{}"""))
+            val r1 = repoReport.createReport(u1.id, occurrence1.id, "R1", "Desc1", json("""{}"""), json("""{}"""))
+            val r2 = repoReport.createReport(u2.id, occurrence2.id, "R2", "Desc2", json("""{}"""), json("""{}"""))
 
             val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, r1.id)
             val e2 = repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, r2.id)
@@ -104,13 +116,25 @@ class RepositoryEvidenceJdbiTest {
             val u1 = repoUsers.createUser("U1", "u1@isel.pt", PasswordValidationInfo("hash"), listOf(1))
             val u2 = repoUsers.createUser("U2", "u2@isel.pt", PasswordValidationInfo("hash"), listOf(1))
 
-            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), u1.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
-                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
-            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), u2.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
-                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
+            val occurrence1 =
+                repoOccurrence.createOccurrence(
+                    LocalDate.of(2030, 3, 30),
+                    u1.id,
+                    OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
+                )
+            val occurrence2 =
+                repoOccurrence.createOccurrence(
+                    LocalDate.of(2030, 4, 1),
+                    u2.id,
+                    OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
+                )
 
-            val r1 = repoReport.createReport(u1.id, occurrence1.id,"R1", "Desc", json("""{}"""), json("""{}"""))
-            val r2 = repoReport.createReport(u2.id, occurrence2.id,"R2", "Desc", json("""{}"""), json("""{}"""))
+            val r1 = repoReport.createReport(u1.id, occurrence1.id, "R1", "Desc", json("""{}"""), json("""{}"""))
+            val r2 = repoReport.createReport(u2.id, occurrence2.id, "R2", "Desc", json("""{}"""), json("""{}"""))
 
             val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, r1.id)
             repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, r2.id)
@@ -126,11 +150,16 @@ class RepositoryEvidenceJdbiTest {
             val u1 = repoUsers.createUser("U1", "u1@isel.pt", PasswordValidationInfo("hash"), listOf(1))
             val u2 = repoUsers.createUser("U2", "u2@isel.pt", PasswordValidationInfo("hash"), listOf(1))
 
-            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), u1.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
-                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
+            val occurrence1 =
+                repoOccurrence.createOccurrence(
+                    LocalDate.of(2030, 3, 30),
+                    u1.id,
+                    OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
+                )
 
-
-            val report = repoReport.createReport(u1.id, occurrence1.id,"Shared", "Desc", json("""{}"""), json("""{}"""))
+            val report = repoReport.createReport(u1.id, occurrence1.id, "Shared", "Desc", json("""{}"""), json("""{}"""))
 
             val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, report.id)
             repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, report.id)
@@ -146,10 +175,15 @@ class RepositoryEvidenceJdbiTest {
             val user = repoUsers.createUser("U", "u@isel.pt", PasswordValidationInfo("hash"), listOf(1))
 
             val occurrence =
-                repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), user.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
-                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
+                repoOccurrence.createOccurrence(
+                    LocalDate.of(2030, 3, 30),
+                    user.id,
+                    OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
+                )
 
-            val report = repoReport.createReport(user.id, occurrence.id,"R", "Desc", json("""{}"""), json("""{}"""))
+            val report = repoReport.createReport(user.id, occurrence.id, "R", "Desc", json("""{}"""), json("""{}"""))
 
             val typeA = json("""{"type":"A"}""")
             val typeB = json("""{"type":"B"}""")
@@ -168,11 +202,15 @@ class RepositoryEvidenceJdbiTest {
             val user = repoUsers.createUser("U", "u@isel.pt", PasswordValidationInfo("hash"), listOf(1))
 
             val occurrence =
-                repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), user.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
-                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
+                repoOccurrence.createOccurrence(
+                    LocalDate.of(2030, 3, 30),
+                    user.id,
+                    OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
+                )
 
-
-            val report = repoReport.createReport(user.id, occurrence.id,"R", "Desc", json("""{}"""), json("""{}"""))
+            val report = repoReport.createReport(user.id, occurrence.id, "R", "Desc", json("""{}"""), json("""{}"""))
 
             val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "Lisbon", "d1", user.id, report.id)
             repoEvidence.createEvidence(json("""{}"""), "f2", "Porto", "d2", user.id, report.id)
@@ -187,10 +225,15 @@ class RepositoryEvidenceJdbiTest {
         trxManager.run {
             val user = repoUsers.createUser("U", "u@isel.pt", PasswordValidationInfo("hash"), listOf(1))
             val occurrence =
-                repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), user.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
-                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
+                repoOccurrence.createOccurrence(
+                    LocalDate.of(2030, 3, 30),
+                    user.id,
+                    OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
+                )
 
-            val report = repoReport.createReport(user.id, occurrence.id,"R", "Desc", json("""{}"""), json("""{}"""))
+            val report = repoReport.createReport(user.id, occurrence.id, "R", "Desc", json("""{}"""), json("""{}"""))
 
             val e = repoEvidence.createEvidence(json("""{}"""), "f", "L", "d", user.id, report.id)
             repoEvidence.deleteById(e.id)
@@ -203,10 +246,15 @@ class RepositoryEvidenceJdbiTest {
         trxManager.run {
             val user = repoUsers.createUser("U", "u@isel.pt", PasswordValidationInfo("hash"), listOf(1))
             val occurrence =
-                repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), user.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
-                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
+                repoOccurrence.createOccurrence(
+                    LocalDate.of(2030, 3, 30),
+                    user.id,
+                    OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
+                )
 
-            val report = repoReport.createReport(user.id, occurrence.id,"R", "Desc", json("""{}"""), json("""{}"""))
+            val report = repoReport.createReport(user.id, occurrence.id, "R", "Desc", json("""{}"""), json("""{}"""))
 
             val e = repoEvidence.createEvidence(json("""{}"""), "f", "L", "d", user.id, report.id)
             val updated = e.copy(description = "updated")
@@ -221,13 +269,25 @@ class RepositoryEvidenceJdbiTest {
             val u1 = repoUsers.createUser("U1", "u1@isel.pt", PasswordValidationInfo("hash"), listOf(1))
             val u2 = repoUsers.createUser("U2", "u2@isel.pt", PasswordValidationInfo("hash"), listOf(1))
 
-            val occurrence1 = repoOccurrence.createOccurrence(LocalDate.of(2030,3,30), u1.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
-                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
-            val occurrence2 = repoOccurrence.createOccurrence(LocalDate.of(2030,4,1), u2.id, OccurrenceType.NORMAL,  occurrenceType = mapper.readTree("""{"type":"fire"}"""),
-                occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""))
+            val occurrence1 =
+                repoOccurrence.createOccurrence(
+                    LocalDate.of(2030, 3, 30),
+                    u1.id,
+                    OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
+                )
+            val occurrence2 =
+                repoOccurrence.createOccurrence(
+                    LocalDate.of(2030, 4, 1),
+                    u2.id,
+                    OccurrenceType.NORMAL,
+                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
+                )
 
-            val r1 = repoReport.createReport(u1.id, occurrence1.id,"R1", "Desc1", json("""{}"""), json("""{}"""))
-            val r2 = repoReport.createReport(u2.id, occurrence2.id,"R2", "Desc2", json("""{}"""), json("""{}"""))
+            val r1 = repoReport.createReport(u1.id, occurrence1.id, "R1", "Desc1", json("""{}"""), json("""{}"""))
+            val r2 = repoReport.createReport(u2.id, occurrence2.id, "R2", "Desc2", json("""{}"""), json("""{}"""))
 
             repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, r1.id)
             repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, r2.id)

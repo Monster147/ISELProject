@@ -15,7 +15,6 @@ class TransactionInMem(
     override val repoEvidence: RepositoryEvidence,
     override val repoRole: RepositoryRole,
     override val repoOccurrence: RepositoryOccurrence,
-
 ) : Transaction {
     override fun rollback(): Unit = throw UnsupportedOperationException()
 }

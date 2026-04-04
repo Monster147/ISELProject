@@ -36,11 +36,12 @@ class RepositoryUserMemTest {
 
     @Test
     fun `getAll returns all users`() {
+        val admin = repo.findById(1) // admin id is 1, he is in mem database
         val user = repo.createUser("Alice", "alice@isel.pt", PasswordValidationInfo("hash"), listOf(1))
         val user2 = repo.createUser("Bob", "bob@isel.pt", PasswordValidationInfo("hash2"), listOf(1))
         val usersFound = repo.findAll()
-        assertEquals(2, usersFound.size)
-        assertEquals(listOf(user, user2), usersFound)
+        assertEquals(3, usersFound.size)
+        assertEquals(listOf(admin, user, user2), usersFound)
     }
 
     @Test
@@ -118,6 +119,7 @@ class RepositoryUserMemTest {
 
     @Test
     fun `findUsersByRole returns correct users`() {
+        val admin = repo.findById(1) // admin id is 1, he is in mem database
         val user1 = repo.createUser("Grace", "grace@gmail.com", PasswordValidationInfo("hash7"), listOf(1))
         val user2 = repo.createUser("Heidi", "heidi@gmail.com", PasswordValidationInfo("hash8"), listOf(2))
         val user3 = repo.createUser("Ivan", "ivan@gmail.com", PasswordValidationInfo("hash9"), listOf(3))
@@ -125,7 +127,7 @@ class RepositoryUserMemTest {
         val admins = repo.findUsersByRole(1)
         val investigators = repo.findUsersByRole(2)
         val insuranceCos = repo.findUsersByRole(3)
-        assertEquals(listOf(user1, user4), admins)
+        assertEquals(listOf(admin, user1, user4), admins)
         assertEquals(listOf(user2, user4), investigators)
         assertEquals(listOf(user3, user4), insuranceCos)
     }

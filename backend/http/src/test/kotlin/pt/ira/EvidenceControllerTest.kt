@@ -44,9 +44,8 @@ class EvidenceControllerTest {
             "file",
             "file.jpg",
             "image/jpeg",
-            "dummyContent".toByteArray()
+            "dummyContent".toByteArray(),
         )
-
 
     @Test
     fun `create evidence success`() {
@@ -68,7 +67,6 @@ class EvidenceControllerTest {
         val userId = createUser()
         val occurrenceId = createOccurrenceForUser(userId)
         val reportId = createReport(userId, occurrenceId)
-
 
         val input = createEvidenceInput(999, reportId)
         val file = createFile()
@@ -188,7 +186,10 @@ class EvidenceControllerTest {
             ).id
         }
 
-    private fun createReport(userId: Int, occurrenceId: Int): Int =
+    private fun createReport(
+        userId: Int,
+        occurrenceId: Int,
+    ): Int =
         trxManager.run {
             repoReport.createReport(
                 creatorId = userId,
