@@ -225,6 +225,7 @@ export const api = {
         });
     },
 
+    /*
     async addIntervenor(input: number, id:number): Promise<Report> {
         return fetchApi<Report>(`/report/${id}/intervenors`, {
             method: "POST",
@@ -238,6 +239,7 @@ export const api = {
             body: JSON.stringify(input),
         });
     },
+    */
 
     // Intervenor
 
@@ -302,7 +304,7 @@ export const api = {
         });
     },
 
-    async findEvidenceByReporterId(reportId:number): Promise<Evidence> {
+    async findEvidenceByReporterId(reporterId:number): Promise<Evidence> {
         return fetchApi<Evidence>(`/evidence/byReporter/${reporterId}`, {
             method: "GET",
         });
@@ -372,4 +374,17 @@ export const api = {
         });
     },
 
+    async addIntervenor(input: number, id:number): Promise<Report> {
+        return fetchApi<Report>(`/occurrence/${id}/intervenors`, {
+            method: "POST",
+            body: JSON.stringify(input),
+        });
+    },
+
+    async removeIntervenor(input: number, id:number): Promise<Report> {
+        return fetchApi<Report>(`/occurrence/${id}/intervenors`, {
+            method: "DELETE",
+            body: JSON.stringify(input),
+        });
+    },
 }

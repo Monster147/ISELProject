@@ -197,6 +197,10 @@ class ReportServiceTest {
                 repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
             }
 
+        val user2 = trxManager.run {
+            repoUsers.createUser("u2", "u2@mail", PasswordValidationInfo("x"), listOf(1))
+        }
+
         val occurrence1 = createOccurrenceForUser(user.id)
         val occurrence2 = createOccurrenceForUser(user.id)
 
@@ -209,9 +213,9 @@ class ReportServiceTest {
 
         reportService.createReport(user.id, occurrence2.id, "t2", "d", json("""{}"""))
 
-        reportService.addEditor(r1.id, user.id)
+        reportService.addEditor(r1.id, user2.id)
 
-        val result = reportService.findByEditor(user.id)
+        val result = reportService.findByEditor(user2.id)
 
         assertEquals(1, result.size)
         assertEquals(r1.id, result.first().id)

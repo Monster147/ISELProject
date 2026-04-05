@@ -63,7 +63,8 @@ CREATE TABLE dbo.report
     addons                  JSONB              NOT NULL,
     created_at              bigint             NOT NULL,
     updated_at              bigint             NOT NULL,
-    editors                 INT[]
+    editors                 INT[]              ,
+    intervenors             INT[]
 );
 
 CREATE TABLE dbo.report_users(

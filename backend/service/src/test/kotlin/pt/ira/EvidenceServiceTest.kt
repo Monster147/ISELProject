@@ -69,8 +69,9 @@ class EvidenceServiceTest {
                     occurrenceId = occurrence.id,
                     title = "title",
                     description = "desc",
-                    type = json("""{"type":"base"}"""),
+                    type = occurrence.occurrenceType,
                     addons = json("""{}"""),
+                    intervenors = occurrence.intervenors,
                 )
 
             user.id to report.id

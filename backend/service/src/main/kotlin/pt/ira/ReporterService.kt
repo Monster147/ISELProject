@@ -51,6 +51,7 @@ class ReportService(
                     description = description,
                     type = occurrence.occurrenceType,
                     addons = addons,
+                    intervenors = occurrence.intervenors,
                 )
             success(report)
         }

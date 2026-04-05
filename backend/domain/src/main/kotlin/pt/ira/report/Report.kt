@@ -14,4 +14,5 @@ data class Report(
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
     val editors: List<Int> = listOf(),
+    val intervenors: List<Int>,
 )

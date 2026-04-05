@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import pt.ira.evindence.Evidence
 import pt.ira.interfaces.TransactionManager
 import pt.ira.model.evidence.CreateEvidenceInput
+import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
 import pt.ira.user.PasswordValidationInfo
 import java.time.LocalDate
@@ -188,16 +189,17 @@ class EvidenceControllerTest {
 
     private fun createReport(
         userId: Int,
-        occurrenceId: Int,
+        occurrence: Occurrence,
     ): Int =
         trxManager.run {
             repoReport.createReport(
                 creatorId = userId,
-                occurrenceId = occurrenceId,
+                occurrenceId = occurrence.id,
                 title = "title",
                 description = "desc",
-                type = mapper.readTree("""{"t":"x"}"""),
+                type = occurrence.occurrenceType,
                 addons = mapper.readTree("""{}"""),
+                intervenors = occurrence.intervenors,
             ).id
         }
 
@@ -209,7 +211,7 @@ class EvidenceControllerTest {
                 importance = OccurrenceType.NORMAL,
                 occurrenceType = mapper.readTree("""{"type":"base"}"""),
                 occurrenceInfo = mapper.readTree("""{}"""),
-            ).id
+            )
         }
 
     private fun createEvidence(

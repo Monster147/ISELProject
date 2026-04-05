@@ -9,4 +9,6 @@ export interface Occurrence {
     importance: OccurrenceType;
     occurrenceType: Json;
     occurrenceInfo: Json;
+    intervenors: number[];
+    evidence:number[];
 }

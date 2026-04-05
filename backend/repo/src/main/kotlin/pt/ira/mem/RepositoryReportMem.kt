@@ -16,6 +16,7 @@ class RepositoryReportMem : RepositoryReport {
         description: String,
         type: JsonNode,
         addons: JsonNode,
+        intervenors: List<Int>
     ): Report =
         Report(
             id = reports.size + 1,
@@ -25,6 +26,8 @@ class RepositoryReportMem : RepositoryReport {
             description = description,
             type = type,
             addons = addons,
+            editors = listOf(creatorId),
+            intervenors = intervenors,
         ).also { reports.add(it) }
 
     override fun findByOccurrenceId(occurrenceId: Int): Report? = reports.find { it.occurrenceId == occurrenceId }

@@ -13,6 +13,7 @@ interface RepositoryReport : Repository<Report> {
         description: String,
         type: JsonNode,
         addons: JsonNode,
+        intervenors: List<Int>,
     ): Report
 
     fun findByOccurrenceId(occurrenceId: Int): Report?
