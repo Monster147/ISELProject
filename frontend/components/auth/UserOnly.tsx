@@ -1,21 +1,20 @@
 import {useAuth} from "../../hooks/useAuth";
 import {useRouter} from "expo-router";
 import {useEffect} from "react";
-import {Text} from "react-native";
-import ThemedText from "../ThemedText";
 import ThemedLoader from "../ThemedLoader";
 
 const UserOnly = ({children}) =>{
-    const {token} = useAuth()
+    const {token, isAuthLoading} = useAuth()
     const router = useRouter()
 
     useEffect(()=> {
+        if (isAuthLoading) return
         if (!token) {
             router.replace("/login")
         }
-    }, [token])
+    }, [token, isAuthLoading])
 
-    if(!token){
+    if (isAuthLoading || !token) {
         return (
             <ThemedLoader/>
         )

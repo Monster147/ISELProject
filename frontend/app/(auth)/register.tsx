@@ -8,6 +8,7 @@ import ThemedTextInput from "../../components/ThemedTextInput";
 import {useState} from "react";
 import {useAuth} from "../../hooks/useAuth";
 import {Colors} from "../../constants/Colors";
+import {useBackRedirect} from "../../hooks/useBackRedirect";
 
 const Register = () => {
     const [name, setName] = useState('')
@@ -17,6 +18,9 @@ const Register = () => {
     const [error, setError] = useState<string | null>(null);
 
     const {register} = useAuth()
+
+    useBackRedirect("/home")
+
 
     const checkErrors = ():boolean =>{
         if (name.trim() === '') {
@@ -94,12 +98,13 @@ const Register = () => {
 
                 {error && <Text style={styles.error}>{error}</Text> }
 
-                <Spacer height={100}/>
+                <Spacer height={25}/>
                 <Link href='/login'>
                     <ThemedText style={{textAlign: 'center'}}>
                         Login instead
                     </ThemedText>
                 </Link>
+
             </ThemedView>
         </TouchableWithoutFeedback>
     )

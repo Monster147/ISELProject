@@ -23,11 +23,11 @@ const RootLayout = () => {
                             animation: "none",
                         }}>
                             <Stack.Screen name="loadingscreen" options={{headerShown: false}}/>
-                            <Stack.Screen name="about" options={{title: 'About'}}/>
-                            <Stack.Screen name="contact" options={{title: 'Contact'}}/>
+                            <Stack.Screen name="about" options={{headerShown: false}}/>
+                            <Stack.Screen name="contact" options={{headerShown: false}}/>
                             <Stack.Screen name="(auth)" options={{headerShown: false}}/>
                             <Stack.Screen name="(dashboard)" options={{headerShown: false}}/>
-                            <Stack.Screen name="home" options={{title: 'Home'}}/>
+                            <Stack.Screen name="home" options={{headerShown: false}}/>
                         </Stack>
                     </ThemedView>
                 </IntervenorProvider>

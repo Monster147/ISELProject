@@ -64,4 +64,8 @@ sealed class Problem(
     data object EndDateNotValid : Problem(URI("${PROBLEM_URI_PATH}/end-date-not-valid"))
 
     data object DuplicateUsersIds : Problem(URI("${PROBLEM_URI_PATH}/duplicate-users-ids"))
+
+    data object IntervenorNotInOccurrence : Problem(URI("${PROBLEM_URI_PATH}/intervenor-not-in-occurrence"))
+
+     data object IntervenorAlreadyInOccurrence : Problem(URI("${PROBLEM_URI_PATH}/intervenor-already-in-occurrence"))
 }

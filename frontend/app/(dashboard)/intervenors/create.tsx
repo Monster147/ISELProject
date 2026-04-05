@@ -1,30 +1,25 @@
 import {Animated, StyleSheet, Text, TextInput, ScrollView, useColorScheme} from "react-native";
-import ThemedView from "../../../../components/ThemedView";
-import ThemedText from "../../../../components/ThemedText";
-import ThemedButton from "../../../../components/ThemedButton";
-import ThemedCard from "../../../../components/ThemedCard";
-import ThemedLoader from "../../../../components/ThemedLoader";
-import {Colors} from "../../../../constants/Colors";
+import ThemedView from "../../../components/ThemedView";
+import ThemedText from "../../../components/ThemedText";
+import ThemedButton from "../../../components/ThemedButton";
+import ThemedCard from "../../../components/ThemedCard";
+import ThemedLoader from "../../../components/ThemedLoader";
+import {Colors} from "../../../constants/Colors";
 import {useFocusEffect, useLocalSearchParams, useRouter} from "expo-router";
 import {useCallback, useEffect, useState} from "react";
-import {useIntervenor} from "../../../../hooks/useIntervenor";
-import {Intervenor} from "../../../../models/intervenor/Intervenor";
-import Spacer from "../../../../components/Spacer";
+import {useIntervenor} from "../../../hooks/useIntervenor";
+import {Intervenor} from "../../../models/intervenor/Intervenor";
+import Spacer from "../../../components/Spacer";
 import {Dropdown} from "react-native-paper-dropdown";
 import {PaperProvider} from "react-native-paper";
-import ThemedTextInput from "../../../../components/ThemedTextInput";
-
-const MULTI_SELECT_OPTIONS = [
-    {label: "Intervenor Identifier", value: "intervenorIdentifier"},
-    {label: "Intervenor Identifier Type", value: "intervenorIdentifierType"},
-    {label: "Intervenor Name", value: "intervenorName"},
-    {label: "Intervenor Phone Number", value: "intervenorPhoneNumber"}, // na API é contactInfo
-    {label: "Intervenor Address", value: "intervenorAddress"},
-];
+import ThemedTextInput from "../../../components/ThemedTextInput";
+import {useBackRedirect} from "../../../hooks/useBackRedirect";
 
 const IntervenorCreate = () => {
     const router = useRouter()
     const [error, setError] = useState<string | null>(null);
+
+    useBackRedirect("/intervenor")
 
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme] ?? Colors.light;
@@ -77,6 +72,19 @@ const IntervenorCreate = () => {
         return false;
     };
 
+    useFocusEffect(
+        useCallback(() => {
+            return () => {
+                setIdentifier("")
+                setIdentifierType("")
+                setAddress("")
+                setPhoneNumber("")
+                setName("")
+                setError(null)
+            }
+        }, [])
+    )
+
 
     if (loading) {
         return (
@@ -122,6 +130,8 @@ const IntervenorCreate = () => {
                         onChangeText={setAddress}
                         value={address}
                     />
+
+                    {error && <Text style={styles.error}>{error}</Text>}
 
                     <ThemedButton onPress={handleCreate} style={styles.create}>
                         <ThemedText style={{color: '#fff', textAlign: 'center'}}> Create Intervenor</ThemedText>

@@ -250,6 +250,12 @@ export const api = {
         });
     },
 
+    async findAllIntervenors(): Promise<Intervenor[]> {
+        return fetchApi<Intervenor[]>("/intervenor", {
+            method: "GET",
+        });
+    },
+
     async updateIntervenor(input: IntervenorUpdateInput, intervenorId:number): Promise<Intervenor> {
         return fetchApi<Intervenor>(`/intervenor/update/${intervenorId}`, {
             method: "POST",
@@ -374,15 +380,15 @@ export const api = {
         });
     },
 
-    async addIntervenor(input: number, id:number): Promise<Report> {
-        return fetchApi<Report>(`/occurrence/${id}/intervenors`, {
+    async addIntervenor(input: number, id:number): Promise<Occurrence> {
+        return fetchApi<Occurrence>(`/occurrence/${id}/intervenors`, {
             method: "POST",
             body: JSON.stringify(input),
         });
     },
 
-    async removeIntervenor(input: number, id:number): Promise<Report> {
-        return fetchApi<Report>(`/occurrence/${id}/intervenors`, {
+    async removeIntervenor(input: number, id:number): Promise<Occurrence> {
+        return fetchApi<Occurrence>(`/occurrence/${id}/intervenors`, {
             method: "DELETE",
             body: JSON.stringify(input),
         });

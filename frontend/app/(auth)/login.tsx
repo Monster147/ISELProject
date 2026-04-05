@@ -17,11 +17,14 @@ import ThemedTextInput from "../../components/ThemedTextInput";
 import {useState} from "react";
 import {useAuth} from "../../hooks/useAuth";
 import ThemedLoader from "../../components/ThemedLoader";
+import {useBackRedirect} from "../../hooks/useBackRedirect";
 
 const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null);
+
+    useBackRedirect("/home")
 
     const {login} = useAuth()
 
@@ -80,18 +83,10 @@ const Login = () => {
 
                 {error && <Text style={styles.error}>{error}</Text> }
 
-                <Spacer height={100}/>
+                <Spacer height={25}/>
                 <Link href='/register'>
                     <ThemedText style={{textAlign: 'center'}}>
                         Register instead
-                    </ThemedText>
-                </Link>
-
-                <Spacer height={100}/>
-
-                <Link href='/home'>
-                    <ThemedText style={{textAlign: 'center'}}>
-                        Go to Home page
                     </ThemedText>
                 </Link>
 

@@ -4,6 +4,7 @@ import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
 import {User} from "../models/user/User";
 import {userInfoRepo} from "../infrastructure/UserInfoPreferencesRepo";
 import {Intervenor} from "../models/intervenor/Intervenor";
+import {intervenorInfoRepo} from "../infrastructure/IntervenorPreferencesRepo";
 
 type IntervenorContextValue = {
     createIntervenor: (idNumber: string, idType: string, name: string, contactInfo: string, address: string) => Promise<void>;
@@ -12,15 +13,33 @@ type IntervenorContextValue = {
     getIntervenorByIdNumber: (idNumber:string) => Promise<any>;
     findIntervenorByContactInfo: (contactInfo:string) => Promise<any>;
     findIntervenorById: (id:number) => Promise<Intervenor>;
+    intervenor: Intervenor[]
 };
 
 export const IntervenorContext = createContext<IntervenorContextValue | undefined>(undefined)
 
 export function IntervenorProvider({children}) {
+    const [intervenor, setIntervenor] = useState<Intervenor[]>([])
+
+    useEffect(() => {
+        loadIntervenors().catch((e) => {
+            console.error("Failed to load intervenors", e);
+        });
+    }, []);
+
+    async function loadIntervenors() {
+        try {
+            const response = await api.findAllIntervenors()
+            setIntervenor(response)
+        }catch (err: any) {
+            throw Error(err.message)
+        }
+    }
 
     async function createIntervenor(idNumber: string, idType: string, name: string, contactInfo: string, address: string){
         try {
             await api.createIntervenor({idNumber, idType, name, contactInfo, address})
+            await loadIntervenors()
         }catch (err: any) {
             throw Error(err.message)
         }
@@ -29,6 +48,7 @@ export function IntervenorProvider({children}) {
     async function updateIntervenor(intervenorId:number,idNumber: string | null, idType: string | null, name: string | null, contactInfo: string | null, address: string | null){
         try {
             await api.updateIntervenor({idNumber, idType, name, contactInfo, address}, intervenorId)
+            await loadIntervenors()
         }catch (err: any) {
             throw Error(err.message)
         }
@@ -37,6 +57,7 @@ export function IntervenorProvider({children}) {
     async function deleteIntervenorByIdNumber(intervenorId:string){
         try {
             await api.deleteIntervenorByIdNumber(intervenorId)
+            await loadIntervenors()
         }catch (err: any) {
             throw Error(err.message)
         }
@@ -70,7 +91,7 @@ export function IntervenorProvider({children}) {
     }
 
     return (
-        <IntervenorContext.Provider value={{createIntervenor, updateIntervenor, deleteIntervenorByIdNumber, getIntervenorByIdNumber, findIntervenorByContactInfo, findIntervenorById}}>
+        <IntervenorContext.Provider value={{createIntervenor, updateIntervenor, deleteIntervenorByIdNumber, getIntervenorByIdNumber, findIntervenorByContactInfo, findIntervenorById, intervenor}}>
             {children}
         </IntervenorContext.Provider>
     )

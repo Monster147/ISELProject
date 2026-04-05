@@ -1,18 +1,20 @@
 import {Animated, StyleSheet, Text, TextInput, ScrollView, useColorScheme} from "react-native";
-import ThemedView from "../../../../components/ThemedView";
-import ThemedText from "../../../../components/ThemedText";
-import ThemedButton from "../../../../components/ThemedButton";
-import ThemedCard from "../../../../components/ThemedCard";
-import ThemedLoader from "../../../../components/ThemedLoader";
-import {Colors} from "../../../../constants/Colors";
+import ThemedView from "../../components/ThemedView";
+import ThemedText from "../../components/ThemedText";
+import ThemedButton from "../../components/ThemedButton";
+import ThemedCard from "../../components/ThemedCard";
+import ThemedLoader from "../../components/ThemedLoader";
+import {Colors} from "../../constants/Colors";
 import {useFocusEffect, useLocalSearchParams, useRouter} from "expo-router";
 import {useCallback, useEffect, useState} from "react";
-import {useIntervenor} from "../../../../hooks/useIntervenor";
-import {Intervenor} from "../../../../models/intervenor/Intervenor";
-import Spacer from "../../../../components/Spacer";
+import {useIntervenor} from "../../hooks/useIntervenor";
+import {Intervenor} from "../../models/intervenor/Intervenor";
+import Spacer from "../../components/Spacer";
 import {Dropdown} from "react-native-paper-dropdown";
 import {PaperProvider} from "react-native-paper";
-import ThemedTextInput from "../../../../components/ThemedTextInput";
+import ThemedTextInput from "../../components/ThemedTextInput";
+import {useAlertExitApp} from "../../hooks/useAlertExitApp";
+import {useOccurrence} from "../../hooks/useOccurrence";
 
 const OPTIONS = [
     {label: "Phone Number", value: "phoneNumber"},
@@ -20,21 +22,24 @@ const OPTIONS = [
 ]
 
 
-const IntervenorsSearch = () => {
-    const {id} = useLocalSearchParams(); // depois fazer o add que vai adicionar o intervenor à ocorrência
+const IntervenorSearch = () => {
+    const { selectMode, occurrenceId } = useLocalSearchParams()
+    const isSelectMode = selectMode === "true"
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [searchType, setSearchType] = useState()
 
+    useAlertExitApp()
+
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
 
-    const {getIntervenorByIdNumber, deleteIntervenorByIdNumber, findIntervenorByContactInfo} = useIntervenor();
+    const {getIntervenorByIdNumber, deleteIntervenorByIdNumber, findIntervenorByContactInfo} = useIntervenor()
+    const {addIntervenorToOccurrence} = useOccurrence()
 
     const [idNumber, setIdNumber] = useState("")
     const [intervenor, setIntervenor] = useState<Intervenor | null>(null)
     const [loading, setLoading] = useState(false)
-    const occurrenceId = Number(id)
 
     const handleSearchByNumberId = async () => {
         try {
@@ -84,7 +89,7 @@ const IntervenorsSearch = () => {
     }
 
     const handleCreate = () => {
-        router.push("/occurrences/intervenors/create");
+        router.push("/intervenors/create");
     };
 
     const handleUpdate = () => {
@@ -93,11 +98,7 @@ const IntervenorsSearch = () => {
             setError("No intervenor selected to update.");
             return;
         }
-        router.push(`/occurrences/intervenors/update/${intervenorId}`)
-    }
-
-    const handleAdd = () => {
-
+        router.push(`intervenors/${intervenorId}`)
     }
 
     const handleSearch = async () => {
@@ -110,6 +111,31 @@ const IntervenorsSearch = () => {
         }
     };
 
+    const handleAddIntervenor = async () => {
+        try {
+            const intervenorId = intervenor?.id;
+            if (!intervenorId) {
+                setError("No intervenor selected to update.");
+                return;
+            }
+            await addIntervenorToOccurrence(intervenorId, Number(occurrenceId))
+            router.replace(`occurrences/${occurrenceId}`)
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            return () => {
+                setIntervenor(null)
+                setIdNumber("")
+                setSearchType(undefined)
+                setError(null)
+            }
+        }, [])
+    )
+
     if (loading) {
         return (
             <ThemedView safe={true} style={styles.container}>
@@ -120,11 +146,12 @@ const IntervenorsSearch = () => {
 
     return (
         <PaperProvider>
-            <ThemedView safe={true} style={styles.container}>
+            <ThemedView style={styles.container} safe={true}>
                 <ScrollView>
+                    <Spacer />
+                    <ThemedText title={true} style={styles.heading}>Intervenors</ThemedText>
                     <ThemedCard style={styles.card}>
-                        <ThemedText title={true} style={styles.title}>Intervenors</ThemedText>
-                        <Spacer/>
+                        <Spacer />
                         <ThemedText>Search Intervenor</ThemedText>
                         <Dropdown
                             label={"Search by"}
@@ -163,9 +190,11 @@ const IntervenorsSearch = () => {
                                 <ThemedButton onPress={handleUpdate} style={styles.update}>
                                     <ThemedText style={{color: '#fff', textAlign: 'center'}}> Update Informations</ThemedText>
                                 </ThemedButton>
-                                <ThemedButton onPress={handleAdd} style={styles.create}>
-                                    <ThemedText style={{color: '#fff', textAlign: 'center'}}> Add Intervenor</ThemedText>
-                                </ThemedButton>
+                                {isSelectMode &&(
+                                    <ThemedButton onPress={handleAddIntervenor}>
+                                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>Add</ThemedText>
+                                    </ThemedButton>
+                                )}
                             </ThemedCard>
                         )}
                     </ThemedCard>
@@ -177,7 +206,7 @@ const IntervenorsSearch = () => {
 
 };
 
-export default IntervenorsSearch;
+export default IntervenorSearch;
 
 const styles = StyleSheet.create({
     container: {
@@ -187,6 +216,11 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 22,
         marginVertical: 10,
+    },
+    heading:{
+        fontWeight: 'bold',
+        fontSize: 18,
+        textAlign: 'center'
     },
     card: {
         margin: 20

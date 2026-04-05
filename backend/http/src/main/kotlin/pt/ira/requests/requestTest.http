@@ -1,4 +1,4 @@
-@token_user = qf7gtzj-vqpffYWNxOannhFVIF8mzNPHbpK5Muwr4FA=
+@token_user = cMtY13FlM9WxEsK3E74ev1XoZ9JeiX1E2kPsmj4j5pY=
 
 ###  Create User
 POST http://localhost:8080/api/user
@@ -50,3 +50,6 @@ Authorization: Bearer {{token_user}}
   "contactInfo": "912345678",
   "address": "Rua Teste, 123"
 }
+
+### Get all intervenors
+GET http://localhost:8080/api/intervenor

@@ -6,9 +6,12 @@ import {useAuth} from "../../hooks/useAuth";
 import ThemedButton from "../../components/ThemedButton";
 import {router} from "expo-router";
 import React from "react";
+import {useAlertExitApp} from "../../hooks/useAlertExitApp";
 
 const Profile = () =>{
     const {logout, token, user} = useAuth()
+
+    useAlertExitApp()
 
     const handleLogout = async () => {
         console.log(user)

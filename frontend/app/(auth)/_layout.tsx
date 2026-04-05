@@ -16,10 +16,10 @@ const AuthLayout = () => {
                     headerStyle: {backgroundColor: theme.navBackground},
                     headerTintColor: theme.title,
                     contentStyle: {backgroundColor: theme.background},
-                    animation: "none",
+                    animation: "slide_from_right",
                 }}>
-                    <Stack.Screen name="login" options={{title: 'Login'}}/>
-                    <Stack.Screen name="register" options={{title: 'Register'}}/>
+                    <Stack.Screen name="login" options={{headerShown: false}}/>
+                    <Stack.Screen name="register" options={{headerShown: false}}/>
                 </Stack>
             </ThemedView>
         </GuestOnly>

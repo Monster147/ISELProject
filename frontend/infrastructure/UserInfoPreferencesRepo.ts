@@ -15,7 +15,7 @@ export interface UserInfo{
 
 export interface UserInfoRepo {
 
-    saveUserInfo(authInfo: UserInfo): Promise<void>
+    saveUserInfo(userInfo: UserInfo): Promise<void>
 
     getUserInfo(): Promise<UserInfo | null>
 
@@ -27,8 +27,8 @@ export class UserInfoPreferencesRepo implements UserInfoRepo {
     private USER_KEY = "userId"
 
 
-    async saveUserInfo(authInfo: UserInfo): Promise<void> {
-        await SecureStore.setItemAsync(this.USER_KEY, JSON.stringify(authInfo))
+    async saveUserInfo(userInfo: UserInfo): Promise<void> {
+        await SecureStore.setItemAsync(this.USER_KEY, JSON.stringify(userInfo))
     }
 
     async getUserInfo(): Promise<UserInfo | null> {

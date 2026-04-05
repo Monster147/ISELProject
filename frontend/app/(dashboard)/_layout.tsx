@@ -1,7 +1,7 @@
 import {StatusBar, StyleSheet, Text, useColorScheme, View} from "react-native";
 import {Stack, Tabs} from "expo-router";
 import {Colors} from "../../constants/Colors";
-import {Ionicons} from "@expo/vector-icons";
+import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 import UserOnly from "../../components/auth/UserOnly";
 
 const DashboardLayout = () => {
@@ -22,6 +22,17 @@ const DashboardLayout = () => {
                     tabBarInactiveTintColor: theme.iconColor,
                 }}
             >
+                <Tabs.Screen
+                    name="intervenor"
+                    options={{
+                        title: 'Intervenor',
+                        tabBarIcon: ({focused}) =>
+                            <MaterialCommunityIcons
+                                size={24}
+                                name={focused ? 'account-group' : 'account-group-outline'}
+                                color={focused ? theme.iconColorFocused : theme.iconColor}
+                            />
+                    }}/>
                 <Tabs.Screen
                     name="occurrence"
                     options={{
@@ -49,15 +60,11 @@ const DashboardLayout = () => {
                     options={{href: null}}
                 />
                 <Tabs.Screen
-                    name="occurrences/intervenors/[id]"
+                    name="intervenors/[id]"
                     options={{href: null}}
                 />
                 <Tabs.Screen
-                    name="occurrences/intervenors/update/[id]"
-                    options={{href: null}}
-                />
-                <Tabs.Screen
-                    name="occurrences/intervenors/create"
+                    name="intervenors/create"
                     options={{href: null}}
                 />
             </Tabs>

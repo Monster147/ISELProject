@@ -1,18 +1,19 @@
 import {Animated, StyleSheet, Text, TextInput, ScrollView, useColorScheme} from "react-native";
-import ThemedView from "../../../../../components/ThemedView";
-import ThemedText from "../../../../../components/ThemedText";
-import ThemedButton from "../../../../../components/ThemedButton";
-import ThemedCard from "../../../../../components/ThemedCard";
-import ThemedLoader from "../../../../../components/ThemedLoader";
-import {Colors} from "../../../../../constants/Colors";
-import {useLocalSearchParams, useRouter} from "expo-router";
-import {useEffect, useState} from "react";
-import {useIntervenor} from "../../../../../hooks/useIntervenor";
-import {Intervenor} from "../../../../../models/intervenor/Intervenor";
-import Spacer from "../../../../../components/Spacer";
+import ThemedView from "../../../components/ThemedView";
+import ThemedText from "../../../components/ThemedText";
+import ThemedButton from "../../../components/ThemedButton";
+import ThemedCard from "../../../components/ThemedCard";
+import ThemedLoader from "../../../components/ThemedLoader";
+import {Colors} from "../../../constants/Colors";
+import {useFocusEffect, useLocalSearchParams, useRouter} from "expo-router";
+import {useCallback, useEffect, useState} from "react";
+import {useIntervenor} from "../../../hooks/useIntervenor";
+import {Intervenor} from "../../../models/intervenor/Intervenor";
+import Spacer from "../../../components/Spacer";
 import {Dropdown, MultiSelectDropdown} from "react-native-paper-dropdown";
 import {PaperProvider} from "react-native-paper";
-import ThemedTextInput from "../../../../../components/ThemedTextInput";
+import ThemedTextInput from "../../../components/ThemedTextInput";
+import {useBackRedirect} from "../../../hooks/useBackRedirect";
 
 const MULTI_SELECT_OPTIONS = [
     {label: "Intervenor Identifier", value: "intervenorIdentifier"},
@@ -28,6 +29,8 @@ const IntervenorUpdate = () => {
     const [error, setError] = useState<string | null>(null);
     const [change, setChange] = useState<string[]>([]);
     const selected = (key: string) => change.includes(key);
+
+    useBackRedirect("/intervenor")
 
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme] ?? Colors.light;
@@ -77,6 +80,22 @@ const IntervenorUpdate = () => {
             setLoading(false);
         }
     };
+
+    useFocusEffect(
+        useCallback(() => {
+            return () => {
+                setIdentifier(null);
+                setIdentifierType(null);
+                setAddress(null);
+                setPhoneNumber(null);
+                setName(null);
+                setError(null);
+                setChange([]);
+                setIntervenor(null);
+            };
+        }, [])
+    );
+
 
     if (loading) {
         return (

@@ -1,6 +1,7 @@
 package pt.ira
 
 import com.fasterxml.jackson.databind.JsonNode
+import occurrence
 import org.springframework.stereotype.Component
 import pt.ira.interfaces.TransactionManager
 import pt.ira.intervenor.Intervenor
@@ -18,6 +19,10 @@ sealed class OccurrenceError {
     data object DuplicateUsersIds : OccurrenceError()
 
     data object IntervenorNotFound : OccurrenceError()
+
+    data object IntervenorAlreadyInOccurrence : OccurrenceError()
+
+    data object IntervenorNotInOccurrence : OccurrenceError()
 }
 
 @Component
@@ -79,6 +84,9 @@ class OccurrenceService(
                 repoIntervenor.findById(intervenorId)
                     ?: return@run failure(OccurrenceError.IntervenorNotFound)
 
+            if (occurrence.intervenors.any { it == intervenorId }) return@run failure(OccurrenceError.IntervenorAlreadyInOccurrence)
+
+
             val updated = repoOccurrence.addIntervenor(occurrence, intervenor)
             success(updated)
         }
@@ -96,6 +104,8 @@ class OccurrenceService(
             val intervenor =
                 repoIntervenor.findById(intervenorId)
                     ?: return@run failure(OccurrenceError.IntervenorNotFound)
+
+            if (!occurrence.intervenors.any { it == intervenorId }) return@run failure(OccurrenceError.IntervenorNotInOccurrence)
 
             val updated = repoOccurrence.removeIntervenor(occurrence, intervenor)
             success(updated)

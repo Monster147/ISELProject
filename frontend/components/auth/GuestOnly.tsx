@@ -1,21 +1,20 @@
 import {useAuth} from "../../hooks/useAuth";
 import {useRouter} from "expo-router";
 import {useEffect} from "react";
-import {Text} from "react-native";
-import ThemedText from "../ThemedText";
 import ThemedLoader from "../ThemedLoader";
 
 const GuestOnly = ({children}) =>{
-    const {token} = useAuth()
+    const {token, isAuthLoading} = useAuth()
     const router = useRouter()
 
     useEffect(()=> {
+        if (isAuthLoading) return
         if (token !== null) {
-            router.replace("/profile")
+            router.replace("/occurrence")
         }
-    }, [token])
+    }, [token, isAuthLoading])
 
-    if(token){
+    if (isAuthLoading || token) {
         return (
             <ThemedLoader/>
         )

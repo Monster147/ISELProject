@@ -22,7 +22,12 @@ class IntervenorService(
         address: String,
     ): Either<IntervenorError, Intervenor> {
         return trxManager.run {
-            if (repoIntervenor.findByIdNumber(idNumber) != null) {
+            val existing = repoIntervenor.findByIdNumber(idNumber)
+            if (existing != null && existing.idType == idType) {
+                return@run failure(IntervenorError.IntervenorAlreadyExists)
+            }
+            val existingByContact = repoIntervenor.findByContactInfo(contactInfo)
+            if (existingByContact != null) {
                 return@run failure(IntervenorError.IntervenorAlreadyExists)
             }
             val intervenor =
@@ -88,4 +93,6 @@ class IntervenorService(
             success(intervenor)
         }
     }
+
+    fun findAll(): List<Intervenor> = trxManager.run { repoIntervenor.findAll() }
 }

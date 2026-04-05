@@ -50,6 +50,12 @@ class IntervenorController(
         }
     }
 
+    @GetMapping
+    fun findAllIntervenors(): ResponseEntity<*> {
+        val intervenors = intervenorService.findAll()
+        return ResponseEntity.status(HttpStatus.OK).body(intervenors)
+    }
+
     @PostMapping("/update/{intervenorId}")
     fun updateIntervenor(
         @RequestBody intervenorUpdateInput: IntervenorUpdateInput,
@@ -157,7 +163,7 @@ class IntervenorController(
     }
 
     @GetMapping("/{id}")
-    fun findIntervenorByContactInfo(
+    fun findIntervenorById(
         @PathVariable id: Int,
     ): ResponseEntity<*> {
         val result = intervenorService.findByID(id)

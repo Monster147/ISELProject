@@ -9,10 +9,16 @@ import {Occurrence} from "../../../models/occurrence/Occurrence";
 import ThemedCard from "../../../components/ThemedCard";
 import ThemedLoader from "../../../components/ThemedLoader";
 import ThemedButton from "../../../components/ThemedButton";
+import {useBackRedirect} from "../../../hooks/useBackRedirect";
+import {useIntervenor} from "../../../hooks/useIntervenor";
 
 const OccurrenceDetails = () => {
     const {id} = useLocalSearchParams()
     const router = useRouter();
+    const { intervenor } = useIntervenor();
+    console.log(intervenor)
+
+    useBackRedirect("/occurrence")
 
     //const [currentOccurrence, setCurrentOccurrence] = useState<Occurrence|null>(null);
     //const {getOccurrence} = useOccurrence()
@@ -45,7 +51,13 @@ const OccurrenceDetails = () => {
     };
 
     const handleIntervenors = async () => {
-        router.push(`/occurrences/intervenors/${occurrenceId}`)
+        router.push({
+            pathname: "/intervenor",
+            params: {
+                selectMode: "true",
+                occurrenceId: occurrenceId
+            }
+        })
     }
 
 
@@ -64,6 +76,31 @@ const OccurrenceDetails = () => {
                     <ThemedText>Reporter: {actualOccurrence.reporterId}</ThemedText>
 
                     <ThemedText>Importance: {actualOccurrence.importance}</ThemedText>
+
+                    {actualOccurrence.intervenors.length > 0 ? (
+                        <>
+                            <ThemedText>Intervenors:</ThemedText>
+
+                            {actualOccurrence.intervenors.map((id) => {
+                                const found = intervenor.find((i) => i.id === id);
+
+                                if (!found) {
+                                    return <ThemedText key={id}>- (unknown intervenor #{id})</ThemedText>;
+                                }
+
+                                return (
+                                    <ThemedText key={found.id}>
+                                        Name: {found.name} {"\n"}
+                                        Contact: {found.contactInfo} {"\n"}
+                                        Address: {found.address}
+                                    </ThemedText>
+                                );
+                            })}
+                        </>
+                    ) : (
+                        <ThemedText>No intervenors yet</ThemedText>
+                    )}
+
 
                     <ThemedText>Occurrence Type:</ThemedText>
                     <ThemedText>{JSON.stringify(actualOccurrence.occurrenceType, null, 2)}</ThemedText>

@@ -8,10 +8,13 @@ import {useEffect} from "react";
 import {Colors} from "../../constants/Colors";
 import ThemedCard from "../../components/ThemedCard";
 import {useRouter} from "expo-router";
+import {useAlertExitApp} from "../../hooks/useAlertExitApp";
 
 const Occurrence = () =>{
     const {occurrence} = useOccurrence()
     const router = useRouter()
+
+    useAlertExitApp()
 
     return(
         <ThemedView style={styles.container} safe={true}>

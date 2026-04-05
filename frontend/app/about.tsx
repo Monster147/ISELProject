@@ -2,14 +2,15 @@ import {StyleSheet} from "react-native";
 import {Link} from 'expo-router'
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
+import {useBackRedirect} from "../hooks/useBackRedirect";
 
 const About = () =>{
+
+    useBackRedirect("/home")
+
     return(
         <ThemedView style={styles.container}>
             <ThemedText style={styles.title} title={true}>About Page</ThemedText>
-            <Link href={"/home"} style={styles.link}>
-                <ThemedText>Back Home</ThemedText>
-            </Link>
         </ThemedView>
     )
 }

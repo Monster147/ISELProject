@@ -4,9 +4,13 @@ import Logo from '../assets/img/isel.png'
 import ThemedView from "../components/ThemedView";
 import Spacer from "../components/Spacer";
 import ThemedText from "../components/ThemedText";
+import {useAlertExitApp} from "../hooks/useAlertExitApp";
 
 
 const Home = () =>{
+
+    useAlertExitApp()
+
     return (
         <ThemedView style={styles.container}>
             <Image source={Logo}/>
