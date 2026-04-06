@@ -16,7 +16,6 @@ const OccurrenceDetails = () => {
     const {id} = useLocalSearchParams()
     const router = useRouter();
     const { intervenor } = useIntervenor();
-    console.log(intervenor)
 
     useBackRedirect("/occurrence")
 
@@ -51,15 +50,8 @@ const OccurrenceDetails = () => {
     };
 
     const handleIntervenors = async () => {
-        router.push({
-            pathname: "/intervenor",
-            params: {
-                selectMode: "true",
-                occurrenceId: occurrenceId
-            }
-        })
+        router.push(`/occurrences/intervenors/${occurrenceId}`)
     }
-
 
     return (
         <ThemedView safe={true} style={styles.container}>
@@ -77,31 +69,6 @@ const OccurrenceDetails = () => {
 
                     <ThemedText>Importance: {actualOccurrence.importance}</ThemedText>
 
-                    {actualOccurrence.intervenors.length > 0 ? (
-                        <>
-                            <ThemedText>Intervenors:</ThemedText>
-
-                            {actualOccurrence.intervenors.map((id) => {
-                                const found = intervenor.find((i) => i.id === id);
-
-                                if (!found) {
-                                    return <ThemedText key={id}>- (unknown intervenor #{id})</ThemedText>;
-                                }
-
-                                return (
-                                    <ThemedText key={found.id}>
-                                        Name: {found.name} {"\n"}
-                                        Contact: {found.contactInfo} {"\n"}
-                                        Address: {found.address}
-                                    </ThemedText>
-                                );
-                            })}
-                        </>
-                    ) : (
-                        <ThemedText>No intervenors yet</ThemedText>
-                    )}
-
-
                     <ThemedText>Occurrence Type:</ThemedText>
                     <ThemedText>{JSON.stringify(actualOccurrence.occurrenceType, null, 2)}</ThemedText>
 
@@ -111,7 +78,7 @@ const OccurrenceDetails = () => {
                         <ThemedText style={{color: '#fff', textAlign: 'center'}}>Go to Evidences</ThemedText>
                     </ThemedButton>
                     <ThemedButton onPress={handleIntervenors} style={styles.create}>
-                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>Add Intervenors</ThemedText>
+                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>See Intervenors</ThemedText>
                     </ThemedButton>
                 </ThemedCard>
             </ScrollView>

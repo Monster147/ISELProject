@@ -1,4 +1,4 @@
-@token_user = cMtY13FlM9WxEsK3E74ev1XoZ9JeiX1E2kPsmj4j5pY=
+@token_user = gvqNSx873XD0AZHBFKrxtoNV3R8YrCqShZazqModFUM=
 
 ###  Create User
 POST http://localhost:8080/api/user
@@ -36,7 +36,7 @@ Authorization: Bearer {{token_user}}
 GET http://localhost:8080/api/occurrence
 
 ### 7) List occurrences by reporterId
-GET http://localhost:8080/api/occurrence/reporter/1
+GET http://localhost:8080/api/occurrence/reporter/2
 
 ### 8) Create intervenor
 POST http://localhost:8080/api/intervenor

@@ -12,7 +12,7 @@ type OccurrenceContextValue = {
     occurrence: Occurrence[];
     getOccurrence: (id:number) => Promise<Occurrence>;
     addIntervenorToOccurrence: (intervenorId: number, occurrenceId: number) => Promise<void>;
-    removeIntervenorToOccurrence: (intervenorId: number, occurrenceId: number) => Promise<void>;
+    removeIntervenorFromOccurrence: (intervenorId: number, occurrenceId: number) => Promise<void>;
 };
 
 export const OccurrenceContext = createContext<OccurrenceContextValue | undefined>(undefined)
@@ -60,7 +60,7 @@ export function OccurrenceProvider({children}) {
         }
     }
 
-    async function removeIntervenorToOccurrence(intervenorId: number, occurrenceId: number){
+    async function removeIntervenorFromOccurrence(intervenorId: number, occurrenceId: number){
         try {
             if (!user) return;
             await api.removeIntervenor(intervenorId, occurrenceId)
@@ -72,7 +72,7 @@ export function OccurrenceProvider({children}) {
     }
 
     return (
-        <OccurrenceContext.Provider value={{occurrence, listOccurrences, getOccurrence, addIntervenorToOccurrence, removeIntervenorToOccurrence}}>
+        <OccurrenceContext.Provider value={{occurrence, listOccurrences, getOccurrence, addIntervenorToOccurrence, removeIntervenorFromOccurrence}}>
             {children}
         </OccurrenceContext.Provider>
     )

@@ -119,9 +119,10 @@ const IntervenorSearch = () => {
                 return;
             }
             await addIntervenorToOccurrence(intervenorId, Number(occurrenceId))
-            router.replace(`occurrences/${occurrenceId}`)
-        } catch (e) {
-            console.error(e)
+            router.replace(`occurrences/intervenors/${occurrenceId}`)
+        } catch (err: any) {
+            if (err instanceof Error) setError(err.message);
+            else setError(String(err));
         }
     }
 

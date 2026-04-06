@@ -67,6 +67,10 @@ const DashboardLayout = () => {
                     name="intervenors/create"
                     options={{href: null}}
                 />
+                <Tabs.Screen
+                    name="occurrences/intervenors/[id]"
+                    options={{href: null}}
+                />
             </Tabs>
         </UserOnly>
     )

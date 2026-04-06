@@ -1,7 +1,6 @@
 package pt.ira
 
 import com.fasterxml.jackson.databind.JsonNode
-import occurrence
 import org.springframework.stereotype.Component
 import pt.ira.interfaces.TransactionManager
 import pt.ira.intervenor.Intervenor

@@ -121,6 +121,7 @@ const IntervenorCreate = () => {
                     <ThemedTextInput
                         style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2}}
                         placeholder={"Intervenor Phone Number"}
+                        keyboardType="phone-pad"
                         onChangeText={setPhoneNumber}
                         value={phoneNumber}
                     />
