@@ -7,10 +7,12 @@ import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
 import Spacer from "../components/Spacer";
 import Home from "./home";
+import {useTranslation} from "react-i18next";
 
 const DURATION_MS = 4000;
 
 const LoadingScreen = ()=> {
+    const {t} = useTranslation()
     const { token, isAuthLoading } = useAuth();
 
     const progress = useRef(new Animated.Value(0)).current;
@@ -48,7 +50,7 @@ const LoadingScreen = ()=> {
     return (
         <ThemedView style={styles.container}>
             <Image source={Logo}/>
-            <ThemedText style={styles.title}>Insurance Reporter App</ThemedText>
+            <ThemedText style={styles.title}>{t("home.appName")}</ThemedText>
             <Spacer height={20} />
             <ThemedView style={styles.progressTrack}>
                 <Animated.View style={[styles.progressFill, { width: barWidth }]} />

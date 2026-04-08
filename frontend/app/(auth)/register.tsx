@@ -9,8 +9,11 @@ import {useState} from "react";
 import {useAuth} from "../../hooks/useAuth";
 import {Colors} from "../../constants/Colors";
 import {useBackRedirect} from "../../hooks/useBackRedirect";
+import {useTranslation} from "react-i18next";
 
 const Register = () => {
+    const {t} = useTranslation()
+
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -24,19 +27,19 @@ const Register = () => {
 
     const checkErrors = ():boolean =>{
         if (name.trim() === '') {
-            setError("Name cannot be empty")
+            setError(t("register.nameEmpty"))
             return true
         }
         if (email.trim() === '') {
-            setError("Email cannot be empty")
+            setError(t("register.emailEmpty"))
             return true
         }
         if (password.trim() === '') {
-            setError("Password cannot be empty")
+            setError(t("register.passwordEmpty"))
             return true
         }
         if (password !== confirmPassword) {
-            setError("Passwords do not match")
+            setError(t("register.passwordDontMatch"))
             return true
         }
         return false
@@ -58,40 +61,40 @@ const Register = () => {
             <ThemedView style={styles.container}>
                 <Spacer/>
                 <ThemedText title={true} style={styles.title}>
-                    Register For an Account
+                    {t("register.registerText")}
                 </ThemedText>
 
                 <ThemedTextInput
                     style={{width: '80%', margin: 20}}
-                    placeholder={"Name"}
+                    placeholder={t("register.name")}
                     onChangeText={setName}
                     value={name}
                 />
 
                 <ThemedTextInput
                     style={{width: '80%', margin: 20}}
-                    placeholder={"Email"}
+                    placeholder={t("register.email")}
                     keyboardType="email-address"
                     onChangeText={setEmail}
                     value={email}
                 />
                 <ThemedTextInput
                     style={{width: '80%', margin: 20}}
-                    placeholder={"Password"}
+                    placeholder={t("register.password")}
                     onChangeText={setPassword}
                     value={password}
                     secureTextEntry
                 />
                 <ThemedTextInput
                     style={{width: '80%', margin: 20}}
-                    placeholder={"Password"}
+                    placeholder={t("register.confirmPassword")}
                     onChangeText={setConfirmPassword}
                     value={confirmPassword}
                     secureTextEntry
                 />
 
                 <ThemedButton onPress={handleSubmit}>
-                    <Text style={{color: 'f2f2f2'}}>Register</Text>
+                    <Text style={{color: 'f2f2f2'}}>{t("register.register")}</Text>
                 </ThemedButton>
 
                 <Spacer/>
@@ -101,7 +104,7 @@ const Register = () => {
                 <Spacer height={25}/>
                 <Link href='/login'>
                     <ThemedText style={{textAlign: 'center'}}>
-                        Login instead
+                        {t("register.login")}
                     </ThemedText>
                 </Link>
 

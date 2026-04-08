@@ -3,8 +3,11 @@ import {Stack, Tabs} from "expo-router";
 import {Colors} from "../../constants/Colors";
 import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 import UserOnly from "../../components/auth/UserOnly";
+import "../../i18next/i18next"
+import {useTranslation} from "react-i18next";
 
 const DashboardLayout = () => {
+    const {t} = useTranslation()
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
 
@@ -25,7 +28,7 @@ const DashboardLayout = () => {
                 <Tabs.Screen
                     name="intervenor"
                     options={{
-                        title: 'Intervenor',
+                        title: t("dashboard.intervenor"),
                         tabBarIcon: ({focused}) =>
                             <MaterialCommunityIcons
                                 size={24}
@@ -36,7 +39,7 @@ const DashboardLayout = () => {
                 <Tabs.Screen
                     name="occurrence"
                     options={{
-                        title: 'Occurrence',
+                        title: t("dashboard.occurrence"),
                         tabBarIcon: ({focused}) =>
                             <Ionicons
                                 size={24}
@@ -47,7 +50,7 @@ const DashboardLayout = () => {
                 <Tabs.Screen
                     name="profile"
                     options={{
-                        title: 'Profile',
+                        title: t("dashboard.profile"),
                         tabBarIcon: ({focused}) =>
                             <Ionicons
                                 size={24}

@@ -18,8 +18,10 @@ import {useState} from "react";
 import {useAuth} from "../../hooks/useAuth";
 import ThemedLoader from "../../components/ThemedLoader";
 import {useBackRedirect} from "../../hooks/useBackRedirect";
+import {useTranslation} from "react-i18next";
 
 const Login = () => {
+    const {t} = useTranslation()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null);
@@ -30,11 +32,11 @@ const Login = () => {
 
     const checkErrors = (): boolean =>{
         if (email.trim() === '') {
-            setError("Email cannot be empty")
+            setError(t("login.emailEmpty"))
             return true
         }
         if (password.trim() === '') {
-            setError("Password cannot be empty")
+            setError(t("login.passwordEmpty"))
             return true
         }
         return false
@@ -57,26 +59,26 @@ const Login = () => {
             <ThemedView style={styles.container}>
                 <Spacer/>
                 <ThemedText title={true} style={styles.title}>
-                    Login to your Account
+                    {t("login.loginText")}
                 </ThemedText>
 
                 <ThemedTextInput
                     style={{width: '80%', margin: 20}}
-                    placeholder={"Email"}
+                    placeholder={t("login.email")}
                     keyboardType="email-address"
                     onChangeText={setEmail}
                     value={email}
                 />
                 <ThemedTextInput
                     style={{width: '80%', margin: 20}}
-                    placeholder={"Password"}
+                    placeholder={t("login.password")}
                     onChangeText={setPassword}
                     value={password}
                     secureTextEntry
                 />
 
                 <ThemedButton onPress={handleSubmit}>
-                    <Text style={{color: 'f2f2f2'}}>Login</Text>
+                    <Text style={{color: 'f2f2f2'}}>{t("login.login")}</Text>
                 </ThemedButton>
 
                 <Spacer/>
@@ -86,7 +88,7 @@ const Login = () => {
                 <Spacer height={25}/>
                 <Link href='/register'>
                     <ThemedText style={{textAlign: 'center'}}>
-                        Register instead
+                        {t("login.register")}
                     </ThemedText>
                 </Link>
 

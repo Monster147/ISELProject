@@ -1,4 +1,4 @@
-@token_user = gvqNSx873XD0AZHBFKrxtoNV3R8YrCqShZazqModFUM=
+@token_user = UQnLdoC-FF-9ycxB9uxvrRyBOPkW-h21HEuZPkX0Pt8=
 
 ###  Create User
 POST http://localhost:8080/api/user
@@ -25,7 +25,7 @@ Content-Type: application/json
 Authorization: Bearer {{token_user}}
 
 {
-  "usersId": 1,
+  "usersId": 2,
   "endDate": "2030-12-31",
   "importance": "NORMAL",
   "occurrenceType": { "type": "fire", "sub": { "a": 1 } },

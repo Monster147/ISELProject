@@ -5,9 +5,11 @@ import ThemedView from "../components/ThemedView";
 import Spacer from "../components/Spacer";
 import ThemedText from "../components/ThemedText";
 import {useAlertExitApp} from "../hooks/useAlertExitApp";
+import {useTranslation} from "react-i18next";
 
 
 const Home = () =>{
+    const {t} = useTranslation()
 
     useAlertExitApp()
 
@@ -16,29 +18,21 @@ const Home = () =>{
             <Image source={Logo}/>
             <Spacer height={20}/>
 
-            <ThemedText style={styles.title} title={true}>The Number 1</ThemedText>
-
             <Spacer height={10}/>
-            <ThemedText> Insurance Reporter App </ThemedText>
+            <ThemedText title={true}> {t("home.appName")} </ThemedText>
             <Spacer/>
 
             <Link href="/login" style={styles.link}>
-                <ThemedText>Login Page</ThemedText>
+                <ThemedText>{t("home.login")}</ThemedText>
             </Link>
             <Link href="/register" style={styles.link}>
-                <ThemedText>Register Page</ThemedText>
+                <ThemedText>{t("home.register")}</ThemedText>
             </Link>
             <Link href="/about" style={styles.link}>
-                <ThemedText>About Page</ThemedText>
+                <ThemedText>{t("home.about")}</ThemedText>
             </Link>
             <Link href="/contact" style={styles.link}>
-                <ThemedText>Contact Page</ThemedText>
-            </Link>
-            <Link href="/profile" style={styles.link}>
-                <ThemedText>Profile Page</ThemedText>
-            </Link>
-            <Link href="/occurrence" style={styles.link}>
-                <ThemedText>Occurrence Page</ThemedText>
+                <ThemedText>{t("home.contact")}</ThemedText>
             </Link>
         </ThemedView>
     )

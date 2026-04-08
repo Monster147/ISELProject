@@ -12,8 +12,10 @@ import {useBackRedirect} from "../../../../hooks/useBackRedirect";
 import {useIntervenor} from "../../../../hooks/useIntervenor";
 import Spacer from "../../../../components/Spacer";
 import {useState} from "react";
+import {useTranslation} from "react-i18next";
 
 const OccurrenceIntervenors = () => {
+    const {t} = useTranslation()
     const {id} = useLocalSearchParams()
     const router = useRouter();
     const { intervenor } = useIntervenor();
@@ -63,18 +65,18 @@ const OccurrenceIntervenors = () => {
 
     const renderIntervenor = ({item}) => (
         <ThemedCard style={styles.card}>
-            <ThemedText>Intervenor Identifier: {item.idNumber}</ThemedText>
-            <ThemedText>Intervenor Identifier Type: {item.idType}</ThemedText>
-            <ThemedText>Intervenor Name: {item.name}</ThemedText>
-            <ThemedText>Intervenor Phone Number: {item.contactInfo}</ThemedText>
-            <ThemedText>Intervenor Address: {item.address}</ThemedText>
+            <ThemedText>{t("occurrenceIntervenors.intervenorId")}: {item.idNumber}</ThemedText>
+            <ThemedText>{t("occurrenceIntervenors.intervenorIdType")}: {item.idType}</ThemedText>
+            <ThemedText>{t("occurrenceIntervenors.intervenorName")}: {item.name}</ThemedText>
+            <ThemedText>{t("occurrenceIntervenors.intervenorPhoneNumber")}: {item.contactInfo}</ThemedText>
+            <ThemedText>{t("occurrenceIntervenors.intervenorAddress")}: {item.address}</ThemedText>
 
             <ThemedButton
                 onPress={() => handleRemove(item.id)}
                 style={styles.remove}
             >
                 <ThemedText style={{color: '#fff', textAlign: 'center'}}>
-                    Remove
+                    {t("occurrenceIntervenors.remove")}
                 </ThemedText>
             </ThemedButton>
         </ThemedCard>
@@ -86,7 +88,7 @@ const OccurrenceIntervenors = () => {
         <ThemedView safe={true} style={styles.container}>
             <Spacer />
             <ThemedText title={true} style={styles.heading}>
-                Intervenors in Occurrence
+                {t("occurrenceIntervenors.occurrenceIntervenors")}
             </ThemedText>
 
             <Spacer />
@@ -95,7 +97,7 @@ const OccurrenceIntervenors = () => {
                 <ThemedView style={styles.emptyContainer}>
                     <ThemedButton onPress={handleIntervenors} style={styles.create}>
                         <ThemedText style={{ color: "#fff", textAlign: "center" }}>
-                            Add Intervenors
+                            {t("occurrenceIntervenors.addIntervenors")}
                         </ThemedText>
                     </ThemedButton>
                 </ThemedView>
@@ -109,7 +111,7 @@ const OccurrenceIntervenors = () => {
                             {error && <Text style={styles.error}>{error}</Text>}
                             <ThemedButton onPress={handleIntervenors} style={styles.create}>
                                 <ThemedText style={{ color: "#fff", textAlign: "center" }}>
-                                    Add Intervenors
+                                    {t("occurrenceIntervenors.addIntervenors")}
                                 </ThemedText>
                             </ThemedButton>
                         </ThemedView>

@@ -14,8 +14,10 @@ import {Dropdown} from "react-native-paper-dropdown";
 import {PaperProvider} from "react-native-paper";
 import ThemedTextInput from "../../../components/ThemedTextInput";
 import {useBackRedirect} from "../../../hooks/useBackRedirect";
+import {useTranslation} from "react-i18next";
 
 const IntervenorCreate = () => {
+    const {t} = useTranslation()
     const router = useRouter()
     const [error, setError] = useState<string | null>(null);
 
@@ -50,23 +52,23 @@ const IntervenorCreate = () => {
 
     const checkErrors = (): boolean => {
         if (!identifier.trim()) {
-            setError("ID Number cannot be empty");
+            setError(t("intervenorCreate.idNumberEmpty"));
             return true;
         }
         if (!identifierType.trim()) {
-            setError("ID Type cannot be empty");
+            setError(t("intervenorCreate.idTypeEmpty"));
             return true;
         }
         if (!name.trim()) {
-            setError("Name cannot be empty");
+            setError(t("intervenorCreate.nameEmpty"));
             return true;
         }
         if (!phoneNumber.trim()) {
-            setError("Phone number cannot be empty");
+            setError(t("intervenorCreate.phoneNumberEmpty"));
             return true;
         }
         if (!address.trim()) {
-            setError("Address cannot be empty");
+            setError(t("intervenorCreate.addressEmpty"));
             return true;
         }
         return false;
@@ -98,36 +100,36 @@ const IntervenorCreate = () => {
             <ScrollView>
                 <ThemedCard style={styles.card}>
                     <ThemedText title={true} style={styles.heading}>
-                        Create a new Intervenor
+                        {t("intervenorCreate.intervenorMessage")}
                     </ThemedText>
                     <ThemedTextInput
                         style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2}}
-                        placeholder={"Intervenor Identifier"}
+                        placeholder={t("intervenorCreate.intervenorId")}
                         onChangeText={setIdentifier}
                         value={identifier}
                     />
                     <ThemedTextInput
                         style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2}}
-                        placeholder={"Intervenor Identifier Type"}
+                        placeholder={t("intervenorCreate.intervenorIdType")}
                         onChangeText={setIdentifierType}
                         value={identifierType}
                     />
                     <ThemedTextInput
                         style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2}}
-                        placeholder={"Intervenor Name"}
+                        placeholder={t("intervenorCreate.intervenorName")}
                         onChangeText={setName}
                         value={name}
                     />
                     <ThemedTextInput
                         style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2}}
-                        placeholder={"Intervenor Phone Number"}
+                        placeholder={t("intervenorCreate.intervenorPhoneNumber")}
                         keyboardType="phone-pad"
                         onChangeText={setPhoneNumber}
                         value={phoneNumber}
                     />
                     <ThemedTextInput
                         style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2}}
-                        placeholder={"Intervenor Address"}
+                        placeholder={t("intervenorCreate.intervenorAddress")}
                         onChangeText={setAddress}
                         value={address}
                     />
@@ -135,11 +137,11 @@ const IntervenorCreate = () => {
                     {error && <Text style={styles.error}>{error}</Text>}
 
                     <ThemedButton onPress={handleCreate} style={styles.create}>
-                        <ThemedText style={{color: '#fff', textAlign: 'center'}}> Create Intervenor</ThemedText>
+                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenorCreate.createIntervenor")}</ThemedText>
                     </ThemedButton>
 
                     <ThemedButton onPress={() => router.back()} style={styles.error}>
-                        <ThemedText style={{color: '#fff', textAlign: 'center'}}> Cancel</ThemedText>
+                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenorCreate.cancel")}</ThemedText>
                     </ThemedButton>
                 </ThemedCard>
             </ScrollView>

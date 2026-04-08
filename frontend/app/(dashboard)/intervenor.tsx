@@ -15,14 +15,16 @@ import {PaperProvider} from "react-native-paper";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import {useAlertExitApp} from "../../hooks/useAlertExitApp";
 import {useOccurrence} from "../../hooks/useOccurrence";
-
-const OPTIONS = [
-    {label: "Phone Number", value: "phoneNumber"},
-    {label: "Intervenor Identifier", value: "intervenorIdentifier"}
-]
-
+import {useTranslation} from "react-i18next";
 
 const IntervenorSearch = () => {
+    const {t} = useTranslation()
+
+    const OPTIONS = [
+        {label: t("intervenor.phoneNumber"), value: "phoneNumber"},
+        {label: t("intervenor.intervenorId"), value: "intervenorIdentifier"}
+    ]
+
     const { selectMode, occurrenceId } = useLocalSearchParams()
     const isSelectMode = selectMode === "true"
     const router = useRouter();
@@ -69,25 +71,6 @@ const IntervenorSearch = () => {
         }
     }
 
-    const handleDeleteIntervenor = async () => {
-        const idToDelete = intervenor?.idNumber;
-        if (!idToDelete) {
-            setError("No intervenor selected to delete.");
-            return;
-        }
-
-        try {
-            setLoading(true)
-            await deleteIntervenorByIdNumber(intervenor?.idNumber)
-            setIntervenor(null)
-        } catch (err: any) {
-            if (err instanceof Error) setError(err.message);
-            else setError(String(err));
-        } finally {
-            setLoading(false);
-        }
-    }
-
     const handleCreate = () => {
         router.push("/intervenors/create");
     };
@@ -95,7 +78,7 @@ const IntervenorSearch = () => {
     const handleUpdate = () => {
         const intervenorId = intervenor?.id;
         if (!intervenorId) {
-            setError("No intervenor selected to update.");
+            setError(t("intervenor.intervenorNotFound"));
             return;
         }
         router.push(`intervenors/${intervenorId}`)
@@ -115,7 +98,7 @@ const IntervenorSearch = () => {
         try {
             const intervenorId = intervenor?.id;
             if (!intervenorId) {
-                setError("No intervenor selected to update.");
+                setError(t("intervenor.intervenorNotFound"));
                 return;
             }
             await addIntervenorToOccurrence(intervenorId, Number(occurrenceId))
@@ -150,31 +133,31 @@ const IntervenorSearch = () => {
             <ThemedView style={styles.container} safe={true}>
                 <ScrollView>
                     <Spacer />
-                    <ThemedText title={true} style={styles.heading}>Intervenors</ThemedText>
+                    <ThemedText title={true} style={styles.heading}>{t("intervenor.intervenors")}</ThemedText>
                     <ThemedCard style={styles.card}>
                         <Spacer />
-                        <ThemedText>Search Intervenor</ThemedText>
+                        <ThemedText>{t("intervenor.searchIntervenor")}</ThemedText>
                         <Dropdown
-                            label={"Search by"}
-                            placeholder={"Select search type"}
+                            label={t("intervenor.searchBy")}
+                            placeholder={t("intervenor.searchBy")}
                             options={OPTIONS}
                             value={searchType}
                             onSelect={setSearchType}
                         />
                         {searchType && <ThemedTextInput
                             style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2}}
-                            placeholder={searchType === "intervenorIdentifier" ? "Enter ID Number" : "Enter phone number"}
+                            placeholder={searchType === "intervenorIdentifier" ? t("intervenor.enterIntervenorId") : t("intervenor.enterPhoneNumber")}
                             keyboardType={searchType === "phoneNumber" ? "phone-pad" : "default"}
                             onChangeText={setIdNumber}
                             value={idNumber}
 
                         />}
                         {searchType && <ThemedButton onPress={handleSearch} style={styles.create}>
-                            <ThemedText style={{color: '#fff', textAlign: 'center'}}>Search</ThemedText>
+                            <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenor.search")}</ThemedText>
                         </ThemedButton>}
 
                         <ThemedButton onPress={handleCreate} style={styles.create}>
-                            <ThemedText style={{color: '#fff', textAlign: 'center'}}> Create Intervenor</ThemedText>
+                            <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenor.createIntervenor")}</ThemedText>
                         </ThemedButton>
 
                         {error && <Text style={styles.error}>{error}</Text>}
@@ -182,18 +165,18 @@ const IntervenorSearch = () => {
                         {intervenor && (
                             <ThemedCard style={{margin: 20, backgroundColor: theme.uiBackground2}}>
                                 <ThemedText title={true}>Intervenor Found</ThemedText>
-                                <ThemedText>Name: {intervenor.name}</ThemedText>
-                                <ThemedText>Contact: {intervenor.contactInfo}</ThemedText>
-                                <ThemedText>Address: {intervenor.address}</ThemedText>
-                                <ThemedText>ID Type: {intervenor.idType}</ThemedText>
-                                <ThemedText>ID Number: {intervenor.idNumber}</ThemedText>
+                                <ThemedText>{t("intervenor.name")}: {intervenor.name}</ThemedText>
+                                <ThemedText>{t("intervenor.contact")}: {intervenor.contactInfo}</ThemedText>
+                                <ThemedText>{t("intervenor.address")}: {intervenor.address}</ThemedText>
+                                <ThemedText>{t("intervenor.idType")}: {intervenor.idType}</ThemedText>
+                                <ThemedText>{t("intervenor.idNumber")}: {intervenor.idNumber}</ThemedText>
 
                                 <ThemedButton onPress={handleUpdate} style={styles.update}>
-                                    <ThemedText style={{color: '#fff', textAlign: 'center'}}> Update Informations</ThemedText>
+                                    <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenor.updateInformation")}</ThemedText>
                                 </ThemedButton>
                                 {isSelectMode &&(
                                     <ThemedButton onPress={handleAddIntervenor}>
-                                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>Add</ThemedText>
+                                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenor.add")}</ThemedText>
                                     </ThemedButton>
                                 )}
                             </ThemedCard>

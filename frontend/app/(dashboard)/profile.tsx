@@ -7,8 +7,10 @@ import ThemedButton from "../../components/ThemedButton";
 import {router} from "expo-router";
 import React from "react";
 import {useAlertExitApp} from "../../hooks/useAlertExitApp";
+import {useTranslation} from "react-i18next";
 
 const Profile = () =>{
+    const {t} = useTranslation()
     const {logout, token, user} = useAuth()
 
     useAlertExitApp()
@@ -25,17 +27,17 @@ const Profile = () =>{
         <ThemedView style={styles.container} safe={true}>
             <Spacer />
             <ThemedText title={true} style={styles.heading}>
-                Your Profile
+                {t("profile.profile")}
             </ThemedText>
 
-            <ThemedText style={styles.heading}>Name:{user?.name }</ThemedText>
-            <ThemedText style={styles.heading}>Email:{user?.email}</ThemedText>
+            <ThemedText style={styles.heading}>{t("profile.name")}:{user?.name }</ThemedText>
+            <ThemedText style={styles.heading}>{t("profile.email")}:{user?.email}</ThemedText>
 
 
             <Spacer />
 
             <ThemedButton onPress={handleLogout}>
-                <ThemedText style={{color: '#f2f2f2'}}>Logout</ThemedText>
+                <ThemedText style={{color: '#f2f2f2'}}>{t("profile.logout")}</ThemedText>
             </ThemedButton>
 
         </ThemedView>

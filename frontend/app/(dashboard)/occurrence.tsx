@@ -9,8 +9,10 @@ import {Colors} from "../../constants/Colors";
 import ThemedCard from "../../components/ThemedCard";
 import {useRouter} from "expo-router";
 import {useAlertExitApp} from "../../hooks/useAlertExitApp";
+import {useTranslation} from "react-i18next";
 
 const Occurrence = () =>{
+    const {t} = useTranslation()
     const {occurrence} = useOccurrence()
     const router = useRouter()
 
@@ -20,7 +22,7 @@ const Occurrence = () =>{
         <ThemedView style={styles.container} safe={true}>
             <Spacer />
             <ThemedText title={true} style={styles.heading}>
-                Occurrence List
+                {t("occurrence.occurrenceList")}
             </ThemedText>
 
             <Spacer />
@@ -32,9 +34,9 @@ const Occurrence = () =>{
                 renderItem={({item}) =>(
                     <Pressable onPress={()=> router.push(`/occurrences/${item.id}`)}>
                         <ThemedCard style={styles.card}>
-                            <ThemedText style={styles.title}>Initial Date:{item.initDate}</ThemedText>
-                            <ThemedText style={styles.title}>End Date:{item.endDate}</ThemedText>
-                            <ThemedText style={styles.title}>Importance:{item.importance}</ThemedText>
+                            <ThemedText style={styles.title}>{t("occurrence.initDate")}:{item.initDate}</ThemedText>
+                            <ThemedText style={styles.title}>{t("occurrence.endDate")}:{item.endDate}</ThemedText>
+                            <ThemedText style={styles.title}>{t("occurrence.importance")}:{item.importance}</ThemedText>
                         </ThemedCard>
                     </Pressable>
                 )}

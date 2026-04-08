@@ -5,6 +5,7 @@ import {AuthProvider} from "../contexts/AuthContext";
 import ThemedView from "../components/ThemedView";
 import {OccurrenceProvider} from "../contexts/OccurrenceContext";
 import {IntervenorProvider} from "../contexts/IntervenorContext";
+import "../i18next/i18next"
 
 
 const RootLayout = () => {

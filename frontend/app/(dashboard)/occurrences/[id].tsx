@@ -11,8 +11,10 @@ import ThemedLoader from "../../../components/ThemedLoader";
 import ThemedButton from "../../../components/ThemedButton";
 import {useBackRedirect} from "../../../hooks/useBackRedirect";
 import {useIntervenor} from "../../../hooks/useIntervenor";
+import {useTranslation} from "react-i18next";
 
 const OccurrenceDetails = () => {
+    const {t} = useTranslation()
     const {id} = useLocalSearchParams()
     const router = useRouter();
     const { intervenor } = useIntervenor();
@@ -57,28 +59,24 @@ const OccurrenceDetails = () => {
         <ThemedView safe={true} style={styles.container}>
             <ScrollView>
                 <ThemedCard style={styles.card}>
-                    <ThemedText title={true} style={styles.title}>Occurrence Details</ThemedText>
+                    <ThemedText title={true} style={styles.title}>{t("occurrenceDetails.occurrenceDetails")}</ThemedText>
 
-                    <ThemedText>ID: {actualOccurrence.id}</ThemedText>
+                    <ThemedText>{t("occurrenceDetails.initDate")}: {actualOccurrence.initDate}</ThemedText>
 
-                    <ThemedText>Initial Date: {actualOccurrence.initDate}</ThemedText>
+                    <ThemedText>{t("occurrenceDetails.endDate")}: {actualOccurrence.endDate}</ThemedText>
 
-                    <ThemedText>End Date: {actualOccurrence.endDate}</ThemedText>
+                    <ThemedText>{t("occurrenceDetails.importance")}: {actualOccurrence.importance}</ThemedText>
 
-                    <ThemedText>Reporter: {actualOccurrence.reporterId}</ThemedText>
-
-                    <ThemedText>Importance: {actualOccurrence.importance}</ThemedText>
-
-                    <ThemedText>Occurrence Type:</ThemedText>
+                    <ThemedText>{t("occurrenceDetails.occurrenceType")}:</ThemedText>
                     <ThemedText>{JSON.stringify(actualOccurrence.occurrenceType, null, 2)}</ThemedText>
 
-                    <ThemedText>Occurrence Info:</ThemedText>
+                    <ThemedText>{t("occurrenceDetails.occurrenceInfo")}:</ThemedText>
                     <ThemedText>{JSON.stringify(actualOccurrence.occurrenceInfo, null, 2)}</ThemedText>
                     <ThemedButton onPress={handleEvidences} style={styles.create}>
-                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>Go to Evidences</ThemedText>
+                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("occurrenceDetails.goEvidences")}</ThemedText>
                     </ThemedButton>
                     <ThemedButton onPress={handleIntervenors} style={styles.create}>
-                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>See Intervenors</ThemedText>
+                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("occurrenceDetails.seeIntervenors")}</ThemedText>
                     </ThemedButton>
                 </ThemedCard>
             </ScrollView>

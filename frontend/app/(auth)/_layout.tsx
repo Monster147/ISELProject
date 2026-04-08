@@ -3,6 +3,7 @@ import {Stack} from "expo-router";
 import {Colors} from "../../constants/Colors";
 import GuestOnly from "../../components/auth/GuestOnly";
 import ThemedView from "../../components/ThemedView";
+import "../../i18next/i18next"
 
 
 const AuthLayout = () => {

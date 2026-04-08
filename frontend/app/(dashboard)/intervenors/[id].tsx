@@ -14,16 +14,19 @@ import {Dropdown, MultiSelectDropdown} from "react-native-paper-dropdown";
 import {PaperProvider} from "react-native-paper";
 import ThemedTextInput from "../../../components/ThemedTextInput";
 import {useBackRedirect} from "../../../hooks/useBackRedirect";
-
-const MULTI_SELECT_OPTIONS = [
-    {label: "Intervenor Identifier", value: "intervenorIdentifier"},
-    {label: "Intervenor Identifier Type", value: "intervenorIdentifierType"},
-    {label: "Intervenor Name", value: "intervenorName"},
-    {label: "Intervenor Phone Number", value: "intervenorPhoneNumber"},
-    {label: "Intervenor Address", value: "intervenorAddress"},
-]
+import {useTranslation} from "react-i18next";
 
 const IntervenorUpdate = () => {
+    const {t} = useTranslation()
+
+    const MULTI_SELECT_OPTIONS = [
+        {label: t("intervenorUpdate.intervenorId"), value: "intervenorIdentifier"},
+        {label: t("intervenorUpdate.intervenorIdType"), value: "intervenorIdentifierType"},
+        {label: t("intervenorUpdate.intervenorName"), value: "intervenorName"},
+        {label: t("intervenorUpdate.intervenorPhoneNumber"), value: "intervenorPhoneNumber"},
+        {label: t("intervenorUpdate.intervenorAddress"), value: "intervenorAddress"},
+    ]
+
     const {id} = useLocalSearchParams()
     const router = useRouter()
     const [error, setError] = useState<string | null>(null);
@@ -114,8 +117,8 @@ const IntervenorUpdate = () => {
                             Update Intervenor
                         </ThemedText>
                         <MultiSelectDropdown
-                            label={"Select fields to update"}
-                            placeholder={"Select fields to update"}
+                            label={t("intervenorUpdate.selectFields")}
+                            placeholder={t("intervenorUpdate.selectFields")}
                             options={MULTI_SELECT_OPTIONS}
                             value={change}
                             onSelect={setChange}
@@ -124,7 +127,7 @@ const IntervenorUpdate = () => {
                         {change.includes("intervenorIdentifier") && (
                             <ThemedTextInput
                                 style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2}}
-                                placeholder="Enter ID Number"
+                                placeholder={t("intervenorUpdate.enterIdNumber")}
                                 onChangeText={setIdentifier}
                                 value={identifier}
                             />
@@ -133,7 +136,7 @@ const IntervenorUpdate = () => {
                         {change.includes("intervenorIdentifierType") && (
                             <ThemedTextInput
                                 style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2}}
-                                placeholder="Enter ID Type"
+                                placeholder={t("intervenorUpdate.enterIdType")}
                                 onChangeText={setIdentifierType}
                                 value={identifierType}
                             />
@@ -142,7 +145,7 @@ const IntervenorUpdate = () => {
                         {change.includes("intervenorName") && (
                             <ThemedTextInput
                                 style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2}}
-                                placeholder="Enter name"
+                                placeholder={t("intervenorUpdate.enterName")}
                                 onChangeText={setName}
                                 value={name}
                             />
@@ -151,7 +154,7 @@ const IntervenorUpdate = () => {
                         {change.includes("intervenorPhoneNumber") && (
                             <ThemedTextInput
                                 style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2}}
-                                placeholder="Enter phone number"
+                                placeholder={t("intervenorUpdate.enterPhoneNumber")}
                                 keyboardType="phone-pad"
                                 onChangeText={setPhoneNumber}
                                 value={phoneNumber}
@@ -161,19 +164,19 @@ const IntervenorUpdate = () => {
                         {change.includes("intervenorAddress") && (
                             <ThemedTextInput
                                 style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2}}
-                                placeholder="Enter address"
+                                placeholder={t("intervenorUpdate.enterAddress")}
                                 onChangeText={setAddress}
                                 value={address}
                             />
                         )}
 
                         {change && <ThemedButton onPress={handleUpdate} style={styles.update}>
-                            <ThemedText style={{color: '#fff', textAlign: 'center'}}>Save changes</ThemedText>
+                            <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenorUpdate.save")}</ThemedText>
                         </ThemedButton>
                         }
 
                         <ThemedButton onPress={() => router.back()} style={styles.error}>
-                            <ThemedText style={{color: '#fff', textAlign: 'center'}}> Cancel</ThemedText>
+                            <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenorUpdate.cancel")}</ThemedText>
                         </ThemedButton>
                     </ThemedCard>
                 </ScrollView>
