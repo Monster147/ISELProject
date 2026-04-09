@@ -100,6 +100,32 @@ const es = {
             remove: "Eliminar",
             addIntervenors: "Añadir intervinientes",
         },
+        errorResponse: {
+            duplicateUsersIds: "La lista de IDs de usuario proporcionada contiene duplicados. Asegúrate de que cada ID de usuario sea único e inténtalo de nuevo.",
+            emailAlreadyInUse: "Ya existe un usuario con la dirección de correo electrónico indicada.",
+            endDateNotValid: "La fecha de finalización proporcionada no es válida. Asegúrate de que la fecha de finalización sea hoy o una fecha futura e inténtalo de nuevo.",
+            evidenceNotFound: "No se encontró esa evidencia. Comprueba la evidencia e inténtalo de nuevo. Si el problema continúa, ponte en contacto con el soporte para obtener más ayuda.",
+            insecurePassword: "¡Esa es una contraseña absurda, sin ninguna protección!",
+            internalError: "Se produjo un error interno inesperado.",
+            allDicesAreSelected: "Todos los dados ya han sido seleccionados.",
+            intervenorAlreadyExists: "Ya existe un interviniente con el mismo nombre. Elige un nombre diferente o actualiza la información del interviniente existente.",
+            intervenorAlreadyInOccurrence: "Ese interviniente ya está asociado a esta ocurrencia.",
+            intervenorNotFound: "No se encontró ese interviniente. Comprueba el ID o los datos de contacto e inténtalo de nuevo.",
+            intervenorNotInOccurrence: "Ese interviniente no está asociado a esta ocurrencia.",
+            occurrenceNotAssignedToUser: "Esta ocurrencia no está asignada a tu cuenta, por lo que no puedes crear un informe para ella.",
+            occurrenceNotFound: "No se encontró ninguna ocurrencia con la información proporcionada.",
+            reporterNotFound: "No se encontró a ese investigador en el sistema. Comprueba la información del investigador e inténtalo de nuevo. Si el problema persiste, ponte en contacto con el soporte para obtener más ayuda.",
+            roleAlreadyExists: "Ese rol ya existe. Elige un nombre diferente para el rol que estás intentando crear.",
+            roleNotFound: "No se encontró ningún rol o el rol no existe.",
+            userNotAdmin: "El usuario no está autorizado para realizar esta acción. Se requieren privilegios de administrador.",
+            userNotFound: "Usuario no encontrado.",
+            userOrPasswordAreInvalid: "Usuario o contraseña inválidos. Comprueba tus credenciales e inténtalo de nuevo.",
+        },
+        importance: {
+            NORMAL: "Normal",
+            URGENT: "Urgente",
+            CRITICAL: "Crítico"
+        }
     },
 };
 

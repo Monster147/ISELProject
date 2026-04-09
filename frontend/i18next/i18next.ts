@@ -4,6 +4,7 @@ import {getLocales} from "expo-localization";
 import {I18nManager} from "react-native";
 import en from "./locales/en";
 import pt from "./locales/pt";
+import es from "./locales/es";
 
 export const lng = getLocales()[0].languageCode ?? "en"
 
@@ -15,7 +16,8 @@ i18n
         // or even better, manage them via a UI: https://react.i18next.com/guides/multiple-translation-files#manage-your-translations-with-a-management-gui)
         resources: {
             en,
-            pt
+            pt,
+            es
         },
         lng, // if you're using a language detector, do not define the lng option
         fallbackLng: "en",

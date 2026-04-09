@@ -99,6 +99,32 @@ const en = {
             intervenorAddress:"Intervenor Address",
             remove:"remove",
             addIntervenors:"Add Intervenors",
+        },
+        errorResponse: {
+            duplicateUsersIds:"The provided list of user IDs contains duplicates. Please ensure each user ID is unique and try again.",
+            emailAlreadyInUse:"There is already a user with given email address.",
+            endDateNotValid:"The provided end date is not valid. Please ensure the end date is today or a future date and try again.",
+            evidenceNotFound:"That evidence was not found. Please check the evidence and try again. If you continue to experience issues, please contact support for further assistance.",
+            insecurePassword:"That is an absurd password without any guard!",
+            internalError:"An unexpected internal error occurred.",
+            allDicesAreSelected:"All dice have already been selected.",
+            intervenorAlreadyExists:"That intervenor with the same name already exists. Please choose a different name or update the existing intervenor's information instead.",
+            intervenorAlreadyInOccurrence:"That intervenor is already associated with this occurrence.",
+            intervenorNotFound:"That intervenor was not found. Please check the ID or contact info and try again.",
+            intervenorNotInOccurrence:"That intervenor is not associated with this occurrence.",
+            occurrenceNotAssignedToUser:"This occurrence is not assigned to your account, so you can't create a report for it.",
+            occurrenceNotFound:"No occurrence was found with the provided information.",
+            reporterNotFound:"That investigator is not found in the system. Please check the reporter's information and try again. If the problem persists, contact support for further assistance.",
+            roleAlreadyExists:"That role already exists. Please choose a different name for the role you are trying to create.",
+            roleNotFound:"No role was found or role does not exist.",
+            userNotAdmin:"User is not authorized to perform this action. Admin privileges are required.",
+            userNotFound:"User not found",
+            userOrPasswordAreInvalid:"Invalid user or password. Please check your credentials and try again.",
+        },
+        importance: {
+            NORMAL: "Normal",
+            URGENT: "Urgent",
+            CRITICAL: "Critical"
         }
     }
 }

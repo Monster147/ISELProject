@@ -36,7 +36,12 @@ const Occurrence = () =>{
                         <ThemedCard style={styles.card}>
                             <ThemedText style={styles.title}>{t("occurrence.initDate")}:{item.initDate}</ThemedText>
                             <ThemedText style={styles.title}>{t("occurrence.endDate")}:{item.endDate}</ThemedText>
-                            <ThemedText style={styles.title}>{t("occurrence.importance")}:{item.importance}</ThemedText>
+                            <ThemedText style={styles.title}>
+                                {t("occurrence.importance")}:
+                                <ThemedText style={{color: importanceColors[item.importance] || "black"}}>
+                                    {t(`importance.${item.importance}`)}
+                                </ThemedText>
+                            </ThemedText>
                         </ThemedCard>
                     </Pressable>
                 )}
@@ -48,6 +53,12 @@ const Occurrence = () =>{
 }
 
 export default Occurrence
+
+const importanceColors: Record<string, string> = {
+    NORMAL: "green",
+    URGENT: "yellow",
+    CRITICAL: "red"
+};
 
 const styles = StyleSheet.create({
     container:{

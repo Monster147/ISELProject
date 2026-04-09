@@ -114,6 +114,32 @@ const pt = {
             intervenorAddress: "Morada do interveniente",
             remove: "Remover",
             addIntervenors: "Adicionar intervenientes",
+        },
+        errorResponse: {
+            duplicateUsersIds: "A lista de IDs de utilizador fornecida contém duplicados. Garante que cada ID de utilizador é único e tenta novamente.",
+            emailAlreadyInUse: "Já existe um utilizador com o endereço de e-mail indicado.",
+            endDateNotValid: "A data de fim fornecida não é válida. Garante que a data de fim é hoje ou uma data futura e tenta novamente.",
+            evidenceNotFound: "Essa evidência não foi encontrada. Verifica a evidência e tenta novamente. Se o problema persistir, contacta o suporte para obter assistência adicional.",
+            insecurePassword: "Essa é uma palavra-passe absurda, sem qualquer proteção!",
+            internalError: "Ocorreu um erro interno inesperado.",
+            allDicesAreSelected: "Todos os dados já foram selecionados.",
+            intervenorAlreadyExists: "Já existe um interveniente com o mesmo nome. Escolhe um nome diferente ou atualiza a informação do interveniente existente.",
+            intervenorAlreadyInOccurrence: "Esse interveniente já está associado a esta ocorrência.",
+            intervenorNotFound: "Esse interveniente não foi encontrado. Verifica o ID ou os contactos e tenta novamente.",
+            intervenorNotInOccurrence: "Esse interveniente não está associado a esta ocorrência.",
+            occurrenceNotAssignedToUser: "Esta ocorrência não está associada à tua conta, por isso não podes criar um relatório para ela.",
+            occurrenceNotFound: "Não foi encontrada nenhuma ocorrência com a informação fornecida.",
+            reporterNotFound: "Esse investigador não foi encontrado no sistema. Verifica a informação do investigador e tenta novamente. Se o problema persistir, contacta o suporte para obter assistência adicional.",
+            roleAlreadyExists: "Esse cargo/função já existe. Escolhe um nome diferente para o cargo/função que estás a tentar criar.",
+            roleNotFound: "Não foi encontrado nenhum cargo/função ou o cargo/função não existe.",
+            userNotAdmin: "O utilizador não tem autorização para executar esta ação. São necessários privilégios de administrador.",
+            userNotFound: "Utilizador não encontrado.",
+            userOrPasswordAreInvalid: "Utilizador ou palavra-passe inválidos. Verifica as tuas credenciais e tenta novamente.",
+        },
+        importance: {
+            NORMAL: "Normal",
+            URGENT: "Urgente",
+            CRITICAL: "Crítico"
         }
     }
 }

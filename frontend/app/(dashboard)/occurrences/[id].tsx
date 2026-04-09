@@ -65,7 +65,7 @@ const OccurrenceDetails = () => {
 
                     <ThemedText>{t("occurrenceDetails.endDate")}: {actualOccurrence.endDate}</ThemedText>
 
-                    <ThemedText>{t("occurrenceDetails.importance")}: {actualOccurrence.importance}</ThemedText>
+                    <ThemedText>{t("occurrenceDetails.importance")}: {t(`importance.${actualOccurrence.importance}`)}</ThemedText>
 
                     <ThemedText>{t("occurrenceDetails.occurrenceType")}:</ThemedText>
                     <ThemedText>{JSON.stringify(actualOccurrence.occurrenceType, null, 2)}</ThemedText>
