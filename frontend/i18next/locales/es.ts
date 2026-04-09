@@ -125,7 +125,25 @@ const es = {
             NORMAL: "Normal",
             URGENT: "Urgente",
             CRITICAL: "Crítico"
-        }
+        },
+        exitApp: {
+            title: "Atención!",
+            message: "Seguro que quieres salir de la aplicación?",
+            cancel: "Cancelar",
+            confirm: "Sí",
+        },
+        logout: {
+            title: "Atención!",
+            message: "Seguro que quieres cerrar sesión?",
+            cancel: "Cancelar",
+            confirm: "Sí",
+        },
+        removeIntervenor: {
+            title: "Atención!",
+            message: "Seguro que quieres eliminar al interviniente de la ocurrencia?",
+            cancel: "Cancelar",
+            confirm: "Sí",
+        },
     },
 };
 

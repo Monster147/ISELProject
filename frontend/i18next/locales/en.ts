@@ -125,7 +125,25 @@ const en = {
             NORMAL: "Normal",
             URGENT: "Urgent",
             CRITICAL: "Critical"
-        }
+        },
+        exitApp:{
+            title:"Hold on!",
+            message:"Are you sure you want to go leave the app?",
+            cancel:"Cancel",
+            confirm:"Yes",
+        },
+        logout:{
+            title: "Hold on!",
+            message:"Are you sure you want to logout?",
+            cancel:"Cancel",
+            confirm: "Yes",
+        },
+        removeIntervenor:{
+            title: "Hold on!",
+            message:"Are you sure you want to remove the intervenor from the occurrence?",
+            cancel:"Cancel",
+            confirm: "Yes",
+        },
     }
 }
 

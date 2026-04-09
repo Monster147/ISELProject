@@ -140,7 +140,25 @@ const pt = {
             NORMAL: "Normal",
             URGENT: "Urgente",
             CRITICAL: "Crítico"
-        }
+        },
+        exitApp: {
+            title: "Atenção!",
+            message: "Tem a certeza que quer sair da aplicação?",
+            cancel: "Cancelar",
+            confirm: "Sim",
+        },
+        logout: {
+            title: "Atenção!",
+            message: "Tem a certeza que quer terminar sessão?",
+            cancel: "Cancelar",
+            confirm: "Sim",
+        },
+        removeIntervenor: {
+            title: "Atenção!",
+            message: "Tem a certeza que quer remover o interveniente da ocorrência?",
+            cancel: "Cancelar",
+            confirm: "Sim",
+        },
     }
 }
 

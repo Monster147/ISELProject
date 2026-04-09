@@ -13,6 +13,7 @@ import {useIntervenor} from "../../../../hooks/useIntervenor";
 import Spacer from "../../../../components/Spacer";
 import {useState} from "react";
 import {useTranslation} from "react-i18next";
+import {confirmAction} from "../../../../utils/confirmAction";
 
 const OccurrenceIntervenors = () => {
     const {t} = useTranslation()
@@ -50,7 +51,19 @@ const OccurrenceIntervenors = () => {
         actualOccurrence.intervenors.includes(i.id)
     )
 
-    const handleRemove = async (intervenorId: number) =>{
+    const handleRemove = (intervenorId: number) => {
+        confirmAction(
+            () => handleRemover(intervenorId),
+            {
+                title: t("removeIntervenor.title"),
+                message: t("removeIntervenor.message"),
+                cancelText: t("removeIntervenor.cancel"),
+                confirmText: t("removeIntervenor.confirm"),
+            }
+        );
+    };
+
+    const handleRemover = async (intervenorId: number) =>{
         try {
             setLoading(true)
             await removeIntervenorFromOccurrence(intervenorId, occurrenceId)

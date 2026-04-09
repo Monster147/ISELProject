@@ -8,6 +8,7 @@ import {router} from "expo-router";
 import React from "react";
 import {useAlertExitApp} from "../../hooks/useAlertExitApp";
 import {useTranslation} from "react-i18next";
+import {confirmAction} from "../../utils/confirmAction";
 
 const Profile = () =>{
     const {t} = useTranslation()
@@ -16,11 +17,15 @@ const Profile = () =>{
     useAlertExitApp()
 
     const handleLogout = async () => {
-        console.log(user)
-        console.log(token)
-        await logout();
-        console.log(user)
-        console.log(token)
+        confirmAction(
+            async ()=> await logout(),
+            {
+                title: t("logout.title"),
+                message: t("logout.message"),
+                confirmText: t("logout.confirm"),
+                cancelText: t("logout.cancel")
+            }
+        )
     };
 
     return(
