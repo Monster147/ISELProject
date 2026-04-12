@@ -1,4 +1,3 @@
-import {API_BASE_URL} from "./api_base_url";
 import {UserInput} from "../models/user/UserInput";
 import {UserCreateTokenOutputModel} from "../models/user/UserCreateTokenOutputModel";
 import {UserCreateTokenInputModel} from "../models/user/UserCreateTokenInputModel";
@@ -30,8 +29,11 @@ const defaultGetErrorDescription = (errorType: string): string => errorType;
 
 let getAuthInfo = defaultGetAuthInfo;
 let resolveErrorDescription = defaultGetErrorDescription;
+let API_BASE_URL = ""
 
-export function configureApi(config: ApiRuntimeConfig): void {
+export function configureApi(config: ApiRuntimeConfig, apiURL:string): void {
+    API_BASE_URL= apiURL
+
     if (config.getAuthInfo) {
         getAuthInfo = config.getAuthInfo;
     }

@@ -1,0 +1,32 @@
+import i18n from "i18next";
+
+export const errorDescriptions: Record<string, string> = {
+    "duplicate-users-ids": "errorResponse.duplicateUsersIds",
+    "email-already-in-use": "errorResponse.emailAlreadyInUse",
+    "end-date-not-valid": "errorResponse.endDateNotValid",
+    "evidence-not-found": "errorResponse.evidenceNotFound",
+    "insecure-password": "errorResponse.insecurePassword",
+    "internal-error": "errorResponse.internalError",
+    "all-dices-are-selected": "errorResponse.allDicesAreSelected",
+    "intervenor-already-exists": "errorResponse.intervenorAlreadyExists",
+    "intervenor-already-in-occurrence": "errorResponse.intervenorAlreadyInOccurrence",
+    "intervenor-not-found": "errorResponse.intervenorNotFound",
+    "intervenor-not-in-occurrence": "errorResponse.intervenorNotInOccurrence",
+    "occurrence-not-assigned-to-user": "errorResponse.occurrenceNotAssignedToUser",
+    "occurrence-not-found": "errorResponse.occurrenceNotFound",
+    "reporter-not-found": "errorResponse.reporterNotFound",
+    "role-already-exists": "errorResponse.roleAlreadyExists",
+    "role-not-found": "errorResponse.roleNotFound",
+    "user-not-admin": "errorResponse.userNotAdmin",
+    "user-not-found": "errorResponse.userNotFound",
+    "user-or-password-are-invalid": "errorResponse.userOrPasswordAreInvalid",
+};
+
+export function getErrorDescription(errorType: string): string {
+    const key = errorDescriptions[errorType];
+    if (!key) {
+        return errorType;
+    }
+
+    return i18n.t(key);
+}

@@ -1,7 +1,8 @@
 import {useReducer} from "react";
 import {useNavigate} from "react-router";
-import {useAuth} from "../contexts-desktop/AuthContext";
+import {useAuth} from "../contexts/AuthContext";
 import {api, ApiError} from "@commons/api/api";
+import {useTranslation} from "react-i18next";
 
 type LoginState = {
     email: string;
@@ -56,6 +57,7 @@ const initState: LoginState = {
 };
 
 export function Login() {
+    const {t} = useTranslation()
     const [state, dispatch] = useReducer(reduce, initState);
     const {login} = useAuth();
     const navigate = useNavigate()
@@ -65,15 +67,14 @@ export function Login() {
         dispatch({type: "post"});
 
         try {
-            const response = await api.createToken({
-                email: state.email,
-                password: state.password,
-            });
+            console.log("antes")
             await login(state.email, state.password);
+            console.log("depois")
             dispatch({type: "success"});
             navigate("/");
         } catch (err) {
-            if (err instanceof ApiError) {
+            console.log("erro")
+            if (err instanceof Error) {
                 dispatch({type: "error", message: err.message});
             } else {
                 dispatch({
@@ -90,7 +91,7 @@ export function Login() {
             <form className="auth-form" onSubmit={handleSubmit}>
                 <div className="form-field">
                     <label>
-                        Email
+                        {t("login.email")}
                         <input
                             type="email"
                             name="email"
@@ -109,7 +110,7 @@ export function Login() {
                 </div>
                 <div className="form-field">
                     <label>
-                        Password
+                        {t("login.password")}
                         <input
                             type="password"
                             name="password"
@@ -136,7 +137,7 @@ export function Login() {
                 >
                     {state.stage === "posting"
                         ? "Logging in..."
-                        : "Login"}
+                        : t("login.login")}
                 </button>
             </form>
         </div>

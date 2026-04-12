@@ -3,12 +3,6 @@ import {api, configureApi} from "@commons/api/api";
 import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
 import {User} from "@commons/models/user/User";
 import {userInfoRepo} from "../infrastructure/UserInfoPreferencesRepo";
-import {getErrorDescription} from "../errors/ErrorDescriptions";
-
-configureApi({
-    getAuthInfo: () => authInfoRepo.getAuthInfo(),
-    getErrorDescription,
-});
 
 type AuthContextValue = {
     token: string | null;

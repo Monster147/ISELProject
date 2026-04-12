@@ -1,7 +1,9 @@
-import {useAuth} from "../contexts-desktop/AuthContext";
+import {useAuth} from "../contexts/AuthContext";
 import {Link, Outlet, useNavigate} from "react-router";
+import {useTranslation} from "react-i18next";
 
 export function Home() {
+    const {t} = useTranslation()
     const {user, logout} = useAuth();
     const navigate = useNavigate();
 
@@ -12,10 +14,10 @@ export function Home() {
 
     return (
         <div className="home-container">
-            <h1 className="home-title">Home</h1>
+            <h1 className="home-title">{t("home.appName")}</h1>
 
             <nav className="home-nav">
-                <Link className="nav-link" to="/">Home Screen</Link>
+                <Link className="nav-link" to="/">{t("home.appName")}</Link>
                 <span className="nav-separator">/</span>
             </nav>
 
@@ -31,9 +33,9 @@ export function Home() {
                     </>
                 ) : (
                     <>
-                        <Link className="nav-link" to="/login">Login</Link>
+                        <Link className="nav-link" to="/login">{t("home.login")}</Link>
                         <span className="nav-separator">/</span>
-                        <Link className="nav-link" to="/register">Register</Link>
+                        <Link className="nav-link" to="/register">{t("home.register")}</Link>
                     </>
                 )}
             </div>
