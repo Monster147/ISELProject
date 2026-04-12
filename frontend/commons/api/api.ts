@@ -1,5 +1,4 @@
 import {API_BASE_URL} from "./api_base_url";
-import {getErrorDescription} from "../../movel/errors/ErrorDescriptions";
 import {UserInput} from "../models/user/UserInput";
 import {UserCreateTokenOutputModel} from "../models/user/UserCreateTokenOutputModel";
 import {UserCreateTokenInputModel} from "../models/user/UserCreateTokenInputModel";
@@ -16,10 +15,31 @@ import {CreateEvidenceInput} from "../models/evidence/CreateEvidenceInput";
 import {Evidence} from "../models/evidence/Evidence";
 import {Json} from "../models/utils/Json";
 import {Report} from "../models/report/Report";
-import {authInfoRepo} from "../../movel/infrastructure/AuthInfoPreferencesRepo";
 import {OccurrenceCreateInput} from "../models/occurrence/OccurrenceCreateInput";
-import {OccurrenceType} from "../models/occurrence/OccurrenceType";
 import {Occurrence} from "../models/occurrence/Occurrence";
+
+type ApiAuthInfo = { token: string } | null;
+
+type ApiRuntimeConfig = {
+    getAuthInfo?: () => Promise<ApiAuthInfo>;
+    getErrorDescription?: (errorType: string) => string;
+};
+
+const defaultGetAuthInfo = async (): Promise<ApiAuthInfo> => null;
+const defaultGetErrorDescription = (errorType: string): string => errorType;
+
+let getAuthInfo = defaultGetAuthInfo;
+let resolveErrorDescription = defaultGetErrorDescription;
+
+export function configureApi(config: ApiRuntimeConfig): void {
+    if (config.getAuthInfo) {
+        getAuthInfo = config.getAuthInfo;
+    }
+
+    if (config.getErrorDescription) {
+        resolveErrorDescription = config.getErrorDescription;
+    }
+}
 
 export class ApiError extends Error {
     constructor(public status: number, message: string) {
@@ -28,7 +48,7 @@ export class ApiError extends Error {
 }
 
 export async function getAuthHeaders(): Promise<HeadersInit> {
-    const authInfo = await authInfoRepo.getAuthInfo();
+    const authInfo = await getAuthInfo();
     const token = authInfo?.token;
     return token ? { Authorization: `Bearer ${token}` } : {};
 }
@@ -50,7 +70,7 @@ export async function fetchApi<T>(
             .json()
             .catch(() => ({ title: "Unknown error" }));
         const errorMessage = error.title
-            ? getErrorDescription(error.title)
+            ? resolveErrorDescription(error.title)
             : response.statusText;
         throw new ApiError(response.status, errorMessage);
     }

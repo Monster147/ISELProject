@@ -1,14 +1,8 @@
-import {createContext, useEffect, useState} from "react";
-import {api, configureApi} from "@commons/api/api";
+import {createContext, useContext, useEffect, useState} from "react";
+import {api} from "@commons/api/api";
 import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
 import {User} from "@commons/models/user/User";
 import {userInfoRepo} from "../infrastructure/UserInfoPreferencesRepo";
-import {getErrorDescription} from "../errors/ErrorDescriptions";
-
-configureApi({
-    getAuthInfo: () => authInfoRepo.getAuthInfo(),
-    getErrorDescription,
-});
 
 type AuthContextValue = {
     token: string | null;
@@ -21,7 +15,7 @@ type AuthContextValue = {
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
-export function AuthProvider({children}) {
+export function AuthProvider({children}: { children: React.ReactNode }) {
     const [token, setToken] = useState<string | null>(null)
     const [user, setUser] = useState<User| null>(null)
     const [isAuthLoading, setIsAuthLoading] = useState(true);
@@ -89,4 +83,12 @@ export function AuthProvider({children}) {
             {children}
         </AuthContext.Provider>
     )
+}
+
+export function useAuth() {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error("useAuth must be used within AuthProvider");
+    }
+    return context;
 }
