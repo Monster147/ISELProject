@@ -1,10 +1,8 @@
 import {createContext, useEffect, useMemo, useState} from "react";
-import {api, ApiError, fetchApi, getAuthHeaders} from "../api/api";
+import {api, ApiError, fetchApi, getAuthHeaders} from "@commons/api/api";
 import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
-import {User} from "../models/user/User";
 import {userInfoRepo} from "../infrastructure/UserInfoPreferencesRepo";
-import {Intervenor} from "../models/intervenor/Intervenor";
-import {intervenorInfoRepo} from "../infrastructure/IntervenorPreferencesRepo";
+import {Intervenor} from "@commons/models/intervenor/Intervenor";
 
 type IntervenorContextValue = {
     createIntervenor: (idNumber: string, idType: string, name: string, contactInfo: string, address: string) => Promise<void>;

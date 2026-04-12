@@ -1,4 +1,4 @@
-@token_user = CHFqg-hg3OWIEGbmS-tDPC2ZwkUlrIevo0jGlq0mLsg=
+@token_user = CtTCjbtKjCY3yGS1tSQgJLUe4pIPqklCjKVYjtmpdx4=
 
 ###  Create User
 POST http://localhost:8080/api/user

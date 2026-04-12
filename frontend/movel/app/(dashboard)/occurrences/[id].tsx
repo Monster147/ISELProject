@@ -5,7 +5,6 @@ import ThemedText from "../../../components/ThemedText";
 import {useLocalSearchParams, useRouter} from "expo-router";
 import {useOccurrence} from "../../../hooks/useOccurrence";
 import {useEffect, useState} from "react";
-import {Occurrence} from "../../../models/occurrence/Occurrence";
 import ThemedCard from "../../../components/ThemedCard";
 import ThemedLoader from "../../../components/ThemedLoader";
 import ThemedButton from "../../../components/ThemedButton";

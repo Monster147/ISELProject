@@ -1,5 +1,5 @@
 import {API_BASE_URL} from "./api_base_url";
-import {getErrorDescription} from "../errors/ErrorDescriptions";
+import {getErrorDescription} from "../../movel/errors/ErrorDescriptions";
 import {UserInput} from "../models/user/UserInput";
 import {UserCreateTokenOutputModel} from "../models/user/UserCreateTokenOutputModel";
 import {UserCreateTokenInputModel} from "../models/user/UserCreateTokenInputModel";
@@ -16,7 +16,7 @@ import {CreateEvidenceInput} from "../models/evidence/CreateEvidenceInput";
 import {Evidence} from "../models/evidence/Evidence";
 import {Json} from "../models/utils/Json";
 import {Report} from "../models/report/Report";
-import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
+import {authInfoRepo} from "../../movel/infrastructure/AuthInfoPreferencesRepo";
 import {OccurrenceCreateInput} from "../models/occurrence/OccurrenceCreateInput";
 import {OccurrenceType} from "../models/occurrence/OccurrenceType";
 import {Occurrence} from "../models/occurrence/Occurrence";

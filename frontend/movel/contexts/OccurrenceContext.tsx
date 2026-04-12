@@ -1,9 +1,8 @@
 import {createContext, useEffect, useMemo, useState} from "react";
-import {api, ApiError, fetchApi, getAuthHeaders} from "../api/api";
+import {api, ApiError, fetchApi, getAuthHeaders} from "@commons/api/api";
 import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
-import {User} from "../models/user/User";
 import {userInfoRepo} from "../infrastructure/UserInfoPreferencesRepo";
-import { Occurrence } from "../models/occurrence/Occurrence";
+import { Occurrence } from "@commons/models/occurrence/Occurrence";
 import {useAuth} from "../hooks/useAuth";
 
 

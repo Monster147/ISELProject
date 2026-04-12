@@ -8,7 +8,7 @@ import {Colors} from "../../../constants/Colors";
 import {useFocusEffect, useLocalSearchParams, useRouter} from "expo-router";
 import {useCallback, useEffect, useState} from "react";
 import {useIntervenor} from "../../../hooks/useIntervenor";
-import {Intervenor} from "../../../models/intervenor/Intervenor";
+import {Intervenor} from "@commons/models/intervenor/Intervenor";
 import Spacer from "../../../components/Spacer";
 import {Dropdown, MultiSelectDropdown} from "react-native-paper-dropdown";
 import {PaperProvider} from "react-native-paper";

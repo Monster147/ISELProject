@@ -1,7 +1,7 @@
 import {createContext, useEffect, useMemo, useState} from "react";
-import {api, ApiError, fetchApi, getAuthHeaders} from "../api/api";
+import {api, ApiError, fetchApi, getAuthHeaders} from "@commons/api/api";
 import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
-import {User} from "../models/user/User";
+import {User} from "@commons/models/user/User";
 import {userInfoRepo} from "../infrastructure/UserInfoPreferencesRepo";
 
 type AuthContextValue = {

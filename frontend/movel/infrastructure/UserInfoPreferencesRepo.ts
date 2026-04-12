@@ -4,7 +4,7 @@ import { MMKV } from 'react-native-mmkv'
 const storage = new MMKV()
 */
 import * as SecureStore from 'expo-secure-store'
-import {User} from "../models/user/User";
+import {User} from "../../commons/models/user/User";
 
 export interface UserInfo{
     id: number;
