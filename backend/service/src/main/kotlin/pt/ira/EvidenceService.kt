@@ -11,7 +11,7 @@ import pt.ira.storage.StorageService
 sealed class EvidenceError {
     data object EvidenceNotFound : EvidenceError()
 
-    data object ReportNotFound : EvidenceError()
+    data object OccurrenceNotFound : EvidenceError()
 
     data object ReporterNotFound : EvidenceError()
 
@@ -41,15 +41,15 @@ class EvidenceService(
         location: String,
         description: String,
         reporterId: Int,
-        reportId: Int,
+        occurrenceId: Int,
     ): Either<EvidenceError, Evidence> {
         return trxManager.run {
             repoUsers.findById(reporterId) ?: return@run failure(EvidenceError.ReporterNotFound)
-            repoReport.findById(reportId) ?: return@run failure(EvidenceError.ReportNotFound)
+            repoOccurrence.findById(occurrenceId) ?: return@run failure(EvidenceError.OccurrenceNotFound)
             if (file.isEmpty) return@run failure(EvidenceError.InvalidFile)
             if (file.contentType !in allowedExtensions) return@run failure(EvidenceError.InvalidFile)
 
-            val filePath = storageService.save(reportId, file)
+            val filePath = storageService.save(occurrenceId, file)
 
             val evidence =
                 repoEvidence.createEvidence(
@@ -57,7 +57,7 @@ class EvidenceService(
                     location = location,
                     description = description,
                     reporterId = reporterId,
-                    reportId = reportId,
+                    occurrenceId = occurrenceId,
                     type = type,
                 )
             success(evidence)
@@ -87,9 +87,9 @@ class EvidenceService(
         }
     }
 
-    fun findByReportId(reportId: Int): List<Evidence> {
+    fun findByOccurrenceId(occurrenceId: Int): List<Evidence> {
         return trxManager.run {
-            repoEvidence.findByReportId(reportId)
+            repoEvidence.findByOccurrenceId(occurrenceId)
         }
     }
 

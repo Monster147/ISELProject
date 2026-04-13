@@ -7,5 +7,5 @@ data class CreateEvidenceInput(
     val location: String,
     val description: String,
     val reporterId: Int,
-    val reportId: Int,
+    val occurrenceId: Int,
 )

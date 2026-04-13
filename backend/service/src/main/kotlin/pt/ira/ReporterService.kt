@@ -132,8 +132,13 @@ class ReportService(
                 repoReport.findById(id)
                     ?: return@run failure(ReportError.ReportNotFound)
 
+            val occurrence = repoOccurrence.findById(report.occurrenceId).let{
+                check(it != null)
+                it
+            }
+
             repoReport.deleteById(report.id)
-            storageService.deleteReportEvidences(report.id)
+            storageService.deleteOccurrenceEvidences(occurrence.id)
             success(true)
         }
     }

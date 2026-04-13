@@ -81,7 +81,7 @@ CREATE TABLE dbo.evidence
     location                VARCHAR(255)       NOT NULL,
     description             TEXT               NOT NULL,
     reporter_id             INT                REFERENCES dbo.users (id) ON DELETE CASCADE,
-    report_id               INT                REFERENCES dbo.report (id) ON DELETE CASCADE,
+    occurrence_id           INT                REFERENCES dbo.occurrence (id) ON DELETE CASCADE,
     created_at              bigint             NOT NULL,
     updated_at              bigint             NOT NULL
 );

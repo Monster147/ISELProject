@@ -13,7 +13,7 @@ class RepositoryEvidenceMem : RepositoryEvidence {
         location: String,
         description: String,
         reporterId: Int,
-        reportId: Int,
+        occurrenceId: Int,
     ): Evidence =
         Evidence(
             id = evidences.size + 1,
@@ -22,10 +22,10 @@ class RepositoryEvidenceMem : RepositoryEvidence {
             location = location,
             description = description,
             reporterId = reporterId,
-            reportId = reportId,
+            occurrenceId = occurrenceId,
         ).also { evidences.add(it) }
 
-    override fun findByReportId(reportId: Int): List<Evidence> = evidences.filter { it.reportId == reportId }
+    override fun findByOccurrenceId(occurrenceId: Int): List<Evidence> = evidences.filter { it.occurrenceId == occurrenceId }
 
     override fun findByReporterId(reporterId: Int): List<Evidence> = evidences.filter { it.reporterId == reporterId }
 

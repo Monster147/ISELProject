@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile
 
 interface StorageService {
     fun save(
-        reportId: Int,
+        occurrenceId: Int,
         file: MultipartFile,
     ): String
 
@@ -13,5 +13,5 @@ interface StorageService {
 
     fun deleteEvidence(path: String): Boolean
 
-    fun deleteReportEvidences(reportId: Int): Boolean
+    fun deleteOccurrenceEvidences(occurrenceId: Int): Boolean
 }

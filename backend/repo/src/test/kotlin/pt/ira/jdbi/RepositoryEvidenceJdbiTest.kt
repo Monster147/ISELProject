@@ -33,7 +33,7 @@ class RepositoryEvidenceJdbiTest {
     fun setup() {
         trxManager.run {
             repoEvidence.clear()
-            repoReport.clear()
+            repoOccurrence.clear()
             repoUsers.clear()
         }
     }
@@ -50,16 +50,6 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceType = mapper.readTree("""{"type":"fire"}"""),
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
-            val report =
-                repoReport.createReport(
-                    creatorId = user.id,
-                    occurrenceId = occurrence.id,
-                    title = "Title",
-                    description = "Desc",
-                    type = json("""{"type":"R"}"""),
-                    addons = json("""{}"""),
-                    intervenors = emptyList(),
-                )
 
             val evidence =
                 repoEvidence.createEvidence(
@@ -68,7 +58,7 @@ class RepositoryEvidenceJdbiTest {
                     location = "Lisbon",
                     description = "desc",
                     reporterId = user.id,
-                    reportId = report.id,
+                    occurrenceId = occurrence.id,
                 )
 
             val found = repoEvidence.findById(evidence.id)
@@ -100,11 +90,8 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val r1 = repoReport.createReport(u1.id, occurrence1.id, "R1", "Desc1", json("""{}"""), json("""{}"""), emptyList())
-            val r2 = repoReport.createReport(u2.id, occurrence2.id, "R2", "Desc2", json("""{}"""), json("""{}"""), emptyList())
-
-            val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, r1.id)
-            val e2 = repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, r2.id)
+            val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, occurrence1.id)
+            val e2 = repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, occurrence2.id)
 
             val all = repoEvidence.findAll()
             assertEquals(listOf(e1, e2), all)
@@ -112,7 +99,7 @@ class RepositoryEvidenceJdbiTest {
     }
 
     @Test
-    fun `findByReportId returns correct evidences`() {
+    fun `findByOccurrenceId returns correct evidences`() {
         trxManager.run {
             val u1 = repoUsers.createUser("U1", "u1@isel.pt", PasswordValidationInfo("hash"), listOf(1))
             val u2 = repoUsers.createUser("U2", "u2@isel.pt", PasswordValidationInfo("hash"), listOf(1))
@@ -134,13 +121,10 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val r1 = repoReport.createReport(u1.id, occurrence1.id, "R1", "Desc", json("""{}"""), json("""{}"""), emptyList())
-            val r2 = repoReport.createReport(u2.id, occurrence2.id, "R2", "Desc", json("""{}"""), json("""{}"""), emptyList())
+            val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, occurrence1.id)
+            repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, occurrence2.id)
 
-            val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, r1.id)
-            repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, r2.id)
-
-            val result = repoEvidence.findByReportId(r1.id)
+            val result = repoEvidence.findByOccurrenceId(occurrence1.id)
             assertEquals(listOf(e1), result)
         }
     }
@@ -160,10 +144,8 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val report = repoReport.createReport(u1.id, occurrence1.id, "Shared", "Desc", json("""{}"""), json("""{}"""), emptyList())
-
-            val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, report.id)
-            repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, report.id)
+            val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, occurrence1.id)
+            repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, occurrence1.id)
 
             val result = repoEvidence.findByReporterId(u1.id)
             assertEquals(listOf(e1), result)
@@ -184,13 +166,11 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val report = repoReport.createReport(user.id, occurrence.id, "R", "Desc", json("""{}"""), json("""{}"""), emptyList())
-
             val typeA = json("""{"type":"A"}""")
             val typeB = json("""{"type":"B"}""")
 
-            val e1 = repoEvidence.createEvidence(typeA, "f1", "L1", "d1", user.id, report.id)
-            repoEvidence.createEvidence(typeB, "f2", "L2", "d2", user.id, report.id)
+            val e1 = repoEvidence.createEvidence(typeA, "f1", "L1", "d1", user.id, occurrence.id)
+            repoEvidence.createEvidence(typeB, "f2", "L2", "d2", user.id, occurrence.id)
 
             val result = repoEvidence.findByType(typeA)
             assertEquals(listOf(e1), result)
@@ -211,10 +191,8 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val report = repoReport.createReport(user.id, occurrence.id, "R", "Desc", json("""{}"""), json("""{}"""), emptyList())
-
-            val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "Lisbon", "d1", user.id, report.id)
-            repoEvidence.createEvidence(json("""{}"""), "f2", "Porto", "d2", user.id, report.id)
+            val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "Lisbon", "d1", user.id, occurrence.id)
+            repoEvidence.createEvidence(json("""{}"""), "f2", "Porto", "d2", user.id, occurrence.id)
 
             val result = repoEvidence.findByLocation("Lisbon")
             assertEquals(listOf(e1), result)
@@ -234,9 +212,7 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val report = repoReport.createReport(user.id, occurrence.id, "R", "Desc", json("""{}"""), json("""{}"""), emptyList())
-
-            val e = repoEvidence.createEvidence(json("""{}"""), "f", "L", "d", user.id, report.id)
+            val e = repoEvidence.createEvidence(json("""{}"""), "f", "L", "d", user.id, occurrence.id)
             repoEvidence.deleteById(e.id)
             assertNull(repoEvidence.findById(e.id))
         }
@@ -255,9 +231,7 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val report = repoReport.createReport(user.id, occurrence.id, "R", "Desc", json("""{}"""), json("""{}"""), emptyList())
-
-            val e = repoEvidence.createEvidence(json("""{}"""), "f", "L", "d", user.id, report.id)
+            val e = repoEvidence.createEvidence(json("""{}"""), "f", "L", "d", user.id, occurrence.id)
             val updated = e.copy(description = "updated")
             repoEvidence.save(updated)
             assertEquals("updated", repoEvidence.findById(e.id)?.description)
@@ -287,11 +261,8 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val r1 = repoReport.createReport(u1.id, occurrence1.id, "R1", "Desc1", json("""{}"""), json("""{}"""), emptyList())
-            val r2 = repoReport.createReport(u2.id, occurrence2.id, "R2", "Desc2", json("""{}"""), json("""{}"""), emptyList())
-
-            repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, r1.id)
-            repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, r2.id)
+            repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, occurrence1.id)
+            repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, occurrence2.id)
 
             repoEvidence.clear()
             assertTrue(repoEvidence.findAll().isEmpty())

@@ -53,6 +53,4 @@ local.properties
 
 package-lock.json
 
-backend/service/uploads
-backend/http/uploads
-backend/app/uploads
+uploads

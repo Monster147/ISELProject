@@ -36,7 +36,7 @@ class EvidenceControllerTest {
         trxManager.run {
             repoEvidence.clear()
             repoUsers.clear()
-            repoReport.clear()
+            repoOccurrence.clear()
         }
     }
 
@@ -52,9 +52,8 @@ class EvidenceControllerTest {
     fun `create evidence success`() {
         val userId = createUser()
         val occurrenceId = createOccurrenceForUser(userId)
-        val reportId = createReport(userId, occurrenceId)
 
-        val input = createEvidenceInput(userId, reportId)
+        val input = createEvidenceInput(userId, occurrenceId)
         val file = createFile()
 
         val resp = controller.createEvidence(file, input)
@@ -67,9 +66,8 @@ class EvidenceControllerTest {
     fun `create evidence reporter not found`() {
         val userId = createUser()
         val occurrenceId = createOccurrenceForUser(userId)
-        val reportId = createReport(userId, occurrenceId)
 
-        val input = createEvidenceInput(999, reportId)
+        val input = createEvidenceInput(999, occurrenceId)
         val file = createFile()
 
         val resp = controller.createEvidence(file, input)
@@ -78,7 +76,7 @@ class EvidenceControllerTest {
     }
 
     @Test
-    fun `create evidence report not found`() {
+    fun `create evidence occurrence not found`() {
         val userId = createUser()
 
         val input = createEvidenceInput(userId, 999)
@@ -91,7 +89,9 @@ class EvidenceControllerTest {
 
     @Test
     fun `find evidence by id success`() {
-        val evidenceId = createEvidence()
+        val userId = createUser()
+        val occurrenceId = createOccurrenceForUser(userId)
+        val evidenceId = createEvidence(userId, occurrenceId)
 
         val resp = controller.findById(evidenceId)
 
@@ -108,8 +108,10 @@ class EvidenceControllerTest {
 
     @Test
     fun `find all evidence`() {
-        createEvidence()
-        createEvidence()
+        val userId = createUser()
+        val occurrenceId = createOccurrenceForUser(userId)
+        createEvidence(userId, occurrenceId)
+        createEvidence(userId, occurrenceId)
 
         val resp = controller.findAll()
 
@@ -119,14 +121,13 @@ class EvidenceControllerTest {
     }
 
     @Test
-    fun `find by report id`() {
+    fun `find by occurrence id`() {
         val userId = createUser()
         val occurrenceId = createOccurrenceForUser(userId)
-        val reportId = createReport(userId, occurrenceId)
 
-        createEvidence(userId, reportId)
+        createEvidence(userId, occurrenceId)
 
-        val resp = controller.findByReportId(reportId)
+        val resp = controller.findByOccurrenceId(occurrenceId)
 
         val list = resp.body as List<*>
         assertEquals(1, list.size)
@@ -136,9 +137,8 @@ class EvidenceControllerTest {
     fun `find by reporter id`() {
         val userId = createUser()
         val occurrenceId = createOccurrenceForUser(userId)
-        val reportId = createReport(userId, occurrenceId)
 
-        createEvidence(userId, reportId)
+        createEvidence(userId, occurrenceId)
 
         val resp = controller.findByReporterId(userId)
 
@@ -151,9 +151,8 @@ class EvidenceControllerTest {
         val userId = createUser()
 
         val occurrenceId = createOccurrenceForUser(userId)
-        val reportId = createReport(userId, occurrenceId)
 
-        createEvidence(userId, reportId, location = "Lisbon")
+        createEvidence(userId, occurrenceId, location = "Lisbon")
 
         val resp = controller.findByLocation("Lisbon")
 
@@ -166,11 +165,10 @@ class EvidenceControllerTest {
         val userId = createUser()
 
         val occurrenceId = createOccurrenceForUser(userId)
-        val reportId = createReport(userId, occurrenceId)
 
         val type = mapper.readTree("""{"t":"A"}""")
 
-        createEvidence(userId, reportId, type = type)
+        createEvidence(userId, occurrenceId, type = type)
 
         val resp = controller.findByType(type)
 
@@ -187,22 +185,6 @@ class EvidenceControllerTest {
             ).id
         }
 
-    private fun createReport(
-        userId: Int,
-        occurrence: Occurrence,
-    ): Int =
-        trxManager.run {
-            repoReport.createReport(
-                creatorId = userId,
-                occurrenceId = occurrence.id,
-                title = "title",
-                description = "desc",
-                type = occurrence.occurrenceType,
-                addons = mapper.readTree("""{}"""),
-                intervenors = occurrence.intervenors,
-            ).id
-        }
-
     private fun createOccurrenceForUser(userId: Int) =
         trxManager.run {
             repoOccurrence.createOccurrence(
@@ -211,19 +193,19 @@ class EvidenceControllerTest {
                 importance = OccurrenceType.NORMAL,
                 occurrenceType = mapper.readTree("""{"type":"base"}"""),
                 occurrenceInfo = mapper.readTree("""{}"""),
-            )
+            ).id
         }
 
     private fun createEvidence(
-        userId: Int = createUser(),
-        reportId: Int = createReport(userId, createOccurrenceForUser(userId)),
+        userId: Int,
+        occurrenceId: Int,
         location: String = "loc",
         type: JsonNode = mapper.readTree("""{"t":"x"}"""),
     ): Int {
         val file = createFile()
         return controller.createEvidence(
             file,
-            createEvidenceInput(userId, reportId, location, type),
+            createEvidenceInput(userId, occurrenceId, location, type),
         ).let { resp ->
             val locationHeader = requireNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
             locationHeader.substringAfterLast("/").toInt()
@@ -232,7 +214,7 @@ class EvidenceControllerTest {
 
     private fun createEvidenceInput(
         userId: Int,
-        reportId: Int,
+        occurrenceId: Int,
         location: String = "loc",
         type: JsonNode = mapper.readTree("""{"t":"x"}"""),
     ) = CreateEvidenceInput(
@@ -240,6 +222,6 @@ class EvidenceControllerTest {
         location = location,
         description = "desc",
         reporterId = userId,
-        reportId = reportId,
+        occurrenceId = occurrenceId,
     )
 }

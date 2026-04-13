@@ -16,14 +16,14 @@ class RepositoryEvidenceJdbi(
         location: String,
         description: String,
         reporterId: Int,
-        reportId: Int,
+        occurrenceId: Int,
     ): Evidence {
         val now = System.currentTimeMillis()
         val id =
             handle.createUpdate(
                 """
-                INSERT INTO dbo.evidence (type, file_path, location, description, reporter_id, report_id, created_at, updated_at)
-                VALUES (:type::jsonb, :file_path, :location, :description, :reporter_id, :report_id, :created_at, :updated_at)
+                INSERT INTO dbo.evidence (type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at)
+                VALUES (:type::jsonb, :file_path, :location, :description, :reporter_id, :occurrence_id, :created_at, :updated_at)
                 RETURNING id
                 """.trimIndent(),
             )
@@ -32,7 +32,7 @@ class RepositoryEvidenceJdbi(
                 .bind("location", location)
                 .bind("description", description)
                 .bind("reporter_id", reporterId)
-                .bind("report_id", reportId)
+                .bind("occurrence_id", occurrenceId)
                 .bind("created_at", now)
                 .bind("updated_at", now)
                 .executeAndReturnGeneratedKeys()
@@ -46,28 +46,28 @@ class RepositoryEvidenceJdbi(
             location = location,
             description = description,
             reporterId = reporterId,
-            reportId = reportId,
+            occurrenceId = occurrenceId,
             createdAt = now,
             updatedAt = now,
         )
     }
 
-    override fun findByReportId(reportId: Int): List<Evidence> =
+    override fun findByOccurrenceId(occurrenceId: Int): List<Evidence> =
         handle.createQuery(
             """
-            SELECT id, type, file_path, location, description, reporter_id, report_id, created_at, updated_at
+            SELECT id, type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at
             FROM dbo.evidence
-            WHERE report_id = :report_id
+            WHERE occurrence_id = :occurrence_id
             """.trimIndent(),
         )
-            .bind("report_id", reportId)
+            .bind("occurrence_id", occurrenceId)
             .map { rs, _ -> mapRowToEvidence(rs) }
             .list()
 
     override fun findByReporterId(reporterId: Int): List<Evidence> =
         handle.createQuery(
             """
-            SELECT id, type, file_path, location, description, reporter_id, report_id, created_at, updated_at
+            SELECT id, type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at
             FROM dbo.evidence
             WHERE reporter_id = :reporter_id
             """.trimIndent(),
@@ -79,7 +79,7 @@ class RepositoryEvidenceJdbi(
     override fun findByType(type: JsonNode): List<Evidence> =
         handle.createQuery(
             """
-            SELECT id, type, file_path, location, description, reporter_id, report_id, created_at, updated_at
+            SELECT id, type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at
             FROM dbo.evidence
             WHERE type = :type::jsonb
             """.trimIndent(),
@@ -91,7 +91,7 @@ class RepositoryEvidenceJdbi(
     override fun findByLocation(location: String): List<Evidence> =
         handle.createQuery(
             """
-            SELECT id, type, file_path, location, description, reporter_id, report_id, created_at, updated_at
+            SELECT id, type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at
             FROM dbo.evidence
             WHERE location = :location
             """.trimIndent(),
@@ -103,7 +103,7 @@ class RepositoryEvidenceJdbi(
     override fun findById(id: Int): Evidence? =
         handle.createQuery(
             """
-            SELECT id, type, file_path, location, description, reporter_id, report_id, created_at, updated_at
+            SELECT id, type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at
             FROM dbo.evidence
             WHERE id = :id
             """.trimIndent(),
@@ -115,7 +115,7 @@ class RepositoryEvidenceJdbi(
     override fun findAll(): List<Evidence> =
         handle.createQuery(
             """
-            SELECT id, type, file_path, location, description, reporter_id, report_id, created_at, updated_at
+            SELECT id, type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at
             FROM dbo.evidence
             ORDER BY id
             """.trimIndent(),
@@ -132,7 +132,7 @@ class RepositoryEvidenceJdbi(
                 location = :location,
                 description = :description,
                 reporter_id = :reporter_id,
-                report_id = :report_id,
+                occurrence_id = :occurrence_id,
                 updated_at = :updated_at
             WHERE id = :id
             """.trimIndent(),
@@ -142,7 +142,7 @@ class RepositoryEvidenceJdbi(
             .bind("location", entity.location)
             .bind("description", entity.description)
             .bind("reporter_id", entity.reporterId)
-            .bind("report_id", entity.reportId)
+            .bind("occurrence_id", entity.occurrenceId)
             .bind("updated_at", entity.updatedAt)
             .bind("id", entity.id)
             .execute()
@@ -167,7 +167,7 @@ class RepositoryEvidenceJdbi(
         val location = rs.getString("location")
         val description = rs.getString("description")
         val reporterId = rs.getInt("reporter_id")
-        val reportId = rs.getInt("report_id")
+        val occurrenceId = rs.getInt("occurrence_id")
         val createdAt = rs.getLong("created_at")
         val updatedAt = rs.getLong("updated_at")
 
@@ -180,7 +180,7 @@ class RepositoryEvidenceJdbi(
             location = location,
             description = description,
             reporterId = reporterId,
-            reportId = reportId,
+            occurrenceId = occurrenceId,
             createdAt = createdAt,
             updatedAt = updatedAt,
         )

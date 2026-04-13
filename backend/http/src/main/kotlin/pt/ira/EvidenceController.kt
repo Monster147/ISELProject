@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import pt.ira.evindence.Evidence
 import pt.ira.model.Problem
 import pt.ira.model.evidence.CreateEvidenceInput
 
@@ -33,7 +34,7 @@ class EvidenceController(
                 data.location,
                 data.description,
                 data.reporterId,
-                data.reportId,
+                data.occurrenceId,
             )
         return when (result) {
             is Success ->
@@ -45,8 +46,8 @@ class EvidenceController(
                     ).build<Unit>()
             is Failure ->
                 when (result.value) {
-                    is EvidenceError.ReportNotFound ->
-                        Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
+                    is EvidenceError.OccurrenceNotFound ->
+                        Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
                     is EvidenceError.ReporterNotFound ->
                         Problem.ReporterNotFound.response(HttpStatus.NOT_FOUND)
                     is EvidenceError.InvalidFile ->
@@ -107,11 +108,11 @@ class EvidenceController(
         }
     }
 
-    @GetMapping("/byReport/{reportId}")
-    fun findByReportId(
-        @PathVariable reportId: Int,
+    @GetMapping("/byOccurrence/{occurrenceId}")
+    fun findByOccurrenceId(
+        @PathVariable occurrenceId: Int,
     ): ResponseEntity<*> {
-        val result = evidenceService.findByReportId(reportId)
+        val result = evidenceService.findByOccurrenceId(occurrenceId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(result)
@@ -170,7 +171,8 @@ class EvidenceController(
                 when (result.value) {
                     is EvidenceError.EvidenceNotFound ->
                         Problem.EvidenceNotFound.response(HttpStatus.NOT_FOUND)
-
+                    is EvidenceError.OccurrenceNotFound ->
+                        Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }

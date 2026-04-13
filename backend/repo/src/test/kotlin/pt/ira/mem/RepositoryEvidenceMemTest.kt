@@ -49,11 +49,11 @@ class RepositoryEvidenceMemTest {
     }
 
     @Test
-    fun `findByReportId returns correct evidences`() {
+    fun `findByOccurrenceId returns correct evidences`() {
         val e1 = repo.createEvidence(json("""{}"""), "f1", "L1", "d1", 1, 100)
         repo.createEvidence(json("""{}"""), "f2", "L2", "d2", 1, 200)
 
-        val result = repo.findByReportId(100)
+        val result = repo.findByOccurrenceId(100)
 
         assertEquals(listOf(e1), result)
     }

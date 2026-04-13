@@ -18,13 +18,13 @@ class FileSystemStorageService : StorageService {
     }
 
     override fun save(
-        reportId: Int,
+        occurrenceId: Int,
         file: MultipartFile,
     ): String {
         val reportDir =
             root
-                .resolve("reports")
-                .resolve(reportId.toString())
+                .resolve("occurrences")
+                .resolve(occurrenceId.toString())
                 .resolve("evidences")
         Files.createDirectories(reportDir)
 
@@ -71,11 +71,11 @@ class FileSystemStorageService : StorageService {
         }
     }
 
-    override fun deleteReportEvidences(reportId: Int): Boolean {
+    override fun deleteOccurrenceEvidences(occurrenceId: Int): Boolean {
         val reportDir =
             root
-                .resolve("reports")
-                .resolve(reportId.toString())
+                .resolve("occurrences")
+                .resolve(occurrenceId.toString())
                 .normalize()
         if (!reportDir.startsWith(root)) return false
 
