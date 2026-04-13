@@ -5,7 +5,7 @@ import Spacer from "../../components/Spacer";
 import {useOccurrence} from "../../hooks/useOccurrence";
 import {useAuth} from "../../hooks/useAuth";
 import {useEffect} from "react";
-import {Colors} from "../../constants/Colors";
+import {Colors} from "@commons/constants/Colors";
 import ThemedCard from "../../components/ThemedCard";
 import {useRouter} from "expo-router";
 import {useAlertExitApp} from "../../hooks/useAlertExitApp";

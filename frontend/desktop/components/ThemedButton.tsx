@@ -1,6 +1,5 @@
 import {Pressable, StyleSheet} from "react-native";
 import {Colors} from "@commons/constants/Colors";
-import Login from "../app/(auth)/login";
 
 function ThemedButton({style, ...props}) {
     return (

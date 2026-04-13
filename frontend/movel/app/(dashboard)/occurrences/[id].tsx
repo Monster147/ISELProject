@@ -1,6 +1,6 @@
 import {Animated, StyleSheet, ScrollView} from "react-native";
 import ThemedView from "../../../components/ThemedView";
-import {Colors} from "../../../constants/Colors";
+import {Colors} from "@commons/constants/Colors";
 import ThemedText from "../../../components/ThemedText";
 import {useLocalSearchParams, useRouter} from "expo-router";
 import {useOccurrence} from "../../../hooks/useOccurrence";

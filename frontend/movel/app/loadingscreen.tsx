@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, Image, StyleSheet, Animated, Easing } from "react-native";
 import { Redirect } from "expo-router";
 import { useAuth } from "../hooks/useAuth";
-import Logo from "../assets/img/isel.png";
+import Logo from "@commons/img/isel.png";
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
 import Spacer from "../components/Spacer";

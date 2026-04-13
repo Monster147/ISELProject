@@ -1,19 +1,19 @@
 import {Keyboard, StyleSheet, Text, TouchableWithoutFeedback} from "react-native";
-import ThemedView from "../../components/ThemedView";
-import ThemedText from "../../components/ThemedText";
-import Spacer from "../../components/Spacer";
-import {Link, router} from "expo-router";
-import ThemedButton from "../../components/ThemedButton";
-import ThemedTextInput from "../../components/ThemedTextInput";
+import ThemedView from "../../../components/ThemedView";
+import ThemedText from "../../../components/ThemedText";
+import Spacer from "../../../components/Spacer";
+import {Link, useNavigate} from "react-router";
+import ThemedButton from "../../../components/ThemedButton";
+import ThemedTextInput from "../../../components/ThemedTextInput";
 import {useState} from "react";
 import {useAuth} from "../../hooks/useAuth";
 import {Colors} from "@commons/constants/Colors";
-import {useBackRedirect} from "../../hooks/useBackRedirect";
 import {useTranslation} from "react-i18next";
 
 const Register = () => {
     const {t} = useTranslation()
 
+    const navigate= useNavigate()
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -21,9 +21,6 @@ const Register = () => {
     const [error, setError] = useState<string | null>(null);
 
     const {register} = useAuth()
-
-    useBackRedirect("/home")
-
 
     const checkErrors = ():boolean =>{
         if (name.trim() === '') {
@@ -50,14 +47,14 @@ const Register = () => {
         if(checkErrors()) return
         try {
             await register(name, email, password)
-            router.replace("/occurrence");
+            navigate("/occurrence");
         } catch (err) {
             if (err instanceof Error) setError(err.message);
             else setError(String(err));
         }
     }
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <TouchableWithoutFeedback>
             <ThemedView style={styles.container}>
                 <Spacer/>
                 <ThemedText title={true} style={styles.title}>
@@ -102,7 +99,7 @@ const Register = () => {
                 {error && <Text style={styles.error}>{error}</Text> }
 
                 <Spacer height={25}/>
-                <Link href='/login'>
+                <Link to='/login'>
                     <ThemedText style={{textAlign: 'center'}}>
                         {t("register.login")}
                     </ThemedText>

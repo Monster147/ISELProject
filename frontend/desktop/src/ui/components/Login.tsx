@@ -1,145 +1,122 @@
-import {useReducer} from "react";
-import {useNavigate} from "react-router";
-import {useAuth} from "../contexts/AuthContext";
-import {api, ApiError} from "@commons/api/api";
+import {StyleSheet, Pressable, Text, TextInput, TouchableWithoutFeedback, Keyboard, ActivityIndicator} from "react-native";
+import ThemedView from "../../../components/ThemedView";
+import ThemedText from "../../../components/ThemedText";
+import Spacer from "../../../components/Spacer";
+import {Link, useNavigate} from "react-router";
+import {Colors} from "@commons/constants/Colors";
+import ThemedButton from "../../../components/ThemedButton";
+import ThemedTextInput from "../../../components/ThemedTextInput";
+import {useState} from "react";
+import {useAuth} from "../../hooks/useAuth";
+//import {useBackRedirect} from "../../hooks/useBackRedirect";
 import {useTranslation} from "react-i18next";
 
-type LoginState = {
-    email: string;
-    password: string;
-    error: string | undefined;
-    stage: "editing" | "posting" | "succeed" | "failed";
-};
-
-type LoginAction =
-    | { type: "input-change"; email: string; password: string }
-    | { type: "post" }
-    | { type: "success" }
-    | { type: "error"; message: string };
-
-function reduce(state: LoginState, action: LoginAction): LoginState {
-    switch (action.type) {
-        case "input-change":
-            return {
-                ...state,
-                email: action.email,
-                password: action.password,
-            };
-        case "post":
-            return {
-                ...state,
-                stage: "posting",
-                error: undefined,
-            };
-        case "success":
-            return {
-                email: "",
-                password: "",
-                error: undefined,
-                stage: "succeed",
-            };
-        case "error":
-            return {
-                ...state,
-                stage: "failed",
-                error: action.message,
-            };
-        default:
-            return state;
-    }
-}
-
-const initState: LoginState = {
-    email: "",
-    password: "",
-    error: undefined,
-    stage: "editing",
-};
-
-export function Login() {
+const Login = () => {
     const {t} = useTranslation()
-    const [state, dispatch] = useReducer(reduce, initState);
-    const {login} = useAuth();
-    const navigate = useNavigate()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        dispatch({type: "post"});
+    //useBackRedirect("/home")
 
-        try {
-            console.log("antes")
-            await login(state.email, state.password);
-            console.log("depois")
-            dispatch({type: "success"});
-            navigate("/");
-        } catch (err) {
-            console.log("erro")
-            if (err instanceof Error) {
-                dispatch({type: "error", message: err.message});
-            } else {
-                dispatch({
-                    type: "error",
-                    message: "An error occurred during login",
-                });
-            }
+    const {login} = useAuth()
+
+    const checkErrors = (): boolean =>{
+        if (email.trim() === '') {
+            setError(t("login.emailEmpty"))
+            return true
         }
-    };
+        if (password.trim() === '') {
+            setError(t("login.passwordEmpty"))
+            return true
+        }
+        return false
+    }
+
+    const handleSubmit = async () => {
+        setError(null)
+        if(checkErrors()) return
+        try {
+            await login(email, password)
+            navigate("/occurrence");
+        } catch (err: any) {
+            console.log(err.message)
+            if (err instanceof Error) setError(err.message);
+            else setError(String(err));
+        }
+    }
 
     return (
-        <div className="auth-container">
-            <h2>Login</h2>
-            <form className="auth-form" onSubmit={handleSubmit}>
-                <div className="form-field">
-                    <label>
-                        {t("login.email")}
-                        <input
-                            type="email"
-                            name="email"
-                            value={state.email}
-                            onChange={(e) =>
-                                dispatch({
-                                    type: "input-change",
-                                    email: e.target.value,
-                                    password: state.password,
-                                })
-                            }
-                            required
-                            autoComplete="email"
-                        />
-                    </label>
-                </div>
-                <div className="form-field">
-                    <label>
-                        {t("login.password")}
-                        <input
-                            type="password"
-                            name="password"
-                            value={state.password}
-                            onChange={(e) =>
-                                dispatch({
-                                    type: "input-change",
-                                    email: state.email,
-                                    password: e.target.value,
-                                })
-                            }
-                            required
-                            autoComplete="current-password"
-                        />
-                    </label>
-                </div>
-                {state.error && (
-                    <div className="form-error">{state.error}</div>
-                )}
-                <button
-                    className="submit-button"
-                    type="submit"
-                    disabled={state.stage === "posting"}
-                >
-                    {state.stage === "posting"
-                        ? "Logging in..."
-                        : t("login.login")}
-                </button>
-            </form>
-        </div>
-    );
+        <TouchableWithoutFeedback>
+            <ThemedView style={styles.container}>
+                <Spacer/>
+                <ThemedText title={true} style={styles.title}>
+                    {t("login.loginText")}
+                </ThemedText>
+
+                <ThemedTextInput
+                    style={{width: '80%', margin: 20}}
+                    placeholder={t("login.email")}
+                    keyboardType="email-address"
+                    onChangeText={setEmail}
+                    value={email}
+                />
+                <ThemedTextInput
+                    style={{width: '80%', margin: 20}}
+                    placeholder={t("login.password")}
+                    onChangeText={setPassword}
+                    value={password}
+                    secureTextEntry
+                />
+
+                <ThemedButton onPress={handleSubmit}>
+                    <Text style={{color: 'f2f2f2'}}>{t("login.login")}</Text>
+                </ThemedButton>
+
+                <Spacer/>
+
+                {error && <Text style={styles.error}>{error}</Text> }
+
+                <Spacer height={25}/>
+                <Link to='/register'>
+                    <ThemedText style={{textAlign: 'center'}}>
+                        {t("login.register")}
+                    </ThemedText>
+                </Link>
+
+            </ThemedView>
+        </TouchableWithoutFeedback>
+    )
 }
+
+export default Login
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    title: {
+        fontWeight: 'bold',
+        fontSize: 18,
+        color: 'purple'
+    },
+    btn: {
+        backgroundColor: Colors.primary,
+        padding: 15,
+        borderRadius: 5,
+    },
+    pressed: {
+        opacity: 0.9
+    },
+    error:{
+        color: Colors.warning,
+        padding: 10,
+        backgroundColor: '#f5c1c8',
+        borderColor: Colors.warning,
+        borderWidth: 1,
+        borderRadius: 6,
+        marginHorizontal: 10,
+    }
+})

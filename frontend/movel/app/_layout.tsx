@@ -1,6 +1,6 @@
 import {StyleSheet, Text, useColorScheme, View} from "react-native";
 import {Stack} from "expo-router";
-import {Colors} from "../constants/Colors";
+import {Colors} from "@commons/constants/Colors";
 import {AuthProvider} from "../contexts/AuthContext";
 import ThemedView from "../components/ThemedView";
 import {OccurrenceProvider} from "../contexts/OccurrenceContext";

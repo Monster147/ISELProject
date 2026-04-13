@@ -1,6 +1,6 @@
 import {StatusBar, StyleSheet, Text, useColorScheme, View} from "react-native";
 import {Stack, Tabs} from "expo-router";
-import {Colors} from "../../constants/Colors";
+import {Colors} from "@commons/constants/Colors";
 import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 import UserOnly from "../../components/auth/UserOnly";
 import "../../i18next/i18next"

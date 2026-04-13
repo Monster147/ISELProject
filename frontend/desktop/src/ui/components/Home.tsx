@@ -1,48 +1,63 @@
-import {useAuth} from "../contexts/AuthContext";
-import {Link, Outlet, useNavigate} from "react-router";
+import {StyleSheet, Image} from "react-native"
+import {Link } from "react-router";
+import ThemedView from "../../../components/ThemedView";
+import Spacer from "../../../components/Spacer";
+import ThemedText from "../../../components/ThemedText";
 import {useTranslation} from "react-i18next";
+import Logo from "../../../../commons/img/isel.png"
 
-export function Home() {
+
+const Home = () =>{
     const {t} = useTranslation()
-    const {user, logout} = useAuth();
-    const navigate = useNavigate();
 
-    const handleLogout = () => {
-        logout()
-        navigate("/login");
-    };
+    //useAlertExitApp()
 
     return (
-        <div className="home-container">
-            <h1 className="home-title">{t("home.appName")}</h1>
+        <ThemedView style={styles.container}>
+            <Image source={Logo}/>
+            <Spacer height={20}/>
 
-            <nav className="home-nav">
-                <Link className="nav-link" to="/">{t("home.appName")}</Link>
-                <span className="nav-separator">/</span>
-            </nav>
+            <Spacer height={10}/>
+            <ThemedText title={true}> {t("home.appName")} </ThemedText>
+            <Spacer/>
 
-            <div className="home-auth">
-                {user ? (
-                    <>
-                        <Link className="profile-link" to="/profile">
-                            {user.name}
-                        </Link>
-                        <button className="logout-button" onClick={handleLogout}>
-                            Logout
-                        </button>
-                    </>
-                ) : (
-                    <>
-                        <Link className="nav-link" to="/login">{t("home.login")}</Link>
-                        <span className="nav-separator">/</span>
-                        <Link className="nav-link" to="/register">{t("home.register")}</Link>
-                    </>
-                )}
-            </div>
-
-            <main className="home-content">
-                <Outlet />
-            </main>
-        </div>
-    );
+            <Link to="/login" style={styles.link}>
+                <ThemedText>{t("home.login")}</ThemedText>
+            </Link>
+            <Link to="/register" style={styles.link}>
+                <ThemedText>{t("home.register")}</ThemedText>
+            </Link>
+            <Link to="/about" style={styles.link}>
+                <ThemedText>{t("home.about")}</ThemedText>
+            </Link>
+            <Link to="/contact" style={styles.link}>
+                <ThemedText>{t("home.contact")}</ThemedText>
+            </Link>
+        </ThemedView>
+    )
 }
+
+export default Home
+
+const styles = StyleSheet.create({
+    container:{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    title:{
+        fontWeight: 'bold',
+        fontSize: 18,
+        color: 'purple'
+    },
+    cart:{
+        backgroundColor: '#eee',
+        padding: 20,
+        borderRadius: 5,
+        boxShadow: '4px 4px rgba(0,0,0,0.1)'
+    },
+    link: {
+        marginVertical: 10,
+        borderBottomWidth: 1,
+    }
+})

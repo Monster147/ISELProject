@@ -4,7 +4,7 @@ import ThemedText from "../../../components/ThemedText";
 import ThemedButton from "../../../components/ThemedButton";
 import ThemedCard from "../../../components/ThemedCard";
 import ThemedLoader from "../../../components/ThemedLoader";
-import {Colors} from "../../../constants/Colors";
+import {Colors} from "@commons/constants/Colors";
 import {useFocusEffect, useLocalSearchParams, useRouter} from "expo-router";
 import {useCallback, useEffect, useState} from "react";
 import {useIntervenor} from "../../../hooks/useIntervenor";

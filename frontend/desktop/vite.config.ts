@@ -42,6 +42,10 @@ export default defineConfig({
     resolve: {
         alias: {
             '@commons': path.resolve(__dirname, '../commons'),
+            'react-native': 'react-native-web',
         }
-    }
+    },
+    optimizeDeps: {
+        exclude: ["react-native"],
+    },
 })

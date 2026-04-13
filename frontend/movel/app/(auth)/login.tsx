@@ -11,7 +11,7 @@ import ThemedView from "../../components/ThemedView";
 import ThemedText from "../../components/ThemedText";
 import Spacer from "../../components/Spacer";
 import {Link, router} from "expo-router";
-import {Colors} from "../../constants/Colors";
+import {Colors} from "@commons/constants/Colors";
 import ThemedButton from "../../components/ThemedButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import {useState} from "react";

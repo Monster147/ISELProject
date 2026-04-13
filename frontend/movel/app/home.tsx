@@ -1,6 +1,6 @@
 import {StyleSheet, Image} from "react-native"
 import {Link, Redirect} from 'expo-router'
-import Logo from '../assets/img/isel.png'
+import Logo from '@commons/img/isel.png'
 import ThemedView from "../components/ThemedView";
 import Spacer from "../components/Spacer";
 import ThemedText from "../components/ThemedText";
