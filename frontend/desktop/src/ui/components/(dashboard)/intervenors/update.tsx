@@ -1,19 +1,16 @@
 import {Animated, StyleSheet, Text, TextInput, ScrollView, useColorScheme} from "react-native";
-import ThemedView from "../../../components/ThemedView";
-import ThemedText from "../../../components/ThemedText";
-import ThemedButton from "../../../components/ThemedButton";
-import ThemedCard from "../../../components/ThemedCard";
-import ThemedLoader from "../../../components/ThemedLoader";
+import ThemedView from "../../../../../components/ThemedView";
+import ThemedText from "../../../../../components/ThemedText";
+import ThemedButton from "../../../../../components/ThemedButton";
+import ThemedCard from "../../../../../components/ThemedCard";
+import ThemedLoader from "../../../../../components/ThemedLoader";
 import {Colors} from "@commons/constants/Colors";
-import {useFocusEffect, useLocalSearchParams, useRouter} from "expo-router";
+import { useNavigate, useParams } from "react-router";
 import {useCallback, useEffect, useState} from "react";
-import {useIntervenor} from "../../../hooks/useIntervenor";
+import {useIntervenor} from "../../../../hooks/useIntervenor";
 import {Intervenor} from "@commons/models/intervenor/Intervenor";
-import Spacer from "../../../components/Spacer";
-import {Dropdown, MultiSelectDropdown} from "react-native-paper-dropdown";
-import {PaperProvider} from "react-native-paper";
-import ThemedTextInput from "../../../components/ThemedTextInput";
-import {useBackRedirect} from "../../../hooks/useBackRedirect";
+import Select from "react-select";
+import ThemedTextInput from "../../../../../components/ThemedTextInput";
 import {useTranslation} from "react-i18next";
 
 const IntervenorUpdate = () => {
@@ -27,19 +24,17 @@ const IntervenorUpdate = () => {
         {label: t("intervenorUpdate.intervenorAddress"), value: "intervenorAddress"},
     ]
 
-    const {id} = useLocalSearchParams()
-    const router = useRouter()
+    const {intervenorId} = useParams()
+    const navigate = useNavigate()
     const [error, setError] = useState<string | null>(null);
     const [change, setChange] = useState<string[]>([]);
     const selected = (key: string) => change.includes(key);
-
-    useBackRedirect("/intervenor")
 
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme] ?? Colors.light;
 
     const {findIntervenorById, updateIntervenor} = useIntervenor();
-    const intervenorId = Number(id)
+    const intervenorIdNumber = Number(intervenorId)
 
     const [intervenor, setIntervenor] = useState<Intervenor | null>(null);
     const [name, setName] = useState<string | null>(null)
@@ -53,7 +48,7 @@ const IntervenorUpdate = () => {
         const load = async () => {
             try {
                 setLoading(true)
-                const intervenorData = await findIntervenorById(intervenorId)
+                const intervenorData = await findIntervenorById(intervenorIdNumber)
                 setIntervenor(intervenorData)
                 setName(intervenorData.name)
                 setIdentifier(intervenorData.idNumber)
@@ -68,14 +63,14 @@ const IntervenorUpdate = () => {
             }
         }
         load()
-    }, [intervenorId])
+    }, [intervenorIdNumber])
 
     const handleUpdate = async () => {
         try {
             setError(null);
             setLoading(true);
-            await updateIntervenor(intervenorId, identifier, identifierType, name, phoneNumber, address);
-            router.back();
+            await updateIntervenor(intervenorIdNumber, identifier, identifierType, name, phoneNumber, address);
+            navigate(-1);
         } catch (err: any) {
             if (err instanceof Error) setError(err.message);
             else setError(String(err));
@@ -83,22 +78,6 @@ const IntervenorUpdate = () => {
             setLoading(false);
         }
     };
-
-    useFocusEffect(
-        useCallback(() => {
-            return () => {
-                setIdentifier(null);
-                setIdentifierType(null);
-                setAddress(null);
-                setPhoneNumber(null);
-                setName(null);
-                setError(null);
-                setChange([]);
-                setIntervenor(null);
-            };
-        }, [])
-    );
-
 
     if (loading) {
         return (
@@ -109,19 +88,21 @@ const IntervenorUpdate = () => {
     }
 
     return (
-        <PaperProvider>
+        <>
             <ThemedView safe style={styles.container}>
                 <ScrollView>
                     <ThemedCard style={styles.card}>
                         <ThemedText title style={styles.title}>
                             Update Intervenor
                         </ThemedText>
-                        <MultiSelectDropdown
-                            label={t("intervenorUpdate.selectFields")}
-                            placeholder={t("intervenorUpdate.selectFields")}
+                        <Select
+                            isMulti
                             options={MULTI_SELECT_OPTIONS}
-                            value={change}
-                            onSelect={setChange}
+                            placeholder={t("intervenorUpdate.selectFields")}
+                            value={MULTI_SELECT_OPTIONS.filter(opt => change.includes(opt.value))}
+                            onChange={(selectedOptions) =>
+                                setChange(selectedOptions ? selectedOptions.map(opt => opt.value) : [])
+                            }
                         />
 
                         {change.includes("intervenorIdentifier") && (
@@ -175,7 +156,7 @@ const IntervenorUpdate = () => {
                         </ThemedButton>
                         }
 
-                        <ThemedButton onPress={() => router.back()} style={styles.error}>
+                        <ThemedButton onPress={() =>  navigate(-1)} style={styles.error}>
                             <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenorUpdate.cancel")}</ThemedText>
                         </ThemedButton>
 
@@ -184,7 +165,7 @@ const IntervenorUpdate = () => {
                     </ThemedCard>
                 </ScrollView>
             </ThemedView>
-        </PaperProvider>
+        </>
     );
 };
 

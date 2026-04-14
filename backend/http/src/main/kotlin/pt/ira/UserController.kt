@@ -89,7 +89,7 @@ class UserController(
         userService.revokeToken(user.token)
     }
 
-    @GetMapping("me")
+    @GetMapping("/me")
     fun userHome(userAuthenticatedUser: AuthenticatedUser): ResponseEntity<UserHomeOutputModel> =
         ResponseEntity
             .status(HttpStatus.OK)

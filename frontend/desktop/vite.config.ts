@@ -16,6 +16,9 @@ export default defineConfig({
             '/api': {
                 target: "https://unfabricated-everett-surveyable.ngrok-free.dev",
                 changeOrigin: true,
+                headers: {
+                    'ngrok-skip-browser-warning': 'true',
+                },
                 configure: (proxy) => {
                     proxy.on("error", (err, req, res) => {
                         console.log("error connection upstream")

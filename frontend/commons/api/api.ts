@@ -110,6 +110,7 @@ export const api = {
     },
 
     async userHome(): Promise<UserHomeOutputModel> {
+        console.log("Fetching user home with auth headers:", await getAuthHeaders());
         return fetchApi<UserHomeOutputModel>("/user/me", {
             headers: await getAuthHeaders(),
         });

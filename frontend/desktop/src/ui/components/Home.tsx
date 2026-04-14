@@ -5,16 +5,15 @@ import Spacer from "../../../components/Spacer";
 import ThemedText from "../../../components/ThemedText";
 import {useTranslation} from "react-i18next";
 import Logo from "../../../../commons/img/isel.png"
+import {useAuth} from "../../hooks/useAuth";
 
 
 const Home = () =>{
     const {t} = useTranslation()
 
-    //useAlertExitApp()
-
     return (
         <ThemedView style={styles.container}>
-            <Image source={Logo}/>
+            <Image source={Logo} style={{ width: 200, height: 200, resizeMode: "contain" }} />
             <Spacer height={20}/>
 
             <Spacer height={10}/>

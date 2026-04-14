@@ -2,7 +2,7 @@ export const Colors = {
     primary: "#6849a7",
     warning: "#cc475a",
     success: "#2e7d32",
-    update: "7367f0",
+    update: "#7367f0",
 
     dark:{
         text: "#d4d4d4",

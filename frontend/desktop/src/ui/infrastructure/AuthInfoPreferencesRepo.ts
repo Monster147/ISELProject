@@ -28,7 +28,8 @@ export class AuthInfoPreferencesRepo implements AuthInfoRepo {
 
     async getAuthInfo() {
         const token = localStorage.getItem(this.TOKEN_KEY)
-        return token ? { token } : null
+        if (!token) return null
+        return {token}
     }
 
     async clearAuthInfo() {

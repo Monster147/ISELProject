@@ -1,34 +1,42 @@
-import {StyleSheet, Pressable, Text, TextInput, TouchableWithoutFeedback, Keyboard, ActivityIndicator} from "react-native";
-import ThemedView from "../../../components/ThemedView";
-import ThemedText from "../../../components/ThemedText";
-import Spacer from "../../../components/Spacer";
+import {Keyboard, StyleSheet, Text, TouchableWithoutFeedback} from "react-native";
+import ThemedView from "../../../../components/ThemedView";
+import ThemedText from "../../../../components/ThemedText";
+import Spacer from "../../../../components/Spacer";
 import {Link, useNavigate} from "react-router";
-import {Colors} from "@commons/constants/Colors";
-import ThemedButton from "../../../components/ThemedButton";
-import ThemedTextInput from "../../../components/ThemedTextInput";
+import ThemedButton from "../../../../components/ThemedButton";
+import ThemedTextInput from "../../../../components/ThemedTextInput";
 import {useState} from "react";
-import {useAuth} from "../../hooks/useAuth";
-//import {useBackRedirect} from "../../hooks/useBackRedirect";
+import {useAuth} from "../../../hooks/useAuth";
+import {Colors} from "@commons/constants/Colors";
 import {useTranslation} from "react-i18next";
 
-const Login = () => {
+const Register = () => {
     const {t} = useTranslation()
+
+    const navigate= useNavigate()
+    const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
     const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
 
-    //useBackRedirect("/home")
+    const {register} = useAuth()
 
-    const {login} = useAuth()
-
-    const checkErrors = (): boolean =>{
+    const checkErrors = ():boolean =>{
+        if (name.trim() === '') {
+            setError(t("register.nameEmpty"))
+            return true
+        }
         if (email.trim() === '') {
-            setError(t("login.emailEmpty"))
+            setError(t("register.emailEmpty"))
             return true
         }
         if (password.trim() === '') {
-            setError(t("login.passwordEmpty"))
+            setError(t("register.passwordEmpty"))
+            return true
+        }
+        if (password !== confirmPassword) {
+            setError(t("register.passwordDontMatch"))
             return true
         }
         return false
@@ -38,40 +46,52 @@ const Login = () => {
         setError(null)
         if(checkErrors()) return
         try {
-            await login(email, password)
+            await register(name, email, password)
             navigate("/occurrence");
-        } catch (err: any) {
-            console.log(err.message)
+        } catch (err) {
             if (err instanceof Error) setError(err.message);
             else setError(String(err));
         }
     }
-
     return (
         <TouchableWithoutFeedback>
             <ThemedView style={styles.container}>
                 <Spacer/>
                 <ThemedText title={true} style={styles.title}>
-                    {t("login.loginText")}
+                    {t("register.registerText")}
                 </ThemedText>
 
                 <ThemedTextInput
                     style={{width: '80%', margin: 20}}
-                    placeholder={t("login.email")}
+                    placeholder={t("register.name")}
+                    onChangeText={setName}
+                    value={name}
+                />
+
+                <ThemedTextInput
+                    style={{width: '80%', margin: 20}}
+                    placeholder={t("register.email")}
                     keyboardType="email-address"
                     onChangeText={setEmail}
                     value={email}
                 />
                 <ThemedTextInput
                     style={{width: '80%', margin: 20}}
-                    placeholder={t("login.password")}
+                    placeholder={t("register.password")}
                     onChangeText={setPassword}
                     value={password}
                     secureTextEntry
                 />
+                <ThemedTextInput
+                    style={{width: '80%', margin: 20}}
+                    placeholder={t("register.confirmPassword")}
+                    onChangeText={setConfirmPassword}
+                    value={confirmPassword}
+                    secureTextEntry
+                />
 
                 <ThemedButton onPress={handleSubmit}>
-                    <Text style={{color: 'f2f2f2'}}>{t("login.login")}</Text>
+                    <Text style={{color: 'f2f2f2'}}>{t("register.register")}</Text>
                 </ThemedButton>
 
                 <Spacer/>
@@ -79,9 +99,9 @@ const Login = () => {
                 {error && <Text style={styles.error}>{error}</Text> }
 
                 <Spacer height={25}/>
-                <Link to='/register'>
+                <Link to='/login'>
                     <ThemedText style={{textAlign: 'center'}}>
-                        {t("login.register")}
+                        {t("register.login")}
                     </ThemedText>
                 </Link>
 
@@ -90,7 +110,7 @@ const Login = () => {
     )
 }
 
-export default Login
+export default Register
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -101,14 +121,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 18,
         color: 'purple'
-    },
-    btn: {
-        backgroundColor: Colors.primary,
-        padding: 15,
-        borderRadius: 5,
-    },
-    pressed: {
-        opacity: 0.9
     },
     error:{
         color: Colors.warning,
