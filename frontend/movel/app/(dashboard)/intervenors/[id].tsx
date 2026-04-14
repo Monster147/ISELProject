@@ -33,7 +33,7 @@ const IntervenorUpdate = () => {
     const [change, setChange] = useState<string[]>([]);
     const selected = (key: string) => change.includes(key);
 
-    useBackRedirect("/intervenor")
+    useBackRedirect(() => router.back())
 
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme] ?? Colors.light;

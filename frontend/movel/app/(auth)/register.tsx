@@ -22,7 +22,7 @@ const Register = () => {
 
     const {register} = useAuth()
 
-    useBackRedirect("/home")
+    useBackRedirect(() => router.navigate(`/home`))
 
 
     const checkErrors = ():boolean =>{

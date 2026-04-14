@@ -7,7 +7,7 @@ import {useAuth} from "../../hooks/useAuth";
 import {useEffect} from "react";
 import {Colors} from "@commons/constants/Colors";
 import ThemedCard from "../../components/ThemedCard";
-import {useRouter} from "expo-router";
+import {useLocalSearchParams, useRouter} from "expo-router";
 import {useAlertExitApp} from "../../hooks/useAlertExitApp";
 import {useTranslation} from "react-i18next";
 
@@ -17,6 +17,10 @@ const Occurrence = () =>{
     const router = useRouter()
 
     useAlertExitApp()
+
+    const params = useLocalSearchParams();
+    console.log("Received params:", params);
+
 
     return(
         <ThemedView style={styles.container} safe={true}>

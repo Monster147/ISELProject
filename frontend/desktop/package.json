@@ -17,8 +17,11 @@
     "dist:linux": "npm run transpile:electron && npm run build && electron-builder --linux --x64"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@types/os-utils": "^0.0.4",
     "i18next": "^26.0.4",
+    "material-ui-confirm": "^4.0.0",
     "os-utils": "^0.0.14",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

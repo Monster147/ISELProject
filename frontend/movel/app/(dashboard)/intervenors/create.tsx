@@ -20,7 +20,7 @@ const IntervenorCreate = () => {
     const router = useRouter()
     const [error, setError] = useState<string | null>(null);
 
-    useBackRedirect("/intervenor")
+    useBackRedirect(() => router.back())
 
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme] ?? Colors.light;

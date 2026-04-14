@@ -25,8 +25,13 @@ const IntervenorSearch = () => {
         {label: t("intervenor.intervenorId"), value: "intervenorIdentifier"}
     ]
 
-    const { selectMode, occurrenceId } = useLocalSearchParams()
-    const isSelectMode = selectMode === "true"
+    const params = useLocalSearchParams();
+    console.log("Received params:", params);
+
+    const isSelectMode = params.selectMode === "true";
+    const occurrenceId = params.occurrenceId;
+    console.log(isSelectMode, occurrenceId)
+
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [searchType, setSearchType] = useState()
@@ -116,6 +121,10 @@ const IntervenorSearch = () => {
                 setIdNumber("")
                 setSearchType(undefined)
                 setError(null)
+                router.setParams({
+                    selectMode: null,
+                    occurrenceId: null
+                });
             }
         }, [])
     )

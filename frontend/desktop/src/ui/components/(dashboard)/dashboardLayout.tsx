@@ -5,6 +5,7 @@ import { Colors } from "@commons/constants/Colors";
 import UserOnly from "../../../../components/auth/UserOnly";
 import { MdGroups, MdGroups2, MdErrorOutline, MdError, MdPersonOutline, MdPerson } from "react-icons/md";
 import RootLayout from "../rootLayout";
+import ThemedView from "../../../../components/ThemedView";
 
 const DashboardLayout = () => {
     const { t } = useTranslation();
@@ -13,12 +14,12 @@ const DashboardLayout = () => {
 
     return (
         <UserOnly>
-            <View style={[styles.container, { backgroundColor: theme.navBackground }]}>
-                <View style={styles.content}>
+            <ThemedView style={[styles.container, { backgroundColor: theme.navBackground }]}>
+                <ThemedView style={styles.content}>
                     <Outlet />
-                </View>
+                </ThemedView>
 
-                <View style={[styles.tabBar, { backgroundColor: theme.navBackground }]}>
+                <ThemedView style={[styles.tabBar, { backgroundColor: theme.navBackground }]}>
                     <TabItem
                         to="/intervenor"
                         label={t("dashboard.intervenor")}
@@ -45,48 +46,42 @@ const DashboardLayout = () => {
                         textColorActive={theme.iconColorFocused}
                         textColorInactive={theme.iconColor}
                     />
-                </View>
-            </View>
+                </ThemedView>
+            </ThemedView>
         </UserOnly>
     );
 }
 
 export default DashboardLayout
 
-function TabItem({
-                     to,
-                     label,
-                     activeIcon,
-                     inactiveIcon,
-                     textColorActive,
-                     textColorInactive,
-                 }: {
-    to: string;
-    label: string;
-    activeIcon: React.ReactNode;
-    inactiveIcon: React.ReactNode;
-    textColorActive: string;
-    textColorInactive: string;
-}) {
+function TabItem({ to, label, activeIcon, inactiveIcon, textColorActive, textColorInactive }) {
     return (
         <NavLink
             to={to}
             style={({ isActive }) => ({
-                flex: 1,
+                width: "100%",
                 alignItems: "center",
                 justifyContent: "center",
-                paddingVertical: 12,
+                paddingVertical: 16,
+                paddingHorizontal: 12,
                 opacity: isActive ? 1 : 0.75,
                 textDecoration: "none",
+                borderRadius: 8,
+                marginVertical: 4,
             })}
         >
             {({ isActive }) => (
-                <>
+                <View style={styles.sidebarItemContent}>
                     {isActive ? activeIcon : inactiveIcon}
-                    <Text style={{ color: isActive ? textColorActive : textColorInactive, fontSize: 12 }}>
+                    <Text style={{
+                        color: isActive ? textColorActive : textColorInactive,
+                        fontSize: 14,
+                        marginTop: 8,
+                        textAlign: "center"
+                    }}>
                         {label}
                     </Text>
-                </>
+                </View>
             )}
         </NavLink>
     );
@@ -99,5 +94,9 @@ const styles = StyleSheet.create({
         height: 90,
         flexDirection: "row",
         paddingTop: 10,
+    },
+    sidebarItemContent: {
+        alignItems: "center",
+        justifyContent: "center",
     },
 });

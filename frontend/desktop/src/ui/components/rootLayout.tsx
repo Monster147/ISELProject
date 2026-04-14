@@ -5,6 +5,7 @@ import ThemedView from "../../../components/ThemedView";
 import {OccurrenceProvider} from "../contexts/OccurrenceContext";
 import {IntervenorProvider} from "../contexts/IntervenorContext";
 import {Outlet} from "react-router";
+import {ConfirmProvider} from "material-ui-confirm";
 
 const RootLayout = () => {
     const colorScheme = useColorScheme()
@@ -14,9 +15,11 @@ const RootLayout = () => {
         <AuthProvider>
             <OccurrenceProvider>
                 <IntervenorProvider>
-                    <ThemedView style={{flex: 1, backgroundColor: theme.background}}>
-                        <Outlet />
-                    </ThemedView>
+                    <ConfirmProvider>
+                        <ThemedView style={{flex: 1, backgroundColor: theme.background}}>
+                            <Outlet/>
+                        </ThemedView>
+                    </ConfirmProvider>
                 </IntervenorProvider>
             </OccurrenceProvider>
         </AuthProvider>

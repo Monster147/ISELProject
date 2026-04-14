@@ -18,7 +18,7 @@ const OccurrenceDetails = () => {
     const router = useRouter();
     const { intervenor } = useIntervenor();
 
-    useBackRedirect("/occurrence")
+    useBackRedirect(() => router.back())
 
     //const [currentOccurrence, setCurrentOccurrence] = useState<Occurrence|null>(null);
     //const {getOccurrence} = useOccurrence()

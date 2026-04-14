@@ -1,4 +1,12 @@
-import {StyleSheet, Pressable, Text, TextInput, TouchableWithoutFeedback, Keyboard, ActivityIndicator} from "react-native";
+import {
+    StyleSheet,
+    Pressable,
+    Text,
+    TextInput,
+    TouchableWithoutFeedback,
+    Keyboard,
+    ActivityIndicator
+} from "react-native";
 import ThemedView from "../../../../components/ThemedView";
 import ThemedText from "../../../../components/ThemedText";
 import Spacer from "../../../../components/Spacer";
@@ -22,7 +30,7 @@ const Login = () => {
 
     const {login} = useAuth()
 
-    const checkErrors = (): boolean =>{
+    const checkErrors = (): boolean => {
         if (email.trim() === '') {
             setError(t("login.emailEmpty"))
             return true
@@ -36,7 +44,7 @@ const Login = () => {
 
     const handleSubmit = async () => {
         setError(null)
-        if(checkErrors()) return
+        if (checkErrors()) return
         try {
             await login(email, password)
             navigate("/occurrence");
@@ -48,45 +56,43 @@ const Login = () => {
     }
 
     return (
-        <TouchableWithoutFeedback>
-            <ThemedView style={styles.container}>
-                <Spacer/>
-                <ThemedText title={true} style={styles.title}>
-                    {t("login.loginText")}
+        <ThemedView style={styles.container}>
+            <Spacer/>
+            <ThemedText title={true} style={styles.title}>
+                {t("login.loginText")}
+            </ThemedText>
+
+            <ThemedTextInput
+                style={{width: '80%', margin: 20}}
+                placeholder={t("login.email")}
+                keyboardType="email-address"
+                onChangeText={setEmail}
+                value={email}
+            />
+            <ThemedTextInput
+                style={{width: '80%', margin: 20}}
+                placeholder={t("login.password")}
+                onChangeText={setPassword}
+                value={password}
+                secureTextEntry
+            />
+
+            <ThemedButton onPress={handleSubmit}>
+                <Text style={{color: 'f2f2f2'}}>{t("login.login")}</Text>
+            </ThemedButton>
+
+            <Spacer/>
+
+            {error && <Text style={styles.error}>{error}</Text>}
+
+            <Spacer height={25}/>
+            <Link to='/register'>
+                <ThemedText style={{textAlign: 'center'}}>
+                    {t("login.register")}
                 </ThemedText>
+            </Link>
 
-                <ThemedTextInput
-                    style={{width: '80%', margin: 20}}
-                    placeholder={t("login.email")}
-                    keyboardType="email-address"
-                    onChangeText={setEmail}
-                    value={email}
-                />
-                <ThemedTextInput
-                    style={{width: '80%', margin: 20}}
-                    placeholder={t("login.password")}
-                    onChangeText={setPassword}
-                    value={password}
-                    secureTextEntry
-                />
-
-                <ThemedButton onPress={handleSubmit}>
-                    <Text style={{color: 'f2f2f2'}}>{t("login.login")}</Text>
-                </ThemedButton>
-
-                <Spacer/>
-
-                {error && <Text style={styles.error}>{error}</Text> }
-
-                <Spacer height={25}/>
-                <Link to='/register'>
-                    <ThemedText style={{textAlign: 'center'}}>
-                        {t("login.register")}
-                    </ThemedText>
-                </Link>
-
-            </ThemedView>
-        </TouchableWithoutFeedback>
+        </ThemedView>
     )
 }
 
@@ -110,7 +116,7 @@ const styles = StyleSheet.create({
     pressed: {
         opacity: 0.9
     },
-    error:{
+    error: {
         color: Colors.warning,
         padding: 10,
         backgroundColor: '#f5c1c8',

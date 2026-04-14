@@ -26,7 +26,7 @@ const Login = () => {
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null);
 
-    useBackRedirect("/home")
+    useBackRedirect(() => router.navigate(`/home`))
 
     const {login} = useAuth()
 

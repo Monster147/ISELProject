@@ -2,13 +2,11 @@ import {useCallback, useEffect} from 'react'
 import { BackHandler } from 'react-native'
 import {router, useFocusEffect} from 'expo-router'
 
-
-
-export function useBackRedirect(route:string) {
+export function useBackRedirect(action: () => void) {
     useFocusEffect(
         useCallback(() => {
             const backAction = () => {
-                router.replace(route)
+                action()
                 return true
             }
 
@@ -18,6 +16,6 @@ export function useBackRedirect(route:string) {
             )
 
             return () => backHandler.remove()
-        }, [route])
+        }, [action])
     )
 }

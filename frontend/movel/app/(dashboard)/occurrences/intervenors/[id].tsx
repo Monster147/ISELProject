@@ -22,7 +22,7 @@ const OccurrenceIntervenors = () => {
     const occurrenceId = Number(id)
     const [error, setError] = useState<string | null>(null);
 
-    useBackRedirect(`/occurrences/${occurrenceId}`)
+    useBackRedirect(() => router.back())
 
     const {occurrence, removeIntervenorFromOccurrence} = useOccurrence()
     const actualOccurrence = occurrence.find(o => o.id === occurrenceId);
@@ -37,13 +37,7 @@ const OccurrenceIntervenors = () => {
     }
 
     const handleIntervenors = async () => {
-        router.push({
-            pathname: "/intervenor",
-            params: {
-                selectMode: "true",
-                occurrenceId: occurrenceId
-            }
-        })
+        router.replace(`/intervenor?selectMode=true&occurrenceId=${occurrenceId}`)
     }
 
     const occurrenceIntervenors = intervenor.filter(i =>
