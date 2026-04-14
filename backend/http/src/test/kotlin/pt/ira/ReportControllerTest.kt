@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import pt.ira.interfaces.TransactionManager
 import pt.ira.model.report.CreateReportInput
+import pt.ira.model.report.EditorInput
+import pt.ira.model.report.StatusInput
 import pt.ira.occurrence.OccurrenceType
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
@@ -95,7 +97,7 @@ class ReportControllerTest {
     fun `find by status`() {
         val reportId = createReport()
 
-        controller.updateReportStatus(reportId, "APPROVED")
+        controller.updateReportStatus(reportId, StatusInput("APPROVED"))
 
         val resp = controller.findByStatus("APPROVED")
 
@@ -132,7 +134,7 @@ class ReportControllerTest {
     fun `update report status`() {
         val reportId = createReport()
 
-        val resp = controller.updateReportStatus(reportId, "APPROVED")
+        val resp = controller.updateReportStatus(reportId, StatusInput("APPROVED"))
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 
@@ -142,7 +144,7 @@ class ReportControllerTest {
 
     @Test
     fun `update report status not found`() {
-        val resp = controller.updateReportStatus(999, "APPROVED")
+        val resp = controller.updateReportStatus(999, StatusInput("APPROVED"))
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -152,7 +154,7 @@ class ReportControllerTest {
         val reportId = createReport()
         val userId = createUser()
 
-        val resp = controller.addEditor(reportId, userId)
+        val resp = controller.addEditor(reportId, EditorInput(userId))
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 
@@ -164,7 +166,7 @@ class ReportControllerTest {
     fun `add editor report not found`() {
         val userId = createUser()
 
-        val resp = controller.addEditor(999, userId)
+        val resp = controller.addEditor(999, EditorInput(userId))
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -173,7 +175,7 @@ class ReportControllerTest {
     fun `add editor user not found`() {
         val reportId = createReport()
 
-        val resp = controller.addEditor(reportId, 999)
+        val resp = controller.addEditor(reportId, EditorInput(999))
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -183,9 +185,9 @@ class ReportControllerTest {
         val reportId = createReport()
         val userId = createUser()
 
-        controller.addEditor(reportId, userId)
+        controller.addEditor(reportId, EditorInput(userId))
 
-        val resp = controller.removeEditor(reportId, userId)
+        val resp = controller.removeEditor(reportId, EditorInput(userId))
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 

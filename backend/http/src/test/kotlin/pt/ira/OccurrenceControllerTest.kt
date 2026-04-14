@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import pt.ira.interfaces.TransactionManager
+import pt.ira.model.occurrence.IntervenorIdInput
 import pt.ira.model.occurrence.OccurrenceCreateInput
 import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
@@ -114,7 +115,7 @@ class OccurrenceControllerTest {
         val occurrenceId = createOccurrence()
         val intervenorId = createIntervenor()
 
-        val resp = controller.addIntervenor(occurrenceId, intervenorId)
+        val resp = controller.addIntervenor(occurrenceId, IntervenorIdInput(intervenorId))
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 
@@ -126,7 +127,7 @@ class OccurrenceControllerTest {
     fun `add intervenor report not found`() {
         val intervenorId = createIntervenor()
 
-        val resp = controller.addIntervenor(999, intervenorId)
+        val resp = controller.addIntervenor(999, IntervenorIdInput(intervenorId))
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -135,7 +136,7 @@ class OccurrenceControllerTest {
     fun `add intervenor not found`() {
         val occurrenceId = createOccurrence()
 
-        val resp = controller.addIntervenor(occurrenceId, 999)
+        val resp = controller.addIntervenor(occurrenceId, IntervenorIdInput(999))
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -145,9 +146,9 @@ class OccurrenceControllerTest {
         val occurrenceId = createOccurrence()
         val intervenorId = createIntervenor()
 
-        controller.addIntervenor(occurrenceId, intervenorId)
+        controller.addIntervenor(occurrenceId, IntervenorIdInput(intervenorId))
 
-        val resp = controller.removeIntervenor(occurrenceId, intervenorId)
+        val resp = controller.removeIntervenor(occurrenceId, IntervenorIdInput(intervenorId))
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 

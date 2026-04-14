@@ -48,7 +48,7 @@ sealed class Problem(
     data object ReportNotFound : Problem(URI("${PROBLEM_URI_PATH}/report-not-found"))
 
     // evidence
-    data object ReporterNotFound : Problem(URI("${PROBLEM_URI_PATH}/report-not-found"))
+    data object ReporterNotFound : Problem(URI("${PROBLEM_URI_PATH}/reporter-not-found"))
 
     data object EvidenceNotFound : Problem(URI("${PROBLEM_URI_PATH}/evidence-not-found"))
 

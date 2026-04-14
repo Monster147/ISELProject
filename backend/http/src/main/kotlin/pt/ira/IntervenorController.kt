@@ -9,15 +9,18 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import pt.ira.intervenor.Intervenor
 import pt.ira.model.Problem
 import pt.ira.model.intervenor.IntervenorInput
 import pt.ira.model.intervenor.IntervenorUpdateInput
+import pt.ira.publishers.Publishers
 
 @RestController
 @RequestMapping("/api/intervenor")
 class IntervenorController(
     private val intervenorService: IntervenorService,
+    private val publisher: Publishers,
 ) {
     @PostMapping
     fun createIntervenor(
@@ -180,5 +183,45 @@ class IntervenorController(
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
+    }
+
+    /**
+     * Fornece um endpoint SSE para escuta de atualizações de um intervenor.
+     *
+     * Endpoint: GET /{intervenorId}/listen
+     *
+     * @param intervenorId identificador do intervenor cujas atualizações se pretende subscrever.
+     * @return `SseEmitter` com tempo de vida prolongado.
+     */
+    @GetMapping("/{intervenorId}/listen")
+    fun listen(
+        @PathVariable intervenorId: Int,
+    ): SseEmitter {
+        val sseEmitter = SseEmitter(Long.MAX_VALUE)
+        publisher.intervenorPublisher.addEmitter(
+            intervenorId,
+            SSEUpdatedDataAdapter(
+                sseEmitter,
+            ),
+        )
+        return sseEmitter
+    }
+
+    /**
+     * Fornece um endpoint SSE para escuta de alterações na lista de intervenors.
+     *
+     * Endpoint: GET /listen
+     *
+     * @return `SseEmitter` com tempo de vida prolongado.
+     */
+    @GetMapping("/listen")
+    fun listenIntervenors(): SseEmitter {
+        val sseEmitter = SseEmitter(Long.MAX_VALUE)
+        publisher.intervenorsPublisher.addEmitter(
+            SSEUpdatedDataAdapter(
+                sseEmitter,
+            ),
+        )
+        return sseEmitter
     }
 }

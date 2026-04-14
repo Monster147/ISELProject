@@ -13,14 +13,16 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import pt.ira.evindence.Evidence
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import pt.ira.model.Problem
 import pt.ira.model.evidence.CreateEvidenceInput
+import pt.ira.publishers.Publishers
 
 @RestController
 @RequestMapping("/api/evidence")
 class EvidenceController(
     private val evidenceService: EvidenceService,
+    private val publisher: Publishers,
 ) {
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createEvidence(
@@ -176,5 +178,27 @@ class EvidenceController(
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
+    }
+
+    /**
+     * Fornece um endpoint SSE para escuta de atualizações de uma evidence.
+     *
+     * Endpoint: GET /{evidenceId}/listen
+     *
+     * @param evidenceId identificador da evidence cujas atualizações se pretende subscrever.
+     * @return `SseEmitter` com tempo de vida prolongado.
+     */
+    @GetMapping("/{evidenceId}/listen")
+    fun listen(
+        @PathVariable evidenceId: Int,
+    ): SseEmitter {
+        val sseEmitter = SseEmitter(Long.MAX_VALUE)
+        publisher.evidencePublisher.addEmitter(
+            evidenceId,
+            SSEUpdatedDataAdapter(
+                sseEmitter,
+            ),
+        )
+        return sseEmitter
     }
 }

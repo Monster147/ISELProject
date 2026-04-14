@@ -2,10 +2,12 @@ package pt.ira
 
 import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.stereotype.Component
+import pt.ira.emitters.ActionKind
 import pt.ira.interfaces.TransactionManager
 import pt.ira.intervenor.Intervenor
 import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
+import pt.ira.publishers.Publishers
 import java.time.LocalDate
 
 sealed class OccurrenceError {
@@ -27,6 +29,7 @@ sealed class OccurrenceError {
 @Component
 class OccurrenceService(
     private val trxManager: TransactionManager,
+    private val publisher: Publishers,
 ) {
     fun createOccurrence(
         usersId: Int,
@@ -46,6 +49,15 @@ class OccurrenceService(
                     occurrenceType = occurrenceType,
                     occurrenceInfo = occurrenceInfo,
                 )
+            publisher.occurrencePublisher.sendMessageToAll(
+                occurrence.id,
+                occurrence,
+                ActionKind.OccurrenceCreated
+            )
+            publisher.occurrencesPublisher.sendMessageToAll(
+                findAll(),
+                ActionKind.OccurrencesChanged
+            )
             success(occurrence)
         }
     }
@@ -87,6 +99,11 @@ class OccurrenceService(
 
 
             val updated = repoOccurrence.addIntervenor(occurrence, intervenor)
+            publisher.occurrencePublisher.sendMessageToAll(
+                updated.id,
+                updated,
+                ActionKind.IntervenorAdded
+            )
             success(updated)
         }
     }
@@ -107,6 +124,11 @@ class OccurrenceService(
             if (!occurrence.intervenors.any { it == intervenorId }) return@run failure(OccurrenceError.IntervenorNotInOccurrence)
 
             val updated = repoOccurrence.removeIntervenor(occurrence, intervenor)
+            publisher.occurrencePublisher.sendMessageToAll(
+                updated.id,
+                updated,
+                ActionKind.IntervenorRemoved
+            )
             success(updated)
         }
     }
@@ -117,6 +139,15 @@ class OccurrenceService(
         return trxManager.run {
             repoOccurrence.findById(id) ?: return@run failure(OccurrenceError.OccurrenceNotFound)
             repoOccurrence.deleteById(id)
+            publisher.occurrencePublisher.sendMessageToAll(
+                id,
+                Unit,
+                ActionKind.OccurrenceDeleted
+            )
+            publisher.occurrencesPublisher.sendMessageToAll(
+                findAll(),
+                ActionKind.OccurrencesChanged
+            )
             success(true)
         }
     }

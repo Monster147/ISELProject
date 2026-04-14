@@ -2,7 +2,9 @@ package pt.ira
 
 import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.stereotype.Component
+import pt.ira.emitters.ActionKind
 import pt.ira.interfaces.TransactionManager
+import pt.ira.publishers.Publishers
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
 import pt.ira.storage.StorageService
@@ -24,7 +26,7 @@ sealed class ReportError {
 @Component
 class ReportService(
     private val trxManager: TransactionManager,
-    private val storageService: StorageService,
+    private val publisher: Publishers
 ) {
     fun createReport(
         creatorId: Int,
@@ -53,6 +55,11 @@ class ReportService(
                     addons = addons,
                     intervenors = occurrence.intervenors,
                 )
+            publisher.reportPublisher.sendMessageToAll(
+                report.id,
+                report,
+                ActionKind.ReportCreated
+            )
             success(report)
         }
     }
@@ -90,6 +97,11 @@ class ReportService(
                     ?: return@run failure(ReportError.UserNotFound)
 
             val updated = repoReport.addEditor(report, user)
+            publisher.reportPublisher.sendMessageToAll(
+                updated.id,
+                updated,
+                ActionKind.EditorAdded
+            )
             success(updated)
         }
     }
@@ -108,6 +120,11 @@ class ReportService(
                     ?: return@run failure(ReportError.UserNotFound)
 
             val updated = repoReport.removeEditor(report, user)
+            publisher.reportPublisher.sendMessageToAll(
+                updated.id,
+                updated,
+                ActionKind.EditorRemoved
+            )
             success(updated)
         }
     }
@@ -122,6 +139,11 @@ class ReportService(
                     ?: return@run failure(ReportError.ReportNotFound)
 
             val updated = repoReport.updateStatus(report, status)
+            publisher.reportPublisher.sendMessageToAll(
+                updated.id,
+                updated,
+                ActionKind.ReportStatusChanged
+            )
             success(updated)
         }
     }
@@ -132,13 +154,12 @@ class ReportService(
                 repoReport.findById(id)
                     ?: return@run failure(ReportError.ReportNotFound)
 
-            val occurrence = repoOccurrence.findById(report.occurrenceId).let{
-                check(it != null)
-                it
-            }
-
             repoReport.deleteById(report.id)
-            storageService.deleteOccurrenceEvidences(occurrence.id)
+            publisher.reportPublisher.sendMessageToAll(
+                report.id,
+                Unit,
+                ActionKind.ReportDeleted
+            )
             success(true)
         }
     }

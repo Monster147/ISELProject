@@ -1,8 +1,10 @@
 package pt.ira
 
 import org.springframework.stereotype.Component
+import pt.ira.emitters.ActionKind
 import pt.ira.interfaces.TransactionManager
 import pt.ira.intervenor.Intervenor
+import pt.ira.publishers.Publishers
 
 sealed class IntervenorError {
     data object IntervenorAlreadyExists : IntervenorError()
@@ -13,6 +15,7 @@ sealed class IntervenorError {
 @Component
 class IntervenorService(
     private val trxManager: TransactionManager,
+    private val publisher: Publishers,
 ) {
     fun createIntervenor(
         idNumber: String,
@@ -38,6 +41,15 @@ class IntervenorService(
                     contactInfo = contactInfo,
                     address = address,
                 )
+            publisher.intervenorPublisher.sendMessageToAll(
+                intervenor.id,
+                intervenor,
+                ActionKind.IntervenorCreated
+            )
+            publisher.intervenorsPublisher.sendMessageToAll(
+                findAll(),
+                ActionKind.IntervenorsChanged
+            )
             success(intervenor)
         }
     }
@@ -61,6 +73,15 @@ class IntervenorService(
                     contactInfo = contactInfo,
                     address = address,
                 )
+            publisher.intervenorPublisher.sendMessageToAll(
+                updatedIntervenor.id,
+                updatedIntervenor,
+                ActionKind.IntervenorUpdated
+            )
+            publisher.intervenorsPublisher.sendMessageToAll(
+                findAll(),
+                ActionKind.IntervenorsChanged
+            )
             success(updatedIntervenor)
         }
     }
@@ -69,6 +90,15 @@ class IntervenorService(
         return trxManager.run {
             val intervenor = repoIntervenor.findByIdNumber(idNumber) ?: return@run failure(IntervenorError.IntervenorNotFound)
             repoIntervenor.deleteById(intervenor.id)
+            publisher.intervenorPublisher.sendMessageToAll(
+                intervenor.id,
+                Unit,
+                ActionKind.IntervenorDeleted
+            )
+            publisher.intervenorsPublisher.sendMessageToAll(
+                findAll(),
+                ActionKind.IntervenorsChanged
+            )
             success(true)
         }
     }

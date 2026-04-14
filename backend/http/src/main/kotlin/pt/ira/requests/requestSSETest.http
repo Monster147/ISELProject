@@ -1,0 +1,206 @@
+@token_user = kpy-bKb3TQmUbXT5iLP9dqgMBYEc9H0fZsEX4Jfiyns=
+
+### Create Token
+POST http://localhost:8080/api/user/token
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "123456"
+}
+
+### Create occurrence
+POST http://localhost:8080/api/occurrence
+Content-Type: application/json
+Authorization: Bearer {{token_user}}
+
+{
+  "usersId": 1,
+  "endDate": "2030-12-31",
+  "importance": "NORMAL",
+  "occurrenceType": { "type": "fire", "sub": { "a": 1 } },
+  "occurrenceInfo": { "location": "Lisbon", "people": [1,2,3] }
+}
+
+### SSE for first occurrence
+POST http://localhost:8080/api/occurrence/1/listen
+Content-Type: application/json
+
+### SSE for list of occurrences
+POST http://localhost:8080/api/occurrence/listen
+Content-Type: application/json
+
+### Create new occurrence
+POST http://localhost:8080/api/occurrence
+Content-Type: application/json
+Authorization: Bearer {{token_user}}
+
+{
+  "usersId": 1,
+  "endDate": "2028-12-31",
+  "importance": "NORMAL",
+  "occurrenceType": { "type": "fire", "sub": { "a": 1 } },
+  "occurrenceInfo": { "location": "Lisbon", "people": [1,2,3] }
+}
+
+### Delete newly created occurrence
+DELETE http://localhost:8080/api/occurrence/2
+Content-Type: application/json
+
+### Create intervenor
+POST http://localhost:8080/api/intervenor
+Content-Type: application/json
+Authorization: Bearer {{token_user}}
+
+{
+  "idNumber": "123456789",
+  "idType": "NIF",
+  "name": "Teste",
+  "contactInfo": "912345678",
+  "address": "Rua Teste, 123"
+}
+
+### SSE for first intervenor
+POST http://localhost:8080/api/intervenor/1/listen
+Content-Type: application/json
+
+### SSE for list of intervenors
+POST http://localhost:8080/api/intervenor/listen
+Content-Type: application/json
+
+### Create new intervenor
+POST http://localhost:8080/api/intervenor
+Content-Type: application/json
+Authorization: Bearer {{token_user}}
+
+{
+  "idNumber": "145236987",
+  "idType": "NIF",
+  "name": "Teste",
+  "contactInfo": "926358714",
+  "address": "Rua Teste, 123"
+}
+
+### Delete newly created intervenor
+DELETE http://localhost:8080/api/intervenor/delete/byIdNumber/145236987
+Content-Type: application/json
+
+### Add intervenor to occurrence
+POST http://localhost:8080/api/occurrence/1/intervenors
+Content-Type: application/json
+
+{
+  "intervenorId": 1
+}
+
+### Remove intervenor from occurrence
+DELETE http://localhost:8080/api/occurrence/1/intervenors
+Content-Type: application/json
+
+{
+  "intervenorId": 1
+}
+
+### Update Intervenor
+POST http://localhost:8080/api/intervenor/update/1
+Content-Type: application/json
+Authorization: Bearer {{token_user}}
+
+{
+    "name": "Teste Atualizado"
+}
+
+### Create Evidence
+POST http://localhost:8080/api/evidence
+Authorization: Bearer {{token_user}}
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="file"; filename="Evidencia1.png"
+Content-Type: image/png
+
+< C:\Users\josec\Downloads\Evidencia1.png
+--boundary123
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+  "type": { "category": "photo", "severity": "high" },
+  "location": "Lisbon",
+  "description": "Fire evidence image",
+  "reporterId": 1,
+  "occurrenceId": 1
+}
+--boundary123--
+
+### SSE for Evidence
+GET http://localhost:8080/api/evidence/1/listen
+Authorization: Bearer {{token_user}}
+
+### Delete Evidence
+DELETE http://localhost:8080/api/evidence/1
+Authorization: Bearer {{token_user}}
+
+### Create Report
+POST http://localhost:8080/api/report
+Authorization: Bearer {{token_user}}
+Content-Type: application/json
+
+{
+  "creatorId": 1,
+  "title": "Fire Report",
+  "description": "Detailed report of the fire incident.",
+  "occurrenceId": 1,
+  "addons": {
+    "photos": [1],
+    "documents": [1]
+  }
+}
+
+### SSE for Report
+GET http://localhost:8080/api/report/1/listen
+Authorization: Bearer {{token_user}}
+
+###  Create User
+POST http://localhost:8080/api/user
+Content-Type: application/json
+
+{
+  "name": "USER1",
+  "email": "user1@gmail.com",
+  "password": "user12"
+}
+
+### Add editor to report
+POST http://localhost:8080/api/report/1/editors
+Authorization: Bearer {{token_user}}
+Content-Type: application/json
+
+{
+  "editorId": 2
+}
+
+### Remove editor from report
+DELETE http://localhost:8080/api/report/1/editors/
+Authorization: Bearer {{token_user}}
+Content-Type: application/json
+
+{
+  "editorId": 2
+}
+
+### Update report status
+POST http://localhost:8080/api/report/update-status/1
+Authorization: Bearer {{token_user}}
+Content-Type: application/json
+
+{
+  "newStatus": "SUBMITED"
+}
+
+### Delete Report
+DELETE http://localhost:8080/api/report/1
+Authorization: Bearer {{token_user}}
+
+
+

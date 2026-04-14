@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
+import pt.ira.emitters.ActionKind
 import pt.ira.evindence.Evidence
 import pt.ira.interfaces.TransactionManager
+import pt.ira.publishers.Publishers
 import pt.ira.storage.StorageService
 
 sealed class EvidenceError {
@@ -24,6 +26,7 @@ sealed class EvidenceError {
 class EvidenceService(
     private val trxManager: TransactionManager,
     private val storageService: StorageService,
+    private val publisher: Publishers
 ) {
     private val allowedExtensions =
         listOf(
@@ -60,6 +63,16 @@ class EvidenceService(
                     occurrenceId = occurrenceId,
                     type = type,
                 )
+            publisher.evidencePublisher.sendMessageToAll(
+                evidence.id,
+                evidence,
+                ActionKind.EvidenceCreated
+            )
+            publisher.occurrencePublisher.sendMessageToAll(
+                occurrenceId,
+                evidence,
+                ActionKind.EvidenceCreated
+            )
             success(evidence)
         }
     }
@@ -125,6 +138,16 @@ class EvidenceService(
 
             repoEvidence.deleteById(evidence.id)
             storageService.deleteEvidence(evidence.filePath)
+            publisher.evidencePublisher.sendMessageToAll(
+                evidence.occurrenceId,
+                Unit,
+                ActionKind.EvidenceDeleted
+            )
+            publisher.occurrencePublisher.sendMessageToAll(
+                evidence.occurrenceId,
+                Unit,
+                ActionKind.EvidenceDeleted
+            )
             success(true)
         }
     }

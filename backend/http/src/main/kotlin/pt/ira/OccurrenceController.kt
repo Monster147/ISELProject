@@ -9,15 +9,19 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import pt.ira.model.Problem
+import pt.ira.model.occurrence.IntervenorIdInput
 import pt.ira.model.occurrence.OccurrenceCreateInput
 import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
+import pt.ira.publishers.Publishers
 
 @RestController
 @RequestMapping("/api/occurrence")
 class OccurrenceController(
     private val occurrenceService: OccurrenceService,
+    private val publisher: Publishers,
 ) {
     @PostMapping
     fun createOccurrence(
@@ -104,9 +108,9 @@ class OccurrenceController(
     @PostMapping("/{id}/intervenors")
     fun addIntervenor(
         @PathVariable id: Int,
-        @RequestBody intervenorId: Int,
+        @RequestBody intervenor: IntervenorIdInput,
     ): ResponseEntity<*> {
-        val result = occurrenceService.addIntervenor(id, intervenorId)
+        val result = occurrenceService.addIntervenor(id, intervenor.intervenorId)
         return when (result) {
             is Success -> ResponseEntity.ok(result.value)
             is Failure ->
@@ -122,9 +126,9 @@ class OccurrenceController(
     @DeleteMapping("/{id}/intervenors")
     fun removeIntervenor(
         @PathVariable id: Int,
-        @RequestBody intervenorId: Int,
+        @RequestBody intervenor: IntervenorIdInput,
     ): ResponseEntity<*> {
-        val result = occurrenceService.removeIntervenor(id, intervenorId)
+        val result = occurrenceService.removeIntervenor(id, intervenor.intervenorId)
         return when (result) {
             is Success -> ResponseEntity.ok(result.value)
             is Failure ->
@@ -135,5 +139,45 @@ class OccurrenceController(
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
+    }
+
+    /**
+     * Fornece um endpoint SSE para escuta de atualizações de uma occurrence.
+     *
+     * Endpoint: GET /{occurrenceId}/listen
+     *
+     * @param occurrenceId identificador da occurrence cujas atualizações se pretende subscrever.
+     * @return `SseEmitter` com tempo de vida prolongado.
+     */
+    @GetMapping("/{occurrenceId}/listen")
+    fun listen(
+        @PathVariable occurrenceId: Int,
+    ): SseEmitter {
+        val sseEmitter = SseEmitter(Long.MAX_VALUE)
+        publisher.occurrencePublisher.addEmitter(
+            occurrenceId,
+            SSEUpdatedDataAdapter(
+                sseEmitter,
+            ),
+        )
+        return sseEmitter
+    }
+
+    /**
+     * Fornece um endpoint SSE para escuta de alterações na lista de occurrences.
+     *
+     * Endpoint: GET /listen
+     *
+     * @return `SseEmitter` com tempo de vida prolongado.
+     */
+    @GetMapping("/listen")
+    fun listenIntervenors(): SseEmitter {
+        val sseEmitter = SseEmitter(Long.MAX_VALUE)
+        publisher.occurrencesPublisher.addEmitter(
+            SSEUpdatedDataAdapter(
+                sseEmitter,
+            ),
+        )
+        return sseEmitter
     }
 }

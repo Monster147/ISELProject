@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import pt.ira.model.Problem
 import pt.ira.model.report.CreateReportInput
+import pt.ira.model.report.EditorInput
+import pt.ira.model.report.StatusInput
+import pt.ira.publishers.Publishers
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
 
@@ -18,6 +22,7 @@ import pt.ira.report.ReportStatus
 @RequestMapping("/api/report")
 class ReportController(
     private val reportService: ReportService,
+    private val publisher: Publishers,
 ) {
     @PostMapping
     fun createReport(
@@ -94,9 +99,9 @@ class ReportController(
     @PostMapping("/update-status/{id}")
     fun updateReportStatus(
         @PathVariable id: Int,
-        @RequestBody newStatus: String,
+        @RequestBody newStatus: StatusInput,
     ): ResponseEntity<*> {
-        val result = reportService.updateStatus(id, ReportStatus.valueOf(newStatus))
+        val result = reportService.updateStatus(id, ReportStatus.valueOf(newStatus.newStatus))
         return when (result) {
             is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)
             is Failure ->
@@ -110,9 +115,9 @@ class ReportController(
     @PostMapping("/{id}/editors")
     fun addEditor(
         @PathVariable id: Int,
-        @RequestBody userId: Int,
+        @RequestBody editor: EditorInput,
     ): ResponseEntity<*> {
-        val result = reportService.addEditor(id, userId)
+        val result = reportService.addEditor(id, editor.editorId)
         return when (result) {
             is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)
             is Failure ->
@@ -127,9 +132,9 @@ class ReportController(
     @DeleteMapping("/{id}/editors/")
     fun removeEditor(
         @PathVariable id: Int,
-        @RequestBody userId: Int,
+        @RequestBody editor: EditorInput,
     ): ResponseEntity<*> {
-        val result = reportService.removeEditor(id, userId)
+        val result = reportService.removeEditor(id, editor.editorId)
         return when (result) {
             is Success -> ResponseEntity.ok(result.value)
             is Failure ->
@@ -139,5 +144,27 @@ class ReportController(
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
+    }
+
+    /**
+     * Fornece um endpoint SSE para escuta de atualizações de um report.
+     *
+     * Endpoint: GET /{reportId}/listen
+     *
+     * @param reportId identificador do report cujas atualizações se pretende subscrever.
+     * @return `SseEmitter` com tempo de vida prolongado.
+     */
+    @GetMapping("/{reportId}/listen")
+    fun listen(
+        @PathVariable reportId: Int,
+    ): SseEmitter {
+        val sseEmitter = SseEmitter(Long.MAX_VALUE)
+        publisher.reportPublisher.addEmitter(
+            reportId,
+            SSEUpdatedDataAdapter(
+                sseEmitter,
+            ),
+        )
+        return sseEmitter
     }
 }
