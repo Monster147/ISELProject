@@ -1,4 +1,4 @@
-import {Animated, StyleSheet, ScrollView, FlatList, View, Text} from "react-native";
+import {StyleSheet, FlatList, Text} from "react-native";
 import ThemedView from "../../../../../../components/ThemedView";
 import {Colors} from "@commons/constants/Colors";
 import ThemedText from "../../../../../../components/ThemedText";
@@ -11,7 +11,7 @@ import {useIntervenor} from "../../../../../hooks/useIntervenor";
 import Spacer from "../../../../../../components/Spacer";
 import {useState} from "react";
 import {useTranslation} from "react-i18next";
-import {confirmAction} from "../../../../utils/confirmAction";
+import {useConfirmAction} from "../../../../utils/confirmAction";
 
 const OccurrenceIntervenors = () => {
     const {t} = useTranslation()
@@ -20,6 +20,7 @@ const OccurrenceIntervenors = () => {
     const { intervenor } = useIntervenor();
     const occurrenceIdNumber = Number(occurrenceId)
     const [error, setError] = useState<string | null>(null);
+    const confirmAction = useConfirmAction();
 
     const {occurrence, removeIntervenorFromOccurrence} = useOccurrence()
     const actualOccurrence = occurrence.find(o => o.id === occurrenceIdNumber);
@@ -56,7 +57,7 @@ const OccurrenceIntervenors = () => {
     const handleRemover = async (intervenorId: number) =>{
         try {
             setLoading(true)
-            await removeIntervenorFromOccurrence(intervenorId, occurrenceId)
+            await removeIntervenorFromOccurrence(intervenorId, occurrenceIdNumber)
             setError(null)
         } catch (err: any) {
             if (err instanceof Error) setError(err.message);

@@ -6,11 +6,12 @@ import {useAuth} from "../../../hooks/useAuth";
 import ThemedButton from "../../../../components/ThemedButton";
 import React from "react";
 import {useTranslation} from "react-i18next";
-import {confirmAction} from "../../utils/confirmAction";
+import {useConfirmAction} from "../../utils/confirmAction";
 
 const Profile = () =>{
     const {t} = useTranslation()
-    const {logout, token, user} = useAuth()
+    const {logout, user} = useAuth()
+    const confirmAction = useConfirmAction();
 
     const handleLogout = async () => {
         confirmAction(
