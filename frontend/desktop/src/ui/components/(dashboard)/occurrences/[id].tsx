@@ -10,6 +10,7 @@ import ThemedLoader from "../../../../../components/ThemedLoader";
 import ThemedButton from "../../../../../components/ThemedButton";
 import {useIntervenor} from "../../../../hooks/useIntervenor";
 import {useTranslation} from "react-i18next";
+import Spacer from "../../../../../components/Spacer";
 
 const OccurrenceDetails = () => {
     const {t} = useTranslation()
@@ -55,7 +56,9 @@ const OccurrenceDetails = () => {
         <ThemedView safe={true} style={styles.container}>
             <ScrollView>
                 <ThemedCard style={styles.card}>
-                    <ThemedText title={true} style={styles.title}>{t("occurrenceDetails.occurrenceDetails")}</ThemedText>
+                    <ThemedText title={true} style={[styles.title, {alignSelf: "center"}]}>{t("occurrenceDetails.occurrenceDetails")}</ThemedText>
+
+                    <Spacer/>
 
                     <ThemedText>{t("occurrenceDetails.initDate")}: {actualOccurrence.initDate}</ThemedText>
 
@@ -98,7 +101,7 @@ const styles = StyleSheet.create({
     create: {
         marginTop: 40,
         backgroundColor: Colors.success,
-        width: 200,
+        width: '15%',
         alignSelf: "center",
     },
 })

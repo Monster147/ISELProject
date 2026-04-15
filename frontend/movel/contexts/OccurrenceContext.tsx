@@ -51,7 +51,7 @@ export function OccurrenceProvider({children}) {
     async function addIntervenorToOccurrence(intervenorId: number, occurrenceId: number){
         try {
             if (!user) return;
-            await api.addIntervenor(intervenorId, occurrenceId)
+            await api.addIntervenor({intervenorId}, occurrenceId)
             const response = await api.findOccurrencesByReporterId(user.id)
             setOccurrence(response)
         }catch (err: any) {
@@ -62,7 +62,7 @@ export function OccurrenceProvider({children}) {
     async function removeIntervenorFromOccurrence(intervenorId: number, occurrenceId: number){
         try {
             if (!user) return;
-            await api.removeIntervenor(intervenorId, occurrenceId)
+            await api.removeIntervenor({intervenorId}, occurrenceId)
             const response = await api.findOccurrencesByReporterId(user.id)
             setOccurrence(response)
         }catch (err: any) {

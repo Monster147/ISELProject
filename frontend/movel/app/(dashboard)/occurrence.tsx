@@ -85,7 +85,8 @@ const styles = StyleSheet.create({
         padding: 10,
         paddingLeft: 14,
         borderLeftColor: Colors.primary,
-        borderLeftWidth: 4
+        borderLeftWidth: 4,
+        alignSelf: "center"
     },
     title: {
         fontSize: 20,

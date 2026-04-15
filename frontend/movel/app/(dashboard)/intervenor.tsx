@@ -154,7 +154,7 @@ const IntervenorSearch = () => {
                             onSelect={setSearchType}
                         />
                         {searchType && <ThemedTextInput
-                            style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2}}
+                            style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center"}}
                             placeholder={searchType === "intervenorIdentifier" ? t("intervenor.enterIntervenorId") : t("intervenor.enterPhoneNumber")}
                             keyboardType={searchType === "phoneNumber" ? "phone-pad" : "default"}
                             onChangeText={setIdNumber}
@@ -172,7 +172,7 @@ const IntervenorSearch = () => {
                         {error && <Text style={styles.error}>{error}</Text>}
 
                         {intervenor && (
-                            <ThemedCard style={{margin: 20, backgroundColor: theme.uiBackground2}}>
+                            <ThemedCard style={{margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center"}}>
                                 <ThemedText title={true}>Intervenor Found</ThemedText>
                                 <ThemedText>{t("intervenor.name")}: {intervenor.name}</ThemedText>
                                 <ThemedText>{t("intervenor.contact")}: {intervenor.contactInfo}</ThemedText>
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     create: {
         marginTop: 40,
         backgroundColor: Colors.success,
-        width: 200,
+        width: '75%',
         alignSelf: "center",
     },
     error: {
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     update: {
         marginTop: 40,
         backgroundColor: Colors.update,
-        width: 200,
+        width: '100%',
         alignSelf: "center",
     },
 });

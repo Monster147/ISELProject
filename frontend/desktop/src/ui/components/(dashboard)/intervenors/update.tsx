@@ -92,7 +92,7 @@ const IntervenorUpdate = () => {
             <ThemedView safe style={styles.container}>
                 <ScrollView>
                     <ThemedCard style={styles.card}>
-                        <ThemedText title style={styles.title}>
+                        <ThemedText title style={[styles.title, {alignSelf: "center"}]}>
                             Update Intervenor
                         </ThemedText>
                         <Select
@@ -107,7 +107,7 @@ const IntervenorUpdate = () => {
 
                         {change.includes("intervenorIdentifier") && (
                             <ThemedTextInput
-                                style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2}}
+                                style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center",}}
                                 placeholder={t("intervenorUpdate.enterIdNumber")}
                                 onChangeText={setIdentifier}
                                 value={identifier}
@@ -116,7 +116,7 @@ const IntervenorUpdate = () => {
 
                         {change.includes("intervenorIdentifierType") && (
                             <ThemedTextInput
-                                style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2}}
+                                style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center",}}
                                 placeholder={t("intervenorUpdate.enterIdType")}
                                 onChangeText={setIdentifierType}
                                 value={identifierType}
@@ -125,7 +125,7 @@ const IntervenorUpdate = () => {
 
                         {change.includes("intervenorName") && (
                             <ThemedTextInput
-                                style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2}}
+                                style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center",}}
                                 placeholder={t("intervenorUpdate.enterName")}
                                 onChangeText={setName}
                                 value={name}
@@ -134,7 +134,7 @@ const IntervenorUpdate = () => {
 
                         {change.includes("intervenorPhoneNumber") && (
                             <ThemedTextInput
-                                style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2}}
+                                style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center",}}
                                 placeholder={t("intervenorUpdate.enterPhoneNumber")}
                                 keyboardType="phone-pad"
                                 onChangeText={setPhoneNumber}
@@ -144,7 +144,7 @@ const IntervenorUpdate = () => {
 
                         {change.includes("intervenorAddress") && (
                             <ThemedTextInput
-                                style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2}}
+                                style={{width: "80%", margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center",}}
                                 placeholder={t("intervenorUpdate.enterAddress")}
                                 onChangeText={setAddress}
                                 value={address}
@@ -156,7 +156,7 @@ const IntervenorUpdate = () => {
                         </ThemedButton>
                         }
 
-                        <ThemedButton onPress={() =>  navigate(-1)} style={styles.error}>
+                        <ThemedButton onPress={() =>  navigate(-1)} style={styles.cancel}>
                             <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenorUpdate.cancel")}</ThemedText>
                         </ThemedButton>
 
@@ -187,7 +187,13 @@ const styles = StyleSheet.create({
     create: {
         marginTop: 40,
         backgroundColor: Colors.success,
-        width: 200,
+        width: '15%',
+        alignSelf: "center",
+    },
+    cancel: {
+        marginTop: 40,
+        backgroundColor: Colors.warning,
+        width: '15%',
         alignSelf: "center",
     },
     error: {
@@ -202,7 +208,7 @@ const styles = StyleSheet.create({
     update: {
         marginTop: 40,
         backgroundColor: Colors.update,
-        width: 200,
+        width: '15%',
         alignSelf: "center",
     },
 });

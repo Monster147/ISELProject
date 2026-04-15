@@ -82,32 +82,32 @@ const IntervenorCreate = () => {
                         {t("intervenorCreate.intervenorMessage")}
                     </ThemedText>
                     <ThemedTextInput
-                        style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2}}
+                        style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center",}}
                         placeholder={t("intervenorCreate.intervenorId")}
                         onChangeText={setIdentifier}
                         value={identifier}
                     />
                     <ThemedTextInput
-                        style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2}}
+                        style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center",}}
                         placeholder={t("intervenorCreate.intervenorIdType")}
                         onChangeText={setIdentifierType}
                         value={identifierType}
                     />
                     <ThemedTextInput
-                        style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2}}
+                        style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center",}}
                         placeholder={t("intervenorCreate.intervenorName")}
                         onChangeText={setName}
                         value={name}
                     />
                     <ThemedTextInput
-                        style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2}}
+                        style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center",}}
                         placeholder={t("intervenorCreate.intervenorPhoneNumber")}
                         keyboardType="phone-pad"
                         onChangeText={setPhoneNumber}
                         value={phoneNumber}
                     />
                     <ThemedTextInput
-                        style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2}}
+                        style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center",}}
                         placeholder={t("intervenorCreate.intervenorAddress")}
                         onChangeText={setAddress}
                         value={address}
@@ -119,7 +119,7 @@ const IntervenorCreate = () => {
                         <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenorCreate.createIntervenor")}</ThemedText>
                     </ThemedButton>
 
-                    <ThemedButton onPress={() => navigate(-1)} style={styles.error}>
+                    <ThemedButton onPress={() => navigate(-1)} style={styles.cancel}>
                         <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenorCreate.cancel")}</ThemedText>
                     </ThemedButton>
                 </ThemedCard>
@@ -146,7 +146,13 @@ const styles = StyleSheet.create({
     create: {
         marginTop: 40,
         backgroundColor: Colors.success,
-        width: 200,
+        width: '15%',
+        alignSelf: "center",
+    },
+    cancel: {
+        marginTop: 40,
+        backgroundColor: Colors.warning,
+        width: '15%',
         alignSelf: "center",
     },
     error: {
@@ -161,7 +167,7 @@ const styles = StyleSheet.create({
     update: {
         marginTop: 40,
         backgroundColor: Colors.update,
-        width: 200,
+        width: '15%',
         alignSelf: "center",
     },
     heading: {

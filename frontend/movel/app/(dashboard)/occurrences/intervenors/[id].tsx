@@ -71,11 +71,11 @@ const OccurrenceIntervenors = () => {
 
     const renderIntervenor = ({item}) => (
         <ThemedCard style={styles.card}>
-            <ThemedText>{t("occurrenceIntervenors.intervenorId")}: {item.idNumber}</ThemedText>
-            <ThemedText>{t("occurrenceIntervenors.intervenorIdType")}: {item.idType}</ThemedText>
-            <ThemedText>{t("occurrenceIntervenors.intervenorName")}: {item.name}</ThemedText>
-            <ThemedText>{t("occurrenceIntervenors.intervenorPhoneNumber")}: {item.contactInfo}</ThemedText>
-            <ThemedText>{t("occurrenceIntervenors.intervenorAddress")}: {item.address}</ThemedText>
+            <ThemedText  style={{alignSelf: "center"}}>{t("occurrenceIntervenors.intervenorId")}: {item.idNumber}</ThemedText>
+            <ThemedText  style={{alignSelf: "center"}}>{t("occurrenceIntervenors.intervenorIdType")}: {item.idType}</ThemedText>
+            <ThemedText  style={{alignSelf: "center"}}>{t("occurrenceIntervenors.intervenorName")}: {item.name}</ThemedText>
+            <ThemedText  style={{alignSelf: "center"}}>{t("occurrenceIntervenors.intervenorPhoneNumber")}: {item.contactInfo}</ThemedText>
+            <ThemedText  style={{alignSelf: "center"}}>{t("occurrenceIntervenors.intervenorAddress")}: {item.address}</ThemedText>
 
             <ThemedButton
                 onPress={() => handleRemove(item.id)}
@@ -140,15 +140,15 @@ const styles = StyleSheet.create({
         margin: 20
     },
     create: {
-        marginTop: 20,
+        marginTop: 40,
         backgroundColor: Colors.success,
-        width: 200,
+        width: '75%',
         alignSelf: "center",
     },
     remove: {
-        marginTop: 15,
+        marginTop: 40,
         backgroundColor: Colors.warning,
-        width: 120,
+        width: '75%',
         alignSelf: "center",
     },
     emptyContainer: {

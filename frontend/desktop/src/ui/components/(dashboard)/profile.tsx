@@ -7,6 +7,7 @@ import ThemedButton from "../../../../components/ThemedButton";
 import React from "react";
 import {useTranslation} from "react-i18next";
 import {useConfirmAction} from "../../utils/confirmAction";
+import {Colors} from "@commons/constants/Colors";
 
 const Profile = () =>{
     const {t} = useTranslation()
@@ -38,8 +39,8 @@ const Profile = () =>{
 
             <Spacer />
 
-            <ThemedButton onPress={handleLogout}>
-                <ThemedText style={{color: '#f2f2f2'}}>{t("profile.logout")}</ThemedText>
+            <ThemedButton onPress={handleLogout} style={styles.logoutButton}>
+                <ThemedText style={{color: '#f2f2f2', textAlign: 'center'}}>{t("profile.logout")}</ThemedText>
             </ThemedButton>
 
         </ThemedView>
@@ -57,5 +58,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 18,
         textAlign: 'center'
-    }
+    },
+    logoutButton: {
+        marginTop: 40,
+        backgroundColor: Colors.warning,
+        width: 200,
+        alignSelf: "center",
+    },
 })

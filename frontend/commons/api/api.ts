@@ -16,6 +16,9 @@ import {Json} from "../models/utils/Json";
 import {Report} from "../models/report/Report";
 import {OccurrenceCreateInput} from "../models/occurrence/OccurrenceCreateInput";
 import {Occurrence} from "../models/occurrence/Occurrence";
+import {IntervenorIdInput} from "../models/intervenor/IntervenorIdInput";
+import {StatusInput} from "../models/report/StatusInput";
+import {EditorInput} from "../models/report/EditorInput";
 
 type ApiAuthInfo = { token: string } | null;
 
@@ -227,14 +230,14 @@ export const api = {
         });
     },
 
-    async updateReportStatus(input: string, id:number): Promise<Report> {
+    async updateReportStatus(input: StatusInput, id:number): Promise<Report> {
         return fetchApi<Report>(`/report/update-status/${id}`, {
             method: "POST",
             body: JSON.stringify(input),
         });
     },
 
-    async addEditor(input: number,id:number): Promise<Report> {
+    async addEditor(input: EditorInput,id:number): Promise<Report> {
         return fetchApi<Report>(`/report/${id}/editors`, {
             method: "POST",
             body: JSON.stringify(input),
@@ -403,14 +406,14 @@ export const api = {
         });
     },
 
-    async addIntervenor(input: number, id:number): Promise<Occurrence> {
+    async addIntervenor(input: IntervenorIdInput, id:number): Promise<Occurrence> {
         return fetchApi<Occurrence>(`/occurrence/${id}/intervenors`, {
             method: "POST",
             body: JSON.stringify(input),
         });
     },
 
-    async removeIntervenor(input: number, id:number): Promise<Occurrence> {
+    async removeIntervenor(input: IntervenorIdInput, id:number): Promise<Occurrence> {
         return fetchApi<Occurrence>(`/occurrence/${id}/intervenors`, {
             method: "DELETE",
             body: JSON.stringify(input),

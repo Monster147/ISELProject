@@ -1,4 +1,4 @@
-@token_user = v8-WpTk7LJe5T6zvJL25u-FEiOem1B2iVVZKAAaf5zs=
+@token_user = 42KEYoTqoIue0iUtVdSf3NKQf3PAFd1PeMhRQBWi0mw=
 
 ###  Create User
 POST http://localhost:8080/api/user
@@ -82,3 +82,11 @@ Content-Type: application/json
 
 ### Get all intervenors
 GET http://localhost:8080/api/intervenor
+
+### Add intervenor to occurrence
+DELETE http://localhost:8080/api/occurrence/1/intervenors
+Content-Type: application/json
+
+{
+  "intervenorId": 1
+}
