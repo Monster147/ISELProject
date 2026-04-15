@@ -1,11 +1,11 @@
 package pt.ira.interfaces
 
 /**
- * The lifecycle of a Transaction is managed outside the scope of the IoC/DI container.
- * Transactions are instantiated by a TransactionManager,
- * which is managed by the IoC/DI container (e.g., Spring).
- * The implementation of Transaction is responsible for creating the
- * necessary repository instances in its constructor.
+ * O ciclo de vida de uma Transaction é gerido fora do âmbito do contentor de IoC/DI.
+ * As transações são instanciadas por um TransactionManager,
+ * gerido pelo contentor de IoC/DI (ex: Spring).
+ * A implementação de Transaction é responsável por criar as
+ * instâncias necessárias de repositórios no seu construtor.
  */
 interface Transaction {
     val repoUsers: RepositoryUser

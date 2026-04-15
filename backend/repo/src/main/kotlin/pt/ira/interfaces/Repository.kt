@@ -1,13 +1,16 @@
 package pt.ira.interfaces
 
+/**
+ * Interface genérica de repositório para operações básicas de CRUD.
+ */
 interface Repository<T> {
-    fun findById(id: Int): T? // Get an entity by its ID
+    fun findById(id: Int): T? // Obtém uma entidade pelo seu identificador
 
-    fun findAll(): List<T> // Retrieve all entities
+    fun findAll(): List<T> // Obtém todas as entidades
 
-    fun save(entity: T) // Save a new or existing entity
+    fun save(entity: T) // Persiste uma nova entidade ou actualiza uma existente
 
-    fun deleteById(id: Int) // Delete an entity by its ID
+    fun deleteById(id: Int) // Remove uma entidade pelo seu identificador
 
-    fun clear() // Delete all entries
+    fun clear() // Remove todas as entidades
 }
