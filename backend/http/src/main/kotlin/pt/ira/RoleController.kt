@@ -11,11 +11,40 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pt.ira.model.Problem
 
+/**
+ * Controlador REST responsável pela gestão de papéis (roles) no sistema.
+ *
+ * Expõe endpoints HTTP para criação, eliminação e consulta de papéis, permitindo
+ * a gestão centralizada de permissões ou categorias associadas a utilizadores, ou entidades.
+ *
+ * Atua como camada de adaptação entre o protocolo HTTP e a lógica de domínio,
+ * delegando todas as operações ao [RoleService] e convertendo os resultados em
+ * respostas HTTP consistentes com mapeamento explícito de erros.
+ *
+ * Responsabilidades principais:
+ * - criação de novos papéis;
+ * - eliminação de papéis por nome;
+ * - consulta de papéis por nome e identificador;
+ * - listagem completa de todos os papéis;
+ * - tradução de erros de domínio para respostas HTTP apropriadas.
+ *
+ * @param roleService serviço responsável pela lógica de negócio associada aos papéis.
+ */
 @RestController
 @RequestMapping("/api/role")
 class RoleController(
     private val roleService: RoleService,
 ) {
+    /**
+     * Cria um papel no sistema.
+     *
+     * Em caso de sucesso, devolve `201 Created` com o header `Location`
+     * a indicar o recurso criado.
+     *
+     * @param roleName nome do papel a criar.
+     *
+     * @return resposta HTTP com o resultado da operação.
+     */
     @PostMapping
     fun createRole(
         @RequestBody roleName: String,
@@ -38,6 +67,15 @@ class RoleController(
         }
     }
 
+    /**
+     * Elimina um papel pelo seu nome.
+     *
+     * Em caso de sucesso, devolve `204 No Content`.
+     *
+     * @param roleName nome do papel a eliminar.
+     *
+     * @return resposta HTTP correspondente ao resultado da operação.
+     */
     @DeleteMapping("/{roleName}")
     fun delete(
         @PathVariable roleName: String,
@@ -57,6 +95,13 @@ class RoleController(
         }
     }
 
+    /**
+     * Obtém um papel pelo seu nome.
+     *
+     * @param roleName nome do papel.
+     *
+     * @return `200 OK` com o papel ou `404 Not Found` se não existir.
+     */
     @GetMapping("/byName/{roleName}")
     fun findByName(
         @PathVariable roleName: String,
@@ -78,6 +123,13 @@ class RoleController(
         }
     }
 
+    /**
+     * Obtém um papel pelo seu identificador.
+     *
+     * @param id identificador do papel.
+     *
+     * @return `200 OK` com o papel ou `404 Not Found` se não existir.
+     */
     @GetMapping("/byId/{id}")
     fun findById(
         @PathVariable id: Int,
@@ -99,6 +151,11 @@ class RoleController(
         }
     }
 
+    /**
+     * Obtém todos os papéis registados no sistema.
+     *
+     * @return `200 OK` com a lista completa de papéis.
+     */
     @GetMapping
     fun findAll(): ResponseEntity<*> {
         val result = roleService.findAllRoles()

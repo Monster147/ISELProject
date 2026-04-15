@@ -17,12 +17,44 @@ import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
 import pt.ira.publishers.Publishers
 
+/**
+ * Controlador REST responsável pela gestão de ocorrências no sistema.
+ *
+ * Expõe endpoints HTTP para criação, consulta, eliminação e atualização de ocorrências,
+ * bem como para gestão de intervenientes associados e subscrição de eventos em tempo real
+ * através de Server-Sent Events (SSE).
+ *
+ * Este controlador atua como camada de interface entre o protocolo HTTP e a lógica de domínio,
+ * delegando toda a execução ao [OccurrenceService] e convertendo os resultados em respostas HTTP
+ * normalizadas com mapeamento explícito de erros.
+ *
+ * Responsabilidades principais:
+ * - criação e remoção de ocorrências;
+ * - consulta por identificador, importância e utilizador responsável;
+ * - associação e remoção de intervenientes numa ocorrência;
+ * - listagem global de ocorrências;
+ * - exposição de streams SSE para atualizações por ocorrência e globais;
+ * - tradução de erros de domínio para respostas HTTP adequadas.
+ *
+ * @param occurrenceService serviço responsável pela lógica de negócio das ocorrências.
+ * @param publisher conjunto de publicadores responsáveis por eventos e notificações SSE.
+ */
 @RestController
 @RequestMapping("/api/occurrence")
 class OccurrenceController(
     private val occurrenceService: OccurrenceService,
     private val publisher: Publishers,
 ) {
+    /**
+     * Cria uma ocorrência no sistema.
+     *
+     * Em caso de sucesso, devolve `201 Created` e o header `Location`
+     * com a localização do recurso criado.
+     *
+     * @param occurrenceInput dados necessários para criação da ocorrência.
+     *
+     * @return resposta HTTP com o resultado da operação.
+     */
     @PostMapping
     fun createOccurrence(
         @RequestBody occurrenceInput: OccurrenceCreateInput,
@@ -53,6 +85,13 @@ class OccurrenceController(
         }
     }
 
+    /**
+     * Obtém uma ocorrência pelo seu identificador.
+     *
+     * @param occurrenceId identificador da ocorrência.
+     *
+     * @return `200 OK` com a ocorrência ou `404 Not Found` se não existir.
+     */
     @GetMapping("/{occurrenceId}")
     fun findById(
         @PathVariable occurrenceId: Int,
@@ -71,6 +110,14 @@ class OccurrenceController(
         }
     }
 
+    /**
+     * Obtém todas as ocorrências registadas no sistema.
+     *
+     * Em caso de sucesso, devolve a lista completa de ocorrências com `200 OK`.
+     * Em caso de erro interno, devolve uma resposta de erro apropriada.
+     *
+     * @return `200 OK` com a lista de ocorrências ou erro interno do sistema.
+     */
     @GetMapping
     fun findAll(): ResponseEntity<*> {
         val occurrences = occurrenceService.findAll()
@@ -86,16 +133,39 @@ class OccurrenceController(
         }
     }
 
+    /**
+     * Obtém ocorrências filtradas por nível de importância.
+     *
+     * @param importance nível de importância da ocorrência.
+     *
+     * @return lista de ocorrências correspondentes ao filtro.
+     */
     @GetMapping("/importance/{importance}")
     fun findByImportance(
         @PathVariable importance: String,
     ): ResponseEntity<List<Occurrence>> = ResponseEntity.ok(occurrenceService.findByImportance(OccurrenceType.valueOf(importance)))
 
+    /**
+     * Obtém ocorrências associadas a um utilizador (reporter).
+     *
+     * @param reporterId identificador do utilizador responsável.
+     *
+     * @return lista de ocorrências associadas ao utilizador.
+     */
     @GetMapping("/reporter/{reporterId}")
     fun findByReporterId(
         @PathVariable reporterId: Int,
     ): ResponseEntity<List<Occurrence>> = ResponseEntity.ok(occurrenceService.findOccurrenceByReporterId(reporterId))
 
+    /**
+     * Elimina uma ocorrência pelo seu identificador.
+     *
+     * Em caso de sucesso, devolve `204 No Content`.
+     *
+     * @param occurrenceId identificador da ocorrência.
+     *
+     * @return resposta HTTP correspondente ao resultado da operação.
+     */
     @DeleteMapping("/{occurrenceId}")
     fun deleteById(
         @PathVariable occurrenceId: Int,
@@ -114,6 +184,14 @@ class OccurrenceController(
         }
     }
 
+    /**
+     * Adiciona um interveniente a uma ocorrência.
+     *
+     * @param id identificador da ocorrência.
+     * @param intervenor dados do interveniente a associar.
+     *
+     * @return ocorrência atualizada ou erro de domínio mapeado.
+     */
     @PostMapping("/{id}/intervenors")
     fun addIntervenor(
         @PathVariable id: Int,
@@ -132,6 +210,14 @@ class OccurrenceController(
         }
     }
 
+    /**
+     * Remove um interveniente de uma ocorrência.
+     *
+     * @param id identificador da ocorrência.
+     * @param intervenor dados do interveniente a remover.
+     *
+     * @return ocorrência atualizada ou erro de domínio mapeado.
+     */
     @DeleteMapping("/{id}/intervenors")
     fun removeIntervenor(
         @PathVariable id: Int,
@@ -151,12 +237,15 @@ class OccurrenceController(
     }
 
     /**
-     * Fornece um endpoint SSE para escuta de atualizações de uma occurrence.
+     * Fornece um endpoint SSE para subscrição de atualizações de uma ocorrência específica.
+     *
+     * Permite receber eventos em tempo real associados a alterações nessa ocorrência.
      *
      * Endpoint: GET /{occurrenceId}/listen
      *
-     * @param occurrenceId identificador da occurrence cujas atualizações se pretende subscrever.
-     * @return `SseEmitter` com tempo de vida prolongado.
+     * @param occurrenceId identificador da ocorrência a observar.
+     *
+     * @return [SseEmitter] com ligação persistente para eventos.
      */
     @GetMapping("/{occurrenceId}/listen")
     fun listen(
@@ -173,11 +262,13 @@ class OccurrenceController(
     }
 
     /**
-     * Fornece um endpoint SSE para escuta de alterações na lista de occurrences.
+     * Fornece um endpoint SSE para subscrição de alterações na lista global de ocorrências.
+     *
+     * Permite receber eventos em tempo real sempre que a lista de ocorrências é atualizada.
      *
      * Endpoint: GET /listen
      *
-     * @return `SseEmitter` com tempo de vida prolongado.
+     * @return [SseEmitter] com ligação persistente para eventos globais.
      */
     @GetMapping("/listen")
     fun listenIntervenors(): SseEmitter {
