@@ -1,9 +1,10 @@
-import {createContext, useEffect, useMemo, useState} from "react";
+import {createContext, useCallback, useEffect, useMemo, useState} from "react";
 import {api, ApiError, fetchApi, getAuthHeaders} from "@commons/api/api";
 import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
 import {userInfoRepo} from "../infrastructure/UserInfoPreferencesRepo";
 import { Occurrence } from "@commons/models/occurrence/Occurrence";
 import {useAuth} from "../hooks/useAuth";
+import {useOccurrencesListener, SSEMessage} from "../hooks/useOccurrencesListener";
 
 
 type OccurrenceContextValue = {
@@ -12,12 +13,14 @@ type OccurrenceContextValue = {
     getOccurrence: (id:number) => Promise<Occurrence>;
     addIntervenorToOccurrence: (intervenorId: number, occurrenceId: number) => Promise<void>;
     removeIntervenorFromOccurrence: (intervenorId: number, occurrenceId: number) => Promise<void>;
+    loading: boolean;
 };
 
 export const OccurrenceContext = createContext<OccurrenceContextValue | undefined>(undefined)
 
 export function OccurrenceProvider({children}) {
     const [occurrence, setOccurrence] = useState<Occurrence[]>([])
+    const [loading, setLoading] = useState(false)
     const {user} = useAuth()
 
     useEffect(() => {
@@ -27,6 +30,22 @@ export function OccurrenceProvider({children}) {
             setOccurrence([])
         }
     }, [user]);
+
+    const handleOnMessage = useCallback((message: SSEMessage)=>{
+        setLoading(true)
+        const data = message.data
+        const action = message.action
+        switch (action) {
+            case "OccurrencesChanged":
+                setOccurrence(data.occurrences)
+                break
+            default:
+                break
+        }
+        setTimeout(() => setLoading(false), 300);
+    }, [])
+
+    useOccurrencesListener(handleOnMessage)
 
     async function listOccurrences() {
         try {

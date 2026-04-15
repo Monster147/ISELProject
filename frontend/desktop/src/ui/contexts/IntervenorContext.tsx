@@ -1,6 +1,7 @@
-import {createContext, useEffect, useMemo, useState} from "react";
+import {createContext, useCallback, useEffect, useMemo, useState} from "react";
 import {api, ApiError, fetchApi, getAuthHeaders} from "@commons/api/api";
 import {Intervenor} from "@commons/models/intervenor/Intervenor";
+import {useIntervenorsListener, SSEMessage} from "../../../hooks/useIntervenorsListener";
 
 type IntervenorContextValue = {
     createIntervenor: (idNumber: string, idType: string, name: string, contactInfo: string, address: string) => Promise<void>;
@@ -22,6 +23,20 @@ export function IntervenorProvider({children}) {
             console.error("Failed to load intervenors", e);
         });
     }, []);
+
+    const handleOnMessage = useCallback((message: SSEMessage)=>{
+        const data = message.data
+        const action = message.action
+        switch (action) {
+            case "IntervenorsChange":
+                setIntervenor(data.intervenors)
+                break
+            default:
+                break
+        }
+    }, [])
+
+    useIntervenorsListener(handleOnMessage)
 
     async function loadIntervenors() {
         try {

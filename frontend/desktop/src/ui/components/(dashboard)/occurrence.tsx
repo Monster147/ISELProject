@@ -3,16 +3,24 @@ import ThemedText from "../../../../components/ThemedText";
 import ThemedView from "../../../../components/ThemedView";
 import Spacer from "../../../../components/Spacer";
 import {useOccurrence} from "../../../hooks/useOccurrence";
-import {useEffect} from "react";
 import {Colors} from "@commons/constants/Colors";
 import ThemedCard from "../../../../components/ThemedCard";
 import {useNavigate} from "react-router";
 import {useTranslation} from "react-i18next";
+import {useAuth} from "../../../hooks/useAuth";
+import ThemedLoader from "../../../../components/ThemedLoader";
 
 const Occurrence = () =>{
     const {t} = useTranslation()
-    const {occurrence} = useOccurrence()
+    const {occurrence, loading} = useOccurrence()
     const navigate = useNavigate()
+    const {user} = useAuth()
+
+    const userOccurrences = occurrence.filter(item => item.reporterId === user?.id);
+
+    if (loading) {
+        return <ThemedLoader />;
+    }
 
     return(
         <ThemedView style={styles.container} safe={true}>
@@ -24,7 +32,7 @@ const Occurrence = () =>{
             <Spacer />
 
             <FlatList
-                data={occurrence}
+                data={userOccurrences}
                 keyExtractor={(item)=> item.id.toString()}
                 contentContainerStyle={styles.list}
                 renderItem={({item}) =>(

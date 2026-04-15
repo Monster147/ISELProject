@@ -1,4 +1,4 @@
-@token_user = 42KEYoTqoIue0iUtVdSf3NKQf3PAFd1PeMhRQBWi0mw=
+@token_user = PLOlQBw5eIGx4ZSaEFiITuPQZuRT2tWMLNzombUMCno=
 
 ###  Create User
 POST http://localhost:8080/api/user
@@ -50,10 +50,10 @@ Content-Type: application/json
 Authorization: Bearer {{token_user}}
 
 {
-  "idNumber": "123456789",
+  "idNumber": "1",
   "idType": "NIF",
   "name": "Teste",
-  "contactInfo": "912345678",
+  "contactInfo": "1",
   "address": "Rua Teste, 123"
 }
 
@@ -84,7 +84,7 @@ Content-Type: application/json
 GET http://localhost:8080/api/intervenor
 
 ### Add intervenor to occurrence
-DELETE http://localhost:8080/api/occurrence/1/intervenors
+POST http://localhost:8080/api/occurrence/1/intervenors
 Content-Type: application/json
 
 {

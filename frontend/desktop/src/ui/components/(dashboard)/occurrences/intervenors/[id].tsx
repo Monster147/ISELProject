@@ -26,6 +26,8 @@ const OccurrenceIntervenors = () => {
     const actualOccurrence = occurrence.find(o => o.id === occurrenceIdNumber);
     const [loading, setLoading] = useState(false)
 
+    //fazer mostrar o refresh devido ao sse
+
     if (!actualOccurrence || loading) {
         return (
             <ThemedView safe={true} style={styles.container}>

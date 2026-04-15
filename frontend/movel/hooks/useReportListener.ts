@@ -1,0 +1,55 @@
+import {useEffect} from "react";
+import EventSource from "react-native-sse";
+
+export type ReportUpdateAction=
+    | "ReportCreated"
+    | "ReportDeleted"
+    | "ReportStatusChanged"
+    | "EditorAdded"
+    | "EditorRemoved"
+
+export interface ReportUpdateData{
+    occurrenceId: number
+    action: ReportUpdateAction
+}
+
+export interface SSEMessage{
+    id?: number
+    data: ReportUpdateAction
+    action: ReportUpdateData
+}
+
+//Precisa de ser updated depois
+
+export function useReportListener(
+    reportId: string | undefined,
+    onMessage: (message: SSEMessage) => void
+) {
+    useEffect(() => {
+        if (!reportId) return;
+
+        const es = new EventSource(
+            `https://unfabricated-everett-surveyable.ngrok-free.dev/api/report/${Number(reportId)}/listen`
+        );
+
+        const onEvent = (event: any) => {
+            try {
+                const message: SSEMessage = JSON.parse(event.data);
+                onMessage(message);
+            } catch (error) {
+                console.error("Error parsing SSE message:", error);
+            }
+        };
+
+        es.addEventListener("message", onEvent);
+        es.addEventListener("error", (event) => {
+            console.error("SSE Error:", event);
+            es.close();
+        });
+
+        return () => {
+            es.removeAllEventListeners();
+            es.close();
+        };
+    }, [reportId, onMessage]);
+}

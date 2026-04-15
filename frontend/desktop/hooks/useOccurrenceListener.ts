@@ -1,0 +1,53 @@
+import {Occurrence} from "@commons/models/intervenor/Occurrence";
+import {useEffect} from "react";
+
+export type OccurrenceUpdateAction =
+    | "EvidenceCreated"
+    | "EvidenceDeleted"
+    | "OccurrenceCreated"
+    | "OccurrenceDeleted"
+    | "IntervenorAdded"
+    | "IntervenorRemoved"
+
+export interface OccurrenceUpdateData{
+    occurrence?: Occurrence
+    action: OccurrenceUpdateAction
+}
+
+export interface SSEMessage{
+    id?: number
+    data: OccurrenceUpdateData
+    action: OccurrenceUpdateAction
+}
+//Precisa de ser updated depois
+export function useOccurrenceListener(
+    occurrenceId: string | undefined,
+    onMessage: (message:SSEMessage) => void
+) {
+    useEffect(() => {
+        if (!occurrenceId) return;
+
+        const eventSource = new EventSource(`/api/occurrence/${Number(occurrenceId)}/listen`)
+
+        eventSource.onmessage = (occurrence) =>{
+            try {
+                const message: SSEMessage = JSON.parse(occurrence.data)
+                onMessage(message)
+            }catch (error){
+                console.error("Failed to parse SSE message", error)
+            }
+        }
+
+        eventSource.onerror = (error) => {
+            console.error("SSE Error:", error);
+            eventSource.close();
+        };
+
+        return () => {
+            eventSource.close();
+        };
+
+    }, [occurrenceId, onMessage]);
+
+}
+

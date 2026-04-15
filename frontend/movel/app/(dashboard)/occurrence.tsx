@@ -10,17 +10,22 @@ import ThemedCard from "../../components/ThemedCard";
 import {useLocalSearchParams, useRouter} from "expo-router";
 import {useAlertExitApp} from "../../hooks/useAlertExitApp";
 import {useTranslation} from "react-i18next";
+import ThemedLoader from "../../components/ThemedLoader";
 
 const Occurrence = () =>{
     const {t} = useTranslation()
-    const {occurrence} = useOccurrence()
+    const {occurrence, loading} = useOccurrence()
     const router = useRouter()
 
     useAlertExitApp()
 
-    const params = useLocalSearchParams();
-    console.log("Received params:", params);
+    const {user} = useAuth()
 
+    const userOccurrences = occurrence.filter(item => item.reporterId === user?.id);
+
+    if (loading) {
+        return <ThemedLoader />;
+    }
 
     return(
         <ThemedView style={styles.container} safe={true}>

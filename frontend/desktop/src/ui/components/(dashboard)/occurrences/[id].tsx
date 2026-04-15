@@ -16,25 +16,12 @@ const OccurrenceDetails = () => {
     const {t} = useTranslation()
     const {id} = useParams()
     const navigate = useNavigate();
-    const { intervenor } = useIntervenor();
-
-    //const [currentOccurrence, setCurrentOccurrence] = useState<Occurrence|null>(null);
-    //const {getOccurrence} = useOccurrence()
 
     const occurrenceId = Number(id)
     const {occurrence} = useOccurrence()
     const actualOccurrence = occurrence.find(o => o.id === occurrenceId);
 
-    /*
-    useEffect(() => {
-        async function loadOccurrence(){
-            const occurrenceData= await getOccurrence(idNumber)
-            setCurrentOccurrence(occurrenceData)
-        }
-
-        loadOccurrence()
-    }, [id])
-     */
+    //fazer mostrar o refresh devido ao sse
 
     if (!actualOccurrence) {
         return (
