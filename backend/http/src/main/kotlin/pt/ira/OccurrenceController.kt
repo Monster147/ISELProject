@@ -74,7 +74,16 @@ class OccurrenceController(
     @GetMapping
     fun findAll(): ResponseEntity<*> {
         val occurrences = occurrenceService.findAll()
-        return ResponseEntity.status(HttpStatus.OK).body(occurrences)
+        return when (occurrences) {
+            is Success ->
+                ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(occurrences)
+            is Failure ->
+                when (occurrences.value) {
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+                }
+        }
     }
 
     @GetMapping("/importance/{importance}")

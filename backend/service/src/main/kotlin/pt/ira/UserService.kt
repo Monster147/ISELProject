@@ -35,6 +35,22 @@ sealed class TokenCreationError {
     data object UserOrPasswordAreInvalid : TokenCreationError()
 }
 
+/**
+ * Serviço responsável pela gestão do ciclo de vida dos utilizadores e autenticação.
+ *
+ * Responsabilidades principais:
+ * - criação e consulta de utilizadores;
+ * - validação e gestão de palavras-passe;
+ * - gestão de papéis (roles) dos utilizadores;
+ * - geração, validação e revogação de tokens de autenticação;
+ * - cálculo de métricas associadas a relatórios.
+ *
+ * @param passwordEncoder codificador de palavras-passe.
+ * @param tokenEncoder codificador de tokens.
+ * @param config configuração do domínio de utilizadores.
+ * @param trxManager gestor de transações usado para aceder aos repositórios dentro de unidades de trabalho.
+ * @param clock fonte de tempo usada para validação temporal de tokens.
+ */
 @Component
 class UserService(
     private val passwordEncoder: PasswordEncoder,
@@ -43,6 +59,14 @@ class UserService(
     private val trxManager: TransactionManager,
     private val clock: Clock,
 ) {
+    /**
+     * Valida uma palavra-passe contra a informação de validação armazenada.
+     *
+     * @param password Palavra-passe em texto simples.
+     * @param validationInfo Informação de validação da palavra-passe.
+     *
+     * @return `true` se a palavra-passe for válida, `false` caso contrário.
+     */
     fun validatePassword(
         password: String,
         validationInfo: PasswordValidationInfo,
@@ -56,8 +80,28 @@ class UserService(
             validationInfo = passwordEncoder.encode(password),
         )
 
+    /**
+     * Verifica se uma palavra-passe cumpre os requisitos mínimos de segurança.
+     *
+     * @param password Palavra-passe a validar.
+     *
+     * @return `true` se a palavra-passe for considerada segura, `false` caso contrário.
+     */
     fun isSafePassword(password: String) = password.length > 4
 
+    /**
+     * Cria um utilizador.
+     *
+     * Valida a segurança da palavra-passe, se o email é único
+     * e a existência dos papéis associados.
+     *
+     * @param name Nome do utilizador.
+     * @param email Endereço de email.
+     * @param password Palavra-passe em texto claro.
+     * @param roles Lista de identificadores de papéis.
+     *
+     * @return [User] criado, ou um erro do tipo [UserError].
+     */
     fun createUser(
         name: String,
         email: String,
@@ -83,6 +127,13 @@ class UserService(
         }
     }
 
+    /**
+     * Obtém um utilizador pelo email.
+     *
+     * @param email Endereço de email.
+     *
+     * @return [User] correspondente, ou erro do tipo [UserError].
+     */
     fun findUserByEmail(email: String): Either<UserError, User> =
         trxManager.run {
             val user = repoUsers.findByEmail(email)
@@ -93,6 +144,13 @@ class UserService(
             }
         }
 
+    /**
+     * Obtém todos os utilizadores com um determinado papel.
+     *
+     * @param roleId Identificador do papel.
+     *
+     * @return Lista de [User] com o papel indicado, ou erro do tipo [UserError].
+     */
     fun findUsersByRoles(roleId: Int): Either<UserError, List<User>> {
         return trxManager.run {
             val users = repoUsers.findUsersByRole(roleId)
@@ -100,6 +158,13 @@ class UserService(
         }
     }
 
+    /**
+     * Obtém um utilizador pelo identificador.
+     *
+     * @param userId Identificador do utilizador.
+     *
+     * @return [User] correspondente, ou erro do tipo [UserError].
+     */
     fun findUserById(userId: Int): Either<UserError, User> =
         trxManager.run {
             val user = repoUsers.findById(userId)
@@ -110,6 +175,18 @@ class UserService(
             }
         }
 
+    /**
+     * Adiciona um papel a um utilizador.
+     *
+     * Valida a existência do utilizador, do administrador e do papel,
+     * bem como permissões administrativas.
+     *
+     * @param adminId Identificador do administrador.
+     * @param userId Identificador do utilizador.
+     * @param roleId Identificador do papel a adicionar.
+     *
+     * @return [User] atualizado, ou erro do tipo [UserError].
+     */
     fun addRole(
         adminId: Int,
         userId: Int,
@@ -125,6 +202,18 @@ class UserService(
         }
     }
 
+    /**
+     * Remove um papel de um utilizador.
+     *
+     * Valida a existência do utilizador, do administrador e do papel,
+     * bem como permissões administrativas.
+     *
+     * @param adminId Identificador do administrador.
+     * @param userId Identificador do utilizador.
+     * @param roleId Identificador do papel a remover.
+     *
+     * @return [User] atualizado, ou erro do tipo [UserError].
+     */
     fun removeRole(
         adminId: Int,
         userId: Int,
@@ -140,6 +229,18 @@ class UserService(
         }
     }
 
+    /**
+     * Define os papéis de um utilizador.
+     *
+     * Substitui completamente a lista de papéis existente.
+     * Valida a existência dos papéis e permissões administrativas.
+     *
+     * @param adminId Identificador do administrador.
+     * @param userId Identificador do utilizador.
+     * @param roleIdList Lista de identificadores de papéis.
+     *
+     * @return [User] atualizado, ou erro do tipo [UserError].
+     */
     fun setRole(
         adminId: Int,
         userId: Int,
@@ -157,6 +258,16 @@ class UserService(
         }
     }
 
+    /**
+     * Calcula a percentagem de tipos de relatórios associados a um utilizador.
+     *
+     * Agrupa os relatórios por tipo e calcula a percentagem relativa
+     * de cada grupo.
+     *
+     * @param reporterId Identificador do utilizador.
+     *
+     * @return Lista de [ReportTypePercentage] com as estatísticas calculadas.
+     */
     fun getTypePercentagesByReporter(reporterId: Int): List<ReportTypePercentage> {
         return trxManager.run {
             val reports = repoReport.findByEditor(reporterId)
@@ -177,6 +288,16 @@ class UserService(
         }
     }
 
+    /**
+     * Cria um token de autenticação para um utilizador.
+     *
+     * Valida as credenciais e gera um novo token com informação temporal associada.
+     *
+     * @param email Endereço de email.
+     * @param password Palavra-passe.
+     *
+     * @return Informação externa do token, ou erro do tipo [TokenCreationError].
+     */
     fun createToken(
         email: String,
         password: String,
@@ -210,6 +331,13 @@ class UserService(
         }
     }
 
+    /**
+     * Revoga um token de autenticação.
+     *
+     * @param token Valor do token.
+     *
+     * @return `true` após a revogação.
+     */
     fun revokeToken(token: String): Boolean {
         val tokenValidationInfo = tokenEncoder.createValidationInformation(token)
         return trxManager.run {
@@ -218,6 +346,15 @@ class UserService(
         }
     }
 
+    /**
+     * Obtém um utilizador com base num token válido.
+     *
+     * Valida o formato e validade temporal do token.
+     *
+     * @param token Valor do token.
+     *
+     * @return [User] correspondente, ou `null` se o token for inválido.
+     */
     fun getUserByToken(token: String): User? {
         if (!canBeToken(token)) {
             return null

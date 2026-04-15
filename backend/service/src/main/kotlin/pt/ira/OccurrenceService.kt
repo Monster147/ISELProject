@@ -26,11 +26,37 @@ sealed class OccurrenceError {
     data object IntervenorNotInOccurrence : OccurrenceError()
 }
 
+/**
+ * Serviço responsável pela gestão do ciclo de vida das ocorrências.
+ *
+ * Responsabilidades principais:
+ * - criação, consulta e eliminação de ocorrências;
+ * - validação de utilizadores e dados temporais;
+ * - gestão de associação de intervenientes a ocorrências;
+ * - publicação de eventos relacionados com alterações de ocorrências.
+ *
+ * @param trxManager gestor de transações usado para aceder aos repositórios dentro de unidades de trabalho.
+ * @param publisher conjunto de publicadores de eventos do sistema.
+ */
 @Component
 class OccurrenceService(
     private val trxManager: TransactionManager,
     private val publisher: Publishers,
 ) {
+    /**
+     * Cria uma ocorrência.
+     *
+     * Valida a data de fim e a existência do utilizador.
+     * Após criação, publica eventos de criação e atualização da lista de ocorrências.
+     *
+     * @param usersId Identificador do utilizador que reporta a ocorrência.
+     * @param endDate Data de fim da ocorrência.
+     * @param importance Nível de importância da ocorrência.
+     * @param occurrenceType Tipo da ocorrência em formato JSON.
+     * @param occurrenceInfo Informação adicional da ocorrência em formato JSON.
+     *
+     * @return [Occurrence] criada, ou um erro do tipo [OccurrenceError].
+     */
     fun createOccurrence(
         usersId: Int,
         endDate: LocalDate,
@@ -62,6 +88,13 @@ class OccurrenceService(
         }
     }
 
+    /**
+     * Obtém uma ocorrência pelo seu identificador.
+     *
+     * @param id Identificador da ocorrência.
+     *
+     * @return [Occurrence] correspondente, ou erro do tipo [OccurrenceError].
+     */
     fun findById(id: Int): Either<OccurrenceError, Occurrence> {
         return trxManager.run {
             val occurrence =
@@ -71,8 +104,22 @@ class OccurrenceService(
         }
     }
 
+    /**
+     * Obtém todas as ocorrências com um determinado nível de importância.
+     *
+     * @param importance Nível de importância a filtrar.
+     *
+     * @return Lista de [Occurrence] com a importância indicada.
+     */
     fun findByImportance(importance: OccurrenceType): List<Occurrence> = trxManager.run { repoOccurrence.findByImportance(importance) }
 
+    /**
+     * Obtém todas as ocorrências registadas por um determinado utilizador.
+     *
+     * @param reporterId Identificador do utilizador.
+     *
+     * @return Lista de [Occurrence] associadas ao utilizador.
+     */
     fun findOccurrenceByReporterId(reporterId: Int): List<Occurrence> =
         trxManager.run {
             repoOccurrence.findOccurrenceByReporterId(
@@ -80,8 +127,27 @@ class OccurrenceService(
             )
         }
 
+    /**
+     * Obtém todas as ocorrências associadas a um interveniente.
+     *
+     * @param intervenor Interveniente a pesquisar.
+     *
+     * @return Lista de [Occurrence] onde o interveniente participa.
+     */
     fun findByIntervenor(intervenor: Intervenor): List<Occurrence> = trxManager.run { repoOccurrence.findByIntervenor(intervenor) }
 
+    /**
+     * Adiciona um interveniente a uma ocorrência.
+     *
+     * Valida a existência da ocorrência e do interveniente,
+     * bem como se o interveniente já está associado.
+     * Publica eventos de atualização após a operação.
+     *
+     * @param occurrenceId Identificador da ocorrência.
+     * @param intervenorId Identificador do interveniente.
+     *
+     * @return [Occurrence] atualizada, ou erro do tipo [OccurrenceError].
+     */
     fun addIntervenor(
         occurrenceId: Int,
         intervenorId: Int,
@@ -104,10 +170,26 @@ class OccurrenceService(
                 updated,
                 ActionKind.IntervenorAdded
             )
+            publisher.occurrencesPublisher.sendMessageToAll(
+                findAll(),
+                ActionKind.OccurrencesChanged
+            )
             success(updated)
         }
     }
 
+    /**
+     * Remove um interveniente de uma ocorrência.
+     *
+     * Valida a existência da ocorrência e do interveniente,
+     * bem como se o interveniente está associado à ocorrência.
+     * Publica eventos de atualização após a operação.
+     *
+     * @param occurrenceId Identificador da ocorrência.
+     * @param intervenorId Identificador do interveniente.
+     *
+     * @return [Occurrence] atualizada, ou erro do tipo [OccurrenceError].
+     */
     fun removeIntervenor(
         occurrenceId: Int,
         intervenorId: Int,
@@ -129,12 +211,30 @@ class OccurrenceService(
                 updated,
                 ActionKind.IntervenorRemoved
             )
+            publisher.occurrencesPublisher.sendMessageToAll(
+                findAll(),
+                ActionKind.OccurrencesChanged
+            )
             success(updated)
         }
     }
 
-    fun findAll(): List<Occurrence> = trxManager.run { repoOccurrence.findAll() }
+    /**
+     * Obtém todas as ocorrências registadas no sistema.
+     *
+     * @return Lista de todas as [Occurrence], ou erro do tipo [OccurrenceError].
+     */
+    fun findAll(): Either<OccurrenceError, List<Occurrence>> = trxManager.run { success(repoOccurrence.findAll()) }
 
+    /**
+     * Remove uma ocorrência do sistema.
+     *
+     * Publica eventos de eliminação e atualização da lista de ocorrências.
+     *
+     * @param id Identificador da ocorrência.
+     *
+     * @return `true` se a eliminação for bem-sucedida, ou erro do tipo [OccurrenceError].
+     */
     fun deleteById(id: Int): Either<OccurrenceError, Boolean> {
         return trxManager.run {
             repoOccurrence.findById(id) ?: return@run failure(OccurrenceError.OccurrenceNotFound)

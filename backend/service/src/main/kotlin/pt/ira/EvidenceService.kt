@@ -22,6 +22,19 @@ sealed class EvidenceError {
     data object FileNotFound : EvidenceError()
 }
 
+/**
+ * Serviço responsável pela gestão do ciclo de vida das evidências.
+ *
+ * Responsabilidades principais:
+ * - criação, consulta, descarga e eliminação de evidências;
+ * - validação de ocorrências e utilizadores associados;
+ * - gestão de ficheiros através de armazenamento interno;
+ * - publicação de eventos relacionados com alterações de evidências.
+ *
+ * @param trxManager gestor de transações usado para aceder aos repositórios dentro de unidades de trabalho.
+ * @param storageService serviço responsável pelo armazenamento físico dos ficheiros.
+ * @param publisher conjunto de publicadores de eventos do sistema.
+ */
 @Component
 class EvidenceService(
     private val trxManager: TransactionManager,
@@ -38,6 +51,22 @@ class EvidenceService(
             "video/mp4",
         )
 
+    /**
+     * Cria uma nova evidência associada a uma ocorrência.
+     *
+     * Valida a existência do utilizador e da ocorrência, valida o ficheiro,
+     * persiste os metadados na base de dados e guarda o ficheiro em armazenamento.
+     * Em seguida, publica eventos de criação.
+     *
+     * @param type Tipo da evidência em formato JSON.
+     * @param file Ficheiro associado à evidência.
+     * @param location Local onde a evidência foi recolhida.
+     * @param description Descrição da evidência.
+     * @param reporterId Identificador do utilizador que reporta a evidência.
+     * @param occurrenceId Identificador da ocorrência associada.
+     *
+     * @return [Evidence] criada, ou um erro do tipo [EvidenceError].
+     */
     fun createEvidence(
         type: JsonNode,
         file: MultipartFile,
@@ -73,10 +102,23 @@ class EvidenceService(
                 evidence,
                 ActionKind.EvidenceCreated
             )
+            val occurrences = repoOccurrence.findAll()
+            publisher.occurrencesPublisher.sendMessageToAll(
+                occurrences,
+                ActionKind.OccurrenceCreated
+            )
             success(evidence)
         }
     }
 
+    /**
+     * Obtém uma evidência e o respetivo ficheiro associado.
+     *
+     * @param id Identificador da evidência.
+     *
+     * @return Par contendo [Evidence] e o recurso do ficheiro associado,
+     *         ou erro do tipo [EvidenceError].
+     */
     fun downloadEvidence(id: Int): Either<EvidenceError, Pair<Evidence, Resource>> {
         return trxManager.run {
             val evidence =
@@ -91,6 +133,13 @@ class EvidenceService(
         }
     }
 
+    /**
+     * Obtém uma evidência pelo seu identificador.
+     *
+     * @param id Identificador da evidência.
+     *
+     * @return [Evidence] correspondente, ou erro do tipo [EvidenceError].
+     */
     fun findById(id: Int): Either<EvidenceError, Evidence> {
         return trxManager.run {
             val evidence =
@@ -100,36 +149,79 @@ class EvidenceService(
         }
     }
 
+    /**
+     * Obtém todas as evidências associadas a uma ocorrência.
+     *
+     * @param occurrenceId Identificador da ocorrência.
+     *
+     * @return Lista de [Evidence] associadas à ocorrência.
+     */
     fun findByOccurrenceId(occurrenceId: Int): List<Evidence> {
         return trxManager.run {
             repoEvidence.findByOccurrenceId(occurrenceId)
         }
     }
 
+    /**
+     * Obtém todas as evidências reportadas por um utilizador.
+     *
+     * @param reporterId Identificador do utilizador.
+     *
+     * @return Lista de [Evidence] associadas ao utilizador.
+     */
     fun findByReporterId(reporterId: Int): List<Evidence> {
         return trxManager.run {
             repoEvidence.findByReporterId(reporterId)
         }
     }
 
+    /**
+     * Obtém todas as evidências de um determinado tipo.
+     *
+     * @param type Tipo da evidência em formato JSON.
+     *
+     * @return Lista de [Evidence] correspondentes ao tipo indicado.
+     */
     fun findByType(type: JsonNode): List<Evidence> {
         return trxManager.run {
             repoEvidence.findByType(type)
         }
     }
 
+    /**
+     * Obtém todas as evidências associadas a uma localização.
+     *
+     * @param location Local a filtrar.
+     *
+     * @return Lista de [Evidence] associadas à localização indicada.
+     */
     fun findByLocation(location: String): List<Evidence> {
         return trxManager.run {
             repoEvidence.findByLocation(location)
         }
     }
 
+    /**
+     * Obtém todas as evidências registadas no sistema.
+     *
+     * @return Lista de todas as [Evidence].
+     */
     fun findAll(): List<Evidence> {
         return trxManager.run {
             repoEvidence.findAll()
         }
     }
 
+    /**
+     * Remove uma evidência do sistema.
+     *
+     * Remove tanto os metadados da base de dados como o ficheiro associado
+     * no armazenamento. Publica eventos de eliminação após a operação.
+     *
+     * @param id Identificador da evidência.
+     *
+     * @return `true` se a eliminação for bem-sucedida, ou erro do tipo [EvidenceError].
+     */
     fun deleteById(id: Int): Either<EvidenceError, Boolean> {
         return trxManager.run {
             val evidence =
@@ -147,6 +239,11 @@ class EvidenceService(
                 evidence.occurrenceId,
                 Unit,
                 ActionKind.EvidenceDeleted
+            )
+            val occurrences = repoOccurrence.findAll()
+            publisher.occurrencesPublisher.sendMessageToAll(
+                occurrences,
+                ActionKind.OccurrenceCreated
             )
             success(true)
         }

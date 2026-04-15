@@ -44,6 +44,13 @@ sealed interface UpdatedData {
     }
 }
 
+/**
+ * Tipos de ação associados a uma `Message`.
+ *
+ * Cada constante contém uma mensagem.
+ *
+ * @property message descrição da ação.
+ */
 enum class ActionKind(val message: String){
     EvidenceCreated("Evidence created"),
     EvidenceDeleted("Evidence deleted"),
