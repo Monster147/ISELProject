@@ -18,12 +18,44 @@ import pt.ira.publishers.Publishers
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
 
+/**
+ * Controlador REST responsável pela gestão de relatórios no sistema.
+ *
+ * Expõe endpoints HTTP para criação, consulta, atualização e eliminação de relatórios,
+ * bem como operações de gestão de estado e de colaboradores (editores), além de suporte
+ * a notificações em tempo real através de Server-Sent Events (SSE).
+ *
+ * Este controlador atua como camada de adaptação entre o protocolo HTTP e a lógica de domínio,
+ * delegando toda a execução ao [ReportService] e traduzindo os resultados para respostas HTTP
+ * com mapeamento explícito de erros de domínio.
+ *
+ * Responsabilidades principais:
+ * - criação e eliminação de relatórios;
+ * - consulta por identificador, estado e criador;
+ * - atualização do estado de um relatório;
+ * - gestão de editores associados a um relatório;
+ * - exposição de stream SSE para atualizações em tempo real de um relatório;
+ * - conversão de erros de domínio em respostas HTTP consistentes.
+ *
+ * @param reportService serviço responsável pela lógica de negócio dos relatórios.
+ * @param publisher conjunto de publicadores responsáveis por eventos e notificações SSE.
+ */
 @RestController
 @RequestMapping("/api/report")
 class ReportController(
     private val reportService: ReportService,
     private val publisher: Publishers,
 ) {
+    /**
+     * Cria um relatório no sistema.
+     *
+     * Em caso de sucesso, devolve `201 Created` com o header `Location`
+     * a apontar para o recurso criado.
+     *
+     * @param reportInput dados necessários para criação do relatório.
+     *
+     * @return resposta HTTP com o resultado da operação.
+     */
     @PostMapping
     fun createReport(
         @RequestBody reportInput: CreateReportInput,
@@ -50,6 +82,13 @@ class ReportController(
         }
     }
 
+    /**
+     * Obtém um relatório pelo seu identificador.
+     *
+     * @param id identificador do relatório.
+     *
+     * @return `200 OK` com o relatório ou `404 Not Found` caso não exista.
+     */
     @GetMapping("/{id}")
     fun findReportById(
         @PathVariable id: Int,
@@ -65,22 +104,50 @@ class ReportController(
         }
     }
 
+    /**
+     * Obtém todos os relatórios registados no sistema.
+     *
+     * @return `200 OK` com a lista completa de relatórios.
+     */
     @GetMapping
     fun findAllReports(): ResponseEntity<*> {
         val reports = reportService.findAll()
         return ResponseEntity.status(HttpStatus.OK).body(reports)
     }
 
+    /**
+     * Obtém relatórios filtrados por estado.
+     *
+     * @param status estado do relatório.
+     *
+     * @return lista de relatórios correspondentes ao estado indicado.
+     */
     @GetMapping("/byStatus/{status}")
     fun findByStatus(
         @PathVariable status: String,
     ): ResponseEntity<List<Report>> = ResponseEntity.ok(reportService.findByStatus(ReportStatus.valueOf(status)))
 
+    /**
+     * Obtém relatórios criados por um utilizador específico.
+     *
+     * @param creatorId identificador do utilizador criador.
+     *
+     * @return lista de relatórios associados ao utilizador.
+     */
     @GetMapping("/byCreator/{creatorId}")
     fun findByCreator(
         @PathVariable creatorId: Int,
     ): ResponseEntity<List<Report>> = ResponseEntity.ok(reportService.findByCreatorId(creatorId))
 
+    /**
+     * Elimina um relatório pelo seu identificador.
+     *
+     * Em caso de sucesso, devolve `204 No Content`.
+     *
+     * @param id identificador do relatório.
+     *
+     * @return resposta HTTP correspondente ao resultado da operação.
+     */
     @DeleteMapping("/{id}")
     fun deleteReportById(
         @PathVariable id: Int,
@@ -96,6 +163,14 @@ class ReportController(
         }
     }
 
+    /**
+     * Atualiza o estado de um relatório.
+     *
+     * @param id identificador do relatório.
+     * @param newStatus novo estado a atribuir ao relatório.
+     *
+     * @return relatório atualizado ou erro de domínio mapeado.
+     */
     @PostMapping("/update-status/{id}")
     fun updateReportStatus(
         @PathVariable id: Int,
@@ -112,6 +187,14 @@ class ReportController(
         }
     }
 
+    /**
+     * Adiciona um editor a um relatório.
+     *
+     * @param id identificador do relatório.
+     * @param editor identificador do editor a adicionar.
+     *
+     * @return relatório atualizado ou erro de domínio mapeado.
+     */
     @PostMapping("/{id}/editors")
     fun addEditor(
         @PathVariable id: Int,
@@ -129,6 +212,14 @@ class ReportController(
         }
     }
 
+    /**
+     * Remove um editor de um relatório.
+     *
+     * @param id identificador do relatório.
+     * @param editor identificador do editor a remover.
+     *
+     * @return relatório atualizado ou erro de domínio mapeado.
+     */
     @DeleteMapping("/{id}/editors/")
     fun removeEditor(
         @PathVariable id: Int,
@@ -147,12 +238,15 @@ class ReportController(
     }
 
     /**
-     * Fornece um endpoint SSE para escuta de atualizações de um report.
+     * Fornece um endpoint SSE para subscrição de atualizações de um relatório específico.
+     *
+     * Permite receber eventos em tempo real associados a alterações nesse relatório.
      *
      * Endpoint: GET /{reportId}/listen
      *
-     * @param reportId identificador do report cujas atualizações se pretende subscrever.
-     * @return `SseEmitter` com tempo de vida prolongado.
+     * @param reportId identificador do relatório a observar.
+     *
+     * @return [SseEmitter] com ligação persistente para eventos.
      */
     @GetMapping("/{reportId}/listen")
     fun listen(

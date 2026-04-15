@@ -19,11 +19,43 @@ import pt.ira.report.ReportTypePercentage
 import pt.ira.user.AuthenticatedUser
 import pt.ira.user.User
 
+/**
+ * Controlador REST responsável pela gestão de utilizadores no sistema.
+ *
+ * Expõe endpoints HTTP para criação de utilizadores, autenticação, gestão de sessões,
+ * consulta de informação de utilizador e administração de papéis (roles), bem como
+ * operações analíticas associadas ao utilizador.
+ *
+ * Atua como camada de adaptação entre o protocolo HTTP e a lógica de domínio,
+ * delegando toda a execução ao [UserService] e convertendo resultados em respostas HTTP
+ * com mapeamento explícito de erros de domínio.
+ *
+ * Responsabilidades principais:
+ * - criação de utilizadores;
+ * - autenticação e geração/revogação de tokens;
+ * - obtenção de dados do utilizador autenticado;
+ * - consulta de utilizadores por identificador e por papel;
+ * - gestão de papéis atribuídos a utilizadores (adicionar, remover, definir);
+ * - obtenção de métricas associadas ao utilizador;
+ * - tradução de erros de domínio para respostas HTTP consistentes.
+ *
+ * @param userService serviço responsável pela lógica de negócio associada aos utilizadores.
+ */
 @RestController
 @RequestMapping("/api/user")
 class UserController(
     private val userService: UserService,
 ) {
+    /**
+     * Cria um utilizador no sistema.
+     *
+     * Em caso de sucesso, devolve `201 Created` com o header `Location`
+     * a apontar para o recurso criado.
+     *
+     * @param userInput dados necessários para criação do utilizador.
+     *
+     * @return resposta HTTP com o resultado da operação.
+     */
     @PostMapping
     fun createUser(
         @RequestBody userInput: UserInput,
@@ -61,6 +93,15 @@ class UserController(
         }
     }
 
+    /**
+     * Gera um token de autenticação para um utilizador.
+     *
+     * Utilizado para autenticação no sistema com base em email e password.
+     *
+     * @param tokenInput credenciais do utilizador.
+     *
+     * @return `201 Created` com o token gerado ou erro de autenticação.
+     */
     @PostMapping("/token")
     fun token(
         @RequestBody tokenInput: UserCreateTokenInputModel,
@@ -84,11 +125,25 @@ class UserController(
         }
     }
 
+    /**
+     * Termina a sessão do utilizador autenticado.
+     *
+     * Revoga o token ativo associado ao utilizador.
+     *
+     * @param user utilizador autenticado.
+     */
     @PostMapping("/logout")
     fun logout(user: AuthenticatedUser) {
         userService.revokeToken(user.token)
     }
 
+    /**
+     * Obtém os dados do utilizador autenticado.
+     *
+     * @param user utilizador autenticado.
+     *
+     * @return dados do utilizador em formato de resposta de domínio.
+     */
     @GetMapping("/me")
     fun userHome(userAuthenticatedUser: AuthenticatedUser): ResponseEntity<UserHomeOutputModel> =
         ResponseEntity
@@ -102,6 +157,13 @@ class UserController(
                 ),
             )
 
+    /**
+     * Obtém um utilizador pelo seu identificador.
+     *
+     * @param userId identificador do utilizador.
+     *
+     * @return `200 OK` com o utilizador ou `404 Not Found` se não existir.
+     */
     @GetMapping("/{userId}")
     fun findUserById(
         @PathVariable("userId") userId: Int,
@@ -128,6 +190,15 @@ class UserController(
         }
     }
 
+    /**
+     * Atribui um papel a um utilizador.
+     *
+     * Requer permissões administrativas.
+     *
+     * @param roleInput dados contendo o utilizador e o papel a atribuir.
+     *
+     * @return confirmação da operação ou erro de permissão/validação.
+     */
     @PostMapping("/roles/add")
     fun addRole(
         user: AuthenticatedUser,
@@ -155,6 +226,15 @@ class UserController(
         }
     }
 
+    /**
+     * Remove um papel de um utilizador.
+     *
+     * Requer permissões administrativas.
+     *
+     * @param roleInput dados contendo o utilizador e o papel a remover.
+     *
+     * @return confirmação da operação ou erro de permissão/validação.
+     */
     @PostMapping("/roles/remove")
     fun removeRole(
         user: AuthenticatedUser,
@@ -182,6 +262,15 @@ class UserController(
         }
     }
 
+    /**
+     * Substitui todos os papéis de um utilizador.
+     *
+     * Requer permissões administrativas.
+     *
+     * @param rolesInput lista completa de papéis a atribuir.
+     *
+     * @return confirmação da operação ou erro de permissão/validação.
+     */
     @PostMapping("/roles/set")
     fun setRoles(
         user: AuthenticatedUser,
@@ -209,6 +298,13 @@ class UserController(
         }
     }
 
+    /**
+     * Obtém todos os utilizadores associados a um determinado papel.
+     *
+     * @param roleId identificador do papel.
+     *
+     * @return lista de utilizadores associados ao papel.
+     */
     @GetMapping("/find/role/{roleId}")
     fun findUsersByRole(
         @PathVariable roleId: Int,
@@ -237,6 +333,13 @@ class UserController(
         }
     }
 
+    /**
+     * Obtém a distribuição percentual de tipos de relatórios associados a um utilizador.
+     *
+     * @param userId identificador do utilizador.
+     *
+     * @return lista de percentagens por tipo de relatório.
+     */
     @GetMapping("/percentages/{userId}")
     fun getPercentages(
         @PathVariable userId: Int,

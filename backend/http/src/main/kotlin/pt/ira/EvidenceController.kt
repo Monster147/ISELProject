@@ -18,12 +18,45 @@ import pt.ira.model.Problem
 import pt.ira.model.evidence.CreateEvidenceInput
 import pt.ira.publishers.Publishers
 
+/**
+ * Controlador REST responsável pela exposição dos endpoints HTTP
+ * relacionados com a gestão de evidências.
+ *
+ * Atua como camada de adaptação entre o protocolo HTTP e a lógica de negócio,
+ * delegando operações no [EvidenceService] e convertendo resultados em
+ * respostas HTTP apropriadas.
+ *
+ * Responsabilidades principais:
+ * - receção e validação de pedidos HTTP (incluindo multipart/form-data);
+ * - mapeamento de resultados de domínio para códigos de estado HTTP;
+ * - serialização de respostas e gestão de headers (ex.: Location, Content-Disposition);
+ * - disponibilização de endpoints de consulta, criação, download e eliminação;
+ * - suporte a Server-Sent Events (SSE) para notificações em tempo real.
+ *
+ * @param evidenceService serviço responsável pela lógica de negócio associada às evidências.
+ * @param publisher conjunto de publicadores utilizados para gerir subscrições SSE.
+ */
 @RestController
 @RequestMapping("/api/evidence")
 class EvidenceController(
     private val evidenceService: EvidenceService,
     private val publisher: Publishers,
 ) {
+    /**
+     * Cria uma evidência a partir de um pedido multipart.
+     *
+     * O pedido deve conter:
+     * - um ficheiro ("file");
+     * - um objeto JSON ("data") com os metadados da evidência.
+     *
+     * Em caso de sucesso, devolve `201 Created` com o header `Location`
+     * a apontar para o recurso criado.
+     *
+     * @param file ficheiro associado à evidência.
+     * @param data dados necessários para criação da evidência.
+     *
+     * @return resposta HTTP com o resultado da operação.
+     */
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createEvidence(
         @RequestPart("file") file: MultipartFile,
@@ -59,6 +92,13 @@ class EvidenceController(
         }
     }
 
+    /**
+     * Obtém uma evidência pelo seu identificador.
+     *
+     * @param id identificador da evidência.
+     *
+     * @return `200 OK` com a evidência, ou `404 Not Found` caso não exista.
+     */
     @GetMapping("/{id}")
     fun findById(
         @PathVariable id: Int,
@@ -79,6 +119,16 @@ class EvidenceController(
         }
     }
 
+    /**
+     * Permite o download do ficheiro associado a uma evidência.
+     *
+     * Define o header `Content-Disposition` para forçar download
+     * com o nome original do ficheiro.
+     *
+     * @param id identificador da evidência.
+     *
+     * @return recurso binário do ficheiro ou erro apropriado.
+     */
     @GetMapping("/{id}/download")
     fun downloadEvidence(
         @PathVariable id: Int,
@@ -110,6 +160,13 @@ class EvidenceController(
         }
     }
 
+    /**
+     * Obtém todas as evidências associadas a uma ocorrência.
+     *
+     * @param occurrenceId identificador da ocorrência.
+     *
+     * @return lista de evidências associadas.
+     */
     @GetMapping("/byOccurrence/{occurrenceId}")
     fun findByOccurrenceId(
         @PathVariable occurrenceId: Int,
@@ -120,6 +177,13 @@ class EvidenceController(
             .body(result)
     }
 
+    /**
+     * Obtém todas as evidências reportadas por um utilizador.
+     *
+     * @param reporterId identificador do utilizador.
+     *
+     * @return lista de evidências associadas ao utilizador.
+     */
     @GetMapping("/byReporter/{reporterId}")
     fun findByReporterId(
         @PathVariable reporterId: Int,
@@ -130,6 +194,15 @@ class EvidenceController(
             .body(result)
     }
 
+    /**
+     * Obtém todas as evidências de um determinado tipo.
+     *
+     * O tipo é fornecido no corpo do pedido em formato JSON.
+     *
+     * @param type tipo da evidência.
+     *
+     * @return lista de evidências correspondentes ao tipo indicado.
+     */
     @GetMapping("/byType")
     fun findByType(
         @RequestBody type: JsonNode,
@@ -140,6 +213,13 @@ class EvidenceController(
             .body(result)
     }
 
+    /**
+     * Obtém todas as evidências associadas a uma localização.
+     *
+     * @param location localização a filtrar.
+     *
+     * @return lista de evidências associadas à localização indicada.
+     */
     @GetMapping("/byLocation/{location}")
     fun findByLocation(
         @PathVariable location: String,
@@ -150,6 +230,11 @@ class EvidenceController(
             .body(result)
     }
 
+    /**
+     * Obtém todas as evidências registadas no sistema.
+     *
+     * @return lista completa de evidências.
+     */
     @GetMapping
     fun findAll(): ResponseEntity<*> {
         val result = evidenceService.findAll()
@@ -158,6 +243,15 @@ class EvidenceController(
             .body(result)
     }
 
+    /**
+     * Remove uma evidência do sistema.
+     *
+     * Em caso de sucesso, devolve `204 No Content`.
+     *
+     * @param id identificador da evidência.
+     *
+     * @return resposta HTTP correspondente ao resultado da operação.
+     */
     @DeleteMapping("/{id}")
     fun deleteEvidence(
         @PathVariable id: Int,
@@ -181,12 +275,16 @@ class EvidenceController(
     }
 
     /**
-     * Fornece um endpoint SSE para escuta de atualizações de uma evidence.
+     * Fornece um endpoint SSE para escuta de atualizações de uma evidência.
+     *
+     * Permite ao cliente subscrever eventos em tempo real relacionados com
+     * alterações numa evidência específica.
      *
      * Endpoint: GET /{evidenceId}/listen
      *
-     * @param evidenceId identificador da evidence cujas atualizações se pretende subscrever.
-     * @return `SseEmitter` com tempo de vida prolongado.
+     * @param evidenceId identificador da evidência a observar.
+     *
+     * @return [SseEmitter] com ligação persistente para envio de eventos.
      */
     @GetMapping("/{evidenceId}/listen")
     fun listen(
