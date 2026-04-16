@@ -19,6 +19,7 @@ import {Occurrence} from "../models/occurrence/Occurrence";
 import {IntervenorIdInput} from "../models/intervenor/IntervenorIdInput";
 import {StatusInput} from "../models/report/StatusInput";
 import {EditorInput} from "../models/report/EditorInput";
+import {Documents} from "../models/Documents/Documents";
 
 type ApiAuthInfo = { token: string } | null;
 
@@ -418,5 +419,43 @@ export const api = {
             method: "DELETE",
             body: JSON.stringify(input),
         });
+    },
+
+    //Documents
+
+    async getDocumentById(id: number): Promise<Documents> {
+        return fetchApi<Documents>(`/documents/${id}`, {
+            method: "GET"
+        })
+    },
+
+    async getDocumentByName(name: string): Promise<Documents> {
+        return fetchApi<Documents>(`/documents/name/${name}`, {
+            method: "GET"
+        })
+    },
+
+    async getDocumentByType(type: string): Promise<Documents> {
+        return fetchApi<Documents>(`/documents/type/${type}`, {
+            method: "GET"
+        })
+    },
+
+    async getAllDocumentTypes(): Promise<string[]> {
+        return fetchApi<string[]>(`/documents/types`, {
+            method: "GET"
+        })
+    },
+
+    async getAllDocument(): Promise<Documents[]> {
+        return fetchApi<Documents[]>(`/documents`, {
+            method: "GET"
+        })
+    },
+
+    async DeleteDocumentById(id: number): Promise<Documents> {
+        return fetchApi<Documents>(`/documents/${id}`, {
+            method: "DELETE"
+        })
     },
 }

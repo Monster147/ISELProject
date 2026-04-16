@@ -7,6 +7,7 @@ import {OccurrenceProvider} from "../contexts/OccurrenceContext";
 import {IntervenorProvider} from "../contexts/IntervenorContext";
 import "../i18next/i18next"
 import "../utils/ConfigureApiMobile"
+import {DocumentProvider} from "../contexts/DocumentContext";
 
 const RootLayout = () => {
     const colorScheme = useColorScheme()
@@ -16,21 +17,23 @@ const RootLayout = () => {
         <AuthProvider>
             <OccurrenceProvider>
                 <IntervenorProvider>
-                    <ThemedView style={{flex: 1}}>
-                        <Stack screenOptions={{
-                            headerStyle: {backgroundColor: theme.navBackground},
-                            headerTintColor: theme.title,
-                            contentStyle: {backgroundColor: theme.background},
-                            animation: "none",
-                        }}>
-                            <Stack.Screen name="loadingscreen" options={{headerShown: false}}/>
-                            <Stack.Screen name="about" options={{headerShown: false}}/>
-                            <Stack.Screen name="contact" options={{headerShown: false}}/>
-                            <Stack.Screen name="(auth)" options={{headerShown: false}}/>
-                            <Stack.Screen name="(dashboard)" options={{headerShown: false}}/>
-                            <Stack.Screen name="home" options={{headerShown: false}}/>
-                        </Stack>
-                    </ThemedView>
+                    <DocumentProvider>
+                        <ThemedView style={{flex: 1}}>
+                            <Stack screenOptions={{
+                                headerStyle: {backgroundColor: theme.navBackground},
+                                headerTintColor: theme.title,
+                                contentStyle: {backgroundColor: theme.background},
+                                animation: "none",
+                            }}>
+                                <Stack.Screen name="loadingscreen" options={{headerShown: false}}/>
+                                <Stack.Screen name="about" options={{headerShown: false}}/>
+                                <Stack.Screen name="contact" options={{headerShown: false}}/>
+                                <Stack.Screen name="(auth)" options={{headerShown: false}}/>
+                                <Stack.Screen name="(dashboard)" options={{headerShown: false}}/>
+                                <Stack.Screen name="home" options={{headerShown: false}}/>
+                            </Stack>
+                        </ThemedView>
+                    </DocumentProvider>
                 </IntervenorProvider>
             </OccurrenceProvider>
         </AuthProvider>

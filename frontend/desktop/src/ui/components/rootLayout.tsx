@@ -11,6 +11,7 @@ import {useEffect, useState} from "react";
 import {useNetworkStatus} from "../../hooks/useNetworkStatus";
 import {useConfirmAction} from "../utils/confirmAction";
 import {useTranslation} from "react-i18next";
+import {DocumentProvider} from "../contexts/DocumentContext";
 
 const RootLayoutContent = () => {
     const colorScheme = useColorScheme()
@@ -59,7 +60,9 @@ const RootLayout = () => {
         <AuthProvider>
             <OccurrenceProvider>
                 <IntervenorProvider>
-                    <RootLayoutContent/>
+                    <DocumentProvider>
+                        <RootLayoutContent/>
+                    </DocumentProvider>
                 </IntervenorProvider>
             </OccurrenceProvider>
         </AuthProvider>
