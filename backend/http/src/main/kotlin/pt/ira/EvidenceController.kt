@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import pt.ira.model.Problem
 import pt.ira.model.evidence.CreateEvidenceInput
 import pt.ira.publishers.Publishers
+import java.nio.file.Paths
 
 /**
  * Controlador REST responsável pela exposição dos endpoints HTTP
@@ -139,13 +140,15 @@ class EvidenceController(
                 val (evidence, resource) = result.value
 
                 val filename = evidence.filePath.substringAfterLast("/")
+                val path = Paths.get(evidence.filePath)
+                val contentType = resolveContentType(path)
 
                 ResponseEntity.ok()
                     .header(
                         "Content-Disposition",
                         "attachment; filename=\"$filename\"",
                     )
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentType(contentType)
                     .body(resource)
             }
 

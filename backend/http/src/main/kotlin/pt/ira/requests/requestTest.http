@@ -1,4 +1,4 @@
-@token_user = J2wHFb8Fb-jfUuMcWG10FUHNw8RKQH-vR1KLFIEKe5U=
+@token_user = AlAGP274OwpKl1q0M-owT2Cow1evsoAZqYB3n1RR0xc=
 
 ###  Create User
 POST http://localhost:8080/api/user
@@ -80,6 +80,10 @@ Content-Type: application/json
 }
 --boundary123--
 
+### Download Evidence
+GET http://localhost:8080/api/evidence/1/download
+Accept: image/png
+
 ### Get all intervenors
 GET http://localhost:8080/api/intervenor
 
@@ -91,7 +95,7 @@ Content-Type: application/json
   "intervenorId": 1
 }
 
-### 9) Create Document
+### Create Document
 POST http://localhost:8080/api/documents
 Content-Type: multipart/form-data; boundary=boundary123
 
@@ -109,3 +113,8 @@ Content-Type: application/json
   "type": "Automovel"
 }
 --boundary123--
+
+### Download Document
+GET http://localhost:8080/api/documents/1/download
+Accept: application/pdf
+

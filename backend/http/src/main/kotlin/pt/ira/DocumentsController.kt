@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.core.io.Resource
 import pt.ira.documents.Documents
 import pt.ira.model.Problem
 import pt.ira.model.documents.DocumentInputModel
+import java.nio.file.Path
+import java.nio.file.Paths
 
 /**
  * Controlador REST responsável pela gestão de documentos no sistema.
@@ -184,6 +187,42 @@ class DocumentsController(
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(documents)
+    }
+
+    /**
+     * Faz download de um documento.
+     *
+     * @param id identificador do documento a fazer download.
+     *
+     * @return `200 OK` com o ficheiro do documento ou `404 Not Found` se não existir.
+     */
+    @GetMapping("/{id}/download")
+    fun downloadDocument(
+        @PathVariable("id") id: Int,
+    ): ResponseEntity<*> {
+        val result = documentsService.downloadDocument(id)
+
+        return when (result) {
+            is Success -> {
+                val (document, resource) = result.value
+                val path = Paths.get(document.filepath)
+                val contentType = resolveContentType(path)
+                ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(contentType)
+                    .header(
+                        "Content-Disposition",
+                        "attachment; filename=\"${document.name}\"",
+                    )
+                    .body(resource)
+            }
+
+            is Failure ->
+                when (result.value) {
+                    is DocumentsError.DocumentNotFound -> Problem.FileNotFound.response(HttpStatus.NOT_FOUND)
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+                }
+        }
     }
 
     /**
