@@ -10,9 +10,18 @@ class TransactionManagerInMem : TransactionManager {
     private val repoIntervenor = RepositoryIntervenorMem()
     private val repoRole = RepositoryRoleMem()
     private val repoOccurrence = RepositoryOccurrenceMem()
+    private val repoDocuments = RepositoryDocumentsMem()
 
     override fun <R> run(block: Transaction.() -> R): R =
         block(
-            TransactionInMem(repoUsers, repoIntervenor, repoReports, repoEvidence, repoRole, repoOccurrence),
+            TransactionInMem(
+                repoUsers,
+                repoIntervenor,
+                repoReports,
+                repoEvidence,
+                repoRole,
+                repoOccurrence,
+                repoDocuments,
+            ),
         )
 }

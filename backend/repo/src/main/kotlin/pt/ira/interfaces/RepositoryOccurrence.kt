@@ -10,7 +10,6 @@ import java.time.LocalDate
  * Repositório de operações sobre ocorrências.
  */
 interface RepositoryOccurrence : Repository<Occurrence> {
-
     /**
      * Cria uma ocorrência com os dados fornecidos.
      *

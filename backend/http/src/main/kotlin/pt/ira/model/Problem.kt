@@ -67,5 +67,8 @@ sealed class Problem(
 
     data object IntervenorNotInOccurrence : Problem(URI("${PROBLEM_URI_PATH}/intervenor-not-in-occurrence"))
 
-     data object IntervenorAlreadyInOccurrence : Problem(URI("${PROBLEM_URI_PATH}/intervenor-already-in-occurrence"))
+    data object IntervenorAlreadyInOccurrence : Problem(URI("${PROBLEM_URI_PATH}/intervenor-already-in-occurrence"))
+
+    // documents
+    data object FileAlreadyExists : Problem(URI("${PROBLEM_URI_PATH}/file-already-exists"))
 }

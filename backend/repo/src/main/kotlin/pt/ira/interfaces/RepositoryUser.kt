@@ -10,7 +10,6 @@ import java.time.Instant
  * Repositório de operações sobre utilizadores.
  */
 interface RepositoryUser : Repository<User> {
-
     /**
      * Cria um novo utilizador no sistema.
      *

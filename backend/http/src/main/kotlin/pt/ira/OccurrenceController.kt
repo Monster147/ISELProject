@@ -204,7 +204,10 @@ class OccurrenceController(
                 when (result.value) {
                     is OccurrenceError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
                     is OccurrenceError.IntervenorNotFound -> Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
-                    is OccurrenceError.IntervenorAlreadyInOccurrence -> Problem.IntervenorAlreadyInOccurrence.response(HttpStatus.BAD_REQUEST)
+                    is OccurrenceError.IntervenorAlreadyInOccurrence ->
+                        Problem.IntervenorAlreadyInOccurrence.response(
+                            HttpStatus.BAD_REQUEST,
+                        )
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }

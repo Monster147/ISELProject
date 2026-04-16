@@ -165,7 +165,8 @@ class OccurrenceControllerTest {
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 
-        val list = resp.body as List<*>
+        val either = resp.body as Either<*, *>
+        val list = (either as Either.Right).value as List<*>
         assertEquals(2, list.size)
     }
 

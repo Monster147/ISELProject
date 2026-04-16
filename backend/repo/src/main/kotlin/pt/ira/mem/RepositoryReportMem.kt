@@ -16,7 +16,7 @@ class RepositoryReportMem : RepositoryReport {
         description: String,
         type: JsonNode,
         addons: JsonNode,
-        intervenors: List<Int>
+        intervenors: List<Int>,
     ): Report =
         Report(
             id = reports.size + 1,

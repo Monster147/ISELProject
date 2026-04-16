@@ -12,7 +12,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import pt.ira.evindence.Evidence
 import pt.ira.interfaces.TransactionManager
 import pt.ira.model.evidence.CreateEvidenceInput
-import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
 import pt.ira.user.PasswordValidationInfo
 import java.time.LocalDate

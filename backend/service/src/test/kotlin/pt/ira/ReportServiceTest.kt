@@ -181,10 +181,10 @@ class ReportServiceTest {
                     it.value
                 }
 
-        reportService.updateStatus(r1.id, ReportStatus.SUBMITED)
+        reportService.updateStatus(r1.id, ReportStatus.SUBMITTED)
         reportService.updateStatus(r2.id, ReportStatus.EDITING)
 
-        val result = reportService.findByStatus(ReportStatus.SUBMITED)
+        val result = reportService.findByStatus(ReportStatus.SUBMITTED)
 
         assertEquals(1, result.size)
         assertEquals(r1.id, result.first().id)
@@ -197,9 +197,10 @@ class ReportServiceTest {
                 repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
             }
 
-        val user2 = trxManager.run {
-            repoUsers.createUser("u2", "u2@mail", PasswordValidationInfo("x"), listOf(1))
-        }
+        val user2 =
+            trxManager.run {
+                repoUsers.createUser("u2", "u2@mail", PasswordValidationInfo("x"), listOf(1))
+            }
 
         val occurrence1 = createOccurrenceForUser(user.id)
         val occurrence2 = createOccurrenceForUser(user.id)
@@ -374,13 +375,13 @@ class ReportServiceTest {
                 }
 
         val updated =
-            reportService.updateStatus(report.id, ReportStatus.SUBMITED)
+            reportService.updateStatus(report.id, ReportStatus.SUBMITTED)
                 .let {
                     check(it is Success)
                     it.value
                 }
 
-        assertEquals(ReportStatus.SUBMITED, updated.status)
+        assertEquals(ReportStatus.SUBMITTED, updated.status)
     }
 
     @Test

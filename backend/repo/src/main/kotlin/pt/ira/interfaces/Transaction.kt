@@ -14,6 +14,7 @@ interface Transaction {
     val repoEvidence: RepositoryEvidence
     val repoRole: RepositoryRole
     val repoOccurrence: RepositoryOccurrence
+    val repoDocuments: RepositoryDocuments
 
     fun rollback()
 }

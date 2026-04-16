@@ -9,9 +9,17 @@ interface StorageService {
         file: MultipartFile,
     ): String
 
+    fun saveDocument(
+        file: MultipartFile,
+        documentName: String,
+        documentType: String,
+    ): String
+
     fun load(path: String): Resource?
 
     fun deleteEvidence(path: String): Boolean
 
     fun deleteOccurrenceEvidences(occurrenceId: Int): Boolean
+
+    fun deleteDocument(path: String): Boolean
 }

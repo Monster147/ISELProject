@@ -78,11 +78,11 @@ class OccurrenceService(
             publisher.occurrencePublisher.sendMessageToAll(
                 occurrence.id,
                 occurrence,
-                ActionKind.OccurrenceCreated
+                ActionKind.OccurrenceCreated,
             )
             publisher.occurrencesPublisher.sendMessageToAll(
                 findAll(),
-                ActionKind.OccurrencesChanged
+                ActionKind.OccurrencesChanged,
             )
             success(occurrence)
         }
@@ -163,16 +163,15 @@ class OccurrenceService(
 
             if (occurrence.intervenors.any { it == intervenorId }) return@run failure(OccurrenceError.IntervenorAlreadyInOccurrence)
 
-
             val updated = repoOccurrence.addIntervenor(occurrence, intervenor)
             publisher.occurrencePublisher.sendMessageToAll(
                 updated.id,
                 updated,
-                ActionKind.IntervenorAdded
+                ActionKind.IntervenorAdded,
             )
             publisher.occurrencesPublisher.sendMessageToAll(
                 findAll(),
-                ActionKind.OccurrencesChanged
+                ActionKind.OccurrencesChanged,
             )
             success(updated)
         }
@@ -209,11 +208,11 @@ class OccurrenceService(
             publisher.occurrencePublisher.sendMessageToAll(
                 updated.id,
                 updated,
-                ActionKind.IntervenorRemoved
+                ActionKind.IntervenorRemoved,
             )
             publisher.occurrencesPublisher.sendMessageToAll(
                 findAll(),
-                ActionKind.OccurrencesChanged
+                ActionKind.OccurrencesChanged,
             )
             success(updated)
         }
@@ -242,11 +241,11 @@ class OccurrenceService(
             publisher.occurrencePublisher.sendMessageToAll(
                 id,
                 Unit,
-                ActionKind.OccurrenceDeleted
+                ActionKind.OccurrenceDeleted,
             )
             publisher.occurrencesPublisher.sendMessageToAll(
                 findAll(),
-                ActionKind.OccurrencesChanged
+                ActionKind.OccurrencesChanged,
             )
             success(true)
         }

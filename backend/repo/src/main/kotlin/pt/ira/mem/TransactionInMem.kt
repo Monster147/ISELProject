@@ -1,5 +1,6 @@
 package pt.ira.mem
 
+import pt.ira.interfaces.RepositoryDocuments
 import pt.ira.interfaces.RepositoryEvidence
 import pt.ira.interfaces.RepositoryIntervenor
 import pt.ira.interfaces.RepositoryOccurrence
@@ -15,6 +16,7 @@ class TransactionInMem(
     override val repoEvidence: RepositoryEvidence,
     override val repoRole: RepositoryRole,
     override val repoOccurrence: RepositoryOccurrence,
+    override val repoDocuments: RepositoryDocuments,
 ) : Transaction {
     override fun rollback(): Unit = throw UnsupportedOperationException()
 }

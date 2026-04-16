@@ -42,6 +42,35 @@ class FileSystemStorageService : StorageService {
         return root.relativize(destination).toString()
     }
 
+    override fun saveDocument(
+        file: MultipartFile,
+        documentName: String,
+        documentType: String,
+    ): String {
+        val docDir =
+            root
+                .resolve("documents")
+                .resolve(documentType)
+        Files.createDirectories(docDir)
+
+        val extension =
+            file.originalFilename
+                ?.substringAfterLast('.', "")
+                ?.let { ".$it" } ?: ""
+
+        val destination = docDir.resolve("${documentName}$extension")
+
+        if (Files.exists(destination)) {
+            return ""
+        }
+
+        file.inputStream.use {
+            Files.copy(it, destination)
+        }
+
+        return root.relativize(destination).toString()
+    }
+
     private fun generateUniquePath(
         dir: Path,
         extension: String,
@@ -62,6 +91,16 @@ class FileSystemStorageService : StorageService {
     }
 
     override fun deleteEvidence(path: String): Boolean {
+        val filePath = root.resolve(path).normalize()
+        if (!filePath.startsWith(root)) return false
+        return try {
+            Files.deleteIfExists(filePath)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override fun deleteDocument(path: String): Boolean {
         val filePath = root.resolve(path).normalize()
         if (!filePath.startsWith(root)) return false
         return try {

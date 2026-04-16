@@ -39,7 +39,7 @@ sealed class EvidenceError {
 class EvidenceService(
     private val trxManager: TransactionManager,
     private val storageService: StorageService,
-    private val publisher: Publishers
+    private val publisher: Publishers,
 ) {
     private val allowedExtensions =
         listOf(
@@ -95,17 +95,17 @@ class EvidenceService(
             publisher.evidencePublisher.sendMessageToAll(
                 evidence.id,
                 evidence,
-                ActionKind.EvidenceCreated
+                ActionKind.EvidenceCreated,
             )
             publisher.occurrencePublisher.sendMessageToAll(
                 occurrenceId,
                 evidence,
-                ActionKind.EvidenceCreated
+                ActionKind.EvidenceCreated,
             )
             val occurrences = repoOccurrence.findAll()
             publisher.occurrencesPublisher.sendMessageToAll(
                 occurrences,
-                ActionKind.OccurrenceCreated
+                ActionKind.OccurrenceCreated,
             )
             success(evidence)
         }
@@ -233,17 +233,17 @@ class EvidenceService(
             publisher.evidencePublisher.sendMessageToAll(
                 evidence.occurrenceId,
                 Unit,
-                ActionKind.EvidenceDeleted
+                ActionKind.EvidenceDeleted,
             )
             publisher.occurrencePublisher.sendMessageToAll(
                 evidence.occurrenceId,
                 Unit,
-                ActionKind.EvidenceDeleted
+                ActionKind.EvidenceDeleted,
             )
             val occurrences = repoOccurrence.findAll()
             publisher.occurrencesPublisher.sendMessageToAll(
                 occurrences,
-                ActionKind.OccurrenceCreated
+                ActionKind.OccurrenceCreated,
             )
             success(true)
         }

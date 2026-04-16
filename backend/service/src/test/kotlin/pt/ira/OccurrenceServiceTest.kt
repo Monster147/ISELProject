@@ -357,14 +357,22 @@ class OccurrenceServiceTest {
             occurrenceInfo = json("""{}"""),
         )
 
-        val result = occurrenceService.findAll()
+        val result =
+            occurrenceService.findAll().let {
+                check(it is Success)
+                it.value
+            }
 
         assertEquals(2, result.size)
     }
 
     @Test
     fun `findAll returns empty list when none`() {
-        val result = occurrenceService.findAll()
+        val result =
+            occurrenceService.findAll().let {
+                check(it is Success)
+                it.value
+            }
 
         assertTrue(result.isEmpty())
     }

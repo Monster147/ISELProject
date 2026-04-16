@@ -9,7 +9,6 @@ import pt.ira.user.User
  * Repositório de operações sobre relatórios.
  */
 interface RepositoryReport : Repository<Report> {
-
     /**
      * Cria um relatório com os dados fornecidos.
      *

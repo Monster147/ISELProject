@@ -90,3 +90,22 @@ Content-Type: application/json
 {
   "intervenorId": 1
 }
+
+### 9) Create Document
+POST http://localhost:8080/api/documents
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="file"; filename="01-DeclaracaoDeAcidenteAuto.pdf"
+Content-Type: application/pdf
+
+< C:\Users\josec\Downloads\Templates\01-Automovel\02_DocumentosDeSuportCAPTAuto_ParaImpressao\01-DeclaracaoDeAcidenteAuto.pdf
+--boundary123
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+  "name": "DeclaracaoDeAcidenteAuto",
+  "type": "Automovel"
+}
+--boundary123--

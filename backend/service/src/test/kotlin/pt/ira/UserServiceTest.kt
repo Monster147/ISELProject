@@ -350,7 +350,7 @@ class UserServiceTest {
                         "d",
                         typeA,
                         json("""{}"""),
-                        occ.intervenors
+                        occ.intervenors,
                     )
                 repoReport.addEditor(report, user)
             }

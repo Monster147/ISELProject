@@ -7,7 +7,6 @@ import pt.ira.interfaces.TransactionManager
 import pt.ira.publishers.Publishers
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
-import pt.ira.storage.StorageService
 
 sealed class ReportError {
     data object ReportNotFound : ReportError()
@@ -38,7 +37,7 @@ sealed class ReportError {
 @Component
 class ReportService(
     private val trxManager: TransactionManager,
-    private val publisher: Publishers
+    private val publisher: Publishers,
 ) {
     /**
      * Cria um relatório associado a uma ocorrência.
@@ -85,7 +84,7 @@ class ReportService(
             publisher.reportPublisher.sendMessageToAll(
                 report.id,
                 report,
-                ActionKind.ReportCreated
+                ActionKind.ReportCreated,
             )
             success(report)
         }
@@ -178,7 +177,7 @@ class ReportService(
             publisher.reportPublisher.sendMessageToAll(
                 updated.id,
                 updated,
-                ActionKind.EditorAdded
+                ActionKind.EditorAdded,
             )
             success(updated)
         }
@@ -212,7 +211,7 @@ class ReportService(
             publisher.reportPublisher.sendMessageToAll(
                 updated.id,
                 updated,
-                ActionKind.EditorRemoved
+                ActionKind.EditorRemoved,
             )
             success(updated)
         }
@@ -242,7 +241,7 @@ class ReportService(
             publisher.reportPublisher.sendMessageToAll(
                 updated.id,
                 updated,
-                ActionKind.ReportStatusChanged
+                ActionKind.ReportStatusChanged,
             )
             success(updated)
         }
@@ -267,7 +266,7 @@ class ReportService(
             publisher.reportPublisher.sendMessageToAll(
                 report.id,
                 Unit,
-                ActionKind.ReportDeleted
+                ActionKind.ReportDeleted,
             )
             success(true)
         }

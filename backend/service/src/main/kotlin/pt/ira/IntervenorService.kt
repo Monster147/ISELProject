@@ -70,11 +70,11 @@ class IntervenorService(
             publisher.intervenorPublisher.sendMessageToAll(
                 intervenor.id,
                 intervenor,
-                ActionKind.IntervenorCreated
+                ActionKind.IntervenorCreated,
             )
             publisher.intervenorsPublisher.sendMessageToAll(
                 findAll(),
-                ActionKind.IntervenorsChanged
+                ActionKind.IntervenorsChanged,
             )
             success(intervenor)
         }
@@ -117,11 +117,11 @@ class IntervenorService(
             publisher.intervenorPublisher.sendMessageToAll(
                 updatedIntervenor.id,
                 updatedIntervenor,
-                ActionKind.IntervenorUpdated
+                ActionKind.IntervenorUpdated,
             )
             publisher.intervenorsPublisher.sendMessageToAll(
                 findAll(),
-                ActionKind.IntervenorsChanged
+                ActionKind.IntervenorsChanged,
             )
             success(updatedIntervenor)
         }
@@ -143,11 +143,11 @@ class IntervenorService(
             publisher.intervenorPublisher.sendMessageToAll(
                 intervenor.id,
                 Unit,
-                ActionKind.IntervenorDeleted
+                ActionKind.IntervenorDeleted,
             )
             publisher.intervenorsPublisher.sendMessageToAll(
                 findAll(),
-                ActionKind.IntervenorsChanged
+                ActionKind.IntervenorsChanged,
             )
             success(true)
         }

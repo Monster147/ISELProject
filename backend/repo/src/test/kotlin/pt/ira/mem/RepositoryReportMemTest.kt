@@ -102,8 +102,8 @@ class RepositoryReportMemTest {
         val updated = repo.findById(report.id)
 
         assertNotNull(updated)
-        assertTrue(updated.editors.contains(creatorId))     // creator continua editor
-        assertTrue(!updated.editors.contains(editor.id))    // editor removido
+        assertTrue(updated.editors.contains(creatorId)) // creator continua editor
+        assertTrue(!updated.editors.contains(editor.id)) // editor removido
         assertEquals(removed, updated)
     }
 

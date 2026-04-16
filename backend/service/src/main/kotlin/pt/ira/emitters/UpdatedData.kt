@@ -51,7 +51,7 @@ sealed interface UpdatedData {
  *
  * @property message descrição da ação.
  */
-enum class ActionKind(val message: String){
+enum class ActionKind(val message: String) {
     EvidenceCreated("Evidence created"),
     EvidenceDeleted("Evidence deleted"),
     IntervenorCreated("Intervenor created"),

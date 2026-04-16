@@ -87,3 +87,11 @@ CREATE TABLE dbo.evidence
 );
 
 INSERT INTO dbo.roles (name) VALUES ('admin'), ('investigator'), ('supervisor');
+
+CREATE TABLE dbo.documents
+(
+    id                      SERIAL             PRIMARY KEY,
+    name                    VARCHAR(255)       NOT NULL,
+    type                    VARCHAR(255)       NOT NULL,
+    file_path               VARCHAR(255)       NOT NULL
+)
