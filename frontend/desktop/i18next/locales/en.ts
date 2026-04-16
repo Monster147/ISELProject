@@ -144,6 +144,11 @@ const en = {
             cancel:"Cancel",
             confirm: "Yes",
         },
+        offline: {
+            title: "Connection Error",
+            message: "Connection to the server unavailable. Please check your internet connection and try again.",
+            confirm: "Try again",
+        }
     }
 }
 

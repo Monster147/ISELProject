@@ -10,7 +10,7 @@ type ConfirmModalProps = {
     title: string;
     message: string;
     confirmText: string;
-    cancelText: string;
+    cancelText?: string;
     onConfirm: () => void;
     onCancel: () => void;
     isLoading?: boolean;
@@ -42,6 +42,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                     <ThemedText style={styles.message}>{message}</ThemedText>
 
                     <ThemedView style={styles.buttonContainer}>
+                        {cancelText && (
                         <ThemedButton
                             style={styles.cancelButton}
                             onPress={onCancel}
@@ -51,6 +52,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                                 {cancelText}
                             </ThemedText>
                         </ThemedButton>
+                        )}
 
                         <ThemedButton
                             style={styles.confirmButton}

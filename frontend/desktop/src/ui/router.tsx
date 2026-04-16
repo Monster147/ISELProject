@@ -15,12 +15,14 @@ import IntervenorCreate from "./components/(dashboard)/intervenors/create";
 import IntervenorUpdate from "./components/(dashboard)/intervenors/update";
 import "../../i18next/i18next";
 import "./utils/ConfigureApiDesktop"
+import Loadingscreen from "./components/loadingscreen";
 
 export const router = createBrowserRouter([
     {
         element: <RootLayout/>,
         children: [
-            {path: "/", element: <Home/>},
+            {path:"/", element: <Loadingscreen/>},
+            {path: "/home", element: <Home/>},
             {
                 element: <AuthLayout/>,
                 children: [

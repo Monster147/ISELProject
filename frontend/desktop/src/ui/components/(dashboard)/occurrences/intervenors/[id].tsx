@@ -40,9 +40,11 @@ const OccurrenceIntervenors = () => {
         navigate(`/intervenor?selectMode=true&occurrenceId=${occurrenceId}`)
     }
 
-    const occurrenceIntervenors = intervenor.filter(i =>
-        actualOccurrence.intervenors.includes(i.id)
-    )
+    const occurrenceIntervenors = Array.isArray(intervenor)
+        ? intervenor.filter(i =>
+            actualOccurrence.intervenors.includes(i.id)
+        )
+        : [];
 
     const handleRemove = (intervenorId: number) => {
         confirmAction(

@@ -144,6 +144,11 @@ const es = {
             cancel: "Cancelar",
             confirm: "Sí",
         },
+        offline: {
+            title: "Error de conexión",
+            message: "Conexión con el servidor no disponible. Por favor, comprueba tu conexión a internet e inténtalo de nuevo.",
+            confirm: "Intentar de nuevo",
+        }
     },
 };
 

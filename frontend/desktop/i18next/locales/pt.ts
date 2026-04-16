@@ -159,6 +159,11 @@ const pt = {
             cancel: "Cancelar",
             confirm: "Sim",
         },
+        offline:{
+            title: "Erro de conexão",
+            message: "Conexão com o servidor indisponível. Verifique a sua conexão à internet e tente novamente.",
+            confirm: "Tentar novamente",
+        }
     }
 }
 

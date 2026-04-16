@@ -22,13 +22,10 @@ export function OccurrenceProvider({children}) {
     const {user} = useAuth()
 
     useEffect(() => {
-        if (user){
-            listOccurrences()
-        } else {
-            setOccurrence([])
-        }
+        listOccurrences()
     }, [user]);
 
+    //sse que tem OccurrencesChanged vai receber um reporterId para somente guardar na lista as ocorrencias dele
     const handleOnMessage = useCallback((message: SSEMessage)=>{
         setLoading(true)
         const data = message.data

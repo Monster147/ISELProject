@@ -4,19 +4,42 @@ import {AuthProvider} from "../contexts/AuthContext";
 import ThemedView from "../../../components/ThemedView";
 import {OccurrenceProvider} from "../contexts/OccurrenceContext";
 import {IntervenorProvider} from "../contexts/IntervenorContext";
-import {Outlet} from "react-router";
+import {Outlet, useNavigate} from "react-router";
 import {useConfirm} from "../hooks/useConfirm";
 import ConfirmModal from "./ConfirmModal";
+import {useEffect, useState} from "react";
+import {useNetworkStatus} from "../../hooks/useNetworkStatus";
+import {useConfirmAction} from "../utils/confirmAction";
+import {useTranslation} from "react-i18next";
 
 const RootLayoutContent = () => {
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light;
-    const { dialog } = useConfirm();
+    const { dialog, confirm  } = useConfirm()
+    const navigate = useNavigate();
+    const loadingScreen = window.location.pathname === "/"
+    const {t} = useTranslation()
+
+    const { isOnline } = useNetworkStatus();
+
+    useEffect(() => {
+        console.log("isOnline:", isOnline);
+        if (!isOnline && !loadingScreen) {
+            confirm({
+                title:  t("offline.title"),
+                message: t("offline.message"),
+                confirmText: t("offline.confirm"),
+            }).then(() => {
+                navigate("/")
+            })
+        }
+    }, [isOnline]);
+
 
     return (
         <ThemedView style={{flex: 1, backgroundColor: theme.background}}>
             <Outlet/>
-            {dialog && (
+            {dialog?.options && (
                 <ConfirmModal
                     visible={true}
                     title={dialog.options.title}
