@@ -56,6 +56,17 @@ const DashboardLayout = () => {
                             />
                     }}/>
                 <Tabs.Screen
+                    name={"documents"}
+                    options={{
+                        title: t("dashboard.documents"),
+                        tabBarIcon: ({focused}) =>
+                            <Ionicons
+                                size={24}
+                                name={focused ? 'document' : 'document-outline'}
+                                color={focused ? theme.iconColorFocused : theme.iconColor}
+                            />
+                    }}/>
+                <Tabs.Screen
                     name="profile"
                     options={{
                         title: t("dashboard.profile"),

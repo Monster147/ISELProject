@@ -55,7 +55,7 @@ const IntervenorSearch = () => {
             setIntervenor(result)
             setError(null)
         } catch (err: any) {
-            if (err instanceof Error) setError(err.message);
+            if (err instanceof Error) setError(t("intervenor.intervenorNotFound"))
             else setError(String(err));
         } finally {
             setLoading(false);
@@ -69,7 +69,7 @@ const IntervenorSearch = () => {
             setIntervenor(result)
             setError(null)
         } catch (err: any) {
-            if (err instanceof Error) setError(err.message);
+            if (err instanceof Error) setError(t("intervenor.intervenorNotFound"))
             else setError(String(err));
         } finally {
             setLoading(false);

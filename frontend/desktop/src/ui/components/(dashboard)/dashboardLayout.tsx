@@ -3,7 +3,16 @@ import { useTranslation } from "react-i18next";
 import { useColorScheme, View, Text, StyleSheet } from "react-native";
 import { Colors } from "@commons/constants/Colors";
 import UserOnly from "../../../../components/auth/UserOnly";
-import { MdGroups, MdGroups2, MdErrorOutline, MdError, MdPersonOutline, MdPerson } from "react-icons/md";
+import {
+    MdGroups,
+    MdGroups2,
+    MdErrorOutline,
+    MdError,
+    MdPersonOutline,
+    MdPerson,
+    MdDescription,
+    MdOutlineDescription
+} from "react-icons/md";
 import RootLayout from "../rootLayout";
 import ThemedView from "../../../../components/ThemedView";
 
@@ -34,6 +43,15 @@ const DashboardLayout = () => {
                         label={t("dashboard.occurrence")}
                         activeIcon={<MdError size={24} color={theme.iconColorFocused} />}
                         inactiveIcon={<MdErrorOutline size={24} color={theme.iconColor} />}
+                        textColorActive={theme.iconColorFocused}
+                        textColorInactive={theme.iconColor}
+                    />
+
+                    <TabItem
+                        to="/documents"
+                        label={t("dashboard.documents")}
+                        activeIcon={<MdDescription size={24} color={theme.iconColorFocused} />}
+                        inactiveIcon={<MdOutlineDescription size={24} color={theme.iconColor} />}
                         textColorActive={theme.iconColorFocused}
                         textColorInactive={theme.iconColor}
                     />

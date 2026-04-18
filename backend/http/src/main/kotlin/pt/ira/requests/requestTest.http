@@ -100,16 +100,16 @@ POST http://localhost:8080/api/documents
 Content-Type: multipart/form-data; boundary=boundary123
 
 --boundary123
-Content-Disposition: form-data; name="file"; filename="01-DeclaracaoDeAcidenteAuto.pdf"
+Content-Disposition: form-data; name="file"; filename="01-RecolhaDocumentaçaoPessoal.pdf"
 Content-Type: application/pdf
 
-< C:\Users\josec\Downloads\Templates\01-Automovel\02_DocumentosDeSuportCAPTAuto_ParaImpressao\01-DeclaracaoDeAcidenteAuto.pdf
+< C:\Users\User\Downloads\Templates\Templates\01_AUTOMÓVEL\02_DOCUMENTOSDESUPORTECAPTAUTO_paraimpressão\02_RecolhaDocumentaçãoPessoal_Autorização.pdf
 --boundary123
 Content-Disposition: form-data; name="data"
 Content-Type: application/json
 
 {
-  "name": "DeclaracaoDeAcidenteAuto",
+  "name": "RecolhaDocumentaçaoPessoal",
   "type": "Automovel"
 }
 --boundary123--
@@ -118,3 +118,8 @@ Content-Type: application/json
 GET http://localhost:8080/api/documents/1/download
 Accept: application/pdf
 
+### Get all documents
+GET http://localhost:8080/api/documents
+
+### Get all documents types
+GET http://localhost:8080/api/documents/types

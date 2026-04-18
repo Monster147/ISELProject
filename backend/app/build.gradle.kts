@@ -51,9 +51,9 @@ kotlin {
 /**
  * Docker related tasks
  */
-val dockerImageJvm = "pokerdice-jvm"
-val dockerImagePostgres = "pokerdice-postgres"
-val dockerImageUbuntu = "pokerdice-ubuntu"
+val dockerImageJvm = "ira-jvm"
+val dockerImagePostgres = "ira-postgres"
+val dockerImageUbuntu = "ira-ubuntu"
 val dockerExe =
     when (
         org.gradle.internal.os.OperatingSystem

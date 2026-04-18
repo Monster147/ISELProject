@@ -33,6 +33,7 @@ const es = {
             occurrence: "Ocurrencia",
             profile: "Perfil",
             intervenor: "Interviniente",
+            documents: "Documentos"
         },
         profile: {
             profile: "Perfil",
@@ -147,6 +148,10 @@ const es = {
             cancel: "Cancelar",
             confirm: "Sí",
         },
+        documents:{
+            documents: "Documentos",
+            noDocument: "No hay documentos"
+        }
     },
 };
 

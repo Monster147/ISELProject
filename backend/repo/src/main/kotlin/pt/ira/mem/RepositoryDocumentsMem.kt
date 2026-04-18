@@ -21,7 +21,7 @@ class RepositoryDocumentsMem : RepositoryDocuments {
             println(docsList)
         }
 
-    override fun findAllTypes(): List<String> = docsList.map { it.type }
+    override fun findAllTypes(): List<String> = docsList.map { it.type }.distinct()
 
     override fun findByName(name: String): Documents? = docsList.firstOrNull { it.name == name }
 

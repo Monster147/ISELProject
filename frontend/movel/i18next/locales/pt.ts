@@ -32,7 +32,8 @@ const pt = {
         dashboard:{
             occurrence:"Ocorrêcias",
             profile:"Perfil",
-            intervenor:"Interveniente"
+            intervenor:"Interveniente",
+            documents: "Documentos"
         },
         profile:{
             profile:"Perfil",
@@ -162,6 +163,10 @@ const pt = {
             cancel: "Cancelar",
             confirm: "Sim",
         },
+        documents:{
+            documents: "Documentos",
+            noDocument: "Sem documentos"
+        }
     }
 }
 

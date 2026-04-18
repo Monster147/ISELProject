@@ -24,14 +24,3 @@ services:
       DB_URL: "jdbc:postgresql://ira-postgres:5432/db?user=dbuser&password=changeit"
     ports:
       - 8080:8080
-
-
-  nginx:
-    container_name: ira-nginx
-    build:
-      context: ..
-      dockerfile: /app/nginx/Dockerfile-nginx
-    ports:
-      - 4000:4000
-    depends_on:
-      - ira-jvm

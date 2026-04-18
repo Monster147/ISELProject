@@ -33,6 +33,7 @@ const es = {
             occurrence: "Ocurrencia",
             profile: "Perfil",
             intervenor: "Interviniente",
+            documents: "Documentos"
         },
         profile: {
             profile: "Perfil",
@@ -151,6 +152,10 @@ const es = {
             title: "Error de conexión",
             message: "Conexión con el servidor no disponible. Por favor, comprueba tu conexión a internet e inténtalo de nuevo.",
             confirm: "Intentar de nuevo",
+        },
+        documents:{
+            documents: "Documentos",
+            noDocument: "No hay documentos"
         }
     },
 };

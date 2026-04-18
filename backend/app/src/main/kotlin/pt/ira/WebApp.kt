@@ -12,6 +12,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import pt.ira.http.AuthenticatedUserArgumentResolver
 import pt.ira.http.AuthenticationInterceptor
+import pt.ira.jdbi.TransactionManagerJdbi
 import pt.ira.jdbi.configureWithAppRequirements
 import pt.ira.mem.TransactionManagerInMem
 import pt.ira.token.Sha256TokenEncoder
@@ -53,11 +54,11 @@ class WebApp {
     @Bean
     fun clock(): Clock = Clock.systemUTC()
 
-    // @Bean
-    // fun trxManagerJdbi(jdbi: Jdbi): TransactionManagerJdbi = TransactionManagerJdbi(jdbi)
-
     @Bean
-    fun trxManager(): TransactionManagerInMem = TransactionManagerInMem()
+    fun trxManagerJdbi(jdbi: Jdbi): TransactionManagerJdbi = TransactionManagerJdbi(jdbi)
+
+    //@Bean
+    //fun trxManager(): TransactionManagerInMem = TransactionManagerInMem()
 
     @Bean
     fun usersDomainConfig() =

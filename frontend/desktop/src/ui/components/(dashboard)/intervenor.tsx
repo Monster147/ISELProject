@@ -14,6 +14,7 @@ import {useOccurrence} from "../../../hooks/useOccurrence";
 import {useTranslation} from "react-i18next";
 import {useNavigate, useParams, useLocation} from "react-router";
 import Select from "react-select";
+import {ApiError} from "@commons/api/api";
 
 const IntervenorSearch = () => {
     const {t} = useTranslation()
@@ -23,7 +24,7 @@ const IntervenorSearch = () => {
         {label: t("intervenor.intervenorId"), value: "intervenorIdentifier"}
     ]
 
-    const { search } = useLocation();
+    const {search} = useLocation();
     const params = new URLSearchParams(search);
     const selectMode = params.get("selectMode");
     const occurrenceId = params.get("occurrenceId");
@@ -50,7 +51,7 @@ const IntervenorSearch = () => {
             setIntervenor(result)
             setError(null)
         } catch (err: any) {
-            if (err instanceof Error) setError(err.message);
+            if (err instanceof Error) setError(t("intervenor.intervenorNotFound"))
             else setError(String(err));
         } finally {
             setLoading(false);
@@ -64,7 +65,7 @@ const IntervenorSearch = () => {
             setIntervenor(result)
             setError(null)
         } catch (err: any) {
-            if (err instanceof Error) setError(err.message);
+            if (err instanceof Error) setError(t("intervenor.intervenorNotFound"))
             else setError(String(err));
         } finally {
             setLoading(false);
@@ -121,10 +122,10 @@ const IntervenorSearch = () => {
         <>
             <ThemedView style={styles.container} safe={true}>
                 <ScrollView>
-                    <Spacer />
+                    <Spacer/>
                     <ThemedText title={true} style={styles.heading}>{t("intervenor.intervenors")}</ThemedText>
                     <ThemedCard style={styles.card}>
-                        <Spacer />
+                        <Spacer/>
                         <ThemedText>{t("intervenor.searchIntervenor")}</ThemedText>
                         <Select
                             options={OPTIONS}
@@ -133,7 +134,12 @@ const IntervenorSearch = () => {
                             onChange={(selectedOption) => setSearchType(selectedOption?.value)}
                         />
                         {searchType && <ThemedTextInput
-                            style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center"}}
+                            style={{
+                                width: '80%',
+                                margin: 20,
+                                backgroundColor: theme.uiBackground2,
+                                alignSelf: "center"
+                            }}
                             placeholder={searchType === "intervenorIdentifier" ? t("intervenor.enterIntervenorId") : t("intervenor.enterPhoneNumber")}
                             keyboardType={searchType === "phoneNumber" ? "phone-pad" : "default"}
                             onChangeText={setIdNumber}
@@ -141,11 +147,15 @@ const IntervenorSearch = () => {
 
                         />}
                         {searchType && <ThemedButton onPress={handleSearch} style={styles.create}>
-                            <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenor.search")}</ThemedText>
+                            <ThemedText
+                                style={{color: '#fff', textAlign: 'center'}}>{t("intervenor.search")}</ThemedText>
                         </ThemedButton>}
 
                         <ThemedButton onPress={handleCreate} style={styles.create}>
-                            <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenor.createIntervenor")}</ThemedText>
+                            <ThemedText style={{
+                                color: '#fff',
+                                textAlign: 'center'
+                            }}>{t("intervenor.createIntervenor")}</ThemedText>
                         </ThemedButton>
 
                         {error && <Text style={styles.error}>{error}</Text>}
@@ -160,11 +170,17 @@ const IntervenorSearch = () => {
                                 <ThemedText>{t("intervenor.idNumber")}: {intervenor.idNumber}</ThemedText>
 
                                 <ThemedButton onPress={handleUpdate} style={styles.update}>
-                                    <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenor.updateInformation")}</ThemedText>
+                                    <ThemedText style={{
+                                        color: '#fff',
+                                        textAlign: 'center'
+                                    }}>{t("intervenor.updateInformation")}</ThemedText>
                                 </ThemedButton>
-                                {isSelectMode &&(
+                                {isSelectMode && (
                                     <ThemedButton onPress={handleAddIntervenor}>
-                                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenor.add")}</ThemedText>
+                                        <ThemedText style={{
+                                            color: '#fff',
+                                            textAlign: 'center'
+                                        }}>{t("intervenor.add")}</ThemedText>
                                     </ThemedButton>
                                 )}
                             </ThemedCard>
@@ -189,7 +205,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
         marginVertical: 10,
     },
-    heading:{
+    heading: {
         fontWeight: 'bold',
         fontSize: 18,
         textAlign: 'center'

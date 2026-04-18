@@ -32,7 +32,8 @@ const en = {
         dashboard:{
             occurrence:"Occurrence",
             profile:"Profile",
-            intervenor:"Intervenor"
+            intervenor:"Intervenor",
+            documents: "Documents"
         },
         profile:{
             profile:"Profile",
@@ -147,6 +148,10 @@ const en = {
             cancel:"Cancel",
             confirm: "Yes",
         },
+        documents:{
+            documents: "Documents",
+            noDocument: "No documents"
+        }
     }
 }
 

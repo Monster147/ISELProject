@@ -32,7 +32,8 @@ const pt = {
         dashboard:{
             occurrence:"Ocorrêcias",
             profile:"Perfil",
-            intervenor:"Interveniente"
+            intervenor:"Interveniente",
+            documents: "Documentos"
         },
         profile:{
             profile:"Perfil",
@@ -166,6 +167,10 @@ const pt = {
             title: "Erro de conexão",
             message: "Conexão com o servidor indisponível. Verifique a sua conexão à internet e tente novamente.",
             confirm: "Tentar novamente",
+        },
+        documents:{
+            documents: "Documentos",
+            noDocument: "Sem documentos"
         }
     }
 }

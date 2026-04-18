@@ -32,7 +32,8 @@ const en = {
         dashboard:{
             occurrence:"Occurrence",
             profile:"Profile",
-            intervenor:"Intervenor"
+            intervenor:"Intervenor",
+            documents: "Documents"
         },
         profile:{
             profile:"Profile",
@@ -151,6 +152,10 @@ const en = {
             title: "Connection Error",
             message: "Connection to the server unavailable. Please check your internet connection and try again.",
             confirm: "Try again",
+        },
+        documents:{
+            documents: "Documents",
+            noDocument: "No documents"
         }
     }
 }

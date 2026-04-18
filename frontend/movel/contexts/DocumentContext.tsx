@@ -11,6 +11,7 @@ type DocumentContextValue = {
     getDocumentByName: (name:string) => Promise<any>
     getDocumentByType: (type:string) => Promise<any>
     getAllDocumentTypes: () => Promise<any>
+    downloadDocument :(id:number)=>Promise<any>
 }
 
 export const DocumentContext = createContext<DocumentContextValue | undefined>(undefined)
@@ -20,7 +21,7 @@ export function DocumentProvider({children}) {
 
     async function getAllDocuments(){
         try {
-            const response=api.getAllDocument()
+            const response=await api.getAllDocument()
             setDocuments(response)
         }catch (err: any) {
             throw Error(err.message)
@@ -29,7 +30,7 @@ export function DocumentProvider({children}) {
 
     async function getDocumentById(id:number){
         try {
-            const response=api.getDocumentById(id)
+            const response=await api.getDocumentById(id)
             return response
         }catch (err: any) {
             throw Error(err.message)
@@ -38,7 +39,7 @@ export function DocumentProvider({children}) {
 
     async function getDocumentByName(name:string){
         try {
-            const response=api.getDocumentByName(name)
+            const response=await api.getDocumentByName(name)
             return response
         }catch (err: any) {
             throw Error(err.message)
@@ -47,7 +48,7 @@ export function DocumentProvider({children}) {
 
     async function getDocumentByType(type:string){
         try {
-            const response=api.getDocumentByType(type)
+            const response= await api.getDocumentByType(type)
             return response
         }catch (err: any) {
             throw Error(err.message)
@@ -56,14 +57,23 @@ export function DocumentProvider({children}) {
 
     async function getAllDocumentTypes(){
         try {
-            const response=api.getAllDocumentTypes()
+            const response= await api.getAllDocumentTypes()
             return response
         }catch (err: any) {
             throw Error(err.message)
         }
     }
+
+    async function downloadDocument(id:number){
+        try {
+            await api.downloadDocument(id)
+        }catch (err: any) {
+            throw Error(err.message)
+        }
+    }
+
     return (
-        <DocumentContext.Provider value={{getAllDocumentTypes, getDocumentByType, getDocumentByName, getDocumentById, getAllDocuments, documents}}>
+        <DocumentContext.Provider value={{getAllDocumentTypes, getDocumentByType, getDocumentByName, getDocumentById, getAllDocuments, documents, downloadDocument}}>
             {children}
         </DocumentContext.Provider>
     )
