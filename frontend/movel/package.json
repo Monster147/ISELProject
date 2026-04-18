@@ -13,6 +13,7 @@
     "@react-native-masked-view/masked-view": "0.3.2",
     "expo": "~54.0.0",
     "expo-constants": "~18.0.13",
+    "expo-file-system": "^55.0.16",
     "expo-linking": "~8.0.11",
     "expo-localization": "~17.0.8",
     "expo-router": "~6.0.23",

@@ -23,16 +23,23 @@ import {Documents} from "../models/Documents/Documents";
 
 type ApiAuthInfo = { token: string } | null;
 
+type DocumentDownloadHandler = (apiBaseUrl: string, id: number) => Promise<void>;
+
 type ApiRuntimeConfig = {
     getAuthInfo?: () => Promise<ApiAuthInfo>;
     getErrorDescription?: (errorType: string) => string;
+    documentDownloadHandler?: DocumentDownloadHandler;
 };
 
 const defaultGetAuthInfo = async (): Promise<ApiAuthInfo> => null;
 const defaultGetErrorDescription = (errorType: string): string => errorType;
+const defaultDocumentDownloadHandler: DocumentDownloadHandler = async () => {
+    throw new Error("Document download handler not configured");
+};
 
 let getAuthInfo = defaultGetAuthInfo;
 let resolveErrorDescription = defaultGetErrorDescription;
+let documentDownloadHandler = defaultDocumentDownloadHandler;
 let API_BASE_URL = ""
 
 export function configureApi(config: ApiRuntimeConfig, apiURL:string): void {
@@ -44,6 +51,10 @@ export function configureApi(config: ApiRuntimeConfig, apiURL:string): void {
 
     if (config.getErrorDescription) {
         resolveErrorDescription = config.getErrorDescription;
+    }
+
+    if (config.documentDownloadHandler) {
+        documentDownloadHandler = config.documentDownloadHandler;
     }
 }
 
@@ -460,28 +471,6 @@ export const api = {
     },
 
     async downloadDocument(id: number): Promise<void> {
-        const response = await fetch(`${API_BASE_URL}/documents/${id}/download`, {
-            method: "GET",
-        })
-
-        if (!response.ok) {
-            throw new Error("Erro ao fazer download");
-        }
-
-        const blob = await response.blob()
-        const contentDisposition = response.headers.get("content-disposition")
-        const filenameMatch = contentDisposition?.match(/filename="?([^"]+)"?/)
-        const filename = filenameMatch?.[1] ?? "download"
-
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement("a")
-        link.href = url
-        link.download = filename
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        window.URL.revokeObjectURL(url)
+        return documentDownloadHandler(API_BASE_URL, id);
     },
-
-    async downloadDocumentMovel():Promise<void>{}
 }
