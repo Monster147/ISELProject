@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import pt.ira.documents.Documents
 import pt.ira.model.Problem
 import pt.ira.model.documents.DocumentInputModel
+import pt.ira.publishers.Publishers
 import java.nio.file.Paths
 
 /**
@@ -39,6 +41,7 @@ import java.nio.file.Paths
 @RequestMapping("/api/documents")
 class DocumentsController(
     private val documentsService: DocumentsService,
+    private val publisher: Publishers,
 ) {
     /**
      * Faz upload de um documento.
@@ -248,5 +251,25 @@ class DocumentsController(
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
+    }
+
+    /**
+     * Fornece um endpoint SSE para subscrição de alterações na lista global de documentos.
+     *
+     * Permite receber eventos em tempo real sempre que a lista de documentos é atualizada.
+     *
+     * Endpoint: GET /listen
+     *
+     * @return [SseEmitter] com ligação persistente para eventos globais.
+     */
+    @GetMapping("/listen")
+    fun listenIntervenors(): SseEmitter {
+        val sseEmitter = SseEmitter(Long.MAX_VALUE)
+        publisher.documentsPublisher.addEmitter(
+            SSEUpdatedDataAdapter(
+                sseEmitter,
+            ),
+        )
+        return sseEmitter
     }
 }

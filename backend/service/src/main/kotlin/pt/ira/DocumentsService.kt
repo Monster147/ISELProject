@@ -4,7 +4,9 @@ import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import pt.ira.documents.Documents
+import pt.ira.emitters.ActionKind
 import pt.ira.interfaces.TransactionManager
+import pt.ira.publishers.Publishers
 import pt.ira.storage.StorageService
 
 sealed class DocumentsError {
@@ -25,11 +27,13 @@ sealed class DocumentsError {
  *
  * @param trxManager gestor de transações usado para aceder aos repositórios dentro de unidades de trabalho.
  * @param storageService serviço responsável pelo armazenamento físico dos ficheiros.
+ * @param publisher conjunto de publicadores de eventos do sistema.
  */
 @Component
 class DocumentsService(
     private val trxManager: TransactionManager,
     private val storageService: StorageService,
+    private val publishers: Publishers,
 ) {
     private val allowedExtensions =
         listOf(
@@ -81,6 +85,11 @@ class DocumentsService(
                     type = type,
                     filepath = filepath,
                 )
+
+            publishers.documentsPublisher.sendMessageToAll(
+                findAllDocuments(),
+                ActionKind.DocumentsChanged
+            )
             success(document)
         }
     }
@@ -174,6 +183,11 @@ class DocumentsService(
             storageService.deleteDocument(document.filepath)
 
             repoDocuments.deleteById(id)
+
+            publishers.documentsPublisher.sendMessageToAll(
+                findAllDocuments(),
+                ActionKind.DocumentsChanged
+            )
             success(true)
         }
 

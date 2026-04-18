@@ -10,6 +10,7 @@ import {
     resolveMimeType
 } from "./ConfigureApiMobileUtils";
 import {Platform} from "react-native";
+import ReactNativeBlobUtil from 'react-native-blob-util'
 
 configureApi(
     {
@@ -17,68 +18,56 @@ configureApi(
         getErrorDescription: getErrorDescription,
         documentDownloadHandler: downloadDocument,
     },
-    "https://unfabricated-everett-surveyable.ngrok-free.dev/api",
+    "https://erosely-redemandable-rebbeca.ngrok-free.dev/api",
 );
 
 export async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
-    const url = `${apiBaseUrl}/documents/${id}/download`;
+    /*const url = `${apiBaseUrl}/documents/${id}/download`;
 
     const response = await fetch(url);
     if (!response.ok) {
         throw new Error("Erro ao ir buscar as informações do documento");
     }
+
     const contentDisposition = response.headers.get("content-disposition");
     const filenameMatch = contentDisposition?.match(/filename="?([^"]+)"?/);
+
     let filename = filenameMatch?.[1] ?? `document_${id}`;
+
     const mime = response.headers.get("content-type");
 
     if (!filename.includes(".")) {
         filename += getExtensionFromMime(mime);
     }
 
-    await ensureDirExists(DOCUMENT_DIR);
-    const fileUri = getFilePath(filename);
-
-    const downloadResumable = FileSystem.createDownloadResumable(
-        url,
-        fileUri
-    );
-
-    const result = await downloadResumable.downloadAsync();
-    if (!result?.uri) {
-        throw new Error("Download falhou");
-    }
-
     if (Platform.OS === "android") {
-        const permission =
-            await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+        const path = `${ReactNativeBlobUtil.fs.dirs.DownloadDir}/${filename}`;
 
-        if (!permission.granted) {
-            console.log("User cancelou → fallback");
-            return;
-        }
+        const res = await ReactNativeBlobUtil.config({
+            fileCache: true,
+            path: path,
+            addAndroidDownloads: {
+                useDownloadManager: true,
+                notification: true,
+                title: filename,
+                description: "A transferir ficheiro...",
+                path: `/storage/emulated/0/Download/${filename}`,
+                mime: mime || "application/octet-stream",
+                mediaScannable: true,
+            },
+        }).fetch("GET", url);
 
-        const dirUri = permission.directoryUri;
-
-        const mimeType = resolveMimeType(
-            filename,
-            result.headers["content-type"]
-        );
-
-        const newFileUri =
-            await FileSystem.StorageAccessFramework.createFileAsync(
-                dirUri,
-                filename,
-                mimeType
-            );
-
-        const base64 = await FileSystem.readAsStringAsync(result.uri, {
-            encoding: FileSystem.EncodingType.Base64,
-        });
-
-        await FileSystem.writeAsStringAsync(newFileUri, base64, {
-            encoding: FileSystem.EncodingType.Base64,
-        });
+        console.log("Guardado em:", res.path());
+        return;
     }
+
+    const path = `${ReactNativeBlobUtil.fs.dirs.DocumentDir}/${filename}`;
+
+    const res = await ReactNativeBlobUtil.config({
+        fileCache: true,
+        path: path,
+    }).fetch("GET", url);
+
+    console.log("Guardado em iOS:", res.path());*/
 }
 

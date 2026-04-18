@@ -68,4 +68,5 @@ enum class ActionKind(val message: String) {
     ReportStatusChanged("Report status changed"),
     EditorAdded("Editor added"),
     EditorRemoved("Editor removed"),
+    DocumentsChanged("Documents changed"),
 }

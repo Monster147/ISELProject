@@ -265,18 +265,24 @@ class OccurrenceController(
     }
 
     /**
-     * Fornece um endpoint SSE para subscrição de alterações na lista global de ocorrências.
+     * Fornece um endpoint SSE para subscrição de alterações na lista de ocorrências de um utilizador específico.
      *
-     * Permite receber eventos em tempo real sempre que a lista de ocorrências é atualizada.
+     * Apenas o utilizador especificado receberá eventos quando a sua lista de ocorrências for alterada.
+     * Útil para notificações personalizadas por utilizador.
      *
-     * Endpoint: GET /listen
+     * Endpoint: GET /listen/user/{userId}
      *
-     * @return [SseEmitter] com ligação persistente para eventos globais.
+     * @param userId identificador do utilizador.
+     *
+     * @return [SseEmitter] com ligação persistente para eventos do utilizador.
      */
-    @GetMapping("/listen")
-    fun listenIntervenors(): SseEmitter {
+    @GetMapping("/listen/user/{userId}")
+    fun listenUserOccurrences(
+        @PathVariable userId: Int,
+    ): SseEmitter {
         val sseEmitter = SseEmitter(Long.MAX_VALUE)
         publisher.occurrencesPublisher.addEmitter(
+            userId,
             SSEUpdatedDataAdapter(
                 sseEmitter,
             ),

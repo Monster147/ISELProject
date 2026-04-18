@@ -5,9 +5,9 @@ POST http://localhost:8080/api/user
 Content-Type: application/json
 
 {
-  "name": "USER1",
-  "email": "user1@gmail.com",
-  "password": "user12"
+  "name": "dadada",
+  "email": "dadada",
+  "password": "dadada"
 }
 
 ### Create Token
@@ -100,16 +100,16 @@ POST http://localhost:8080/api/documents
 Content-Type: multipart/form-data; boundary=boundary123
 
 --boundary123
-Content-Disposition: form-data; name="file"; filename="01-RecolhaDocumentaçaoPessoal.pdf"
+Content-Disposition: form-data; name="file"; filename="01-DeclaracaoDeAcidenteAuto.pdf"
 Content-Type: application/pdf
 
-< C:\Users\User\Downloads\Templates\Templates\01_AUTOMÓVEL\02_DOCUMENTOSDESUPORTECAPTAUTO_paraimpressão\02_RecolhaDocumentaçãoPessoal_Autorização.pdf
+< C:\Users\josec\Downloads\Templates\01-Automovel\02_DocumentosDeSuportCAPTAuto_ParaImpressao\01-DeclaracaoDeAcidenteAuto.pdf
 --boundary123
 Content-Disposition: form-data; name="data"
 Content-Type: application/json
 
 {
-  "name": "RecolhaDocumentaçaoPessoal",
+  "name": "DeclaracaoDeAcidenteAuto",
   "type": "Automovel"
 }
 --boundary123--

@@ -81,7 +81,8 @@ class OccurrenceService(
                 ActionKind.OccurrenceCreated,
             )
             publisher.occurrencesPublisher.sendMessageToAll(
-                findAll(),
+                usersId,
+                findOccurrenceByReporterId(usersId),
                 ActionKind.OccurrencesChanged,
             )
             success(occurrence)
@@ -169,8 +170,10 @@ class OccurrenceService(
                 updated,
                 ActionKind.IntervenorAdded,
             )
+            val reporterId = occurrence.reporterId
             publisher.occurrencesPublisher.sendMessageToAll(
-                findAll(),
+                occurrence.reporterId,
+                findOccurrenceByReporterId(reporterId),
                 ActionKind.OccurrencesChanged,
             )
             success(updated)
@@ -210,8 +213,10 @@ class OccurrenceService(
                 updated,
                 ActionKind.IntervenorRemoved,
             )
+            val reporterId = occurrence.reporterId
             publisher.occurrencesPublisher.sendMessageToAll(
-                findAll(),
+                occurrence.reporterId,
+                findOccurrenceByReporterId(reporterId),
                 ActionKind.OccurrencesChanged,
             )
             success(updated)
@@ -236,15 +241,17 @@ class OccurrenceService(
      */
     fun deleteById(id: Int): Either<OccurrenceError, Boolean> {
         return trxManager.run {
-            repoOccurrence.findById(id) ?: return@run failure(OccurrenceError.OccurrenceNotFound)
+            val occurrence = repoOccurrence.findById(id) ?: return@run failure(OccurrenceError.OccurrenceNotFound)
             repoOccurrence.deleteById(id)
             publisher.occurrencePublisher.sendMessageToAll(
                 id,
                 Unit,
                 ActionKind.OccurrenceDeleted,
             )
+            val reporterId = occurrence.reporterId
             publisher.occurrencesPublisher.sendMessageToAll(
-                findAll(),
+                occurrence.reporterId,
+                findOccurrenceByReporterId(reporterId),
                 ActionKind.OccurrencesChanged,
             )
             success(true)
