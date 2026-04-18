@@ -15,7 +15,9 @@ interface StorageService {
         documentType: String,
     ): String
 
-    fun load(path: String): Resource?
+    fun loadEvidence(path: String): Resource?
+
+    fun loadDocument(path: String): Resource?
 
     fun deleteEvidence(path: String): Boolean
 

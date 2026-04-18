@@ -11,11 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.core.io.Resource
 import pt.ira.documents.Documents
 import pt.ira.model.Problem
 import pt.ira.model.documents.DocumentInputModel
-import java.nio.file.Path
 import java.nio.file.Paths
 
 /**

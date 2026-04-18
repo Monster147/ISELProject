@@ -11,10 +11,11 @@ import java.util.UUID
 
 @Component
 class FileSystemStorageService : StorageService {
-    private val root = Paths.get(System.getProperty("user.dir")).resolve("uploads")
+    private val rootEvidence = Paths.get(System.getProperty("user.dir")).resolve("uploads")
+    private val rootDocuments = Paths.get(System.getProperty("user.dir")).resolve("documents")
 
     init {
-        Files.createDirectories(root)
+        Files.createDirectories(rootEvidence)
     }
 
     override fun save(
@@ -22,7 +23,7 @@ class FileSystemStorageService : StorageService {
         file: MultipartFile,
     ): String {
         val reportDir =
-            root
+            rootEvidence
                 .resolve("occurrences")
                 .resolve(occurrenceId.toString())
                 .resolve("evidences")
@@ -39,7 +40,7 @@ class FileSystemStorageService : StorageService {
             Files.copy(it, destination)
         }
 
-        return root.relativize(destination).toString()
+        return rootEvidence.relativize(destination).toString()
     }
 
     override fun saveDocument(
@@ -48,8 +49,7 @@ class FileSystemStorageService : StorageService {
         documentType: String,
     ): String {
         val docDir =
-            root
-                .resolve("documents")
+            rootDocuments
                 .resolve(documentType)
         Files.createDirectories(docDir)
 
@@ -68,7 +68,7 @@ class FileSystemStorageService : StorageService {
             Files.copy(it, destination)
         }
 
-        return root.relativize(destination).toString()
+        return rootDocuments.relativize(destination).toString()
     }
 
     private fun generateUniquePath(
@@ -79,9 +79,20 @@ class FileSystemStorageService : StorageService {
         return if (!Files.exists(path)) path else generateUniquePath(dir, extension)
     }
 
-    override fun load(path: String): Resource? {
-        val filePath = root.resolve(path).normalize()
-        if (!filePath.startsWith(root)) return null
+    override fun loadEvidence(path: String): Resource? {
+        val filePath = rootEvidence.resolve(path).normalize()
+        if (!filePath.startsWith(rootEvidence)) return null
+        val resource = UrlResource(filePath.toUri())
+        return if (resource.exists() || resource.isReadable) {
+            resource
+        } else {
+            null
+        }
+    }
+
+    override fun loadDocument(path: String): Resource? {
+        val filePath = rootDocuments.resolve(path).normalize()
+        if (!filePath.startsWith(rootDocuments)) return null
         val resource = UrlResource(filePath.toUri())
         return if (resource.exists() || resource.isReadable) {
             resource
@@ -91,8 +102,8 @@ class FileSystemStorageService : StorageService {
     }
 
     override fun deleteEvidence(path: String): Boolean {
-        val filePath = root.resolve(path).normalize()
-        if (!filePath.startsWith(root)) return false
+        val filePath = rootEvidence.resolve(path).normalize()
+        if (!filePath.startsWith(rootEvidence)) return false
         return try {
             Files.deleteIfExists(filePath)
         } catch (e: Exception) {
@@ -101,8 +112,8 @@ class FileSystemStorageService : StorageService {
     }
 
     override fun deleteDocument(path: String): Boolean {
-        val filePath = root.resolve(path).normalize()
-        if (!filePath.startsWith(root)) return false
+        val filePath = rootDocuments.resolve(path).normalize()
+        if (!filePath.startsWith(rootDocuments)) return false
         return try {
             Files.deleteIfExists(filePath)
         } catch (e: Exception) {
@@ -112,11 +123,11 @@ class FileSystemStorageService : StorageService {
 
     override fun deleteOccurrenceEvidences(occurrenceId: Int): Boolean {
         val reportDir =
-            root
+            rootEvidence
                 .resolve("occurrences")
                 .resolve(occurrenceId.toString())
                 .normalize()
-        if (!reportDir.startsWith(root)) return false
+        if (!reportDir.startsWith(rootEvidence)) return false
 
         return try {
             Files.walk(reportDir)

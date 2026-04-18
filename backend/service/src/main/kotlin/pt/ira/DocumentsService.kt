@@ -192,8 +192,9 @@ class DocumentsService(
                 repoDocuments.findById(id)
                     ?: return@run failure(DocumentsError.DocumentNotFound)
 
-            val resource = storageService.load(document.filepath)
-                ?: return@run failure(DocumentsError.DocumentNotFound)
+            val resource =
+                storageService.loadDocument(document.filepath)
+                    ?: return@run failure(DocumentsError.DocumentNotFound)
 
             success(Pair(document, resource))
         }

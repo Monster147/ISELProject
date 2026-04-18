@@ -126,7 +126,7 @@ class EvidenceService(
                     ?: return@run failure(EvidenceError.EvidenceNotFound)
 
             val resource =
-                storageService.load(evidence.filePath)
+                storageService.loadEvidence(evidence.filePath)
                     ?: return@run failure(EvidenceError.FileNotFound)
 
             success(Pair(evidence, resource))
