@@ -10,6 +10,6 @@ class Publishers {
     val occurrencePublisher = ClassPublisher()
     val occurrencesPublisher = ClassPublisher()
     val reportPublisher = ClassPublisher()
-
     val documentsPublisher = ClassesPublisher()
+    val typesPublisher = ClassesPublisher()
 }

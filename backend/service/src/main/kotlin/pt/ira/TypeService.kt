@@ -2,7 +2,9 @@ package pt.ira
 
 import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.stereotype.Component
+import pt.ira.emitters.ActionKind
 import pt.ira.interfaces.TransactionManager
+import pt.ira.publishers.Publishers
 import pt.ira.type.Type
 
 sealed class TypeError {
@@ -20,10 +22,12 @@ sealed class TypeError {
  * - prevenção de duplicados por nome.
  *
  * @param trxManager gestor de transações para acesso aos repositórios.
+ * @param publisher conjunto de publicadores de eventos do sistema.
  */
 @Component
 class TypeService(
     private val trxManager: TransactionManager,
+    private val publisher: Publishers
 ) {
     /**
      * Cria um tipo.
@@ -49,6 +53,10 @@ class TypeService(
             }
 
             val type = repoType.createType(name, form)
+            publisher.typesPublisher.sendMessageToAll(
+                findAll(),
+                ActionKind.TypesChanged
+            )
             success(type)
         }
     }
@@ -122,7 +130,10 @@ class TypeService(
                 )
 
             repoType.save(updated)
-
+            publisher.typesPublisher.sendMessageToAll(
+                findAll(),
+                ActionKind.TypesChanged
+            )
             success(updated)
         }
     }
@@ -136,11 +147,14 @@ class TypeService(
      */
     fun deleteById(id: Int): Either<TypeError, Boolean> {
         return trxManager.run {
-            val existing = repoType.findById(id)
+            repoType.findById(id)
                 ?: return@run failure(TypeError.TypeNotFound)
 
             repoType.deleteById(id)
-
+            publisher.typesPublisher.sendMessageToAll(
+                findAll(),
+                ActionKind.TypesChanged
+            )
             success(true)
         }
     }

@@ -1,12 +1,13 @@
 package pt.ira
 
-
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import pt.ira.model.Problem
 import pt.ira.model.type.TypeCreateInput
 import pt.ira.model.type.TypeUpdateInput
+import pt.ira.publishers.Publishers
 import pt.ira.type.Type
 
 /**
@@ -23,11 +24,13 @@ import pt.ira.type.Type
  * - mapeamento de erros de domínio para respostas HTTP.
  *
  * @param typeService serviço responsável pela lógica de negócio dos tipos.
+ * @param publisher conjunto de publicadores responsáveis por eventos e notificações SSE.
  */
 @RestController
 @RequestMapping("/api/type")
 class TypeController(
     private val typeService: TypeService,
+    private val publisher: Publishers,
 ) {
 
     /**
@@ -129,6 +132,10 @@ class TypeController(
 
     /**
      * Remove um tipo.
+     *
+     * @param id identificador do tipo.
+     *
+     * @return tipo removido ou erro de domínio mapeado.
      */
     @DeleteMapping("/{id}")
     fun deleteById(
@@ -144,5 +151,25 @@ class TypeController(
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
+    }
+
+    /**
+     * Fornece um endpoint SSE para subscrição de alterações na lista global de tipos.
+     *
+     * Permite receber eventos em tempo real sempre que a lista de tipos é atualizada.
+     *
+     * Endpoint: GET /listen
+     *
+     * @return [SseEmitter] com ligação persistente para eventos globais.
+     */
+    @GetMapping("/listen")
+    fun listenIntervenors(): SseEmitter {
+        val sseEmitter = SseEmitter(Long.MAX_VALUE)
+        publisher.typesPublisher.addEmitter(
+            SSEUpdatedDataAdapter(
+                sseEmitter,
+            ),
+        )
+        return sseEmitter
     }
 }
