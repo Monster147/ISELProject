@@ -5,6 +5,6 @@ export interface OccurrenceCreateInput{
     usersId: number,
     date: string;
     importance: OccurrenceType;
-    occurrenceType: Json;
+    occurrenceType: number;
     occurrenceInfo: Json;
 }

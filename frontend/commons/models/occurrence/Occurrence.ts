@@ -7,7 +7,7 @@ export interface Occurrence {
     endDate: string;
     reporterId: number;
     importance: OccurrenceType;
-    occurrenceType: Json;
+    occurrenceType: number;
     occurrenceInfo: Json;
     intervenors: number[];
     evidence:number[];

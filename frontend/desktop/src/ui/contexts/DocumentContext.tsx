@@ -1,6 +1,6 @@
 import {createContext, useCallback, useEffect, useState} from "react";
 import {Intervenor} from "@commons/models/intervenor/Intervenor";
-import {Documents} from "@commons/models/Documents/Documents";
+import {Documents} from "@commons/models/documents/Documents";
 import {api} from "@commons/api/api";
 import {IntervenorContext} from "./IntervenorContext";
 import {useAuth} from "../../hooks/useAuth";

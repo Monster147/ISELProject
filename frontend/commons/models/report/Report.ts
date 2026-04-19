@@ -7,7 +7,7 @@ export interface Report {
     title: string;
     description: string;
     status: ReportStatus;
-    type: Json;
+    type: number;
     addons: Json;
     createdAt: number;
     updatedAt: number;

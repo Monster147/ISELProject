@@ -19,7 +19,10 @@ import {Occurrence} from "../models/occurrence/Occurrence";
 import {IntervenorIdInput} from "../models/intervenor/IntervenorIdInput";
 import {StatusInput} from "../models/report/StatusInput";
 import {EditorInput} from "../models/report/EditorInput";
-import {Documents} from "../models/Documents/Documents";
+import {Documents} from "../models/documents/Documents";
+import {TypeCreateInput} from "../models/type/TypeCreateInput";
+import {Type} from "../models/type/Type";
+import {TypeUpdateInput} from "../models/type/TypeUpdateInput";
 
 type ApiAuthInfo = { token: string } | null;
 
@@ -473,4 +476,45 @@ export const api = {
     async downloadDocument(id: number): Promise<void> {
         return documentDownloadHandler(API_BASE_URL, id);
     },
+
+    //Types
+
+    async createType(input:TypeCreateInput): Promise<Type>{
+        return fetchApi<Type>(`/type`, {
+            method: "POST",
+            body: JSON.stringify(input)
+        })
+    },
+
+    async findTypeById(id:number): Promise<Type>{
+        return fetchApi<Type>(`/type/${id}`, {
+            method: "GET"
+        })
+    },
+
+    async findTypeByName(name:string): Promise<Type>{
+        return fetchApi<Type>(`/type/name/${name}`, {
+            method: "GET"
+        })
+    },
+
+    async findAllTypes():Promise<Type[]>{
+        return fetchApi<Type[]>(`/type`, {
+            method: "GET"
+        })
+    },
+
+    async updateType(id:number, input:TypeUpdateInput):Promise<Type>{
+        return fetchApi<Type>(`/type/${id}`, {
+            method: "POST",
+            body: JSON.stringify(input)
+        })
+    },
+
+    async deleteTypeById(id:number):Promise<void>{
+        return fetchApi<void>(`/type/${id}`, {
+            method: "DELETE"
+        })
+    }
+
 }

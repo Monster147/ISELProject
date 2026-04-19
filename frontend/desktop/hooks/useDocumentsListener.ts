@@ -1,5 +1,5 @@
 import {useEffect} from "react";
-import {Documents} from "../../commons/models/Documents/Documents";
+import {Documents} from "@commons/models/documents/Documents";
 
 export type DocumentsUpdateAction=
     | "DocumentsChanged"

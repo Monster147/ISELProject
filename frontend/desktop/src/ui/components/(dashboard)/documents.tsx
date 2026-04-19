@@ -4,7 +4,7 @@ import { useDocument } from "../../../hooks/useDocument";
 import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator } from "react-native";
 import { useColorScheme } from "react-native";
 import { Colors } from "@commons/constants/Colors";
-import { Documents } from "@commons/models/Documents/Documents";
+import { Documents } from "@commons/models/documents/Documents";
 import { MdExpandMore, MdExpandLess, MdDownload } from "react-icons/md";
 import ThemedView from "../../../../components/ThemedView";
 import ThemedLoader from "../../../../components/ThemedLoader";

@@ -110,7 +110,7 @@ class TypeController(
      * @param id identificador do tipo
      * @param input dados a atualizar
      */
-    @PutMapping("/{id}")
+    @PostMapping("/{id}")
     fun updateType(
         @PathVariable id: Int,
         @RequestBody input: TypeUpdateInput,

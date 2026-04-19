@@ -1,4 +1,4 @@
-import { useColorScheme } from "react-native";
+import {useColorScheme} from "react-native";
 import {Colors} from "@commons/constants/Colors";
 import {AuthProvider} from "../contexts/AuthContext";
 import ThemedView from "../../../components/ThemedView";
@@ -12,22 +12,23 @@ import {useNetworkStatus} from "../../hooks/useNetworkStatus";
 import {useConfirmAction} from "../utils/confirmAction";
 import {useTranslation} from "react-i18next";
 import {DocumentProvider} from "../contexts/DocumentContext";
+import {TypeProvider} from "../contexts/TypeContext";
 
 const RootLayoutContent = () => {
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light;
-    const { dialog, confirm  } = useConfirm()
+    const {dialog, confirm} = useConfirm()
     const navigate = useNavigate();
     const loadingScreen = window.location.pathname === "/"
     const {t} = useTranslation()
 
-    const { isOnline } = useNetworkStatus();
+    const {isOnline} = useNetworkStatus();
 
     useEffect(() => {
         console.log("isOnline:", isOnline);
         if (!isOnline && !loadingScreen) {
             confirm({
-                title:  t("offline.title"),
+                title: t("offline.title"),
                 message: t("offline.message"),
                 confirmText: t("offline.confirm"),
             }).then(() => {
@@ -61,7 +62,9 @@ const RootLayout = () => {
             <OccurrenceProvider>
                 <IntervenorProvider>
                     <DocumentProvider>
-                        <RootLayoutContent/>
+                        <TypeProvider>
+                            <RootLayoutContent/>
+                        </TypeProvider>
                     </DocumentProvider>
                 </IntervenorProvider>
             </OccurrenceProvider>

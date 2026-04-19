@@ -1,4 +1,4 @@
-@token_user = Pexsa6IL2EOI5iS43m_wFmUyaem3htsLgsmmkfeCSyM=
+@token_user = mYwAuCfmHEJD9LclhEKponFFs6WhR-rYhDRF3GUg2wU=
 
 ### Create Admin User
 POST http://localhost:8080/api/user
@@ -20,16 +20,26 @@ Content-Type: application/json
   "password": "123456"
 }
 
+### Create Type
+POST http://localhost:8080/api/type
+Content-Type: application/json
+Authorization: Bearer {{token_user}}
+
+{
+  "name": "Fire",
+  "form": { "type": "fire", "sub": { "a": 1 } }
+}
+
 ### Create occurrence
 POST http://localhost:8080/api/occurrence
 Content-Type: application/json
 Authorization: Bearer {{token_user}}
 
 {
-  "usersId": 1,
+  "usersId": 2,
   "endDate": "2030-12-31",
   "importance": "NORMAL",
-  "occurrenceType": { "type": "fire", "sub": { "a": 1 } },
+  "occurrenceType": 1 ,
   "occurrenceInfo": { "location": "Lisbon", "people": [1,2,3] }
 }
 

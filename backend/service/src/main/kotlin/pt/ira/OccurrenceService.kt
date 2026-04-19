@@ -24,6 +24,8 @@ sealed class OccurrenceError {
     data object IntervenorAlreadyInOccurrence : OccurrenceError()
 
     data object IntervenorNotInOccurrence : OccurrenceError()
+
+    data object TypeNotFound : OccurrenceError()
 }
 
 /**
@@ -67,6 +69,7 @@ class OccurrenceService(
         return trxManager.run {
             if (endDate.isBefore(LocalDate.now())) return@run failure(OccurrenceError.EndDateNotValid)
             repoUsers.findById(usersId) ?: return@run failure(OccurrenceError.UserNotFound)
+            repoType.findById(occurrenceType) ?: return@run failure(OccurrenceError.TypeNotFound)
             val occurrence =
                 repoOccurrence.createOccurrence(
                     endDate = endDate,

@@ -11,6 +11,7 @@ import ThemedButton from "../../../../../components/ThemedButton";
 import {useIntervenor} from "../../../../hooks/useIntervenor";
 import {useTranslation} from "react-i18next";
 import Spacer from "../../../../../components/Spacer";
+import {useType} from "../../../../hooks/useType";
 
 const OccurrenceDetails = () => {
     const {t} = useTranslation()
@@ -20,6 +21,9 @@ const OccurrenceDetails = () => {
     const occurrenceId = Number(id)
     const {occurrence} = useOccurrence()
     const actualOccurrence = occurrence.find(o => o.id === occurrenceId);
+    const {type} = useType()
+
+    const currentJsonType = type.find(t => t.id === actualOccurrence?.occurrenceType)
 
     //fazer mostrar o refresh devido ao sse
 
@@ -54,7 +58,7 @@ const OccurrenceDetails = () => {
                     <ThemedText>{t("occurrenceDetails.importance")}: {t(`importance.${actualOccurrence.importance}`)}</ThemedText>
 
                     <ThemedText>{t("occurrenceDetails.occurrenceType")}:</ThemedText>
-                    <ThemedText>{JSON.stringify(actualOccurrence.occurrenceType, null, 2)}</ThemedText>
+                    <ThemedText>{JSON.stringify(currentJsonType, null, 2)}</ThemedText>
 
                     <ThemedText>{t("occurrenceDetails.occurrenceInfo")}:</ThemedText>
                     <ThemedText>{JSON.stringify(actualOccurrence.occurrenceInfo, null, 2)}</ThemedText>

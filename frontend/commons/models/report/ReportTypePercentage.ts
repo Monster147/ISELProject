@@ -1,7 +1,7 @@
 import {Json} from "../utils/Json";
 
 export interface ReportTypePercentage{
-    type: Json;
+    type: number;
     count: number;
     percentage: number;
 }

@@ -9,6 +9,7 @@ import {useNavigate} from "react-router";
 import {useTranslation} from "react-i18next";
 import {useAuth} from "../../../hooks/useAuth";
 import ThemedLoader from "../../../../components/ThemedLoader";
+import {useType} from "../../../hooks/useType";
 
 const Occurrence = () =>{
     const {t} = useTranslation()
