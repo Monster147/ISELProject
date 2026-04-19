@@ -36,6 +36,13 @@ CREATE TABLE dbo.intervenor(
     address                 VARCHAR(255)       NOT NULL
 );
 
+CREATE TABLE dbo.type
+(
+    id                      SERIAL             PRIMARY KEY,
+    name                    VARCHAR(255)       NOT NULL,
+    form                    JSONB              NOT NULL
+);
+
 CREATE TYPE dbo.occurrence_type AS ENUM ('NORMAL','URGENT','CRITICAL');
 
 CREATE TABLE dbo.occurrence
@@ -45,7 +52,7 @@ CREATE TABLE dbo.occurrence
     endDate                 DATE                 NOT NULL,
     reporter_id             INT                  REFERENCES dbo.users (id) ON DELETE CASCADE,
     importance              dbo.occurrence_type  NOT NULL DEFAULT 'NORMAL',
-    occur_type              JSONB                NOT NULL,
+    occur_type              INT                  REFERENCES dbo.type (id) ON DELETE CASCADE,
     occur_info              JSONB                NOT NULL,
     evidences               INT[]                ,
     intervenors             INT[]
@@ -59,7 +66,7 @@ CREATE TABLE dbo.report
     title                   VARCHAR(255)       NOT NULL,
     description             TEXT               NOT NULL,
     status                  dbo.report_status  NOT NULL DEFAULT 'EDITING',
-    type                    JSONB              NOT NULL,
+    type                    INT                REFERENCES dbo.type (id) ON DELETE CASCADE,
     addons                  JSONB              NOT NULL,
     created_at              bigint             NOT NULL,
     updated_at              bigint             NOT NULL,
@@ -94,4 +101,4 @@ CREATE TABLE dbo.documents
     name                    VARCHAR(255)       NOT NULL,
     type                    VARCHAR(255)       NOT NULL,
     file_path               VARCHAR(255)       NOT NULL
-)
+);

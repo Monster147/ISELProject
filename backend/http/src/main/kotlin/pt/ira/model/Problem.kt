@@ -71,4 +71,11 @@ sealed class Problem(
 
     // documents
     data object FileAlreadyExists : Problem(URI("${PROBLEM_URI_PATH}/file-already-exists"))
+
+    // type
+    data object TypeNotFound : Problem(URI("${PROBLEM_URI_PATH}/type-not-found"))
+
+    data object TypeAlreadyExists : Problem(URI("${PROBLEM_URI_PATH}/type-already-exists"))
+
+    data object InvalidName : Problem(URI("${PROBLEM_URI_PATH}/invalid-name"))
 }

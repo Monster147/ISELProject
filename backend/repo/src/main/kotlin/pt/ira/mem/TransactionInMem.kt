@@ -6,6 +6,7 @@ import pt.ira.interfaces.RepositoryIntervenor
 import pt.ira.interfaces.RepositoryOccurrence
 import pt.ira.interfaces.RepositoryReport
 import pt.ira.interfaces.RepositoryRole
+import pt.ira.interfaces.RepositoryType
 import pt.ira.interfaces.RepositoryUser
 import pt.ira.interfaces.Transaction
 
@@ -17,6 +18,7 @@ class TransactionInMem(
     override val repoRole: RepositoryRole,
     override val repoOccurrence: RepositoryOccurrence,
     override val repoDocuments: RepositoryDocuments,
+    override val repoType: RepositoryType,
 ) : Transaction {
     override fun rollback(): Unit = throw UnsupportedOperationException()
 }

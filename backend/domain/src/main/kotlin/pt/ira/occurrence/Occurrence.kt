@@ -16,8 +16,7 @@ import java.time.LocalDate
  * @property reporterId Identificador do utilizador que reportou a ocorrência.
  * @property importance Nível de importância da ocorrência, usado para priorização.
  *                      Por defeito é [OccurrenceType.NORMAL].
- * @property occurrenceType Tipo da ocorrência em formato JSON (armazenado como JSONB),
- *                          permitindo tipagens flexíveis e extensíveis.
+ * @property occurrenceType Tipo da ocorrência, representado por um inteiro que pode ser mapeado para categorias específicas.
  * @property occurrenceInfo Informação adicional da ocorrência em formato JSON,
  *                          podendo incluir detalhes específicos dependentes do tipo.
  * @property intervenors Lista de identificadores dos intervenientes associados à ocorrência.
@@ -31,7 +30,7 @@ data class Occurrence(
     val endDate: LocalDate,
     val reporterId: Int,
     val importance: OccurrenceType = OccurrenceType.NORMAL,
-    val occurrenceType: JsonNode,
+    val occurrenceType: Int,
     val occurrenceInfo: JsonNode,
     val intervenors: List<Int> = listOf(),
     val evidences: List<Int> = listOf(),

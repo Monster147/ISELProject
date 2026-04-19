@@ -14,7 +14,7 @@ class RepositoryReportMem : RepositoryReport {
         occurrenceId: Int,
         title: String,
         description: String,
-        type: JsonNode,
+        type: Int,
         addons: JsonNode,
         intervenors: List<Int>,
     ): Report =
@@ -74,7 +74,7 @@ class RepositoryReportMem : RepositoryReport {
         return updatedReport
     }
 
-    override fun findByType(type: JsonNode): List<Report> = reports.filter { it.type == type }
+    override fun findByType(type: Int): List<Report> = reports.filter { it.type == type }
 
     override fun findById(id: Int): Report? = reports.find { it.id == id }
 

@@ -15,8 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode
  * @property title Título do relatório.
  * @property description Descrição detalhada do conteúdo do relatório.
  * @property status Estado atual do relatório no workflow. Por defeito é [ReportStatus.EDITING].
- * @property type Tipo do relatório em formato JSON (armazenado como JSONB),
- *                permitindo tipagens flexíveis e extensíveis.
+ * @property type Tipo do relatório, representado por um inteiro que pode ser mapeado para categorias específicas.
  * @property addons Dados adicionais em formato JSON, podendo incluir extensões
  *                  específicas ao domínio ou metainformação.
  * @property createdAt Timestamp (epoch millis) que indica quando o relatório foi criado.
@@ -33,7 +32,7 @@ data class Report(
     val title: String,
     val description: String,
     val status: ReportStatus = ReportStatus.EDITING,
-    val type: JsonNode,
+    val type: Int,
     val addons: JsonNode,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),

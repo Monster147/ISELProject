@@ -39,7 +39,7 @@ class UserServiceTest {
                 endDate = LocalDate.of(2030, 3, 30),
                 reporterId = userId,
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             )
         }
@@ -332,7 +332,7 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter returns 100 percent for single type`() {
-        val typeA = json("""{"t":"a"}""")
+        val typeA = 1
 
         val user =
             trxManager.run {
@@ -368,7 +368,7 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter only considers reports where user is editor`() {
-        val typeA = json("""{"t":"a"}""")
+        val typeA = 1
 
         val user1 =
             trxManager.run {
@@ -400,8 +400,8 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter calculates correct percentages`() {
-        val typeA = json("""{"t":"a"}""")
-        val typeB = json("""{"t":"b"}""")
+        val typeA = 1
+        val typeB = 2
 
         val user =
             trxManager.run {
@@ -440,8 +440,8 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter sorts by count descending`() {
-        val typeA = json("""{"t":"a"}""")
-        val typeB = json("""{"t":"b"}""")
+        val typeA = 1
+        val typeB = 2
 
         val user =
             trxManager.run {
@@ -470,8 +470,8 @@ class UserServiceTest {
 
     @Test
     fun `getTypePercentagesByReporter sorts by type when counts equal`() {
-        val typeA = json("""{"t":"a"}""")
-        val typeB = json("""{"t":"b"}""")
+        val typeA = 1
+        val typeB = 2
 
         val user =
             trxManager.run {

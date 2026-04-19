@@ -17,7 +17,7 @@ class RepositoryReportJdbi(
         occurrenceId: Int,
         title: String,
         description: String,
-        type: JsonNode,
+        type: Int,
         addons: JsonNode,
         intervenors: List<Int>,
     ): Report {
@@ -26,7 +26,7 @@ class RepositoryReportJdbi(
             handle.createUpdate(
                 """
                 INSERT INTO dbo.report (creator_id, occurrence_id ,title, description, status, type, addons, editors, intervenors, created_at, updated_at) 
-                VALUES (:creator_id, :occurrence_id, :title, :description, :status::dbo.report_status, :type::jsonb, :addons::jsonb, :editors, :intervenors, :created_at, :updated_at)
+                VALUES (:creator_id, :occurrence_id, :title, :description, :status::dbo.report_status, :type, :addons::jsonb, :editors, :intervenors, :created_at, :updated_at)
                 RETURNING id
                 """.trimIndent(),
             )
@@ -35,7 +35,7 @@ class RepositoryReportJdbi(
                 .bind("title", title)
                 .bind("description", description)
                 .bind("status", ReportStatus.EDITING.name)
-                .bind("type", type.toString())
+                .bind("type", type)
                 .bind("addons", addons.toString())
                 .bind("editors", arrayOf(creatorId))
                 .bind("intervenors", intervenors.toTypedArray())
@@ -146,15 +146,15 @@ class RepositoryReportJdbi(
         return updatedReport
     }
 
-    override fun findByType(type: JsonNode): List<Report> =
+    override fun findByType(type: Int): List<Report> =
         handle.createQuery(
             """
             SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors
             FROM dbo.report
-            WHERE type = :type::jsonb
+            WHERE type = :type
             """.trimIndent(),
         )
-            .bind("type", type.toString())
+            .bind("type", type)
             .map { rs, _ -> mapRowToReport(rs) }
             .list()
 
@@ -190,7 +190,7 @@ class RepositoryReportJdbi(
                 title = :title,
                 description = :description,
                 status = :status::dbo.report_status,
-                type = :type::jsonb,
+                type = :type,
                 addons = :addons::jsonb,
                 updated_at = :updated_at,
                 editors = :editors, 
@@ -204,7 +204,7 @@ class RepositoryReportJdbi(
             .bind("title", entity.title)
             .bind("description", entity.description)
             .bind("status", entity.status.name)
-            .bind("type", entity.type.toString())
+            .bind("type", entity.type)
             .bind("addons", entity.addons.toString())
             .bind("editors", entity.editors.toTypedArray())
             .bind("intervenors", entity.intervenors.toTypedArray())
@@ -231,7 +231,7 @@ class RepositoryReportJdbi(
         val title = rs.getString("title")
         val description = rs.getString("description")
         val status = rs.getString("status").let { ReportStatus.valueOf(it) }
-        val type = rs.getString("type")
+        val type = rs.getInt("type")
         val addons = rs.getString("addons")
         val createdAt = rs.getLong("created_at")
         val updatedAt = rs.getLong("updated_at")
@@ -239,8 +239,6 @@ class RepositoryReportJdbi(
             rs.getArray("editors")?.let { arr ->
                 (arr.array as Array<*>).map { (it as Number).toInt() }
             } ?: emptyList()
-
-        val typeJson = objectMapper.readTree(type)
         val addonsJson = objectMapper.readTree(addons)
 
         val intervenors =
@@ -255,7 +253,7 @@ class RepositoryReportJdbi(
             title = title,
             description = description,
             status = status,
-            type = typeJson,
+            type = type,
             addons = addonsJson,
             createdAt = createdAt,
             updatedAt = updatedAt,

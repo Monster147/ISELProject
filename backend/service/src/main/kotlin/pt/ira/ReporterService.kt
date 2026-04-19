@@ -140,7 +140,7 @@ class ReportService(
      *
      * @return Lista de [Report] correspondentes ao tipo indicado.
      */
-    fun findByType(type: JsonNode): List<Report> = trxManager.run { repoReport.findByType(type) }
+    fun findByType(type: Int): List<Report> = trxManager.run { repoReport.findByType(type) }
 
     /**
      * Obtém todos os relatórios registados no sistema.

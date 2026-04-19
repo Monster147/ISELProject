@@ -13,6 +13,7 @@ class TransactionInJdbi(
     override val repoRole = RepositoryRoleJdbi(handle)
     override val repoOccurrence = RepositoryOccurrenceJdbi(handle)
     override val repoDocuments = RepositoryDocumentsJdbi(handle)
+    override val repoType = RepositoryTypeJdbi(handle)
 
     override fun rollback() {
         handle.rollback()

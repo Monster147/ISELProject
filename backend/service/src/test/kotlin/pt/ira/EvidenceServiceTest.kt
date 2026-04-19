@@ -58,7 +58,7 @@ class EvidenceServiceTest {
                     endDate = LocalDate.of(2030, 3, 30),
                     reporterId = user.id,
                     importance = OccurrenceType.NORMAL,
-                    occurrenceType = json("""{"type":"base"}"""),
+                    occurrenceType = 1,
                     occurrenceInfo = json("""{}"""),
                 )
 

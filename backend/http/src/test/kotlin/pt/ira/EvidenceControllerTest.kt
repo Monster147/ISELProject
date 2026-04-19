@@ -190,7 +190,7 @@ class EvidenceControllerTest {
                 endDate = LocalDate.of(2030, 3, 30),
                 reporterId = userId,
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = mapper.readTree("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = mapper.readTree("""{}"""),
             ).id
         }

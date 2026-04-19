@@ -49,12 +49,19 @@ class RepositoryOccurrenceJdbiTest {
                     PasswordValidationInfo("hash"),
                     listOf(1),
                 )
+
+            val type =
+                repoType.createType(
+                    "Type",
+                    mapper.readTree("""{"name":"fire"}""")
+                ).id
+
             val created =
                 repoOccurrence.createOccurrence(
                     endDate = LocalDate.of(2030, 3, 30),
                     reporterId = creator.id,
                     importance = OccurrenceType.NORMAL,
-                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceType = type,
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
@@ -88,12 +95,19 @@ class RepositoryOccurrenceJdbiTest {
                     PasswordValidationInfo("hash"),
                     listOf(1),
                 )
+
+            val type =
+                repoType.createType(
+                    "Type",
+                    mapper.readTree("""{"name":"fire"}""")
+                ).id
+
             val o1 =
                 repoOccurrence.createOccurrence(
                     LocalDate.of(2030, 3, 30),
                     creator1.id,
                     OccurrenceType.NORMAL,
-                    mapper.readTree("""{"t":"a"}"""),
+                    type,
                     mapper.readTree("""{"i":"a"}"""),
                 )
 
@@ -102,7 +116,7 @@ class RepositoryOccurrenceJdbiTest {
                     LocalDate.of(2030, 4, 1),
                     creator2.id,
                     OccurrenceType.URGENT,
-                    mapper.readTree("""{"t":"b"}"""),
+                    type,
                     mapper.readTree("""{"i":"b"}"""),
                 )
 
@@ -138,12 +152,18 @@ class RepositoryOccurrenceJdbiTest {
                     listOf(1),
                 )
 
+            val type =
+                repoType.createType(
+                    "Type",
+                    mapper.readTree("""{"name":"fire"}""")
+                ).id
+
             val o1 =
                 repoOccurrence.createOccurrence(
                     LocalDate.of(2030, 3, 30),
                     creator1.id,
                     OccurrenceType.NORMAL,
-                    mapper.readTree("""{"t":"a"}"""),
+                    type,
                     mapper.readTree("""{"i":"a"}"""),
                 )
 
@@ -151,7 +171,7 @@ class RepositoryOccurrenceJdbiTest {
                 LocalDate.of(2030, 4, 1),
                 creator2.id,
                 OccurrenceType.URGENT,
-                mapper.readTree("""{"t":"b"}"""),
+                type,
                 mapper.readTree("""{"i":"b"}"""),
             )
 
@@ -160,7 +180,7 @@ class RepositoryOccurrenceJdbiTest {
                     LocalDate.of(2030, 4, 2),
                     creator3.id,
                     OccurrenceType.NORMAL,
-                    mapper.readTree("""{"t":"c"}"""),
+                    type,
                     mapper.readTree("""{"i":"c"}"""),
                 )
 
@@ -187,12 +207,19 @@ class RepositoryOccurrenceJdbiTest {
                     PasswordValidationInfo("hash"),
                     listOf(1),
                 )
+
+            val type =
+                repoType.createType(
+                    "Type",
+                    mapper.readTree("""{"name":"fire"}""")
+                ).id
+
             val o1 =
                 repoOccurrence.createOccurrence(
                     LocalDate.of(2030, 3, 30),
                     creator1.id,
                     OccurrenceType.NORMAL,
-                    mapper.readTree("""{"t":"a"}"""),
+                    type,
                     mapper.readTree("""{"i":"a"}"""),
                 )
 
@@ -201,7 +228,7 @@ class RepositoryOccurrenceJdbiTest {
                     LocalDate.of(2030, 4, 1),
                     creator1.id,
                     OccurrenceType.URGENT,
-                    mapper.readTree("""{"t":"b"}"""),
+                    type,
                     mapper.readTree("""{"i":"b"}"""),
                 )
 
@@ -209,7 +236,7 @@ class RepositoryOccurrenceJdbiTest {
                 LocalDate.of(2030, 4, 2),
                 creator2.id,
                 OccurrenceType.CRITICAL,
-                mapper.readTree("""{"t":"c"}"""),
+                type,
                 mapper.readTree("""{"i":"c"}"""),
             )
 
@@ -223,12 +250,19 @@ class RepositoryOccurrenceJdbiTest {
     fun `addIntervenor adds intervenor correctly`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
+
+            val type =
+                repoType.createType(
+                    "Type",
+                    mapper.readTree("""{"name":"fire"}""")
+                ).id
+
             val occurrence =
                 repoOccurrence.createOccurrence(
                     endDate = LocalDate.of(2030, 3, 30),
                     reporterId = creator.id,
                     importance = OccurrenceType.NORMAL,
-                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceType = type,
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
@@ -254,12 +288,19 @@ class RepositoryOccurrenceJdbiTest {
     fun `addIntervenor does not duplicate intervenor`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
+
+            val type =
+                repoType.createType(
+                    "Type",
+                    mapper.readTree("""{"name":"fire"}""")
+                ).id
+
             val occurrence =
                 repoOccurrence.createOccurrence(
                     endDate = LocalDate.of(2030, 3, 30),
                     reporterId = creator.id,
                     importance = OccurrenceType.NORMAL,
-                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceType = type,
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
             val intervenor =
@@ -282,12 +323,19 @@ class RepositoryOccurrenceJdbiTest {
     fun `removeIntervenor removes intervenor`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
+
+            val type =
+                repoType.createType(
+                    "Type",
+                    mapper.readTree("""{"name":"fire"}""")
+                ).id
+
             val occurrence =
                 repoOccurrence.createOccurrence(
                     endDate = LocalDate.of(2030, 3, 30),
                     reporterId = creator.id,
                     importance = OccurrenceType.NORMAL,
-                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceType = type,
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
             val intervenor =
@@ -314,12 +362,19 @@ class RepositoryOccurrenceJdbiTest {
     fun `removeIntervenor does nothing if not present`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
+
+            val type =
+                repoType.createType(
+                    "Type",
+                    mapper.readTree("""{"name":"fire"}""")
+                ).id
+
             val occurrence =
                 repoOccurrence.createOccurrence(
                     endDate = LocalDate.of(2030, 3, 30),
                     reporterId = creator.id,
                     importance = OccurrenceType.NORMAL,
-                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceType = type,
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
             val intervenor =
@@ -344,12 +399,19 @@ class RepositoryOccurrenceJdbiTest {
     fun `findByIntervenor returns correct reports`() {
         trxManager.run {
             val creator = repoUsers.createUser("Creator", "c@mail.com", PasswordValidationInfo("h"), listOf(1))
+
+            val type =
+                repoType.createType(
+                    "Type",
+                    mapper.readTree("""{"name":"fire"}""")
+                ).id
+
             val occurrence =
                 repoOccurrence.createOccurrence(
                     endDate = LocalDate.of(2030, 3, 30),
                     reporterId = creator.id,
                     importance = OccurrenceType.NORMAL,
-                    occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                    occurrenceType = type,
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
@@ -388,21 +450,33 @@ class RepositoryOccurrenceJdbiTest {
                     listOf(1),
                 )
 
+            val type =
+                repoType.createType(
+                    "Type",
+                    mapper.readTree("""{"name":"fire"}""")
+                ).id
+
             val created =
                 repoOccurrence.createOccurrence(
                     LocalDate.of(2030, 3, 30),
                     creator1.id,
                     OccurrenceType.NORMAL,
-                    mapper.readTree("""{"t":"a"}"""),
+                    type,
                     mapper.readTree("""{"i":"a"}"""),
                 )
+
+            val typeUpdated =
+                repoType.createType(
+                    "Type",
+                    mapper.readTree("""{"name":"updated"}""")
+                ).id
 
             val updated =
                 created.copy(
                     endDate = LocalDate.of(2030, 4, 10),
                     reporterId = creator2.id,
                     importance = OccurrenceType.CRITICAL,
-                    occurrenceType = mapper.readTree("""{"t":"updated"}"""),
+                    occurrenceType = typeUpdated,
                     occurrenceInfo = mapper.readTree("""{"i":"updated"}"""),
                 )
 
@@ -424,12 +498,19 @@ class RepositoryOccurrenceJdbiTest {
                     PasswordValidationInfo("hash"),
                     listOf(1),
                 )
+
+            val type =
+                repoType.createType(
+                    "Type",
+                    mapper.readTree("""{"name":"fire"}""")
+                ).id
+
             val created =
                 repoOccurrence.createOccurrence(
                     LocalDate.of(2030, 3, 30),
                     creator1.id,
                     OccurrenceType.NORMAL,
-                    mapper.readTree("""{"t":"a"}"""),
+                    type,
                     mapper.readTree("""{"i":"a"}"""),
                 )
 
@@ -458,11 +539,17 @@ class RepositoryOccurrenceJdbiTest {
                     listOf(1),
                 )
 
+            val type =
+                repoType.createType(
+                    "Type",
+                    mapper.readTree("""{"name":"fire"}""")
+                ).id
+
             repoOccurrence.createOccurrence(
                 LocalDate.of(2030, 3, 30),
                 creator1.id,
                 OccurrenceType.NORMAL,
-                mapper.readTree("""{"t":"a"}"""),
+                type,
                 mapper.readTree("""{"i":"a"}"""),
             )
 
@@ -470,7 +557,7 @@ class RepositoryOccurrenceJdbiTest {
                 LocalDate.of(2030, 4, 1),
                 creator2.id,
                 OccurrenceType.URGENT,
-                mapper.readTree("""{"t":"b"}"""),
+                type,
                 mapper.readTree("""{"i":"b"}"""),
             )
 

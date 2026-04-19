@@ -35,17 +35,6 @@ class OccurrenceServiceTest {
         }
     }
 
-    private fun createOccurrenceForUser(userId: Int) =
-        trxManager.run {
-            repoOccurrence.createOccurrence(
-                endDate = LocalDate.of(2030, 3, 30),
-                reporterId = userId,
-                importance = OccurrenceType.NORMAL,
-                occurrenceType = json("""{"type":"base"}"""),
-                occurrenceInfo = json("""{}"""),
-            )
-        }
-
     private fun createUser(
         name: String,
         email: String,
@@ -67,7 +56,7 @@ class OccurrenceServiceTest {
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(5),
                 importance = OccurrenceType.CRITICAL,
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -87,7 +76,7 @@ class OccurrenceServiceTest {
                 usersId = user.id,
                 endDate = LocalDate.now().minusDays(1),
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             )
 
@@ -101,7 +90,7 @@ class OccurrenceServiceTest {
             occurrenceService.createOccurrence(
                 usersId = 999,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             )
 
@@ -117,7 +106,7 @@ class OccurrenceServiceTest {
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -149,7 +138,7 @@ class OccurrenceServiceTest {
             usersId = user.id,
             endDate = LocalDate.now().plusDays(3),
             importance = OccurrenceType.URGENT,
-            occurrenceType = json("""{"type":"base"}"""),
+            occurrenceType = 1,
             occurrenceInfo = json("""{}"""),
         )
 
@@ -166,7 +155,7 @@ class OccurrenceServiceTest {
         occurrenceService.createOccurrence(
             usersId = user.id,
             endDate = LocalDate.now().plusDays(3),
-            occurrenceType = json("""{"type":"base"}"""),
+            occurrenceType = 1,
             occurrenceInfo = json("""{}"""),
         )
 
@@ -199,7 +188,7 @@ class OccurrenceServiceTest {
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -230,7 +219,7 @@ class OccurrenceServiceTest {
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -258,7 +247,7 @@ class OccurrenceServiceTest {
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -287,7 +276,7 @@ class OccurrenceServiceTest {
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -325,7 +314,7 @@ class OccurrenceServiceTest {
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -346,14 +335,14 @@ class OccurrenceServiceTest {
         occurrenceService.createOccurrence(
             usersId = user1.id,
             endDate = LocalDate.now().plusDays(3),
-            occurrenceType = json("""{"type":"base"}"""),
+            occurrenceType = 1,
             occurrenceInfo = json("""{}"""),
         )
 
         occurrenceService.createOccurrence(
             usersId = user2.id,
             endDate = LocalDate.now().plusDays(4),
-            occurrenceType = json("""{"type":"base"}"""),
+            occurrenceType = 1,
             occurrenceInfo = json("""{}"""),
         )
 
@@ -386,7 +375,7 @@ class OccurrenceServiceTest {
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)

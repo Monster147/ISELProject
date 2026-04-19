@@ -27,7 +27,7 @@ interface RepositoryReport : Repository<Report> {
         occurrenceId: Int,
         title: String,
         description: String,
-        type: JsonNode,
+        type: Int,
         addons: JsonNode,
         intervenors: List<Int>,
     ): Report
@@ -110,9 +110,9 @@ interface RepositoryReport : Repository<Report> {
     /**
      * Obtém todos os relatórios de um determinado tipo.
      *
-     * @param type Tipo do relatório em formato JSON.
+     * @param type Tipo do relatório representado por um inteiro.
      *
      * @return Lista de [Report] que correspondem ao tipo indicado.
      */
-    fun findByType(type: JsonNode): List<Report>
+    fun findByType(type: Int): List<Report>
 }

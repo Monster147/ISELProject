@@ -29,7 +29,7 @@ class RepositoryOccurrenceMemTest {
                 endDate = LocalDate.of(2030, 3, 30),
                 reporterId = 1,
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = mapper.readTree("""{"type":"fire"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
             )
 
@@ -52,7 +52,7 @@ class RepositoryOccurrenceMemTest {
                 LocalDate.of(2030, 3, 30),
                 1,
                 OccurrenceType.NORMAL,
-                mapper.readTree("""{"t":"a"}"""),
+                1,
                 mapper.readTree("""{"i":"a"}"""),
             )
 
@@ -61,7 +61,7 @@ class RepositoryOccurrenceMemTest {
                 LocalDate.of(2030, 4, 1),
                 2,
                 OccurrenceType.URGENT,
-                mapper.readTree("""{"t":"b"}"""),
+                1,
                 mapper.readTree("""{"i":"b"}"""),
             )
 
@@ -78,7 +78,7 @@ class RepositoryOccurrenceMemTest {
                 LocalDate.of(2030, 3, 30),
                 1,
                 OccurrenceType.NORMAL,
-                mapper.readTree("""{"t":"a"}"""),
+                1,
                 mapper.readTree("""{"i":"a"}"""),
             )
 
@@ -86,7 +86,7 @@ class RepositoryOccurrenceMemTest {
             LocalDate.of(2030, 4, 1),
             2,
             OccurrenceType.URGENT,
-            mapper.readTree("""{"t":"b"}"""),
+            1,
             mapper.readTree("""{"i":"b"}"""),
         )
 
@@ -95,7 +95,7 @@ class RepositoryOccurrenceMemTest {
                 LocalDate.of(2030, 4, 2),
                 3,
                 OccurrenceType.NORMAL,
-                mapper.readTree("""{"t":"c"}"""),
+                1,
                 mapper.readTree("""{"i":"c"}"""),
             )
 
@@ -111,7 +111,7 @@ class RepositoryOccurrenceMemTest {
                 LocalDate.of(2030, 3, 30),
                 1,
                 OccurrenceType.NORMAL,
-                mapper.readTree("""{"t":"a"}"""),
+                1,
                 mapper.readTree("""{"i":"a"}"""),
             )
 
@@ -120,7 +120,7 @@ class RepositoryOccurrenceMemTest {
                 LocalDate.of(2030, 4, 1),
                 1,
                 OccurrenceType.URGENT,
-                mapper.readTree("""{"t":"b"}"""),
+                1,
                 mapper.readTree("""{"i":"b"}"""),
             )
 
@@ -128,7 +128,7 @@ class RepositoryOccurrenceMemTest {
             LocalDate.of(2030, 4, 2),
             3,
             OccurrenceType.CRITICAL,
-            mapper.readTree("""{"t":"c"}"""),
+            1,
             mapper.readTree("""{"i":"c"}"""),
         )
 
@@ -144,7 +144,7 @@ class RepositoryOccurrenceMemTest {
                 LocalDate.of(2030, 3, 30),
                 1,
                 OccurrenceType.NORMAL,
-                mapper.readTree("""{"t":"a"}"""),
+                1,
                 mapper.readTree("""{"i":"a"}"""),
             )
 
@@ -153,7 +153,7 @@ class RepositoryOccurrenceMemTest {
                 endDate = LocalDate.of(2030, 4, 10),
                 reporterId = 5,
                 importance = OccurrenceType.CRITICAL,
-                occurrenceType = mapper.readTree("""{"t":"updated"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = mapper.readTree("""{"i":"updated"}"""),
             )
 
@@ -171,7 +171,7 @@ class RepositoryOccurrenceMemTest {
                 LocalDate.of(2030, 3, 30),
                 1,
                 OccurrenceType.NORMAL,
-                mapper.readTree("""{"t":"a"}"""),
+                1,
                 mapper.readTree("""{"i":"a"}"""),
             )
 
@@ -187,7 +187,7 @@ class RepositoryOccurrenceMemTest {
             LocalDate.of(2030, 3, 30),
             1,
             OccurrenceType.NORMAL,
-            mapper.readTree("""{"t":"a"}"""),
+            1,
             mapper.readTree("""{"i":"a"}"""),
         )
 
@@ -195,7 +195,7 @@ class RepositoryOccurrenceMemTest {
             LocalDate.of(2030, 4, 1),
             2,
             OccurrenceType.URGENT,
-            mapper.readTree("""{"t":"b"}"""),
+            1,
             mapper.readTree("""{"i":"b"}"""),
         )
 
@@ -211,7 +211,7 @@ class RepositoryOccurrenceMemTest {
                 LocalDate.of(2030, 3, 30),
                 1,
                 OccurrenceType.NORMAL,
-                mapper.readTree("""{"t":"a"}"""),
+                1,
                 mapper.readTree("""{"i":"a"}"""),
             )
         val intervenor = Intervenor(1, "159874598", "CC", "TestName", "958768396", "RUA TESTE")
@@ -231,7 +231,7 @@ class RepositoryOccurrenceMemTest {
                 LocalDate.of(2030, 3, 30),
                 1,
                 OccurrenceType.NORMAL,
-                mapper.readTree("""{"t":"a"}"""),
+                1,
                 mapper.readTree("""{"i":"a"}"""),
             )
         val intervenor = Intervenor(1, "159874598", "CC", "TestName", "958768396", "RUA TESTE")
@@ -249,7 +249,7 @@ class RepositoryOccurrenceMemTest {
                 LocalDate.of(2030, 3, 30),
                 1,
                 OccurrenceType.NORMAL,
-                mapper.readTree("""{"t":"a"}"""),
+                1,
                 mapper.readTree("""{"i":"a"}"""),
             )
         val intervenor = Intervenor(1, "159874598", "CC", "TestName", "958768396", "RUA TESTE")
@@ -271,7 +271,7 @@ class RepositoryOccurrenceMemTest {
                 LocalDate.of(2030, 3, 30),
                 1,
                 OccurrenceType.NORMAL,
-                mapper.readTree("""{"t":"a"}"""),
+                1,
                 mapper.readTree("""{"i":"a"}"""),
             )
         val intervenor = Intervenor(1, "159874598", "CC", "TestName", "958768396", "RUA TESTE")
@@ -292,7 +292,7 @@ class RepositoryOccurrenceMemTest {
                 LocalDate.of(2030, 3, 30),
                 1,
                 OccurrenceType.NORMAL,
-                mapper.readTree("""{"t":"a"}"""),
+                1,
                 mapper.readTree("""{"i":"a"}"""),
             )
 

@@ -11,6 +11,7 @@ class TransactionManagerInMem : TransactionManager {
     private val repoRole = RepositoryRoleMem()
     private val repoOccurrence = RepositoryOccurrenceMem()
     private val repoDocuments = RepositoryDocumentsMem()
+    private val repoType = RepositoryTypeMem()
 
     override fun <R> run(block: Transaction.() -> R): R =
         block(
@@ -22,6 +23,7 @@ class TransactionManagerInMem : TransactionManager {
                 repoRole,
                 repoOccurrence,
                 repoDocuments,
+                repoType,
             ),
         )
 }

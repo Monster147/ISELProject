@@ -8,6 +8,6 @@ data class OccurrenceCreateInput(
     val usersId: Int,
     val endDate: LocalDate,
     val importance: OccurrenceType,
-    val occurrenceType: JsonNode,
+    val occurrenceType: Int,
     val occurrenceInfo: JsonNode,
 )

@@ -17,7 +17,7 @@ class RepositoryOccurrenceJdbi(
         endDate: LocalDate,
         reporterId: Int,
         importance: OccurrenceType,
-        occurrenceType: JsonNode,
+        occurrenceType: Int,
         occurrenceInfo: JsonNode,
     ): Occurrence {
         val now = LocalDate.now()
@@ -25,7 +25,7 @@ class RepositoryOccurrenceJdbi(
             handle.createUpdate(
                 """
                 INSERT INTO dbo.occurrence (initDate, endDate, reporter_id, importance, occur_type, occur_info, evidences, intervenors)
-                VALUES (:initDate, :endDate, :reporter_id, :importance::dbo.occurrence_type, :occur_type::jsonb, :occur_info::jsonb, :evidences, :intervenors)
+                VALUES (:initDate, :endDate, :reporter_id, :importance::dbo.occurrence_type, :occur_type, :occur_info::jsonb, :evidences, :intervenors)
                 RETURNING id
                 """.trimIndent(),
             )
@@ -33,7 +33,7 @@ class RepositoryOccurrenceJdbi(
                 .bind("endDate", endDate)
                 .bind("reporter_id", reporterId)
                 .bind("importance", importance.name)
-                .bind("occur_type", occurrenceType.toString())
+                .bind("occur_type", occurrenceType)
                 .bind("occur_info", occurrenceInfo.toString())
                 .bind("evidences", emptyArray<Int>())
                 .bind("intervenors", emptyArray<Int>())
@@ -145,7 +145,7 @@ class RepositoryOccurrenceJdbi(
                 endDate = :endDate,
                 reporter_id = :reporter_id,
                 importance = :importance::dbo.occurrence_type,
-                occur_type = :occur_type::jsonb,
+                occur_type = :occur_type,
                 occur_info = :occur_info::jsonb,
                 evidences = :evidences,
                 intervenors = :intervenors
@@ -157,7 +157,7 @@ class RepositoryOccurrenceJdbi(
             .bind("endDate", entity.endDate)
             .bind("reporter_id", entity.reporterId)
             .bind("importance", entity.importance.name)
-            .bind("occur_type", entity.occurrenceType.toString())
+            .bind("occur_type", entity.occurrenceType)
             .bind("occur_info", entity.occurrenceInfo.toString())
             .bind("evidences", entity.evidences.toTypedArray())
             .bind("intervenors", entity.intervenors.toTypedArray())
@@ -182,7 +182,7 @@ class RepositoryOccurrenceJdbi(
         val importance = rs.getString("importance").let { OccurrenceType.valueOf(it) }
         val initDate = rs.getDate("initDate").toLocalDate()
         val endDate = rs.getDate("endDate").toLocalDate()
-        val occurType = rs.getString("occur_type")
+        val occurType = rs.getInt("occur_type")
         val occurInfo = rs.getString("occur_info")
         val evidences =
             rs.getArray("evidences")?.let { arr ->
@@ -192,7 +192,6 @@ class RepositoryOccurrenceJdbi(
             rs.getArray("intervenors")?.let { arr ->
                 (arr.array as Array<*>).map { (it as Number).toInt() }
             } ?: emptyList()
-        val typeJson = objectMapper.readTree(occurType)
         val infoJson = objectMapper.readTree(occurInfo)
 
         return Occurrence(
@@ -201,7 +200,7 @@ class RepositoryOccurrenceJdbi(
             endDate = endDate,
             reporterId = reporterId,
             importance = importance,
-            occurrenceType = typeJson,
+            occurrenceType = occurType,
             occurrenceInfo = infoJson,
             evidences = evidences,
             intervenors = intervenors,

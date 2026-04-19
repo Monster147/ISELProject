@@ -61,7 +61,7 @@ class OccurrenceService(
         usersId: Int,
         endDate: LocalDate,
         importance: OccurrenceType = OccurrenceType.NORMAL,
-        occurrenceType: JsonNode,
+        occurrenceType: Int,
         occurrenceInfo: JsonNode,
     ): Either<OccurrenceError, Occurrence> {
         return trxManager.run {

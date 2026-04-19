@@ -42,7 +42,7 @@ class ReportServiceTest {
                 endDate = LocalDate.of(2030, 3, 30),
                 reporterId = userId,
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             )
         }
@@ -246,7 +246,7 @@ class ReportServiceTest {
 
         reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""))
 
-        val result = reportService.findByType(json("""{"type":"base"}"""))
+        val result = reportService.findByType(1)
 
         assertTrue(result.any { it.id == r1.id })
         assertTrue(result.any { it.title == "t1" })

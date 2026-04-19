@@ -49,7 +49,7 @@ class OccurrenceControllerTest {
                 usersId = userId,
                 endDate = LocalDate.of(2030, 3, 30),
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             )
 
@@ -66,7 +66,7 @@ class OccurrenceControllerTest {
                 usersId = 999,
                 endDate = LocalDate.of(2030, 3, 30),
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             )
 
@@ -84,7 +84,7 @@ class OccurrenceControllerTest {
                 usersId = userId,
                 endDate = LocalDate.now().minusDays(1),
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             )
 
@@ -179,7 +179,7 @@ class OccurrenceControllerTest {
                 endDate = LocalDate.of(2030, 3, 30),
                 reporterId = userId,
                 importance = OccurrenceType.CRITICAL,
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             )
         }
@@ -200,7 +200,7 @@ class OccurrenceControllerTest {
                 endDate = LocalDate.of(2030, 3, 30),
                 reporterId = userId,
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             )
         }
@@ -246,7 +246,7 @@ class OccurrenceControllerTest {
                 usersId = userId,
                 endDate = LocalDate.of(2030, 3, 30),
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = json("""{"type":"base"}"""),
+                occurrenceType = 1,
                 occurrenceInfo = json("""{}"""),
             ),
         ).let { resp ->

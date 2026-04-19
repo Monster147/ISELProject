@@ -272,15 +272,14 @@ class UserService(
         return trxManager.run {
             val reports = repoReport.findByEditor(reporterId)
             if (reports.isEmpty()) return@run emptyList()
-            val mapper = ObjectMapper()
             val totalReports = reports.size.toDouble()
             reports
-                .groupBy { it.type.toString() }
+                .groupBy { it.type }
                 .map { (type, groupedReports) ->
                     val rawPercentage = (groupedReports.size / totalReports) * 100
                     val rounded = round(rawPercentage * 10) / 10
                     ReportTypePercentage(
-                        type = mapper.readTree(type),
+                        type = type,
                         count = groupedReports.size,
                         percentage = rounded,
                     )

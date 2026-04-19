@@ -14,7 +14,6 @@ import pt.ira.http.AuthenticatedUserArgumentResolver
 import pt.ira.http.AuthenticationInterceptor
 import pt.ira.jdbi.TransactionManagerJdbi
 import pt.ira.jdbi.configureWithAppRequirements
-import pt.ira.mem.TransactionManagerInMem
 import pt.ira.token.Sha256TokenEncoder
 import pt.ira.user.UsersDomainConfig
 import java.time.Clock
@@ -57,8 +56,8 @@ class WebApp {
     @Bean
     fun trxManagerJdbi(jdbi: Jdbi): TransactionManagerJdbi = TransactionManagerJdbi(jdbi)
 
-    //@Bean
-    //fun trxManager(): TransactionManagerInMem = TransactionManagerInMem()
+    // @Bean
+    // fun trxManager(): TransactionManagerInMem = TransactionManagerInMem()
 
     @Bean
     fun usersDomainConfig() =

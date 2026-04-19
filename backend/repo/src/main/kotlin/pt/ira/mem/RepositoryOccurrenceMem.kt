@@ -14,7 +14,7 @@ class RepositoryOccurrenceMem : RepositoryOccurrence {
         endDate: LocalDate,
         reporterId: Int,
         importance: OccurrenceType,
-        occurrenceType: JsonNode,
+        occurrenceType: Int,
         occurrenceInfo: JsonNode,
     ): Occurrence =
         Occurrence(
