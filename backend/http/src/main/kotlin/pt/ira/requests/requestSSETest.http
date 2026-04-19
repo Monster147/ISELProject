@@ -1,4 +1,15 @@
-@token_user = kpy-bKb3TQmUbXT5iLP9dqgMBYEc9H0fZsEX4Jfiyns=
+@token_user = Pexsa6IL2EOI5iS43m_wFmUyaem3htsLgsmmkfeCSyM=
+
+### Create Admin User
+POST http://localhost:8080/api/user
+Content-Type: application/json
+
+{
+  "name": "Admin",
+  "email": "admin@gmail.com",
+  "password": "123456",
+  "role": "ADMIN"
+}
 
 ### Create Token
 POST http://localhost:8080/api/user/token
@@ -74,10 +85,10 @@ Content-Type: application/json
 Authorization: Bearer {{token_user}}
 
 {
-  "idNumber": "145236987",
-  "idType": "NIF",
+  "idNumber": "1452369873",
+  "idType": "NIFSD",
   "name": "Teste",
-  "contactInfo": "926358714",
+  "contactInfo": "9263587145",
   "address": "Rua Teste, 123"
 }
 

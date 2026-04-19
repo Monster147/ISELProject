@@ -27,7 +27,6 @@ export function OccurrenceProvider({children}) {
         listOccurrences()
     }, [user]);
 
-    //sse que tem OccurrencesChanged vai receber um reporterId para somente guardar na lista as ocorrencias dele
     const handleOnMessage = useCallback((message: SSEMessage)=>{
         setLoading(true)
         const data = message.data
@@ -42,7 +41,7 @@ export function OccurrenceProvider({children}) {
         setTimeout(() => setLoading(false), 300);
     }, [])
 
-    useOccurrencesListener(handleOnMessage)
+    useOccurrencesListener(user?.id, handleOnMessage)
 
     async function listOccurrences() {
         try {
@@ -87,7 +86,7 @@ export function OccurrenceProvider({children}) {
     }
 
     return (
-        <OccurrenceContext.Provider value={{occurrence, listOccurrences, getOccurrence, addIntervenorToOccurrence, removeIntervenorFromOccurrence}}>
+        <OccurrenceContext.Provider value={{occurrence, listOccurrences, getOccurrence, addIntervenorToOccurrence, removeIntervenorFromOccurrence, loading}}>
             {children}
         </OccurrenceContext.Provider>
     )

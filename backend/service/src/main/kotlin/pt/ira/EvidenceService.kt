@@ -102,10 +102,11 @@ class EvidenceService(
                 evidence,
                 ActionKind.EvidenceCreated,
             )
-            val occurrences = repoOccurrence.findAll()
+            val occurrences = repoOccurrence.findOccurrenceByReporterId(reporterId)
             publisher.occurrencesPublisher.sendMessageToAll(
+                reporterId,
                 occurrences,
-                ActionKind.OccurrenceCreated,
+                ActionKind.OccurrencesChanged,
             )
             success(evidence)
         }
@@ -240,10 +241,11 @@ class EvidenceService(
                 Unit,
                 ActionKind.EvidenceDeleted,
             )
-            val occurrences = repoOccurrence.findAll()
+            val occurrences = repoOccurrence.findOccurrenceByReporterId(evidence.reporterId)
             publisher.occurrencesPublisher.sendMessageToAll(
+                evidence.reporterId,
                 occurrences,
-                ActionKind.OccurrenceCreated,
+                ActionKind.OccurrencesChanged,
             )
             success(true)
         }

@@ -1,6 +1,6 @@
 import {createContext, useCallback, useEffect, useMemo, useState} from "react";
 import {api, ApiError, fetchApi, getAuthHeaders} from "@commons/api/api";
-import { Occurrence } from "@commons/models/occurrence/Occurrence";
+import {Occurrence} from "@commons/models/occurrence/Occurrence";
 import {useAuth} from "../../hooks/useAuth";
 import {SSEMessage, useOccurrencesListener} from "../../../hooks/useOccurrencesListener";
 
@@ -8,7 +8,7 @@ import {SSEMessage, useOccurrencesListener} from "../../../hooks/useOccurrencesL
 type OccurrenceContextValue = {
     listOccurrences: () => Promise<void>;
     occurrence: Occurrence[];
-    getOccurrence: (id:number) => Promise<Occurrence>;
+    getOccurrence: (id: number) => Promise<Occurrence>;
     addIntervenorToOccurrence: (intervenorId: number, occurrenceId: number) => Promise<void>;
     removeIntervenorFromOccurrence: (intervenorId: number, occurrenceId: number) => Promise<void>;
     loading: boolean;
@@ -25,7 +25,6 @@ export function OccurrenceProvider({children}) {
         listOccurrences()
     }, [user]);
 
-    //sse que tem OccurrencesChanged vai receber um reporterId para somente guardar na lista as ocorrencias dele
     const handleOnMessage = useCallback((message: SSEMessage)=>{
         setLoading(true)
         const data = message.data
@@ -40,7 +39,7 @@ export function OccurrenceProvider({children}) {
         setTimeout(() => setLoading(false), 300);
     }, [])
 
-    useOccurrencesListener(handleOnMessage)
+    useOccurrencesListener(user?.id, handleOnMessage)
 
     async function listOccurrences() {
         try {

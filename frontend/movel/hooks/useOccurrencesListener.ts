@@ -17,15 +17,17 @@ export interface SSEMessage {
 }
 
 export function useOccurrencesListener(
+    userID: number | undefined,
     onMessage: (message: SSEMessage) => void
 ) {
     useEffect(() => {
-        const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/occurrence/listen`);
+        if (!userID) return;
+        const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/occurrence/listen/user/${userID}`);
 
         const onEvent = (event: any) => {
             try {
                 const receivedMessage = JSON.parse(event.data);
-                const value = receivedMessage?.data?.value;
+                const value = receivedMessage?.data
                 const occurrences: Occurrence[] = Array.isArray(value) ? value : [];
 
                 const message: SSEMessage = {
@@ -53,5 +55,5 @@ export function useOccurrencesListener(
             es.removeAllEventListeners();
             es.close();
         };
-    }, [onMessage]);
+    }, [userID,onMessage]);
 }

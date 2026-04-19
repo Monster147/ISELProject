@@ -1,39 +1,39 @@
-import {Intervenor} from "@commons/models/intervenor/Intervenor";
 import {useEffect} from "react";
-import EventSource from "react-native-sse";
+import {Documents} from "../../commons/models/Documents/Documents";
+import EventSource from "react-native-sse"
 
-export type IntervenorsUpdateAction =
-    | "IntervenorsChanged"
+export type DocumentsUpdateAction=
+    | "DocumentsChanged"
 
-export interface IntervenorsUpdateData{
-    intervenors: Intervenor[]
-    action: IntervenorsUpdateAction
+export interface DocumentsUpdateData{
+    documents: Documents[]
+    action: DocumentsUpdateAction
 }
 
-export interface SSEMessage {
-    id?: number;
-    data: IntervenorsUpdateData
-    action: IntervenorsUpdateAction
+export interface SSEMessage{
+    id?: number
+    data: DocumentsUpdateData
+    action: DocumentsUpdateAction
 }
 
-export function useIntervenorsListener(
-    onMessage: (message: SSEMessage) => void
+export function useDocumentsListener(
+    onMessage: (message:SSEMessage) => void
 ) {
     useEffect(() => {
-        const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/intervenor/listen`);
+        const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/documents/listen`);
 
         const onEvent = (event: any) => {
             try {
                 const receivedMessage = JSON.parse(event.data);
                 const value = receivedMessage?.data
-                const intervenors: Intervenor[] = Array.isArray(value) ? value : [];
+                const documents: Documents[] = Array.isArray(value) ? value : [];
 
                 const message: SSEMessage = {
                     id: receivedMessage.id,
                     action: receivedMessage.action,
                     data: {
                         action: receivedMessage.action,
-                        intervenors,
+                        documents,
                     },
                 };
 
@@ -53,5 +53,6 @@ export function useIntervenorsListener(
             es.removeAllEventListeners();
             es.close();
         };
-    }, [onMessage]);
+
+    }, [onMessage])
 }

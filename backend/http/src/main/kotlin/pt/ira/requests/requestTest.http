@@ -100,16 +100,16 @@ POST http://localhost:8080/api/documents
 Content-Type: multipart/form-data; boundary=boundary123
 
 --boundary123
-Content-Disposition: form-data; name="file"; filename="01-DeclaracaoDeAcidenteAuto.pdf"
+Content-Disposition: form-data; name="file"; filename="03_InformaçãoSocioeconómica.pdf"
 Content-Type: application/pdf
 
-< C:\Users\josec\Downloads\Templates\01-Automovel\02_DocumentosDeSuportCAPTAuto_ParaImpressao\01-DeclaracaoDeAcidenteAuto.pdf
+< C:\Users\User\Downloads\Templates\Templates\01_AUTOMÓVEL\02_DOCUMENTOSDESUPORTECAPTAUTO_paraimpressão\03_InformaçãoSocioeconómica.pdf
 --boundary123
 Content-Disposition: form-data; name="data"
 Content-Type: application/json
 
 {
-  "name": "DeclaracaoDeAcidenteAuto",
+  "name": "03_InformaçãoSocioeconómica",
   "type": "Automovel"
 }
 --boundary123--

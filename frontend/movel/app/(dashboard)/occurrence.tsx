@@ -19,10 +19,6 @@ const Occurrence = () =>{
 
     useAlertExitApp()
 
-    const {user} = useAuth()
-
-    const userOccurrences = occurrence.filter(item => item.reporterId === user?.id);
-
     if (loading) {
         return <ThemedLoader />;
     }

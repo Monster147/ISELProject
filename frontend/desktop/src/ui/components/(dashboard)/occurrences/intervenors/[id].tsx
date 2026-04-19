@@ -9,7 +9,7 @@ import ThemedLoader from "../../../../../../components/ThemedLoader";
 import ThemedButton from "../../../../../../components/ThemedButton";
 import {useIntervenor} from "../../../../../hooks/useIntervenor";
 import Spacer from "../../../../../../components/Spacer";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {useConfirmAction} from "../../../../utils/confirmAction";
 
@@ -17,18 +17,25 @@ const OccurrenceIntervenors = () => {
     const {t} = useTranslation()
     const {occurrenceId} = useParams()
     const navigate = useNavigate();
-    const { intervenor } = useIntervenor();
+    const { intervenor } = useIntervenor()
     const occurrenceIdNumber = Number(occurrenceId)
     const [error, setError] = useState<string | null>(null);
     const confirmAction = useConfirmAction();
+    const [refreshing, setRefreshing] = useState(false)
 
     const {occurrence, removeIntervenorFromOccurrence} = useOccurrence()
     const actualOccurrence = occurrence.find(o => o.id === occurrenceIdNumber);
     const [loading, setLoading] = useState(false)
 
-    //fazer mostrar o refresh devido ao sse
+    useEffect(() => {
+        if (actualOccurrence) {
+            setRefreshing(true)
+            const timer = setTimeout(() => setRefreshing(false), 300)
+            return () => clearTimeout(timer)
+        }
+    }, [actualOccurrence, intervenor])
 
-    if (!actualOccurrence || loading) {
+    if (!actualOccurrence || loading || refreshing) {
         return (
             <ThemedView safe={true} style={styles.container}>
                 <ThemedLoader/>

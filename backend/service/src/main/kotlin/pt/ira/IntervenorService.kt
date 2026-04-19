@@ -200,5 +200,5 @@ class IntervenorService(
      *
      * @return Lista de todas as [Intervenor], ou erro do tipo [IntervenorError].
      */
-    fun findAll(): Either<IntervenorError, List<Intervenor>> = trxManager.run { success(repoIntervenor.findAll()) }
+    fun findAll(): List<Intervenor> = trxManager.run {repoIntervenor.findAll() }
 }

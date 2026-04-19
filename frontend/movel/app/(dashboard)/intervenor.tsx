@@ -26,51 +26,52 @@ const IntervenorSearch = () => {
     ]
 
     const params = useLocalSearchParams();
-    console.log("Received params:", params);
-
     const isSelectMode = params.selectMode === "true";
     const occurrenceId = params.occurrenceId;
-    console.log(isSelectMode, occurrenceId)
 
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
-    const [searchType, setSearchType] = useState()
+    const [searchType, setSearchType] = useState<string | undefined>(undefined)
 
     useAlertExitApp()
 
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
 
-    const {getIntervenorByIdNumber, deleteIntervenorByIdNumber, findIntervenorByContactInfo} = useIntervenor()
+    const { intervenor } = useIntervenor()
     const {addIntervenorToOccurrence} = useOccurrence()
 
     const [idNumber, setIdNumber] = useState("")
-    const [intervenor, setIntervenor] = useState<Intervenor | null>(null)
+    const [foundIntervenor, setFoundIntervenor] = useState<Intervenor | null>(null)
     const [loading, setLoading] = useState(false)
 
-    const handleSearchByNumberId = async () => {
+    const handleSearchByNumberId = () => {
         try {
             setLoading(true)
-            const result = await getIntervenorByIdNumber(idNumber)
-            setIntervenor(result)
+            const result = intervenor.find(i => i.idNumber === idNumber)
+            if (!result) {
+                setError(t("intervenor.intervenorNotFound"))
+                setFoundIntervenor(null)
+                return
+            }
+            setFoundIntervenor(result)
             setError(null)
-        } catch (err: any) {
-            if (err instanceof Error) setError(t("intervenor.intervenorNotFound"))
-            else setError(String(err));
         } finally {
             setLoading(false);
         }
     }
 
-    const handleSearchByPhoneNumber = async () => {
+    const handleSearchByPhoneNumber = () => {
         try {
             setLoading(true)
-            const result = await findIntervenorByContactInfo(idNumber)
-            setIntervenor(result)
+            const result = intervenor.find(i => i.contactInfo === idNumber)
+            if (!result) {
+                setError(t("intervenor.intervenorNotFound"))
+                setFoundIntervenor(null)
+                return
+            }
+            setFoundIntervenor(result)
             setError(null)
-        } catch (err: any) {
-            if (err instanceof Error) setError(t("intervenor.intervenorNotFound"))
-            else setError(String(err));
         } finally {
             setLoading(false);
         }
@@ -81,7 +82,7 @@ const IntervenorSearch = () => {
     };
 
     const handleUpdate = () => {
-        const intervenorId = intervenor?.id;
+        const intervenorId = foundIntervenor?.id;
         if (!intervenorId) {
             setError(t("intervenor.intervenorNotFound"));
             return;
@@ -90,18 +91,18 @@ const IntervenorSearch = () => {
     }
 
     const handleSearch = async () => {
-        setIntervenor(null);
+        setFoundIntervenor(null);
         if (!searchType) return
         if (searchType === "phoneNumber") {
-            await handleSearchByPhoneNumber();
+            handleSearchByPhoneNumber();
         } else {
-            await handleSearchByNumberId();
+            handleSearchByNumberId();
         }
     };
 
     const handleAddIntervenor = async () => {
         try {
-            const intervenorId = intervenor?.id;
+            const intervenorId = foundIntervenor?.id;
             if (!intervenorId) {
                 setError(t("intervenor.intervenorNotFound"));
                 return;
@@ -117,7 +118,7 @@ const IntervenorSearch = () => {
     useFocusEffect(
         useCallback(() => {
             return () => {
-                setIntervenor(null)
+                setFoundIntervenor(null)
                 setIdNumber("")
                 setSearchType(undefined)
                 setError(null)
@@ -144,14 +145,18 @@ const IntervenorSearch = () => {
                     <Spacer />
                     <ThemedText title={true} style={styles.heading}>{t("intervenor.intervenors")}</ThemedText>
                     <ThemedCard style={styles.card}>
-                        <Spacer />
+                        <Spacer/>
                         <ThemedText>{t("intervenor.searchIntervenor")}</ThemedText>
                         <Dropdown
                             label={t("intervenor.searchBy")}
                             placeholder={t("intervenor.searchBy")}
                             options={OPTIONS}
                             value={searchType}
-                            onSelect={setSearchType}
+                            onSelect={(value) => {
+                                setSearchType(value)
+                                setIdNumber("")
+                                setError(null)
+                            }}
                         />
                         {searchType && <ThemedTextInput
                             style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center"}}
@@ -171,14 +176,14 @@ const IntervenorSearch = () => {
 
                         {error && <Text style={styles.error}>{error}</Text>}
 
-                        {intervenor && (
+                        {foundIntervenor && (
                             <ThemedCard style={{margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center"}}>
                                 <ThemedText title={true}>Intervenor Found</ThemedText>
-                                <ThemedText>{t("intervenor.name")}: {intervenor.name}</ThemedText>
-                                <ThemedText>{t("intervenor.contact")}: {intervenor.contactInfo}</ThemedText>
-                                <ThemedText>{t("intervenor.address")}: {intervenor.address}</ThemedText>
-                                <ThemedText>{t("intervenor.idType")}: {intervenor.idType}</ThemedText>
-                                <ThemedText>{t("intervenor.idNumber")}: {intervenor.idNumber}</ThemedText>
+                                <ThemedText>{t("intervenor.name")}: {foundIntervenor.name}</ThemedText>
+                                <ThemedText>{t("intervenor.contact")}: {foundIntervenor.contactInfo}</ThemedText>
+                                <ThemedText>{t("intervenor.address")}: {foundIntervenor.address}</ThemedText>
+                                <ThemedText>{t("intervenor.idType")}: {foundIntervenor.idType}</ThemedText>
+                                <ThemedText>{t("intervenor.idNumber")}: {foundIntervenor.idNumber}</ThemedText>
 
                                 <ThemedButton onPress={handleUpdate} style={styles.update}>
                                     <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("intervenor.updateInformation")}</ThemedText>

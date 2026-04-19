@@ -14,9 +14,6 @@ const Occurrence = () =>{
     const {t} = useTranslation()
     const {occurrence, loading} = useOccurrence()
     const navigate = useNavigate()
-    const {user} = useAuth()
-
-    const userOccurrences = occurrence.filter(item => item.reporterId === user?.id);
 
     if (loading) {
         return <ThemedLoader />;
@@ -32,7 +29,7 @@ const Occurrence = () =>{
             <Spacer />
 
             <FlatList
-                data={userOccurrences}
+                data={occurrence}
                 keyExtractor={(item)=> item.id.toString()}
                 contentContainerStyle={styles.list}
                 renderItem={({item}) =>(

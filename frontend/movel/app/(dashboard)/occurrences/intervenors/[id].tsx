@@ -10,7 +10,7 @@ import ThemedButton from "../../../../components/ThemedButton";
 import {useBackRedirect} from "../../../../hooks/useBackRedirect";
 import {useIntervenor} from "../../../../hooks/useIntervenor";
 import Spacer from "../../../../components/Spacer";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {confirmAction} from "../../../../utils/confirmAction";
 
@@ -21,6 +21,7 @@ const OccurrenceIntervenors = () => {
     const { intervenor } = useIntervenor();
     const occurrenceId = Number(id)
     const [error, setError] = useState<string | null>(null);
+    const [refreshing, setRefreshing] = useState(false)
 
     useBackRedirect(() => router.back())
 
@@ -28,7 +29,15 @@ const OccurrenceIntervenors = () => {
     const actualOccurrence = occurrence.find(o => o.id === occurrenceId);
     const [loading, setLoading] = useState(false)
 
-    if (!actualOccurrence || loading) {
+    useEffect(() => {
+        if (actualOccurrence) {
+            setRefreshing(true)
+            const timer = setTimeout(() => setRefreshing(false), 300)
+            return () => clearTimeout(timer)
+        }
+    }, [actualOccurrence, intervenor])
+
+    if (!actualOccurrence || loading|| refreshing) {
         return (
             <ThemedView safe={true} style={styles.container}>
                 <ThemedLoader/>

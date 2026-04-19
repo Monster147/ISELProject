@@ -37,36 +37,40 @@ const IntervenorSearch = () => {
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
 
-    const {getIntervenorByIdNumber, deleteIntervenorByIdNumber, findIntervenorByContactInfo} = useIntervenor()
+    const { intervenor } = useIntervenor()
     const {addIntervenorToOccurrence} = useOccurrence()
 
     const [idNumber, setIdNumber] = useState("")
-    const [intervenor, setIntervenor] = useState<Intervenor | null>(null)
+    const [foundIntervenor, setFoundIntervenor] = useState<Intervenor | null>(null)
     const [loading, setLoading] = useState(false)
 
-    const handleSearchByNumberId = async () => {
+    const handleSearchByNumberId = () => {
         try {
             setLoading(true)
-            const result = await getIntervenorByIdNumber(idNumber)
-            setIntervenor(result)
+            const result = intervenor.find(i => i.idNumber === idNumber)
+            if (!result) {
+                setError(t("intervenor.intervenorNotFound"))
+                setFoundIntervenor(null)
+                return
+            }
+            setFoundIntervenor(result)
             setError(null)
-        } catch (err: any) {
-            if (err instanceof Error) setError(t("intervenor.intervenorNotFound"))
-            else setError(String(err));
         } finally {
             setLoading(false);
         }
     }
 
-    const handleSearchByPhoneNumber = async () => {
+    const handleSearchByPhoneNumber = () => {
         try {
             setLoading(true)
-            const result = await findIntervenorByContactInfo(idNumber)
-            setIntervenor(result)
+            const result = intervenor.find(i => i.contactInfo === idNumber)
+            if (!result) {
+                setError(t("intervenor.intervenorNotFound"))
+                setFoundIntervenor(null)
+                return
+            }
+            setFoundIntervenor(result)
             setError(null)
-        } catch (err: any) {
-            if (err instanceof Error) setError(t("intervenor.intervenorNotFound"))
-            else setError(String(err));
         } finally {
             setLoading(false);
         }
@@ -77,7 +81,7 @@ const IntervenorSearch = () => {
     };
 
     const handleUpdate = () => {
-        const intervenorId = intervenor?.id;
+        const intervenorId = foundIntervenor?.id;
         if (!intervenorId) {
             setError(t("intervenor.intervenorNotFound"));
             return;
@@ -86,18 +90,18 @@ const IntervenorSearch = () => {
     }
 
     const handleSearch = async () => {
-        setIntervenor(null);
+        setFoundIntervenor(null);
         if (!searchType) return
         if (searchType === "phoneNumber") {
-            await handleSearchByPhoneNumber();
+            handleSearchByPhoneNumber();
         } else {
-            await handleSearchByNumberId();
+            handleSearchByNumberId();
         }
     };
 
     const handleAddIntervenor = async () => {
         try {
-            const intervenorId = intervenor?.id;
+            const intervenorId = foundIntervenor?.id;
             if (!intervenorId) {
                 setError(t("intervenor.intervenorNotFound"));
                 return;
@@ -131,7 +135,11 @@ const IntervenorSearch = () => {
                             options={OPTIONS}
                             placeholder={t("intervenor.searchBy")}
                             value={OPTIONS.find(opt => opt.value === searchType) || null}
-                            onChange={(selectedOption) => setSearchType(selectedOption?.value)}
+                            onChange={(selectedOption) => {
+                                setSearchType(selectedOption?.value)
+                                setIdNumber("")
+                                setError(null)
+                        }}
                         />
                         {searchType && <ThemedTextInput
                             style={{
@@ -160,14 +168,14 @@ const IntervenorSearch = () => {
 
                         {error && <Text style={styles.error}>{error}</Text>}
 
-                        {intervenor && (
+                        {foundIntervenor && (
                             <ThemedCard style={{margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center"}}>
                                 <ThemedText title={true}>Intervenor Found</ThemedText>
-                                <ThemedText>{t("intervenor.name")}: {intervenor.name}</ThemedText>
-                                <ThemedText>{t("intervenor.contact")}: {intervenor.contactInfo}</ThemedText>
-                                <ThemedText>{t("intervenor.address")}: {intervenor.address}</ThemedText>
-                                <ThemedText>{t("intervenor.idType")}: {intervenor.idType}</ThemedText>
-                                <ThemedText>{t("intervenor.idNumber")}: {intervenor.idNumber}</ThemedText>
+                                <ThemedText>{t("intervenor.name")}: {foundIntervenor.name}</ThemedText>
+                                <ThemedText>{t("intervenor.contact")}: {foundIntervenor.contactInfo}</ThemedText>
+                                <ThemedText>{t("intervenor.address")}: {foundIntervenor.address}</ThemedText>
+                                <ThemedText>{t("intervenor.idType")}: {foundIntervenor.idType}</ThemedText>
+                                <ThemedText>{t("intervenor.idNumber")}: {foundIntervenor.idNumber}</ThemedText>
 
                                 <ThemedButton onPress={handleUpdate} style={styles.update}>
                                     <ThemedText style={{

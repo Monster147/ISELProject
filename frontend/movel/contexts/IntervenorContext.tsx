@@ -30,7 +30,7 @@ export function IntervenorProvider({children}) {
         const data = message.data
         const action = message.action
         switch (action) {
-            case "IntervenorsChange":
+            case "IntervenorsChanged":
                 setIntervenor(data.intervenors)
                 break
             default:

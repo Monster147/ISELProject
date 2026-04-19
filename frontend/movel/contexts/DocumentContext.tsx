@@ -1,8 +1,10 @@
-import {createContext, useState} from "react";
+import {createContext, useCallback, useEffect, useState} from "react";
 import {Intervenor} from "@commons/models/intervenor/Intervenor";
 import {Documents} from "@commons/models/Documents/Documents";
 import {api} from "@commons/api/api";
 import {IntervenorContext} from "./IntervenorContext";
+import {useAuth} from "../hooks/useAuth";
+import {useDocumentsListener,SSEMessage} from "../hooks/useDocumentsListener";
 
 type DocumentContextValue = {
     documents: Documents[]
@@ -12,12 +14,35 @@ type DocumentContextValue = {
     getDocumentByType: (type:string) => Promise<any>
     getAllDocumentTypes: () => Promise<any>
     downloadDocument :(id:number)=>Promise<any>
+    loading:boolean
 }
 
 export const DocumentContext = createContext<DocumentContextValue | undefined>(undefined)
 
 export function DocumentProvider({children}) {
     const [documents, setDocuments] = useState<Documents[]>([])
+    const {user} = useAuth()
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        getAllDocuments()
+    }, [user]);
+
+    const handleOnMessage = useCallback((message: SSEMessage) => {
+        setLoading(true)
+        const data = message.data
+        const action = message.action
+        switch (action) {
+            case "DocumentsChanged":
+                setDocuments(data.documents)
+                break
+            default:
+                break
+        }
+        setTimeout(() => setLoading(false), 300);
+    }, [])
+
+    useDocumentsListener(handleOnMessage)
 
     async function getAllDocuments(){
         try {
@@ -73,7 +98,7 @@ export function DocumentProvider({children}) {
     }
 
     return (
-        <DocumentContext.Provider value={{getAllDocumentTypes, getDocumentByType, getDocumentByName, getDocumentById, getAllDocuments, documents, downloadDocument}}>
+        <DocumentContext.Provider value={{getAllDocumentTypes, getDocumentByType, getDocumentByName, getDocumentById, getAllDocuments, documents, downloadDocument, loading}}>
             {children}
         </DocumentContext.Provider>
     )

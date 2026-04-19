@@ -1,37 +1,38 @@
-import {Intervenor} from "@commons/models/intervenor/Intervenor";
 import {useEffect} from "react";
+import {Documents} from "../../commons/models/Documents/Documents";
 
-export type IntervenorsUpdateAction =
-    | "IntervenorsChanged"
+export type DocumentsUpdateAction=
+    | "DocumentsChanged"
 
-export interface IntervenorsUpdateData{
-    intervenors: Intervenor[]
-    action: IntervenorsUpdateAction
+export interface DocumentsUpdateData{
+    documents: Documents[]
+    action: DocumentsUpdateAction
 }
 
-export interface SSEMessage {
-    id?: number;
-    data: IntervenorsUpdateData
-    action: IntervenorsUpdateAction
+export interface SSEMessage{
+    id?: number
+    data: DocumentsUpdateData
+    action: DocumentsUpdateAction
 }
 
-export function useIntervenorsListener(
-    onMessage: (message: SSEMessage) => void
+export function useDocumentsListener(
+    onMessage: (message:SSEMessage) => void
 ) {
     useEffect(() => {
-        const eventSource = new EventSource(`/api/intervenor/listen`)
 
-        eventSource.onmessage = (intervenor) =>{
+        const eventSource = new EventSource(`/api/documents/listen`)
+
+        eventSource.onmessage = (occurrence) =>{
             try {
-                const receivedMessage = JSON.parse(intervenor.data);
+                const receivedMessage = JSON.parse(occurrence.data);
                 const value = receivedMessage?.data
-                const intervenors: Intervenor[] = Array.isArray(value) ? value : [];
+                const documents: Documents[] = Array.isArray(value) ? value : [];
                 const message: SSEMessage = {
                     id: receivedMessage.id,
                     action: receivedMessage.action,
                     data: {
                         action: receivedMessage.action,
-                        intervenors,
+                        documents,
                     },
                 };
                 onMessage(message);
@@ -49,7 +50,7 @@ export function useIntervenorsListener(
 
         return () => {
             eventSource.close();
-        };
+        }
 
-    }, [onMessage]);
+    }, [onMessage])
 }

@@ -10,53 +10,16 @@ import ThemedView from "../../../../components/ThemedView";
 import ThemedLoader from "../../../../components/ThemedLoader";
 import ThemedText from "../../../../components/ThemedText";
 import Spacer from "../../../../components/Spacer";
+import ThemedCard from "../../../../components/ThemedCard";
 
 const Document = () => {
     const { t } = useTranslation()
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
-    const { getAllDocumentTypes, getDocumentByType, downloadDocument } = useDocument()
+    const { documents, downloadDocument, loading } = useDocument()
 
-    const [documentTypes, setDocumentTypes] = useState<string[]>([])
     const [expandedType, setExpandedType] = useState<string | null>(null)
-    const [documentsByType, setDocumentsByType] = useState<{ [key: string]: Documents[] }>({})
-    const [loading, setLoading] = useState(true)
     const [downloading, setDownloading] = useState<number | null>(null)
-
-    useEffect(() => {
-        loadDocumentTypes();
-    }, []);
-
-    const loadDocumentTypes = async () => {
-        try {
-            setLoading(true)
-            const types = await getAllDocumentTypes()
-            setDocumentTypes(types || [])
-        } catch (error) {
-        } finally {
-            setLoading(false)
-        }
-    };
-
-    const handleTypePress = async (type: string) => {
-        if (expandedType === type) {
-            setExpandedType(null)
-            return;
-        }
-
-        if (!documentsByType[type]) {
-            try {
-                const docs = await getDocumentByType(type)
-                setDocumentsByType(prev => ({
-                    ...prev,
-                    [type]: Array.isArray(docs) ? docs : [docs]
-                }))
-            } catch (error) {
-            }
-        }
-
-        setExpandedType(type)
-    };
 
     const handleDownload = async (id: number, fileName: string) => {
         try {
@@ -68,21 +31,30 @@ const Document = () => {
         }
     };
 
+    const documentsByType = documents.reduce((acc, doc) => {
+        const type = doc.type
+        if (!acc[type]) {
+            acc[type] = []
+        }
+        acc[type].push(doc)
+        return acc
+    }, {} as { [key: string]: Documents[] })
+
+    const documentTypes = Object.keys(documentsByType)
+
     const renderDocumentType = ({ item: type }: { item: string }) => {
         const isExpanded = expandedType === type;
         const docs = documentsByType[type] || [];
 
         return (
-            <ThemedView style={styles.typeContainer}>
+            <ThemedCard style={styles.card}>
                 <Pressable
+                    onPress={() => setExpandedType(isExpanded ? null : type)}
                     style={styles.typeHeader}
-                    onPress={() => handleTypePress(type)}
                 >
-                    <ThemedView style={styles.typeHeaderContent}>
-                        <ThemedText style={styles.typeName}>
-                            {type}
-                        </ThemedText>
-                    </ThemedView>
+                    <ThemedText style={styles.typeName}>
+                        {type}
+                    </ThemedText>
                     {isExpanded ? (
                         <MdExpandLess size={24} color={theme.text} />
                     ) : (
@@ -91,20 +63,17 @@ const Document = () => {
                 </Pressable>
 
                 {isExpanded && (
-                    <ThemedView style={styles.expandedContent}>
+                    <ThemedView style={[styles.expandedContent, { backgroundColor: theme.uiBackground }]}>
                         {docs.length > 0 ? (
                             docs.map(doc => (
                                 <ThemedView
                                     key={doc.id}
-                                    style={styles.documentItem}
+                                    style={[styles.documentItem, { backgroundColor: theme.uiBackground }]}
                                 >
-                                    <ThemedView style={styles.documentInfo}>
-                                        <ThemedText style={styles.documentName}>
-                                            {doc.name}
-                                        </ThemedText>
-                                    </ThemedView>
+                                    <ThemedText style={styles.documentName}>
+                                        {doc.name}
+                                    </ThemedText>
                                     <Pressable
-                                        style={styles.downloadButton}
                                         onPress={() => handleDownload(doc.id, doc.name)}
                                         disabled={downloading === doc.id}
                                     >
@@ -123,28 +92,34 @@ const Document = () => {
                         )}
                     </ThemedView>
                 )}
-            </ThemedView>
+            </ThemedCard>
         );
     };
 
     if (loading) {
-        return <ThemedLoader />;
+        return (
+            <ThemedView safe={true} style={styles.container}>
+                <ThemedLoader/>
+            </ThemedView>
+        );
     }
 
     return (
-        <ThemedView style={styles.container}>
+        <ThemedView style={styles.container} safe={true}>
             <Spacer />
             <ThemedText title={true} style={styles.heading}>
                 {t("documents.documents")}
             </ThemedText>
+
             <Spacer />
+
             {documentTypes.length > 0 ? (
                 <FlatList
                     data={documentTypes}
                     renderItem={renderDocumentType}
                     keyExtractor={item => item}
-                    style={styles.list}
                     scrollEnabled={true}
+                    contentContainerStyle={styles.list}
                 />
             ) : (
                 <ThemedView style={styles.emptyContainer}>
@@ -157,27 +132,26 @@ const Document = () => {
     );
 };
 
-
 export default Document
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        alignItems: "stretch",
     },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 16,
+    heading: {
+        fontWeight: 'bold',
+        fontSize: 18,
+        textAlign: 'center'
     },
     list: {
-        flex: 1,
+        paddingBottom: 20,
     },
-    typeContainer: {
-        marginBottom: 12,
-        borderRadius: 8,
-        borderWidth: 1,
-        overflow: "hidden",
+    card: {
+        margin: 20,
+        padding: 0,
+        borderLeftColor: Colors.primary,
+        borderLeftWidth: 4,
     },
     typeHeader: {
         flexDirection: "row",
@@ -185,16 +159,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         padding: 16,
     },
-    typeHeaderContent: {
-        flex: 1,
-    },
     typeName: {
         fontSize: 16,
         fontWeight: "600",
-        marginBottom: 4,
-    },
-    typeCount: {
-        fontSize: 12,
     },
     expandedContent: {
         borderTopWidth: 1,
@@ -206,32 +173,20 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 12,
         paddingHorizontal: 8,
-        borderBottomWidth: 1,
-    },
-    documentInfo: {
-        flex: 1,
     },
     documentName: {
         fontSize: 14,
         fontWeight: "500",
-    },
-    downloadButton: {
-        padding: 8,
-        borderRadius: 6,
-        marginLeft: 12,
+        flex: 1,
     },
     emptyContainer: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        paddingHorizontal: 20,
     },
     emptyMessage: {
         fontSize: 14,
         textAlign: "center",
-    },
-    heading:{
-        fontWeight: 'bold',
-        fontSize: 18,
-        textAlign: 'center'
     },
 });

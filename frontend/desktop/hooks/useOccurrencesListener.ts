@@ -16,15 +16,18 @@ export interface SSEMessage {
 }
 
 export function useOccurrencesListener(
+    userID: number | undefined,
     onMessage: (message: SSEMessage) => void
 ) {
     useEffect(() => {
-        const eventSource = new EventSource(`/api/occurrence/listen`)
+        if (!userID) return;
+
+        const eventSource = new EventSource(`/api/occurrence/listen/user/${userID}`);
 
         eventSource.onmessage = (occurrence) =>{
             try {
                 const receivedMessage = JSON.parse(occurrence.data);
-                const value = receivedMessage?.data?.value;
+                const value = receivedMessage?.data
                 const occurrences: Occurrence[] = Array.isArray(value) ? value : [];
                 const message: SSEMessage = {
                     id: receivedMessage.id,
@@ -51,5 +54,5 @@ export function useOccurrencesListener(
             eventSource.close();
         };
 
-    }, [onMessage]);
+    }, [userID,onMessage]);
 }
