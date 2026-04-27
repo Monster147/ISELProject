@@ -8,6 +8,7 @@ import pt.ira.emitters.ActionKind
 import pt.ira.interfaces.TransactionManager
 import pt.ira.publishers.Publishers
 import pt.ira.storage.StorageService
+import java.text.Normalizer
 
 sealed class DocumentsError {
     data object DocumentNotFound : DocumentsError()
@@ -71,8 +72,11 @@ class DocumentsService(
             return failure(DocumentsError.InvalidFile)
         }
 
+        val safeName = normalizeFileName(name)
+        println("Name: $safeName")
+
         val filepath =
-            storageService.saveDocument(file, name, type)
+            storageService.saveDocument(file, safeName, type)
 
         if (filepath.isEmpty()) {
             return failure(DocumentsError.FileAlreadyExists)
@@ -81,7 +85,7 @@ class DocumentsService(
         return trxManager.run {
             val document =
                 repoDocuments.uploadDocumentInfo(
-                    name = name,
+                    name = safeName,
                     type = type,
                     filepath = filepath,
                 )
@@ -212,4 +216,11 @@ class DocumentsService(
 
             success(Pair(document, resource))
         }
+
+    private fun normalizeFileName(filename: String): String {
+        val normalizer = Normalizer.normalize(filename, Normalizer.Form.NFD)
+        return normalizer
+            .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
+            .replace("[^a-zA-Z0-9._-]".toRegex(), "_")
+    }
 }
