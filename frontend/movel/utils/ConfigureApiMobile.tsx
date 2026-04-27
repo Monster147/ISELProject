@@ -2,15 +2,8 @@ import {configureApi} from "@commons/api/api";
 import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
 import {getErrorDescription} from "../errors/ErrorDescriptions";
 import * as FileSystem from 'expo-file-system/legacy';
-import {
-    DOCUMENT_DIR,
-    ensureDirExists,
-    getExtensionFromMime,
-    getFilePath,
-    resolveMimeType
-} from "./ConfigureApiMobileUtils";
 import {Platform} from "react-native";
-import ReactNativeBlobUtil from 'react-native-blob-util'
+import {shareAsync} from "expo-sharing";
 
 configureApi(
     {
@@ -22,52 +15,40 @@ configureApi(
 );
 
 export async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
-    /*const url = `${apiBaseUrl}/documents/${id}/download`;
+    const url = `${apiBaseUrl}/documents/${id}/download`
+    const response = await fetch(url, {
+        method: "GET",
+    });
 
-    const response = await fetch(url);
     if (!response.ok) {
-        throw new Error("Erro ao ir buscar as informações do documento");
+        throw new Error("Erro ao fazer download");
     }
+    const contentDisposition = response.headers.get("content-disposition")
+    const filenameMatch = contentDisposition?.match(/filename="?([^"]+)"?/)
+    const filename = filenameMatch?.[1] ?? "download"
 
-    const contentDisposition = response.headers.get("content-disposition");
-    const filenameMatch = contentDisposition?.match(/filename="?([^"]+)"?/);
+    const result = await FileSystem.downloadAsync(url, FileSystem.documentDirectory + filename)
 
-    let filename = filenameMatch?.[1] ?? `document_${id}`;
+    console.log(result)
 
-    const mime = response.headers.get("content-type");
-
-    if (!filename.includes(".")) {
-        filename += getExtensionFromMime(mime);
-    }
-
-    if (Platform.OS === "android") {
-        const path = `${ReactNativeBlobUtil.fs.dirs.DownloadDir}/${filename}`;
-
-        const res = await ReactNativeBlobUtil.config({
-            fileCache: true,
-            path: path,
-            addAndroidDownloads: {
-                useDownloadManager: true,
-                notification: true,
-                title: filename,
-                description: "A transferir ficheiro...",
-                path: `/storage/emulated/0/Download/${filename}`,
-                mime: mime || "application/octet-stream",
-                mediaScannable: true,
-            },
-        }).fetch("GET", url);
-
-        console.log("Guardado em:", res.path());
-        return;
-    }
-
-    const path = `${ReactNativeBlobUtil.fs.dirs.DocumentDir}/${filename}`;
-
-    const res = await ReactNativeBlobUtil.config({
-        fileCache: true,
-        path: path,
-    }).fetch("GET", url);
-
-    console.log("Guardado em iOS:", res.path());*/
+    saveFile(result.uri, filename, result.headers["Content-Type"])
 }
 
+const saveFile = async (uri, filename, mimetype) => {
+    if (Platform.OS === 'android'){
+        const permissions= await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync()
+        if (permissions.granted) {
+            const base64= await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 })
+            await FileSystem.StorageAccessFramework.createFileAsync(permissions.directoryUri, filename, mimetype)
+                .then(async (url) =>{
+                    await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 })
+                })
+                .catch(error => console.log(error))
+        }
+        else{
+            shareAsync(uri)
+        }
+    } else {
+        shareAsync(uri)
+    }
+}
