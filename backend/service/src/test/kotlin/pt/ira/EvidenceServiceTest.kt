@@ -72,7 +72,7 @@ class EvidenceServiceTest {
 
         val evidence =
             evidenceService.createEvidence(
-                type = json("""{"type":"image"}"""),
+                type = "image",
                 file = file(),
                 location = "Lisboa",
                 description = "desc",
@@ -92,7 +92,7 @@ class EvidenceServiceTest {
 
         val result =
             evidenceService.createEvidence(
-                json("""{"type":"x"}"""),
+                "image",
                 file = file(),
                 "Lisboa",
                 "desc",
@@ -110,7 +110,7 @@ class EvidenceServiceTest {
 
         val result =
             evidenceService.createEvidence(
-                json("""{"type":"x"}"""),
+                "image",
                 file = file(),
                 "Lisboa",
                 "desc",
@@ -128,7 +128,7 @@ class EvidenceServiceTest {
 
         val created =
             evidenceService.createEvidence(
-                json("""{"type":"video"}"""),
+                "image",
                 file = file(),
                 "Porto",
                 "desc",
@@ -160,8 +160,8 @@ class EvidenceServiceTest {
     fun `findByOccurrenceId returns evidences`() {
         val (userId, occurrenceId) = setupUserAndOccurrence()
 
-        evidenceService.createEvidence(json("""{"type":"a"}"""), file = file(), "Lisboa", "d", userId, occurrenceId)
-        evidenceService.createEvidence(json("""{"type":"b"}"""), file = file(), "Porto", "d", userId, occurrenceId)
+        evidenceService.createEvidence("image", file = file(), "Lisboa", "d", userId, occurrenceId)
+        evidenceService.createEvidence("image", file = file(), "Porto", "d", userId, occurrenceId)
 
         val result = evidenceService.findByOccurrenceId(occurrenceId)
 
@@ -172,8 +172,8 @@ class EvidenceServiceTest {
     fun `findByReporterId returns evidences`() {
         val (userId, occurrenceId) = setupUserAndOccurrence()
 
-        evidenceService.createEvidence(json("""{"type":"a"}"""), file = file(), "Lisboa", "d", userId, occurrenceId)
-        evidenceService.createEvidence(json("""{"type":"b"}"""), file = file(), "Porto", "d", userId, occurrenceId)
+        evidenceService.createEvidence("image", file = file(), "Lisboa", "d", userId, occurrenceId)
+        evidenceService.createEvidence("image", file = file(), "Porto", "d", userId, occurrenceId)
 
         val result = evidenceService.findByReporterId(userId)
 
@@ -184,12 +184,13 @@ class EvidenceServiceTest {
     fun `findByType returns evidences`() {
         val (userId, occurrenceId) = setupUserAndOccurrence()
 
-        val type = json("""{"type":"image"}""")
+        val typeImage = "image"
+        val typeVideo = "video"
 
-        evidenceService.createEvidence(type, file = file(), "Lisboa", "d", userId, occurrenceId)
-        evidenceService.createEvidence(json("""{"type":"video"}"""), file = file(), "Porto", "d", userId, occurrenceId)
+        evidenceService.createEvidence(typeImage, file = file(), "Lisboa", "d", userId, occurrenceId)
+        evidenceService.createEvidence(typeVideo, file = file(), "Porto", "d", userId, occurrenceId)
 
-        val result = evidenceService.findByType(type)
+        val result = evidenceService.findByType(typeImage)
 
         assertEquals(1, result.size)
     }
@@ -198,8 +199,8 @@ class EvidenceServiceTest {
     fun `findByLocation returns evidences`() {
         val (userId, occurrenceId) = setupUserAndOccurrence()
 
-        evidenceService.createEvidence(json("""{"type":"a"}"""), file = file(), "Lisboa", "d", userId, occurrenceId)
-        evidenceService.createEvidence(json("""{"type":"b"}"""), file = file(), "Lisboa", "d", userId, occurrenceId)
+        evidenceService.createEvidence("a", file = file(), "Lisboa", "d", userId, occurrenceId)
+        evidenceService.createEvidence("b", file = file(), "Lisboa", "d", userId, occurrenceId)
 
         val result = evidenceService.findByLocation("Lisboa")
 
@@ -210,8 +211,8 @@ class EvidenceServiceTest {
     fun `findAll returns all evidences`() {
         val (userId, occurrenceId) = setupUserAndOccurrence()
 
-        evidenceService.createEvidence(json("""{"type":"a"}"""), file = file(), "Lisboa", "d", userId, occurrenceId)
-        evidenceService.createEvidence(json("""{"type":"b"}"""), file = file(), "Porto", "d", userId, occurrenceId)
+        evidenceService.createEvidence("a", file = file(), "Lisboa", "d", userId, occurrenceId)
+        evidenceService.createEvidence("b", file = file(), "Porto", "d", userId, occurrenceId)
 
         val result = evidenceService.findAll()
 
@@ -224,7 +225,7 @@ class EvidenceServiceTest {
 
         val created =
             evidenceService.createEvidence(
-                json("""{"type":"x"}"""),
+                "image",
                 file = file(),
                 "Lisboa",
                 "d",

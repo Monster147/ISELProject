@@ -68,7 +68,7 @@ class EvidenceService(
      * @return [Evidence] criada, ou um erro do tipo [EvidenceError].
      */
     fun createEvidence(
-        type: JsonNode,
+        type: String,
         file: MultipartFile,
         location: String,
         description: String,
@@ -183,7 +183,7 @@ class EvidenceService(
      *
      * @return Lista de [Evidence] correspondentes ao tipo indicado.
      */
-    fun findByType(type: JsonNode): List<Evidence> {
+    fun findByType(type: String): List<Evidence> {
         return trxManager.run {
             repoEvidence.findByType(type)
         }

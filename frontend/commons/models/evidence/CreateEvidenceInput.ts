@@ -1,7 +1,5 @@
-import {Json} from "../utils/Json";
-
 export interface CreateEvidenceInput{
-    type: Json;
+    type: string;
     location: string;
     description: string;
     reporterId: number;

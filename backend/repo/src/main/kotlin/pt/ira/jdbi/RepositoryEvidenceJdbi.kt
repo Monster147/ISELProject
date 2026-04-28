@@ -11,7 +11,7 @@ class RepositoryEvidenceJdbi(
     private val handle: Handle,
 ) : RepositoryEvidence {
     override fun createEvidence(
-        type: JsonNode,
+        type: String,
         filePath: String,
         location: String,
         description: String,
@@ -23,11 +23,11 @@ class RepositoryEvidenceJdbi(
             handle.createUpdate(
                 """
                 INSERT INTO dbo.evidence (type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at)
-                VALUES (:type::jsonb, :file_path, :location, :description, :reporter_id, :occurrence_id, :created_at, :updated_at)
+                VALUES (:type, :file_path, :location, :description, :reporter_id, :occurrence_id, :created_at, :updated_at)
                 RETURNING id
                 """.trimIndent(),
             )
-                .bind("type", type.toString())
+                .bind("type", type)
                 .bind("file_path", filePath)
                 .bind("location", location)
                 .bind("description", description)
@@ -76,15 +76,15 @@ class RepositoryEvidenceJdbi(
             .map { rs, _ -> mapRowToEvidence(rs) }
             .list()
 
-    override fun findByType(type: JsonNode): List<Evidence> =
+    override fun findByType(type: String): List<Evidence> =
         handle.createQuery(
             """
             SELECT id, type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at
             FROM dbo.evidence
-            WHERE type = :type::jsonb
+            WHERE type = :type
             """.trimIndent(),
         )
-            .bind("type", type.toString())
+            .bind("type", type)
             .map { rs, _ -> mapRowToEvidence(rs) }
             .list()
 
@@ -127,7 +127,7 @@ class RepositoryEvidenceJdbi(
         handle.createUpdate(
             """
             UPDATE dbo.evidence
-            SET type = :type::jsonb,
+            SET type = :type,
                 file_path = :file_path,
                 location = :location,
                 description = :description,
@@ -137,7 +137,7 @@ class RepositoryEvidenceJdbi(
             WHERE id = :id
             """.trimIndent(),
         )
-            .bind("type", entity.type.toString())
+            .bind("type", entity.type)
             .bind("file_path", entity.filePath)
             .bind("location", entity.location)
             .bind("description", entity.description)
@@ -158,8 +158,6 @@ class RepositoryEvidenceJdbi(
         handle.createUpdate("DELETE FROM dbo.evidence").execute()
     }
 
-    private val objectMapper = ObjectMapper()
-
     private fun mapRowToEvidence(rs: ResultSet): Evidence {
         val id = rs.getInt("id")
         val type = rs.getString("type")
@@ -171,11 +169,9 @@ class RepositoryEvidenceJdbi(
         val createdAt = rs.getLong("created_at")
         val updatedAt = rs.getLong("updated_at")
 
-        val typeJson = objectMapper.readTree(type)
-
         return Evidence(
             id = id,
-            type = typeJson,
+            type = type,
             filePath = filepath,
             location = location,
             description = description,

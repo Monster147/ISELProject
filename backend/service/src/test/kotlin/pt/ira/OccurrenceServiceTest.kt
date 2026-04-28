@@ -32,6 +32,7 @@ class OccurrenceServiceTest {
             repoUsers.clear()
             repoIntervenor.clear()
             repoOccurrence.clear()
+            repoType.clear()
         }
     }
 
@@ -47,16 +48,22 @@ class OccurrenceServiceTest {
         )
     }
 
+    private fun createType(): Int =
+        trxManager.run {
+            repoType.createType("type", json("""{"field": "value"}""")).id
+        }
+
     @Test
     fun `createOccurrence creates occurrence successfully`() {
         val user = createUser("u", "u@mail")
+        val typeId = createType()
 
         val occurrence =
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(5),
                 importance = OccurrenceType.CRITICAL,
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -70,13 +77,14 @@ class OccurrenceServiceTest {
     @Test
     fun `createOccurrence fails when endDate is in the past`() {
         val user = createUser("u", "u@mail")
+        val typeId = createType()
 
         val result =
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().minusDays(1),
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             )
 
@@ -86,11 +94,13 @@ class OccurrenceServiceTest {
 
     @Test
     fun `createOccurrence fails when user does not exist`() {
+        val typeId = createType()
+
         val result =
             occurrenceService.createOccurrence(
                 usersId = 999,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             )
 
@@ -101,12 +111,13 @@ class OccurrenceServiceTest {
     @Test
     fun `findById returns occurrence`() {
         val user = createUser("u", "u@mail")
+        val typeId = createType()
 
         val created =
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -133,12 +144,13 @@ class OccurrenceServiceTest {
     @Test
     fun `findByImportance returns occurrences`() {
         val user = createUser("u", "u@mail")
+        val typeId = createType()
 
         occurrenceService.createOccurrence(
             usersId = user.id,
             endDate = LocalDate.now().plusDays(3),
             importance = OccurrenceType.URGENT,
-            occurrenceType = 1,
+            occurrenceType = typeId,
             occurrenceInfo = json("""{}"""),
         )
 
@@ -151,11 +163,12 @@ class OccurrenceServiceTest {
     @Test
     fun `findOccurrenceByReporterId returns occurrences`() {
         val user = createUser("u", "u@mail")
+        val typeId = createType()
 
         occurrenceService.createOccurrence(
             usersId = user.id,
             endDate = LocalDate.now().plusDays(3),
-            occurrenceType = 1,
+            occurrenceType = typeId,
             occurrenceInfo = json("""{}"""),
         )
 
@@ -184,11 +197,13 @@ class OccurrenceServiceTest {
                 repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
             }
 
+        val typeId = createType()
+
         val occurrence =
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -215,11 +230,13 @@ class OccurrenceServiceTest {
                 repoIntervenor.createIntervenor("123", "CC", "name", "contact", "addr")
             }
 
+        val typeId = createType()
+
         val occurrence =
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -243,11 +260,13 @@ class OccurrenceServiceTest {
                 repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
             }
 
+        val typeId = createType()
+
         val occurrence =
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -272,11 +291,13 @@ class OccurrenceServiceTest {
                 repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
             }
 
+        val typeId = createType()
+
         val occurrence =
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -310,11 +331,13 @@ class OccurrenceServiceTest {
                 repoUsers.createUser("u", "u@mail", PasswordValidationInfo("x"), listOf(1))
             }
 
+        val typeId = createType()
+
         val occurrence =
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -331,18 +354,19 @@ class OccurrenceServiceTest {
     fun `findAll returns all occurrences`() {
         val user1 = createUser("u1", "u1@mail")
         val user2 = createUser("u2", "u2@mail")
+        val typeId = createType()
 
         occurrenceService.createOccurrence(
             usersId = user1.id,
             endDate = LocalDate.now().plusDays(3),
-            occurrenceType = 1,
+            occurrenceType = typeId,
             occurrenceInfo = json("""{}"""),
         )
 
         occurrenceService.createOccurrence(
             usersId = user2.id,
             endDate = LocalDate.now().plusDays(4),
-            occurrenceType = 1,
+            occurrenceType = typeId,
             occurrenceInfo = json("""{}"""),
         )
 
@@ -369,13 +393,14 @@ class OccurrenceServiceTest {
     @Test
     fun `deleteById removes occurrence`() {
         val user = createUser("u", "u@mail")
+        val typeId = createType()
 
         val created =
             occurrenceService.createOccurrence(
                 usersId = user.id,
                 endDate = LocalDate.now().plusDays(3),
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             ).let {
                 check(it is Success)
@@ -399,4 +424,6 @@ class OccurrenceServiceTest {
         assertIs<Either.Left<*>>(result)
         assertIs<OccurrenceError.OccurrenceNotFound>(result.value)
     }
+
+
 }

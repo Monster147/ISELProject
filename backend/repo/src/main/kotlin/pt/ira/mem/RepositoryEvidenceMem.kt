@@ -8,7 +8,7 @@ class RepositoryEvidenceMem : RepositoryEvidence {
     private val evidences = mutableListOf<Evidence>()
 
     override fun createEvidence(
-        type: JsonNode,
+        type: String,
         filePath: String,
         location: String,
         description: String,
@@ -29,7 +29,7 @@ class RepositoryEvidenceMem : RepositoryEvidence {
 
     override fun findByReporterId(reporterId: Int): List<Evidence> = evidences.filter { it.reporterId == reporterId }
 
-    override fun findByType(type: JsonNode): List<Evidence> = evidences.filter { it.type == type }
+    override fun findByType(type: String): List<Evidence> = evidences.filter { it.type == type }
 
     override fun findByLocation(location: String): List<Evidence> = evidences.filter { it.location == location }
 

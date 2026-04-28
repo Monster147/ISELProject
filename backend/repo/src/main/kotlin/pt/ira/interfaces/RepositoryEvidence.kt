@@ -10,7 +10,7 @@ interface RepositoryEvidence : Repository<Evidence> {
     /**
      * Cria uma evidência com os dados fornecidos.
      *
-     * @param type Tipo da evidência em formato JSON.
+     * @param type Tipo da evidência.
      * @param filePath Caminho para o ficheiro associado à evidência.
      * @param location Local onde a evidência foi recolhida ou observada.
      * @param description Descrição textual da evidência.
@@ -20,7 +20,7 @@ interface RepositoryEvidence : Repository<Evidence> {
      * @return A [Evidence] criada.
      */
     fun createEvidence(
-        type: JsonNode,
+        type: String,
         filePath: String,
         location: String,
         description: String,
@@ -49,11 +49,11 @@ interface RepositoryEvidence : Repository<Evidence> {
     /**
      * Obtém todas as evidências de um determinado tipo.
      *
-     * @param type Tipo da evidência em formato JSON.
+     * @param type Tipo da evidência.
      *
      * @return Lista de [Evidence] que correspondem ao tipo indicado.
      */
-    fun findByType(type: JsonNode): List<Evidence>
+    fun findByType(type: String): List<Evidence>
 
     /**
      * Obtém todas as evidências associadas a uma determinada localização.

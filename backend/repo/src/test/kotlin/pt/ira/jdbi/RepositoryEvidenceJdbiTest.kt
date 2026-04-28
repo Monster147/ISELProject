@@ -58,7 +58,7 @@ class RepositoryEvidenceJdbiTest {
 
             val evidence =
                 repoEvidence.createEvidence(
-                    type = json("""{"type":"image"}"""),
+                    type = "image",
                     filePath = "path/file.png",
                     location = "Lisbon",
                     description = "desc",
@@ -99,8 +99,8 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, occurrence1.id)
-            val e2 = repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, occurrence2.id)
+            val e1 = repoEvidence.createEvidence("image", "f1", "L1", "d1", u1.id, occurrence1.id)
+            val e2 = repoEvidence.createEvidence("image", "f2", "L2", "d2", u2.id, occurrence2.id)
 
             val all = repoEvidence.findAll()
             assertEquals(listOf(e1, e2), all)
@@ -134,8 +134,8 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, occurrence1.id)
-            repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, occurrence2.id)
+            val e1 = repoEvidence.createEvidence("image", "f1", "L1", "d1", u1.id, occurrence1.id)
+            repoEvidence.createEvidence("image", "f2", "L2", "d2", u2.id, occurrence2.id)
 
             val result = repoEvidence.findByOccurrenceId(occurrence1.id)
             assertEquals(listOf(e1), result)
@@ -161,8 +161,8 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, occurrence1.id)
-            repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, occurrence1.id)
+            val e1 = repoEvidence.createEvidence("image", "f1", "L1", "d1", u1.id, occurrence1.id)
+            repoEvidence.createEvidence("image", "f2", "L2", "d2", u2.id, occurrence1.id)
 
             val result = repoEvidence.findByReporterId(u1.id)
             assertEquals(listOf(e1), result)
@@ -187,8 +187,8 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val typeA = json("""{"type":"A"}""")
-            val typeB = json("""{"type":"B"}""")
+            val typeA = "A"
+            val typeB = "B"
 
             val e1 = repoEvidence.createEvidence(typeA, "f1", "L1", "d1", user.id, occurrence.id)
             repoEvidence.createEvidence(typeB, "f2", "L2", "d2", user.id, occurrence.id)
@@ -216,8 +216,8 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val e1 = repoEvidence.createEvidence(json("""{}"""), "f1", "Lisbon", "d1", user.id, occurrence.id)
-            repoEvidence.createEvidence(json("""{}"""), "f2", "Porto", "d2", user.id, occurrence.id)
+            val e1 = repoEvidence.createEvidence("image", "f1", "Lisbon", "d1", user.id, occurrence.id)
+            repoEvidence.createEvidence("image", "f2", "Porto", "d2", user.id, occurrence.id)
 
             val result = repoEvidence.findByLocation("Lisbon")
             assertEquals(listOf(e1), result)
@@ -242,7 +242,7 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val e = repoEvidence.createEvidence(json("""{}"""), "f", "L", "d", user.id, occurrence.id)
+            val e = repoEvidence.createEvidence("image", "f", "L", "d", user.id, occurrence.id)
             repoEvidence.deleteById(e.id)
             assertNull(repoEvidence.findById(e.id))
         }
@@ -266,7 +266,7 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val e = repoEvidence.createEvidence(json("""{}"""), "f", "L", "d", user.id, occurrence.id)
+            val e = repoEvidence.createEvidence("image", "f", "L", "d", user.id, occurrence.id)
             val updated = e.copy(description = "updated")
             repoEvidence.save(updated)
             assertEquals("updated", repoEvidence.findById(e.id)?.description)
@@ -300,8 +300,8 @@ class RepositoryEvidenceJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            repoEvidence.createEvidence(json("""{}"""), "f1", "L1", "d1", u1.id, occurrence1.id)
-            repoEvidence.createEvidence(json("""{}"""), "f2", "L2", "d2", u2.id, occurrence2.id)
+            repoEvidence.createEvidence("image", "f1", "L1", "d1", u1.id, occurrence1.id)
+            repoEvidence.createEvidence("image", "f2", "L2", "d2", u2.id, occurrence2.id)
 
             repoEvidence.clear()
             assertTrue(repoEvidence.findAll().isEmpty())

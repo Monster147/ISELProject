@@ -32,24 +32,32 @@ class OccurrenceControllerTest {
 
     private fun json(v: String) = mapper.readTree(v)
 
+    private fun createType(): Int =
+        trxManager.run {
+            repoType.createType("type", json("""{"field": "value"}""")).id
+        }
+
     @BeforeEach
     fun cleanup() {
         trxManager.run {
             repoOccurrence.clear()
             repoUsers.clear()
+            repoIntervenor.clear()
+            repoType.clear()
         }
     }
 
     @Test
     fun `create occurrence success`() {
         val userId = createUser()
+        val typeId = createType()
 
         val input =
             OccurrenceCreateInput(
                 usersId = userId,
                 endDate = LocalDate.of(2030, 3, 30),
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             )
 
@@ -61,12 +69,14 @@ class OccurrenceControllerTest {
 
     @Test
     fun `create occurrence user not found returns 404`() {
+        val typeId = createType()
+
         val input =
             OccurrenceCreateInput(
                 usersId = 999,
                 endDate = LocalDate.of(2030, 3, 30),
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             )
 
@@ -78,13 +88,14 @@ class OccurrenceControllerTest {
     @Test
     fun `create occurrence past date returns bad request`() {
         val userId = createUser()
+        val typeId = createType()
 
         val input =
             OccurrenceCreateInput(
                 usersId = userId,
                 endDate = LocalDate.now().minusDays(1),
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             )
 
@@ -173,13 +184,14 @@ class OccurrenceControllerTest {
     @Test
     fun `find by importance`() {
         val userId = createUser()
+        val typeId = createType()
 
         trxManager.run {
             repoOccurrence.createOccurrence(
                 endDate = LocalDate.of(2030, 3, 30),
                 reporterId = userId,
                 importance = OccurrenceType.CRITICAL,
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             )
         }
@@ -194,13 +206,14 @@ class OccurrenceControllerTest {
     @Test
     fun `find by reporter id`() {
         val userId = createUser()
+        val typeId = createType()
 
         trxManager.run {
             repoOccurrence.createOccurrence(
                 endDate = LocalDate.of(2030, 3, 30),
                 reporterId = userId,
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = 1,
+                occurrenceType = typeId,
                 occurrenceInfo = json("""{}"""),
             )
         }
@@ -246,7 +259,7 @@ class OccurrenceControllerTest {
                 usersId = userId,
                 endDate = LocalDate.of(2030, 3, 30),
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = 1,
+                occurrenceType = createType(),
                 occurrenceInfo = json("""{}"""),
             ),
         ).let { resp ->

@@ -208,7 +208,7 @@ class EvidenceController(
      */
     @GetMapping("/byType")
     fun findByType(
-        @RequestBody type: JsonNode,
+        @RequestBody type: String,
     ): ResponseEntity<*> {
         val result = evidenceService.findByType(type)
         return ResponseEntity

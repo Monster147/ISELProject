@@ -10,8 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode
  * (ocorrência e utilizador que reportou)
  *
  * @property id Identificador único da evidência.
- * @property type Tipo da evidência representado em formato JSON (armazenado como JSONB na base de dados).
- *                Permite flexibilidade na estrutura dependendo do tipo de evidência.
+ * @property type Tipo da evidência.
  * @property filePath Caminho para o ficheiro associado à evidência no sistema de armazenamento.
  * @property location Local onde a evidência foi recolhida ou observada.
  * @property description Descrição textual detalhada da evidência.
@@ -25,8 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode
  */
 data class Evidence(
     val id: Int,
-    // JSONB
-    val type: JsonNode,
+    val type: String,
     val filePath: String,
     val location: String,
     val description: String,

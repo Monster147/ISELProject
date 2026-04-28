@@ -165,7 +165,7 @@ class EvidenceControllerTest {
 
         val occurrenceId = createOccurrenceForUser(userId)
 
-        val type = mapper.readTree("""{"t":"A"}""")
+        val type = "A"
 
         createEvidence(userId, occurrenceId, type = type)
 
@@ -199,7 +199,7 @@ class EvidenceControllerTest {
         userId: Int,
         occurrenceId: Int,
         location: String = "loc",
-        type: JsonNode = mapper.readTree("""{"t":"x"}"""),
+        type: String = "x",
     ): Int {
         val file = createFile()
         return controller.createEvidence(
@@ -215,7 +215,7 @@ class EvidenceControllerTest {
         userId: Int,
         occurrenceId: Int,
         location: String = "loc",
-        type: JsonNode = mapper.readTree("""{"t":"x"}"""),
+        type: String = "x",
     ) = CreateEvidenceInput(
         type = type,
         location = location,

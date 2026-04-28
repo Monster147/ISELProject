@@ -83,7 +83,7 @@ CREATE TABLE dbo.report_users(
 CREATE TABLE dbo.evidence
 (
     id                      SERIAL             PRIMARY KEY,
-    type                    JSONB              NOT NULL,
+    type                    VARCHAR(255)       NOT NULL,
     file_path               VARCHAR(255)       NOT NULL,
     location                VARCHAR(255)       NOT NULL,
     description             TEXT               NOT NULL,
