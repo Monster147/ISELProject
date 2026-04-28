@@ -17,6 +17,7 @@ import "../../i18next/i18next";
 import "./utils/ConfigureApiDesktop"
 import Loadingscreen from "./components/loadingscreen";
 import Documents from "./components/(dashboard)/documents";
+import OccurrenceEvidences from "./components/(dashboard)/occurrences/evidences/[id]";
 
 export const router = createBrowserRouter([
     {
@@ -42,7 +43,8 @@ export const router = createBrowserRouter([
                     {path: "/occurrence/intervenors/:occurrenceId", element: <OccurrenceIntervenors/>},
                     {path: "/intervenor/create", element: <IntervenorCreate/>},
                     {path: "/intervenor/update/:intervenorId", element: <IntervenorUpdate/>},
-                    {path: "/intervenor/:selectMode/:occurrenceId", element: <IntervenorSearch/>}
+                    {path: "/intervenor/:selectMode/:occurrenceId", element: <IntervenorSearch/>},
+                    {path: "/occurrence/evidences/:occurrenceId", element: <OccurrenceEvidences/>}
                 ]
             },
         ],

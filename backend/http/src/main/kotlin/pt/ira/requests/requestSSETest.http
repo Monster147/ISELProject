@@ -1,4 +1,4 @@
-@token_user = cn5UNK422zgIuhFSTSIqtdBAXIPvgWmMwg8W55fGueQ=
+@token_user = uiFCpkPxbUiEoXcRMTu1Kq0H02pDdEb6YDDLA_nWdAA=
 
 ### Create Admin User
 POST http://localhost:8080/api/user
@@ -36,7 +36,7 @@ Content-Type: application/json
 Authorization: Bearer {{token_user}}
 
 {
-  "usersId": 2,
+  "usersId": 1,
   "endDate": "2030-12-31",
   "importance": "NORMAL",
   "occurrenceType": 1 ,

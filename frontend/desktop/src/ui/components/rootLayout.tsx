@@ -13,6 +13,7 @@ import {useConfirmAction} from "../utils/confirmAction";
 import {useTranslation} from "react-i18next";
 import {DocumentProvider} from "../contexts/DocumentContext";
 import {TypeProvider} from "../contexts/TypeContext";
+import {EvidenceProvider} from "../contexts/EvidenceContext";
 
 const RootLayoutContent = () => {
     const colorScheme = useColorScheme()
@@ -63,7 +64,9 @@ const RootLayout = () => {
                 <IntervenorProvider>
                     <DocumentProvider>
                         <TypeProvider>
-                            <RootLayoutContent/>
+                            <EvidenceProvider>
+                                <RootLayoutContent/>
+                            </EvidenceProvider>
                         </TypeProvider>
                     </DocumentProvider>
                 </IntervenorProvider>

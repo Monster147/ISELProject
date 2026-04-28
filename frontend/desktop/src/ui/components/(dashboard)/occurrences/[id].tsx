@@ -36,7 +36,7 @@ const OccurrenceDetails = () => {
     }
 
     const handleEvidences = async () => {
-        console.log("Navegar Evidencias")
+        navigate(`/occurrence/evidences/${occurrenceId}`)
     };
 
     const handleIntervenors = async () => {
@@ -57,8 +57,7 @@ const OccurrenceDetails = () => {
 
                     <ThemedText>{t("occurrenceDetails.importance")}: {t(`importance.${actualOccurrence.importance}`)}</ThemedText>
 
-                    <ThemedText>{t("occurrenceDetails.occurrenceType")}:</ThemedText>
-                    <ThemedText>{JSON.stringify(currentJsonType, null, 2)}</ThemedText>
+                    <ThemedText>{t("occurrenceDetails.occurrenceType")}: {currentJsonType?.name}</ThemedText>
 
                     <ThemedText>{t("occurrenceDetails.occurrenceInfo")}:</ThemedText>
                     <ThemedText>{JSON.stringify(actualOccurrence.occurrenceInfo, null, 2)}</ThemedText>
