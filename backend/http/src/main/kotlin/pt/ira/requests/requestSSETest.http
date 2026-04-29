@@ -1,4 +1,4 @@
-@token_user = uiFCpkPxbUiEoXcRMTu1Kq0H02pDdEb6YDDLA_nWdAA=
+@token_user = sVXN_a-pZaQFL0orN_JirCDI5yfVZNLRafWulyNKZ88=
 
 ### Create Admin User
 POST http://localhost:8080/api/user
@@ -38,7 +38,7 @@ Authorization: Bearer {{token_user}}
 {
   "usersId": 1,
   "endDate": "2030-12-31",
-  "importance": "NORMAL",
+  "importance": "URGENT",
   "occurrenceType": 1 ,
   "occurrenceInfo": { "location": "Lisbon", "people": [1,2,3] }
 }
@@ -223,5 +223,5 @@ Content-Type: application/json
 DELETE http://localhost:8080/api/report/1
 Authorization: Bearer {{token_user}}
 
-
-
+### Get overview Stats
+GET http://localhost:8080/api/stats

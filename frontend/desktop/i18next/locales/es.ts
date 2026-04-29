@@ -33,7 +33,8 @@ const es = {
             occurrence: "Ocurrencia",
             profile: "Perfil",
             intervenor: "Interviniente",
-            documents: "Documentos"
+            documents: "Documentos",
+            dashboard: "Panel"
         },
         profile: {
             profile: "Perfil",
@@ -159,7 +160,24 @@ const es = {
         documents:{
             documents: "Documentos",
             noDocument: "No hay documentos"
-        }
+        },
+        stats: {
+            totalUsers: "Usuarios totales",
+            totalOccurrences: "Ocurrencias totales",
+            totalReports: "Informes totales",
+            totalEvidences: "Evidencias totales",
+            global: "Estadísticas globales",
+            reportsByType: "Informes por tipo",
+            reportsByStatus: "Informes por estado",
+            occurrencesByImportance: "Ocurrencias por importancia",
+            thisMonth: "Estadísticas de este mes",
+        },
+        reportStatus: {
+            EDITING: "En edición",
+            SUBMITTED: "Enviado",
+            APPROVED: "Aprobado",
+            REJECTED: "Rechazado",
+        },
     },
 };
 

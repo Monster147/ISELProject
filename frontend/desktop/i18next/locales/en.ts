@@ -33,7 +33,8 @@ const en = {
             occurrence:"Occurrence",
             profile:"Profile",
             intervenor:"Intervenor",
-            documents: "Documents"
+            documents: "Documents",
+            dashboard: "Dashboard"
         },
         profile:{
             profile:"Profile",
@@ -159,6 +160,23 @@ const en = {
         documents:{
             documents: "Documents",
             noDocument: "No documents"
+        },
+        stats:{
+            totalUsers: "Total Users",
+            totalOccurrences: "Total Occurrences",
+            totalReports: "Total Reports",
+            totalEvidences: "Total Evidences",
+            global: "Global Stats",
+            reportsByType: "Reports by Type",
+            reportsByStatus: "Reports by Status",
+            occurrencesByImportance: "Occurrences by Importance",
+            thisMonth: "This Month Stats",
+        },
+        reportStatus:{
+            EDITING: "Editing",
+            SUBMITTED: "Submitted",
+            APPROVED: "Approved",
+            REJECTED: "Rejected",
         }
     }
 }

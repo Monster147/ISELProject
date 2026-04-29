@@ -10,6 +10,7 @@ import "../utils/ConfigureApiMobile"
 import {DocumentProvider} from "../contexts/DocumentContext";
 import {TypeProvider} from "../contexts/TypeContext";
 import {EvidenceProvider} from "../contexts/EvidenceContext";
+import {StatsProvider} from "../contexts/StatsContext";
 
 const RootLayout = () => {
     const colorScheme = useColorScheme()
@@ -22,21 +23,23 @@ const RootLayout = () => {
                     <DocumentProvider>
                         <TypeProvider>
                             <EvidenceProvider>
-                                <ThemedView style={{flex: 1}}>
-                                    <Stack screenOptions={{
-                                        headerStyle: {backgroundColor: theme.navBackground},
-                                        headerTintColor: theme.title,
-                                        contentStyle: {backgroundColor: theme.background},
-                                        animation: "none",
-                                    }}>
-                                        <Stack.Screen name="loadingscreen" options={{headerShown: false}}/>
-                                        <Stack.Screen name="about" options={{headerShown: false}}/>
-                                        <Stack.Screen name="contact" options={{headerShown: false}}/>
-                                        <Stack.Screen name="(auth)" options={{headerShown: false}}/>
-                                        <Stack.Screen name="(dashboard)" options={{headerShown: false}}/>
-                                        <Stack.Screen name="home" options={{headerShown: false}}/>
-                                    </Stack>
-                                </ThemedView>
+                                <StatsProvider>
+                                    <ThemedView style={{flex: 1}}>
+                                        <Stack screenOptions={{
+                                            headerStyle: {backgroundColor: theme.navBackground},
+                                            headerTintColor: theme.title,
+                                            contentStyle: {backgroundColor: theme.background},
+                                            animation: "none",
+                                        }}>
+                                            <Stack.Screen name="loadingscreen" options={{headerShown: false}}/>
+                                            <Stack.Screen name="about" options={{headerShown: false}}/>
+                                            <Stack.Screen name="contact" options={{headerShown: false}}/>
+                                            <Stack.Screen name="(auth)" options={{headerShown: false}}/>
+                                            <Stack.Screen name="(dashboard)" options={{headerShown: false}}/>
+                                            <Stack.Screen name="home" options={{headerShown: false}}/>
+                                        </Stack>
+                                    </ThemedView>
+                                </StatsProvider>
                             </EvidenceProvider>
                         </TypeProvider>
                     </DocumentProvider>

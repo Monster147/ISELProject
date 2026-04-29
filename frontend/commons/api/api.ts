@@ -23,6 +23,10 @@ import {Documents} from "../models/documents/Documents";
 import {TypeCreateInput} from "../models/type/TypeCreateInput";
 import {Type} from "../models/type/Type";
 import {TypeUpdateInput} from "../models/type/TypeUpdateInput";
+import {OverviewStats} from "../models/stats/OverviewStats";
+import {StatsReportType} from "../models/stats/StatsReportType";
+import {StatsReportStatus} from "../models/stats/StatsReportStatus";
+import {StatsOccurrenceImportance} from "../models/stats/StatsOccurrenceImportance";
 
 type ApiAuthInfo = { token: string } | null;
 
@@ -514,6 +518,50 @@ export const api = {
     async deleteTypeById(id:number):Promise<void>{
         return fetchApi<void>(`/type/${id}`, {
             method: "DELETE"
+        })
+    },
+
+    // Stats
+
+    async getOverviewStats():Promise<OverviewStats>{
+        return fetchApi<OverviewStats>(`/stats`, {
+            method: "GET"
+        })
+    },
+
+    async getStatsReportByType():Promise<StatsReportType[]>{
+        return fetchApi<StatsReportType[]>(`/stats/report/type`, {
+            method: "GET"
+        })
+    },
+
+    async getStatsReportByStatus():Promise<StatsReportStatus[]>{
+        return fetchApi<StatsReportStatus[]>(`/stats/report/status`, {
+            method: "GET"
+        })
+    },
+
+    async getStatsOccurrenceByImportance():Promise<StatsOccurrenceImportance[]>{
+        return fetchApi<StatsOccurrenceImportance[]>(`/stats/occurrence/importance`, {
+            method: "GET"
+        })
+    },
+
+    async getStatsReportByTypeThisMonth():Promise<StatsReportType[]>{
+        return fetchApi<StatsReportType[]>(`/stats/report/type/month`, {
+            method: "GET"
+        })
+    },
+
+    async getStatsReportByStatusThisMonth():Promise<StatsReportStatus[]>{
+        return fetchApi<StatsReportStatus[]>(`/stats/report/status/month`, {
+            method: "GET"
+        })
+    },
+
+    async getStatsOccurrenceByImportanceThisMonth():Promise<StatsOccurrenceImportance[]>{
+        return fetchApi<StatsOccurrenceImportance[]>(`/stats/occurrence/importance/month`, {
+            method: "GET"
         })
     }
 

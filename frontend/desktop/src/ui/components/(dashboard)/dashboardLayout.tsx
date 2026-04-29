@@ -11,7 +11,7 @@ import {
     MdPersonOutline,
     MdPerson,
     MdDescription,
-    MdOutlineDescription
+    MdOutlineDescription, MdInsights, MdOutlineInsights
 } from "react-icons/md";
 import RootLayout from "../rootLayout";
 import ThemedView from "../../../../components/ThemedView";
@@ -34,6 +34,15 @@ const DashboardLayout = () => {
                         label={t("dashboard.intervenor")}
                         activeIcon={<MdGroups size={24} color={theme.iconColorFocused} />}
                         inactiveIcon={<MdGroups2 size={24} color={theme.iconColor} />}
+                        textColorActive={theme.iconColorFocused}
+                        textColorInactive={theme.iconColor}
+                    />
+
+                    <TabItem
+                        to="/dashboard"
+                        label={t("dashboard.dashboard")}
+                        activeIcon={<MdInsights size={24} color={theme.iconColorFocused} />}
+                        inactiveIcon={<MdOutlineInsights size={24} color={theme.iconColor} />}
                         textColorActive={theme.iconColorFocused}
                         textColorInactive={theme.iconColor}
                     />

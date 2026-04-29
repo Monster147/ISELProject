@@ -18,6 +18,7 @@ import "./utils/ConfigureApiDesktop"
 import Loadingscreen from "./components/loadingscreen";
 import Documents from "./components/(dashboard)/documents";
 import OccurrenceEvidences from "./components/(dashboard)/occurrences/evidences/[id]";
+import Dashboard from "./components/(dashboard)/dashboard";
 
 export const router = createBrowserRouter([
     {
@@ -44,7 +45,8 @@ export const router = createBrowserRouter([
                     {path: "/intervenor/create", element: <IntervenorCreate/>},
                     {path: "/intervenor/update/:intervenorId", element: <IntervenorUpdate/>},
                     {path: "/intervenor/:selectMode/:occurrenceId", element: <IntervenorSearch/>},
-                    {path: "/occurrence/evidences/:occurrenceId", element: <OccurrenceEvidences/>}
+                    {path: "/occurrence/evidences/:occurrenceId", element: <OccurrenceEvidences/>},
+                    {path: "/dashboard", element: <Dashboard/> }
                 ]
             },
         ],

@@ -14,6 +14,7 @@ import {useTranslation} from "react-i18next";
 import {DocumentProvider} from "../contexts/DocumentContext";
 import {TypeProvider} from "../contexts/TypeContext";
 import {EvidenceProvider} from "../contexts/EvidenceContext";
+import {StatsProvider} from "../contexts/StatsContext";
 
 const RootLayoutContent = () => {
     const colorScheme = useColorScheme()
@@ -65,7 +66,9 @@ const RootLayout = () => {
                     <DocumentProvider>
                         <TypeProvider>
                             <EvidenceProvider>
-                                <RootLayoutContent/>
+                                <StatsProvider>
+                                    <RootLayoutContent/>
+                                </StatsProvider>
                             </EvidenceProvider>
                         </TypeProvider>
                     </DocumentProvider>

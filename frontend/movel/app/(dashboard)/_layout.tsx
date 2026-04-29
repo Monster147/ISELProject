@@ -45,6 +45,19 @@ const DashboardLayout = () => {
                     }}
                 />
                 <Tabs.Screen
+                    name="dashboard"
+                    options={{
+                        title: t("dashboard.dashboard"),
+                        tabBarIcon: ({ focused }) => (
+                            <MaterialCommunityIcons
+                                size={24}
+                                name={focused ? "chart-box" : "chart-box-outline"}
+                                color={focused ? theme.iconColorFocused : theme.iconColor}
+                            />
+                        ),
+                    }}
+                />
+                <Tabs.Screen
                     name="occurrence"
                     options={{
                         title: t("dashboard.occurrence"),
