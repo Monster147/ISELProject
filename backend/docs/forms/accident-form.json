@@ -1,0 +1,1417 @@
+{
+  "name": "Accident",
+  "form": {
+    "type": "automobile_accident",
+    "sections": [
+      {
+        "title": "SELEÇÃO DO SEGURADO",
+        "fields": [
+          {
+            "name": "selectedIntervenient",
+            "label": "Selecione o Interveniente",
+            "type": "select",
+            "required": true,
+            "dynamicOptions": {
+              "source": "occurrenceIntervenients",
+              "labelField": "name",
+              "valueField": "id",
+              "autofill": {
+                "name": "name",
+                "nif": "idNumber",
+                "contact": "contactInfo",
+                "address": "address"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "title": "INFORMAÇÕES DO SEGURADO",
+        "fields": [
+          {
+            "name": "name",
+            "label": "Nome",
+            "type": "string",
+            "required": true,
+            "readOnly": true
+          },
+          {
+            "name": "nif",
+            "label": "NIF",
+            "type": "string",
+            "required": true,
+            "readOnly": true
+          },
+          {
+            "name": "address",
+            "label": "Morada",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "contact",
+            "label": "Contacto",
+            "type": "string",
+            "required": true,
+            "readOnly": true
+          },
+          {
+            "name": "profession",
+            "label": "Profissão / Atividade",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "workplace",
+            "label": "Local de trabalho / Sede",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "INFORMAÇÕES DO VEÍCULO SEGURADO",
+        "fields": [
+          {
+            "name": "vehicleRegistration",
+            "label": "Matrícula",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "vehicleMakeModel",
+            "label": "Marca / Modelo",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "vehicleColor",
+            "label": "Cor",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "vehicleYear",
+            "label": "Ano do Veículo",
+            "type": "number",
+            "required": true
+          },
+          {
+            "name": "vehiclePower",
+            "label": "Potência do Veículo",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "ownerName",
+            "label": "Proprietário / Nome",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "title": "INFORMAÇÕES DO CONDUTOR",
+        "fields": [
+          {
+            "name": "driverName",
+            "label": "Nome",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "driverNIF",
+            "label": "NIF",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "driverAddress",
+            "label": "Morada",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "driverContact",
+            "label": "Contacto",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "driverEmail",
+            "label": "Email",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "driverProfession",
+            "label": "Profissão",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "driverWorkplace",
+            "label": "Local de trabalho",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "INFORMAÇÕES DA LICENÇA DE CONDUÇÃO",
+        "fields": [
+          {
+            "name": "drivingLicense",
+            "label": "Lic. Condução",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "licenseCategories",
+            "label": "Categorias",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "tasLevel",
+            "label": "TAS (g/l)",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "isHabitualDriver",
+            "label": "É o condutor habitual do veículo?",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "commissaryCondition",
+            "label": "Condição de Comissário",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "INFORMAÇÕES ADICIONAIS",
+        "fields": [
+          {
+            "name": "usualCirculationCouncil",
+            "label": "Concelho de circulação habitual",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "driverOwnerRelationship",
+            "label": "Relação Condutor / Proprietário",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "intervenientRelationship",
+            "label": "Relação entre intervenientes",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "otherMaterialDamages",
+            "label": "Outros Danos Materiais",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "NÚMERO DE TERCEIROS",
+        "fields": [
+          {
+            "name": "numberOfThirdParties",
+            "label": "Quantos terceiros estão envolvidos?",
+            "type": "number",
+            "required": true,
+            "min": 0,
+            "max": 10
+          }
+        ]
+      },
+      {
+        "title": "SELEÇÃO DO TERCEIRO {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "thirdPartySelected_{index}",
+            "label": "Selecione o Interveniente",
+            "type": "select",
+            "required": true,
+            "dynamicOptions": {
+              "source": "occurrenceIntervenients",
+              "labelField": "name",
+              "valueField": "id",
+              "autofill": {
+                "thirdPartyName_{index}": "name",
+                "thirdPartyNIF_{index}": "idNumber",
+                "thirdPartyContact_{index}": "contactInfo",
+                "thirdPartyAddress_{index}": "address"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "title": "INFORMAÇÕES DO TERCEIRO {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "thirdPartyName_{index}",
+            "label": "Nome",
+            "type": "string",
+            "required": true,
+            "readOnly": true
+          },
+          {
+            "name": "thirdPartyNIF_{index}",
+            "label": "NIF",
+            "type": "string",
+            "required": true,
+            "readOnly": true
+          },
+          {
+            "name": "thirdPartyAddress_{index}",
+            "label": "Morada",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "thirdPartyContact_{index}",
+            "label": "Contacto",
+            "type": "string",
+            "required": true,
+            "readOnly": true
+          },
+          {
+            "name": "thirdPartyProfession_{index}",
+            "label": "Profissão / Atividade",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "thirdPartyWorkplace_{index}",
+            "label": "Local de trabalho / Sede",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "INFORMAÇÕES DO VEÍCULO TERCEIRO {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "thirdPartyVehicleRegistration_{index}",
+            "label": "Matrícula",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "thirdPartyVehicleMakeModel_{index}",
+            "label": "Marca / Modelo",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "thirdPartyVehicleColor_{index}",
+            "label": "Cor",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "thirdPartyVehicleYear_{index}",
+            "label": "Ano do Veículo",
+            "type": "number",
+            "required": true
+          },
+          {
+            "name": "thirdPartyVehiclePower_{index}",
+            "label": "Potência do Veículo",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "thirdPartyOwnerName_{index}",
+            "label": "Proprietário / Nome",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "thirdPartyInsurranceCo_{index}",
+            "label": "Seguradora",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "thirdPartyInsurranceCoPolicy_{index}",
+            "label": "Apólice n.º",
+            "type": "number",
+            "required": true
+          }
+        ]
+      },
+      {
+        "title": "INFORMAÇÕES DO CONDUTOR DO TERCEIRO {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "thirdPartyDriverName_{index}",
+            "label": "Nome",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "thirdPartyDriverNIF_{index}",
+            "label": "NIF",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "thirdPartyDriverAddress_{index}",
+            "label": "Morada",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "thirdPartyDriverContact_{index}",
+            "label": "Contacto",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "thirdPartyDriverEmail_{index}",
+            "label": "Email",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "thirdPartyDriverProfession_{index}",
+            "label": "Profissão",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "thirdPartyDriverWorkplace_{index}",
+            "label": "Local de trabalho",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "INFORMAÇÕES DA LICENÇA DE CONDUÇÃO DO TERCEIRO {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "thirdPartyDrivingLicense_{index}",
+            "label": "Lic. Condução",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "thirdPartyLicenseCategories_{index}",
+            "label": "Categorias",
+            "type": "string",
+            "required": false
+          },{
+            "name": "thirdPartyTasLevel_{index}",
+            "label": "TAS (g/l)",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "INFORMAÇÕES ADICIONAIS DO TERCEIRO {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "thirdPartyCommissaryCondition_{index}",
+            "label": "Condição de Comissário",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "thirdPartyIntervenientRelationship_{index}",
+            "label": "Relação entre intervenientes",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "thirdPartyOtherMaterialDamages_{index}",
+            "label": "Outros Danos Materiais",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "NÚMERO DE TESTEMUNHAS",
+        "fields": [
+          {
+            "name": "numberOfWitnesses",
+            "label": "Quantas testemunhas estão presentes?",
+            "type": "number",
+            "required": false,
+            "min": 0,
+            "max": 10
+          }
+        ]
+      },
+      {
+        "title": "TESTEMUNHA {index}",
+        "repeatFor": "numberOfWitnesses",
+        "fields": [
+          {
+            "name": "witnessName_{index}",
+            "label": "Nome",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "witnessNIF_{index}",
+            "label": "NIF",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "witnessAddress_{index}",
+            "label": "Morada",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "witnessContact_{index}",
+            "label": "Contacto",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "witnessEmail_{index}",
+            "label": "Email",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "witnessRelationship_{index}",
+            "label": "Relação entre intervenientes",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "witnessLocation_{index}",
+            "label": "Local onde se encontrava aquando do acidente",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "title": "NÚMERO DE FERIDOS",
+        "fields": [
+          {
+            "name": "numberOfInjured",
+            "label": "Quantos feridos estão presentes?",
+            "type": "number",
+            "required": false,
+            "min": 0,
+            "max": 20
+          }
+        ]
+      },
+      {
+        "title": "FERIDO {index}",
+        "repeatFor": "numberOfInjured",
+        "fields": [
+          {
+            "name": "injuredVehicleType_{index}",
+            "label": "Veículo / Tipo",
+            "type": "select",
+            "required": true,
+            "options": [
+              { "value": "insured_vehicle", "label": "Veículo Seguro" },
+              { "value": "third_vehicle", "label": "Veículo Terceiro" },
+              { "value": "pedestrian", "label": "Peões" }
+            ]
+          },
+          {
+            "name": "injuredName_{index}",
+            "label": "Nome",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "title": "LOCAL DO SINISTRO",
+        "fields": [
+          {
+            "name": "accidentDateTime",
+            "label": "Data e hora do sinistro",
+            "type": "datetime",
+            "required": true
+          },
+          {
+            "name": "visitDate",
+            "label": "Data e hora da visita ao local",
+            "type": "datetime",
+            "required": true
+          },
+          {
+            "name": "roadType",
+            "label": "Denominação - Estrada / Rua / Caminho",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "locality",
+            "label": "Denominação - Localidade e Concelho",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "roadLayout",
+            "label": "Perfil - Traçado",
+            "type": "select",
+            "required": false,
+            "options": [
+              { "value": "straight", "label": "Recto" },
+              { "value": "curve_left", "label": "Curva à Esquerda" },
+              { "value": "curve_right", "label": "Curva à Direita" },
+              { "value": "intersection", "label": "Intersecção" },
+              { "value": "roundabout", "label": "Rotunda" }
+            ]
+          },
+          {
+            "name": "numberOfLanes",
+            "label": "Perfil - Nº de vias de trânsito",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "visibility",
+            "label": "Perfil - Visibilidade (metros)",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "roadSurfaceType",
+            "label": "Perfil - Tipo e estado do piso",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "roadWidth",
+            "label": "Perfil - Largura da faixa de rodagem",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "shoulderWidth",
+            "label": "Perfil - Largura das bermas",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "sidewalkWidth",
+            "label": "Perfil - Largura dos passeios",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "valletWidth",
+            "label": "Perfil - Largura das valetas",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "longitudinalSlope",
+            "label": "Perfil - Declive Longitudinal (%)",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "transversalSlope",
+            "label": "Perfil - Declive Transversal (%)",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "verticalSignaling",
+            "label": "Sinalização - Vertical",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "horizontalSignaling",
+            "label": "Sinalização - Horizontal",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "speedLimit",
+            "label": "Sinalização - Limite de velocidade",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "weatherConditions",
+            "label": "Condições de visibilidade - Estado do tempo",
+            "type": "select",
+            "required": false,
+            "options": [
+              { "value": "clear", "label": "Céu limpo" },
+              { "value": "cloudy", "label": "Nublado" },
+              { "value": "rain", "label": "Chuva" },
+              { "value": "fog", "label": "Nevoeiro" },
+              { "value": "snow", "label": "Neve" }
+            ]
+          },
+          {
+            "name": "lightingConditions",
+            "label": "Condições de visibilidade - Iluminação",
+            "type": "select",
+            "required": false,
+            "options": [
+              { "value": "daylight", "label": "Luz do dia" },
+              { "value": "twilight", "label": "Crepúsculo" },
+              { "value": "night_lit", "label": "Noite com iluminação" },
+              { "value": "night_unlit", "label": "Noite sem iluminação" }
+            ]
+          },
+          {
+            "name": "trafficIntensity",
+            "label": "Intensidade do tráfego",
+            "type": "select",
+            "required": false,
+            "options": [
+              { "value": "light", "label": "Ligeiro" },
+              { "value": "moderate", "label": "Moderado" },
+              { "value": "intense", "label": "Intenso" },
+              { "value": "very_intense", "label": "Muito intenso" }
+            ]
+          },
+          {
+            "name": "tracesFound",
+            "label": "Vestígios encontrados",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "locationCharacterization",
+            "label": "Caracterização do local / Outros elementos relevantes",
+            "type": "text",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "ENTIDADES OFICIAIS",
+        "fields": [
+          {
+            "name": "authorities",
+            "label": "Autoridades",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "courts",
+            "label": "Tribunais",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "apsInsured",
+            "label": "APS/Segurnet",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "roadAssistanceDate",
+            "label": "Assistência em Viagem - Data/hora da assistência",
+            "type": "datetime",
+            "required": false
+          },
+          {
+            "name": "roadAssistanceLocation",
+            "label": "Assistência em Viagem - Local",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "roadAssistanceReason",
+            "label": "Assistência em Viagem - Motivo",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "roadAssistanceRequester",
+            "label": "Assistência em Viagem - Quem solicitou",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "towingCompany",
+            "label": "Assistência em Viagem - Rebocador",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "firefightersNem",
+            "label": "Bombeiros/INEM",
+            "type": "text",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "O ACIDENTE",
+        "fields": [
+          {
+            "name": "insuredVersionCvs",
+            "label": "Versão do Segurado / CVS",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "witnessesIndicatedByInsured",
+            "label": "Testemunhas - Indicadas pelo Segurado",
+            "type": "text",
+            "required": false
+          },
+
+          {
+            "name": "otherWitnesses",
+            "label": "Outras Testemunhas",
+            "type": "text",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "O ACIDENTE - TERCEIRO {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "thirdVersionCvt_{index}",
+            "label": "Versão do Terceiro / CVT {index}",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "witnessesIndicatedByThird_{index}",
+            "label": "Indicadas pelo Terceiro {index}",
+            "type": "text",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "DANOS VERIFICADOS",
+        "fields": [
+          {
+            "name": "damagesInsuredVehicleAltimetry",
+            "label": "Veículos - Danos no Veículo Seguro - Altimetria",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "damagesInsuredVehicleRepairer",
+            "label": "Veículos - Danos no Veículo Seguro - Reparador",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "damagesInsuredVehicleIPO",
+            "label": "Veículos - Danos no Veículo Seguro - IPO",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "otherMaterialDamagesDesc",
+            "label": "Outros Danos Materiais",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "proofOfOwnership",
+            "label": "Outros Danos Materiais - Prova de propriedade dos bens",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "collisionSequence",
+            "label": "Sequência de Embates",
+            "type": "text",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "DANOS VEÍCULO TERCEIRO {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "damagesThirdVehicleAltimetry_{index}",
+            "label": "Veículo Terceiro {index} - Altimetria",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "damagesThirdVehicleRepairer_{index}",
+            "label": "Veículo Terceiro {index} - Reparador",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "damagesThirdVehicleIPO_{index}",
+            "label": "Veículo Terceiro {index} - IPO",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "otherMaterialDamagesDesc",
+            "label": "Outros Danos Materiais",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "proofOfOwnership",
+            "label": "Outros Danos Materiais - Prova de propriedade dos bens",
+            "type": "text",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "RESPONSABILIDADES",
+        "fields": [
+          {
+            "name": "accidentCircumstances",
+            "label": "Apreciação Técnica do Sinistro - Análise ao local e as circunstâncias do sinistro",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "vehicleDamagesAnalysis",
+            "label": "Apreciação Técnica do Sinistro - Análise danos dos veículos",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "vsDamagesPhoto",
+            "label": "Apreciação Técnica do Sinistro - Enquadramento dos danos em imagens - Danos do VS",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vsDamagesPhotoAltimetry",
+            "label": "Apreciação Técnica do Sinistro - Enquadramento dos danos em imagens - Danos do VS com Altimetria",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "intervenorsConnectionsSearch",
+            "label": "Apreciação Técnica do Sinistro - Pesquisa de ligações entre intervenientes",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "roadAssistanceAnalysis",
+            "label": "Apreciação Técnica do Sinistro - Assistência em Viagem",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "otherElementsAnalysis",
+            "label": "Apreciação Técnica do Sinistro -  Importa referir que:",
+            "type": "text",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "RESPONSABILIDADES VT {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "vtDamagesPhoto_{index}",
+            "label": "Apreciação Técnica do Sinistro - Enquadramento dos danos em imagens - Danos do VT {index}",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vtDamagesPhotoAltimetry_{index}",
+            "label": "Apreciação Técnica do Sinistro - Enquadramento dos danos em imagens - Danos do VT {index} com Altimetria",
+            "type": "image",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "ELEMENTOS SUSPEITOS",
+        "fields": [
+          {
+            "name": "numberOfSuspiciousElements",
+            "label": "Quantos elementos suspeitos foram obtidos?",
+            "type": "number",
+            "required": true,
+            "min": 0,
+            "max": 20
+          }
+        ]
+      },
+      {
+        "title": "ELEMENTO SUSPEITO {index}",
+        "repeatFor": "numberOfSuspiciousElements",
+        "fields": [
+          {
+            "name": "suspiciousElementTitle_{index}",
+            "label": "Título do elemento suspeito",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "suspiciousElementDescription_{index}",
+            "label": "Descrição",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "suspiciousElementEvidence_{index}",
+            "label": "Imagem/Documento de suporte",
+            "type": "file",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "ELEMENTOS DE PROVA",
+        "fields": [
+          {
+            "name": "numberOfProofElements",
+            "label": "Quantos elementos de prova foram obtidos?",
+            "type": "number",
+            "required": true,
+            "min": 0,
+            "max": 50
+          }
+        ]
+      },
+      {
+        "title": "ELEMENTO DE PROVA {index}",
+        "repeatFor": "numberOfProofElements",
+        "fields": [
+          {
+            "name": "proofElementTitle_{index}",
+            "label": "Título da prova",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "proofElementDescription_{index}",
+            "label": "Descrição",
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "proofElementFile_{index}",
+            "label": "Documento/Imagem",
+            "type": "file",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "CONCLUSÃO",
+        "fields": [
+          {
+              "name": "conclusion",
+              "label": "Definição/Conclusões",
+              "type": "text",
+              "required": false
+          }
+        ]
+      },
+      {
+        "title": "REPORTAGEM FOTOGRÁFICA",
+        "fields": [
+          {
+            "name": "aerialViewOfLocation",
+            "label": "Vista aérea do local",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "coordinates",
+            "label": "Coordenadas",
+            "type": "text",
+            "required": false
+          },
+          {
+            "name": "vsDirectionOfTravel",
+            "label": "Sentido de marcha do VS",
+            "type": "image",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "REPORTAGEM FOTOGRÁFICA VT {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "vtDirectionOfTravel_{index}",
+            "label": "Sentido de marcha do VT",
+            "type": "image",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "FOTOGRAFIAS CEDIDAS POR INTERVENIENTES",
+        "fields": [
+          {
+            "name": "numberOfThirdPartyPhotos",
+            "label": "Quantas fotos foram cedidas por intervenientes?",
+            "type": "number",
+            "required": false,
+            "min": 0,
+            "max": 20
+          },
+          {
+            "name": "thirdPartyPhoto_{index}",
+            "label": "Fotografia cedida por interveniente",
+            "type": "image",
+            "repeatedFor": "numberOfThirdPartyPhotos",
+            "required": false
+          },
+          {
+            "name": "thirdPartyPhotosDescription_{index}",
+            "label": "Descrição das fotografias cedidas por intervenientes",
+            "type": "text",
+            "repeatedFor": "numberOfThirdPartyPhotos",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "ANÁLISE AO VEÍCULO SEGURO",
+        "fields": [
+          {
+            "name": "vsFrontPhoto",
+            "label": "Frente do Veículo Seguro",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vsRightSidePhoto",
+            "label": "Lateral Direita do Veículo Seguro",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vsLeftSidePhoto",
+            "label": "Lateral esquerda do Veículo Seguro",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vsRearPhoto",
+            "label": "Traseira do Veículo Seguro",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vsDamagesDonePhoto",
+            "label": "Danos do Veículo Seguro",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vsDamagesDonePhotoAltimetry",
+            "label": "Altimetria dos danos do Veículo Seguro",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vsDamagesSufferedPhoto",
+            "label": "Danos no Veículo Seguro",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vsDamagesSufferedPhotoAltimetry",
+            "label": "Altimetria dos danos no Veículo Seguro",
+            "type": "image",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "DOCUMENTOS VEÍCULO SEGURO",
+        "fields": [
+            {
+                "name": "vsVehicleDUADocFront",
+                "label": "DUA Veículo Seguro - Frente",
+                "type": "file",
+                "required": false
+            },
+            {
+                "name": "vsVehicleDUADocBack",
+                "label": "DUA Veículo Seguro - Verso",
+                "type": "file",
+                "required": false
+            }
+        ]
+      },
+      {
+        "title": "ANÁLISE AO VEÍCULO TERCEIRO {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "vtFrontPhoto_{index}",
+            "label": "Frente do Veículo Terceiro {index}",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vtRightSidePhoto_{index}",
+            "label": "Lateral Direita do Veículo Terceiro {index}",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vtLeftSidePhoto_{index}",
+            "label": "Lateral esquerda do Veículo Terceiro {index}",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vtRearPhoto_{index}",
+            "label": "Traseira do Veículo Terceiro {index}",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vtDamagesDonePhoto_{index}",
+            "label": "Danos do Veículo Terceiro {index}",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vtDamagesDonePhotoAltimetry_{index}",
+            "label": "Altimetria dos danos do Veículo Terceiro {index}",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vtDamagesSufferedPhoto_{index}",
+            "label": "Danos no Veículo Terceiro {index}",
+            "type": "image",
+            "required": false
+          },
+          {
+            "name": "vtDamagesSufferedPhotoAltimetry_{index}",
+            "label": "Altimetria dos danos no Veículo Terceiro {index}",
+            "type": "image",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "DOCUMENTOS VEÍCULO TERCEIRO {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "vtVehicleDUADocFront_{index}",
+            "label": "DUA Veículo Terceiro {index} - Frente",
+            "type": "file",
+            "required": false
+          },
+          {
+            "name": "vtVehicleDUADocBack_{index}",
+            "label": "DUA Veículo Terceiro {index} - Verso",
+            "type": "file",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "DEPOIMENTO DO CONDUTOR DO VEÍCULO SEGURO",
+        "fields": [
+            {
+                "name": "insuredDriverStatement",
+                "label": "Depoimento do condutor do veículo seguro",
+                "type": "file",
+                "required": false
+            }
+        ]
+      },
+      {
+        "title": "AUTORIZAÇÃO PARA OBTENÇÃO DE DOCUMENTAÇÃO",
+        "fields": [
+          {
+            "name": "authorization",
+            "label": "Autorização para obtenção de documentação junto de entidades oficiais",
+            "type": "file",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "DOCUMENTOS CONDUTOR DO VEÍCULO SEGURO",
+        "fields": [
+          {
+            "name": "vsDriverLicenseFront",
+            "label": "Carta de condução do CVS - Frente",
+            "type": "file",
+            "required": false
+          },
+          {
+            "name": "vsDriverLicenseBack",
+            "label": "Carta de condução do CVS - Verso",
+            "type": "file",
+            "required": false
+          },
+          {
+            "name": "vsCCFront",
+            "label": "Cartão de Cidadão do CVS - Frente",
+            "type": "file",
+            "required": false
+          },
+          {
+            "name": "vsCCBack",
+            "label": "Cartão de Cidadão do CVS - Verso",
+            "type": "file",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "DEPOIMENTO DO CONDUTOR DO VEÍCULO TERCEIRO {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "thirdPartyDriverStatement_{index}",
+            "label": "Depoimento do condutor do veículo terceiro {index}",
+            "type": "file",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "AUTORIZAÇÃO PARA OBTENÇÃO DE DOCUMENTAÇÃO",
+        "fields": [
+          {
+            "name": "authorization",
+            "label": "Autorização para obtenção de documentação junto de entidades oficiais",
+            "type": "file",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "DOCUMENTOS CONDUTOR DO VEÍCULO TERCEIRO {index}",
+        "repeatFor": "numberOfThirdParties",
+        "fields": [
+          {
+            "name": "vtDriverLicenseFront_{index}",
+            "label": "Carta de condução do CVT {index} - Frente",
+            "type": "file",
+            "required": false
+          },
+          {
+            "name": "vtDriverLicenseBack_{index}",
+            "label": "Carta de condução do CVT {index} - Verso",
+            "type": "file",
+            "required": false
+          },
+          {
+            "name": "vtCCFront_{index}",
+            "label": "Cartão de Cidadão do CVT {index} - Frente",
+            "type": "file",
+            "required": false
+          },
+          {
+            "name": "vtCCBack_{index}",
+            "label": "Cartão de Cidadão do CVT {index} - Verso",
+            "type": "file",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "AUTO DE OCORRÊNCIA",
+        "fields": [
+          {
+            "name": "occurrenceReport",
+            "label": "Auto de Ocorrência - Documento final do processo",
+            "type": "file",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "DEPOIMENTO TESTEMUNHA",
+        "fields": [
+          {
+            "name": "numberOfWitnessStatements",
+            "label": "Quantos depoimentos de testemunhas existem?",
+            "type": "number",
+            "required": false,
+            "min": 0,
+            "max": 20
+          },
+          {
+            "name": "witnessStatement_{index}",
+            "label": "Depoimento de testemunha {index}",
+            "type": "file",
+            "repeatedFor": "numberOfWitnessStatements",
+            "required": false
+          },
+          {
+            "name": "witnessStatementDescription_{index}",
+            "label": "Descrição do depoimento {index}",
+            "type": "text",
+            "repeatedFor": "numberOfWitnessStatements",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": "OUTRA DOCUMENTAÇÃO",
+        "fields": [
+          {
+            "name": "numberOfOtherDocuments",
+            "label": "Quantos documentos adicionais existem?",
+            "type": "number",
+            "required": false,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "name": "otherDocumentation_{index}",
+            "label": "Outra documentação relevante",
+            "type": "file",
+            "repeatedFor": "numberOfOtherDocuments",
+            "required": false
+          },
+          {
+            "name": "otherDocumentationDescription_{index}",
+            "label": "Descrição da documentação",
+            "type": "text",
+            "repeatedFor": "numberOfOtherDocuments",
+            "required": false
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -180,7 +180,11 @@ const en = {
         },
         filter:{
             filter: "Filter",
-            clear: "Clear"
+            clear: "Clear",
+            importance: "Importance",
+            dateRange: "Date range",
+            startDate: "Start date",
+            endDate: "End date",
         }
     }
 }

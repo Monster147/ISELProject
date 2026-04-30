@@ -16,6 +16,8 @@ import ThemedFilterButton from "../../../../components/ThemedFilterButton";
 import {IoFilterOutline, IoFilterSharp} from "react-icons/io5";
 import {useState} from "react";
 import {OccurrenceType} from "@commons/models/occurrence/OccurrenceType";
+import ThemedTextInput from "../../../../components/ThemedTextInput";
+import ThemedDateInput from "../../../../components/ThemedDateInput";
 
 const OccurrenceScreen = () => {
     const {t} = useTranslation();
@@ -50,8 +52,26 @@ const OccurrenceScreen = () => {
         })
     }
 
+    const handleMinDateChange = (date: string) => {
+        setFilters(prev => ({
+            ...prev,
+            minDate: date
+        }))
+    }
+
+    const handleMaxDateChange = (date: string) => {
+        setFilters(prev => ({
+            ...prev,
+            maxDate: date
+        }))
+    }
+
     const clearFilters = () => {
-        setFilters({})
+        setFilters({
+            importance: undefined,
+            minDate: undefined,
+            maxDate: undefined
+        })
     }
 
     return (
@@ -77,6 +97,12 @@ const OccurrenceScreen = () => {
                         {t("filter.filter")}
                     </ThemedText>
 
+                    <ThemedText style={styles.subTitle}>
+                        {t("filter.importance")}:
+                    </ThemedText>
+
+                    <Spacer height={6}/>
+
                     <ThemedView style={[styles.row, { backgroundColor: theme.uiBackground }]}>
                         {importanceOptions.map((imp) => (
                             <Pressable key={imp} onPress={() => toggleImportance(imp)}>
@@ -90,7 +116,25 @@ const OccurrenceScreen = () => {
                                 </ThemedText>
                             </Pressable>
                         ))}
+                    </ThemedView>
 
+                    <ThemedText style={styles.subTitle}>
+                        {t("filter.dateRange")}:
+                    </ThemedText>
+                    <ThemedView style={[styles.dateRow, { backgroundColor: theme.uiBackground }]}>
+                        <ThemedDateInput
+                            value={filters.minDate}
+                            onChangeText={handleMinDateChange}
+                            style={styles.dateInput}
+                        />
+                        <ThemedDateInput
+                            value={filters.maxDate}
+                            onChangeText={handleMaxDateChange}
+                            style={styles.dateInput}
+                        />
+                    </ThemedView>
+
+                    <ThemedView style={[styles.row, { backgroundColor: theme.uiBackground }]}>
                         <Pressable onPress={clearFilters}>
                             <ThemedText style={[styles.chipClear]}>
                                 {t("filter.clear")}
@@ -141,15 +185,20 @@ const filterOccurrence = (options?: OccurrenceFilters, occurrences?: Occurrence[
         result = result.filter(o => options.importance?.includes(o.importance));
     }
 
-    if (options.maxDate) {
-        const max = new Date(options.maxDate).getTime();
-        result = result.filter(o => new Date(o.endDate).getTime() <= max)
+    const maxDate = options?.maxDate?.trim()
+    if (maxDate) {
+        result = result.filter(o =>
+            o.endDate <= maxDate
+        )
     }
 
-    if (options.minDate) {
-        const min = new Date(options.minDate).getTime();
-        result = result.filter(o => new Date(o.initDate).getTime() >= min)
+    const minDate = options?.minDate?.trim()
+    if (minDate) {
+        result = result.filter(o =>
+            o.initDate >= minDate
+        )
     }
+
     return result
 }
 
@@ -211,6 +260,12 @@ const styles = StyleSheet.create({
         padding: 16,
         paddingBottom: 12,
     },
+    subTitle: {
+        fontSize: 14,
+        fontWeight: "500",
+        paddingHorizontal: 16,
+        paddingTop: 12,
+    },
     row: {
         flexDirection: "row",
         flexWrap: "wrap",
@@ -218,6 +273,19 @@ const styles = StyleSheet.create({
         gap: 8,
         paddingHorizontal: 12,
         paddingBottom: 12,
+    },
+    dateRow: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: 8,
+        paddingHorizontal: 12,
+        paddingBottom: 12,
+        paddingTop: 8,
+    },
+    dateInput: {
+        flex: 1,
+        height: 40,
     },
     chip: {
         paddingVertical: 8,

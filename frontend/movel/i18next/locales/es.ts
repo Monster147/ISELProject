@@ -176,6 +176,10 @@ const es = {
         filter: {
             filter: "Filtrar",
             clear: "Limpiar",
+            importance: "Importancia",
+            dateRange: "Rango de fechas",
+            startDate: "Fecha de inicio",
+            endDate: "Fecha de fin",
         },
     },
 };

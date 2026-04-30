@@ -191,6 +191,10 @@ const pt = {
         filter: {
             filter: "Filtrar",
             clear: "Limpar",
+            importance: "Importância",
+            dateRange: "Intervalo de datas",
+            startDate: "Data de início",
+            endDate: "Data de fim",
         },
     }
 }
