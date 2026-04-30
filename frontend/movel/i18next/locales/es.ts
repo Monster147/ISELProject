@@ -173,6 +173,10 @@ const es = {
             APPROVED: "Aprobado",
             REJECTED: "Rechazado",
         },
+        filter: {
+            filter: "Filtrar",
+            clear: "Limpiar",
+        },
     },
 };
 

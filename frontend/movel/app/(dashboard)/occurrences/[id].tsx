@@ -1,6 +1,7 @@
 import {Animated, StyleSheet, ScrollView} from "react-native";
 import ThemedView from "../../../components/ThemedView";
 import {Colors} from "@commons/constants/Colors";
+import dateFormater from "@commons/utils/dateFormater";
 import ThemedText from "../../../components/ThemedText";
 import {useLocalSearchParams, useRouter} from "expo-router";
 import {useOccurrence} from "../../../hooks/useOccurrence";
@@ -53,14 +54,13 @@ const OccurrenceDetails = () => {
 
                     <Spacer/>
 
-                    <ThemedText>{t("occurrenceDetails.initDate")}: {actualOccurrence.initDate}</ThemedText>
+                    <ThemedText>{t("occurrenceDetails.initDate")}: {dateFormater(actualOccurrence.initDate)}</ThemedText>
 
-                    <ThemedText>{t("occurrenceDetails.endDate")}: {actualOccurrence.endDate}</ThemedText>
+                    <ThemedText>{t("occurrenceDetails.endDate")}: {dateFormater(actualOccurrence.endDate)}</ThemedText>
 
                     <ThemedText>{t("occurrenceDetails.importance")}: {t(`importance.${actualOccurrence.importance}`)}</ThemedText>
 
-                    <ThemedText>{t("occurrenceDetails.occurrenceType")}:</ThemedText>
-                    <ThemedText>{JSON.stringify(currentJsonType, null, 2)}</ThemedText>
+                    <ThemedText>{t("occurrenceDetails.occurrenceType")}: {currentJsonType?.name}</ThemedText>
 
                     <ThemedText>{t("occurrenceDetails.occurrenceInfo")}:</ThemedText>
                     <ThemedText>{JSON.stringify(actualOccurrence.occurrenceInfo, null, 2)}</ThemedText>

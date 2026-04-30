@@ -193,16 +193,16 @@ function BarChartCard({ title, rows }: { title: string; rows: ChartRow[] }) {
             {rows.length === 0 ? (
                 <ThemedText style={styles.emptyText}>—</ThemedText>
             ) : (
-                <View style={styles.chartRows}>
+                <ThemedView style={[styles.chartRow, {backgroundColor: theme.uiBackground}]}>
                     {rows
                         .slice()
                         .sort((a, b) => b.count - a.count)
                         .map((row) => (
-                            <View key={row.label} style={styles.chartRow}>
+                            <ThemedView key={row.label} style={[styles.chartRow, {backgroundColor: theme.uiBackground}]}>
                                 <ThemedText style={styles.rowLabel}>{row.label}</ThemedText>
 
-                                <View style={[styles.barTrack, { backgroundColor: theme.uiBackground }]}>
-                                    <View
+                                <ThemedView style={[styles.barTrack, { backgroundColor: theme.uiBackground }]}>
+                                    <ThemedView
                                         style={[
                                             styles.barFill,
                                             {
@@ -211,14 +211,14 @@ function BarChartCard({ title, rows }: { title: string; rows: ChartRow[] }) {
                                             },
                                         ]}
                                     />
-                                </View>
+                                </ThemedView>
 
                                 <ThemedText style={styles.rowValue}>
                                     {row.count} ({row.percentage}%)
                                 </ThemedText>
-                            </View>
+                            </ThemedView>
                         ))}
-                </View>
+                </ThemedView>
             )}
         </ThemedCard>
     );

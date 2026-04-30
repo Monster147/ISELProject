@@ -172,6 +172,10 @@ const en = {
             SUBMITTED: "Submitted",
             APPROVED: "Approved",
             REJECTED: "Rejected",
+        },
+        filter:{
+            filter: "Filter",
+            clear: "Clear"
         }
     }
 }

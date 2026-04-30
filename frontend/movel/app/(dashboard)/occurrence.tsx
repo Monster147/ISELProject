@@ -1,46 +1,116 @@
-import {FlatList, Pressable, StyleSheet} from "react-native";
+import {FlatList, Pressable, StyleSheet, useColorScheme} from "react-native";
 import ThemedText from "../../components/ThemedText";
 import ThemedView from "../../components/ThemedView";
 import Spacer from "../../components/Spacer";
 import {useOccurrence} from "../../hooks/useOccurrence";
 import {useAuth} from "../../hooks/useAuth";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {Colors} from "@commons/constants/Colors";
 import ThemedCard from "../../components/ThemedCard";
 import {useLocalSearchParams, useRouter} from "expo-router";
 import {useAlertExitApp} from "../../hooks/useAlertExitApp";
 import {useTranslation} from "react-i18next";
 import ThemedLoader from "../../components/ThemedLoader";
+import dateFormater from "@commons/utils/dateFormater";
+import {Occurrence} from "@commons/models/occurrence/Occurrence";
+import {OccurrenceType} from "@commons/models/occurrence/OccurrenceType";
+import ThemedFilterButton from "../../components/ThemedFilterButton";
 
-const Occurrence = () =>{
+const OccurrenceScreen = () => {
     const {t} = useTranslation()
     const {occurrence, loading} = useOccurrence()
     const router = useRouter()
+    const colorScheme = useColorScheme()
+    const theme = Colors[colorScheme] ?? Colors.light
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [filters, setFilters] = useState<OccurrenceFilters>({});
 
     useAlertExitApp()
 
     if (loading) {
-        return <ThemedLoader />;
+        return <ThemedLoader/>;
     }
 
-    return(
+    const realOccurrenceList = filterOccurrence(filters, occurrence)
+
+    const importanceOptions = Object.values(OccurrenceType) as OccurrenceType[]
+
+    const toggleImportance = (value: OccurrenceType) => {
+        setFilters(prev => {
+            let current = prev.importance ?? [];
+
+            if (current.includes(value)) {
+                current = current.filter(x => x !== value)
+            } else {
+                current = [...current, value]
+            }
+            return {
+                ...prev,
+                importance: current.length ? current : undefined,
+            }
+        })
+    }
+
+    const clearFilters = () => {
+        setFilters({})
+    }
+
+    return (
         <ThemedView style={styles.container} safe={true}>
-            <Spacer />
+            <Spacer/>
             <ThemedText title={true} style={styles.heading}>
                 {t("occurrence.occurrenceList")}
             </ThemedText>
 
-            <Spacer />
+            <Spacer/>
+
+            <ThemedView style={styles.toolbar}>
+                <ThemedFilterButton
+                    active={isFilterOpen}
+                    onPress={() => setIsFilterOpen(prev => !prev)}
+                />
+            </ThemedView>
+
+            {isFilterOpen && (
+                <ThemedView style={[styles.filterPanel, { backgroundColor: theme.uiBackground }]}>
+                    <ThemedText title={true} style={styles.filterTitle}>
+                        {t("filter.filter")}
+                    </ThemedText>
+
+                    <ThemedView style={[styles.row, { backgroundColor: theme.uiBackground }]}>
+                        {importanceOptions.map((imp) => (
+                            <Pressable key={imp} onPress={() => toggleImportance(imp)}>
+                                <ThemedText
+                                    style={[
+                                        styles.chip,
+                                        (filters.importance ?? []).includes(imp) && styles.chipActive
+                                    ]}
+                                >
+                                    {t(`importance.${imp}`)}
+                                </ThemedText>
+                            </Pressable>
+                        ))}
+
+                        <Pressable onPress={clearFilters}>
+                            <ThemedText style={[styles.chipClear]}>
+                                {t("filter.clear")}
+                            </ThemedText>
+                        </Pressable>
+                    </ThemedView>
+                </ThemedView>
+            )}
 
             <FlatList
-                data={occurrence}
-                keyExtractor={(item)=> item.id.toString()}
+                data={realOccurrenceList}
+                keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={styles.list}
-                renderItem={({item}) =>(
-                    <Pressable onPress={()=> router.push(`/occurrences/${item.id}`)}>
+                renderItem={({item}) => (
+                    <Pressable onPress={() => router.push(`/occurrences/${item.id}`)}>
                         <ThemedCard style={styles.card}>
-                            <ThemedText style={styles.title}>{t("occurrence.initDate")}:{item.initDate}</ThemedText>
-                            <ThemedText style={styles.title}>{t("occurrence.endDate")}:{item.endDate}</ThemedText>
+                            <ThemedText
+                                style={styles.title}>{t("occurrence.initDate")}:{dateFormater(item.initDate)}</ThemedText>
+                            <ThemedText
+                                style={styles.title}>{t("occurrence.endDate")}:{dateFormater(item.endDate)}</ThemedText>
                             <ThemedText style={styles.title}>
                                 {t("occurrence.importance")}:
                                 <ThemedText style={{color: importanceColors[item.importance] || "black"}}>
@@ -57,20 +127,46 @@ const Occurrence = () =>{
     )
 }
 
-export default Occurrence
+export default OccurrenceScreen
+
+export type OccurrenceFilters = {
+    importance?: OccurrenceType[],
+    maxDate?: string,
+    minDate?: string
+}
+
+const filterOccurrence = (options?: OccurrenceFilters, occurrences?: Occurrence[]) => {
+    if (!occurrences) return []
+    if (!options) return occurrences
+    let result = occurrences
+    if (options.importance) {
+        result = result.filter(o => options.importance?.includes(o.importance));
+    }
+
+    if (options.maxDate) {
+        const max = new Date(options.maxDate).getTime();
+        result = result.filter(o => new Date(o.endDate).getTime() <= max)
+    }
+
+    if (options.minDate) {
+        const min = new Date(options.minDate).getTime();
+        result = result.filter(o => new Date(o.initDate).getTime() >= min)
+    }
+    return result
+}
 
 const importanceColors: Record<string, string> = {
-    NORMAL: "green",
+    NORMAL: "lime",
     URGENT: "yellow",
     CRITICAL: "red"
 };
 
 const styles = StyleSheet.create({
-    container:{
+    container: {
         flex: 1,
         alignItems: 'stretch',
     },
-    heading:{
+    heading: {
         fontWeight: 'bold',
         fontSize: 18,
         textAlign: 'center'
@@ -94,4 +190,52 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginBottom: 10,
     },
+    toolbar: {
+        width: "90%",
+        marginHorizontal: "5%",
+        flexDirection: "row",
+        justifyContent: "flex-end",
+    },
+    filterPanel: {
+        width: "90%",
+        marginHorizontal: "5%",
+        marginTop: 10,
+        padding: 0,
+        borderRadius: 5,
+        borderLeftColor: Colors.primary,
+        borderLeftWidth: 4,
+        borderWidth: 0,
+        overflow: "hidden",
+    },
+    filterTitle: {
+        fontSize: 16,
+        fontWeight: "600",
+        padding: 16,
+        paddingBottom: 12,
+    },
+    row: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: 8,
+        paddingHorizontal: 12,
+        paddingBottom: 12,
+    },
+    chip: {
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 999,
+        borderWidth: 1,
+    },
+    chipActive: {
+        borderColor: Colors.primary,
+        backgroundColor: Colors.update,
+    },
+    chipClear: {
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 999,
+        borderWidth: 1,
+        backgroundColor: Colors.warning,
+    }
 })

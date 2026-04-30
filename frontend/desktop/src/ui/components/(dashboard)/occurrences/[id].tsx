@@ -12,6 +12,7 @@ import {useIntervenor} from "../../../../hooks/useIntervenor";
 import {useTranslation} from "react-i18next";
 import Spacer from "../../../../../components/Spacer";
 import {useType} from "../../../../hooks/useType";
+import dateFormater from "@commons/utils/dateFormater";
 
 const OccurrenceDetails = () => {
     const {t} = useTranslation()
@@ -51,9 +52,9 @@ const OccurrenceDetails = () => {
 
                     <Spacer/>
 
-                    <ThemedText>{t("occurrenceDetails.initDate")}: {actualOccurrence.initDate}</ThemedText>
+                    <ThemedText>{t("occurrenceDetails.initDate")}: {dateFormater(actualOccurrence.initDate)}</ThemedText>
 
-                    <ThemedText>{t("occurrenceDetails.endDate")}: {actualOccurrence.endDate}</ThemedText>
+                    <ThemedText>{t("occurrenceDetails.endDate")}: {dateFormater(actualOccurrence.endDate)}</ThemedText>
 
                     <ThemedText>{t("occurrenceDetails.importance")}: {t(`importance.${actualOccurrence.importance}`)}</ThemedText>
 

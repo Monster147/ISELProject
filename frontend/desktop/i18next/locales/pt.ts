@@ -193,6 +193,10 @@ const pt = {
             APPROVED: "Aprovado",
             REJECTED: "Rejeitado",
         },
+        filter: {
+            filter: "Filtrar",
+            clear: "Limpar",
+        },
     }
 }
 

@@ -19,6 +19,7 @@ import Loadingscreen from "./components/loadingscreen";
 import Documents from "./components/(dashboard)/documents";
 import OccurrenceEvidences from "./components/(dashboard)/occurrences/evidences/[id]";
 import Dashboard from "./components/(dashboard)/dashboard";
+import OccurrenceScreen from "./components/(dashboard)/occurrence";
 
 export const router = createBrowserRouter([
     {
@@ -38,7 +39,7 @@ export const router = createBrowserRouter([
                 children: [
                     {path: "/intervenor", element: <IntervenorSearch/>},
                     {path: "/profile", element: <Profile/>},
-                    {path: "/occurrence", element: <Occurrence/>},
+                    {path: "/occurrence", element: <OccurrenceScreen/>},
                     {path: "/documents", element: <Documents/>},
                     {path: "/occurrence/:id", element: <OccurrenceDetails/>},
                     {path: "/occurrence/intervenors/:occurrenceId", element: <OccurrenceIntervenors/>},
