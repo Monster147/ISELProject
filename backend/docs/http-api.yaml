@@ -7,11 +7,6 @@ servers:
   - url: http://localhost:8080/api
 
 paths:
-
-  # ---------------------------
-  # UserController (/api/user)
-  # ---------------------------
-
   /user:
     post:
       summary: Cria um novo utilizador
@@ -121,7 +116,7 @@ paths:
 
   /user/roles/add:
     post:
-      summary: Adiciona uma role ao utilizador (admin)
+      summary: Adiciona uma role ao utilizador
       operationId: addRole
       security:
         - bearerAuth: []
@@ -151,7 +146,7 @@ paths:
 
   /user/roles/remove:
     post:
-      summary: Remove uma role do utilizador (admin)
+      summary: Remove uma role do utilizador
       operationId: removeRole
       security:
         - bearerAuth: []
@@ -181,7 +176,7 @@ paths:
 
   /user/roles/set:
     post:
-      summary: Define a lista completa de roles do utilizador (admin)
+      summary: Define a lista completa de roles do utilizador
       operationId: setRoles
       security:
         - bearerAuth: []
@@ -211,7 +206,7 @@ paths:
 
   /user/find/role/{roleId}:
     get:
-      summary: Lista utilizadores por role
+      summary: Lista os utilizadores pela role
       operationId: findUsersByRole
       parameters:
         - name: roleId
@@ -239,7 +234,7 @@ paths:
 
   /user/percentages/{userId}:
     get:
-      summary: Distribuição percentual de tipos de relatório por utilizador
+      summary: Distribuição percentual de tipos de relatório pelo utilizador
       operationId: getPercentages
       parameters:
         - name: userId
@@ -249,7 +244,7 @@ paths:
             type: integer
       responses:
         '200':
-          description: Lista de percentagens
+          description: Lista das percentagens
           content:
             application/json:
               schema:
@@ -258,10 +253,6 @@ paths:
                   $ref: '#/components/schemas/ReportTypePercentage'
         '500':
           description: Erro interno
-
-  # ---------------------------
-  # RoleController (/api/role)
-  # ---------------------------
 
   /role:
     post:
@@ -301,7 +292,7 @@ paths:
 
   /role/{roleName}:
     delete:
-      summary: Apaga role por nome
+      summary: Apaga a role pelo nome
       operationId: deleteRole
       parameters:
         - name: roleName
@@ -321,7 +312,7 @@ paths:
 
   /role/byName/{roleName}:
     get:
-      summary: Obtém role por nome
+      summary: Obtém a role pelo nome
       operationId: findRoleByName
       parameters:
         - name: roleName
@@ -345,7 +336,7 @@ paths:
 
   /role/byId/{id}:
     get:
-      summary: Obtém role por id
+      summary: Obtém a role pelo id
       operationId: findRoleById
       parameters:
         - name: id
@@ -367,13 +358,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Problem'
 
-  # -----------------------------
-  # ReportController (/api/report)
-  # -----------------------------
-
   /report:
     post:
-      summary: Cria relatório
+      summary: Cria o relatório
       operationId: createReport
       requestBody:
         required: true
@@ -395,7 +382,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Problem'
     get:
-      summary: Lista relatórios
+      summary: Lista os relatórios
       operationId: findAllReports
       responses:
         '200':
@@ -409,7 +396,7 @@ paths:
 
   /report/{id}:
     get:
-      summary: Obtém relatório por id
+      summary: Obtém o relatório pelo id
       operationId: findReportById
       parameters:
         - name: id
@@ -431,7 +418,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Problem'
     delete:
-      summary: Apaga relatório por id
+      summary: Apaga o relatório pelo id
       operationId: deleteReportById
       parameters:
         - name: id
@@ -451,7 +438,7 @@ paths:
 
   /report/byStatus/{status}:
     get:
-      summary: Lista relatórios por estado
+      summary: Lista os relatórios pelo estado
       operationId: findReportsByStatus
       parameters:
         - name: status
@@ -471,7 +458,7 @@ paths:
 
   /report/byCreator/{creatorId}:
     get:
-      summary: Lista relatórios por criador
+      summary: Lista os relatórios pelo criador
       operationId: findReportsByCreator
       parameters:
         - name: creatorId
@@ -491,7 +478,7 @@ paths:
 
   /report/update-status/{id}:
     post:
-      summary: Atualiza estado do relatório
+      summary: Atualiza o estado do relatório
       operationId: updateReportStatus
       parameters:
         - name: id
@@ -521,7 +508,7 @@ paths:
 
   /report/{id}/editors:
     post:
-      summary: Adiciona editor ao relatório
+      summary: Adiciona o editor ao relatório
       operationId: addEditor
       parameters:
         - name: id
@@ -545,7 +532,7 @@ paths:
 
   /report/{id}/editors/:
     delete:
-      summary: Remove editor do relatório
+      summary: Remove o editor do relatório
       operationId: removeEditor
       parameters:
         - name: id
@@ -569,7 +556,7 @@ paths:
 
   /report/{reportId}/listen:
     get:
-      summary: SSE - escuta atualizações de um relatório
+      summary: SSE - listener das atualizações de um relatório
       operationId: listenReport
       parameters:
         - name: reportId
@@ -585,13 +572,9 @@ paths:
               schema:
                 type: string
 
-  # ---------------------------------
-  # OccurrenceController (/api/occurrence)
-  # ---------------------------------
-
   /occurrence:
     post:
-      summary: Cria ocorrência
+      summary: Cria a ocorrência
       operationId: createOccurrence
       requestBody:
         required: true
@@ -607,7 +590,7 @@ paths:
               schema:
                 type: string
         '400':
-          description: Dados inválidos (ex.: end date, duplicate users)
+          description: Dados inválidos
           content:
             application/problem+json:
               schema:
