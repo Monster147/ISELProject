@@ -1,12 +1,16 @@
 openapi: 3.0.3
 info:
-  title: IRA API - User
+  title: IRA API
   version: 1.0.0
 
 servers:
   - url: http://localhost:8080/api
 
 paths:
+
+  # ---------------------------
+  # UserController (/api/user)
+  # ---------------------------
 
   /user:
     post:
@@ -73,6 +77,22 @@ paths:
         '200':
           description: Logout efetuado
 
+  /user/me:
+    get:
+      summary: Obtém dados do utilizador autenticado
+      operationId: userHome
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Utilizador autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserHomeOutput'
+        '401':
+          description: Não autenticado
+
   /user/{userId}:
     get:
       summary: Obtém utilizador por ID
@@ -101,8 +121,10 @@ paths:
 
   /user/roles/add:
     post:
-      summary: Adiciona uma role ao utilizador
+      summary: Adiciona uma role ao utilizador (admin)
       operationId: addRole
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -112,6 +134,12 @@ paths:
       responses:
         '200':
           description: Role adicionada com sucesso
+        '403':
+          description: Utilizador não é admin
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         '404':
           description: Role ou utilizador não encontrado
           content:
@@ -123,8 +151,10 @@ paths:
 
   /user/roles/remove:
     post:
-      summary: Remove uma role do utilizador
+      summary: Remove uma role do utilizador (admin)
       operationId: removeRole
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -134,6 +164,12 @@ paths:
       responses:
         '200':
           description: Role removida com sucesso
+        '403':
+          description: Utilizador não é admin
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         '404':
           description: Role ou utilizador não encontrado
           content:
@@ -145,8 +181,10 @@ paths:
 
   /user/roles/set:
     post:
-      summary: Define as roles do utilizador
+      summary: Define a lista completa de roles do utilizador (admin)
       operationId: setRoles
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -156,6 +194,12 @@ paths:
       responses:
         '200':
           description: Roles definidas com sucesso
+        '403':
+          description: Utilizador não é admin
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
         '404':
           description: Role ou utilizador não encontrado
           content:
@@ -193,8 +237,1371 @@ paths:
         '500':
           description: Erro interno
 
+  /user/percentages/{userId}:
+    get:
+      summary: Distribuição percentual de tipos de relatório por utilizador
+      operationId: getPercentages
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de percentagens
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReportTypePercentage'
+        '500':
+          description: Erro interno
+
+  # ---------------------------
+  # RoleController (/api/role)
+  # ---------------------------
+
+  /role:
+    post:
+      summary: Cria uma role
+      operationId: createRole
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        '201':
+          description: Role criada
+          headers:
+            Location:
+              schema:
+                type: string
+        '400':
+          description: Role já existe
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    get:
+      summary: Lista todas as roles
+      operationId: findAllRoles
+      responses:
+        '200':
+          description: Lista de roles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /role/{roleName}:
+    delete:
+      summary: Apaga role por nome
+      operationId: deleteRole
+      parameters:
+        - name: roleName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Removida
+        '404':
+          description: Role não encontrada
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /role/byName/{roleName}:
+    get:
+      summary: Obtém role por nome
+      operationId: findRoleByName
+      parameters:
+        - name: roleName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Role encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Role não encontrada
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /role/byId/{id}:
+    get:
+      summary: Obtém role por id
+      operationId: findRoleById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Role encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Role não encontrada
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  # -----------------------------
+  # ReportController (/api/report)
+  # -----------------------------
+
+  /report:
+    post:
+      summary: Cria relatório
+      operationId: createReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReportInput'
+      responses:
+        '201':
+          description: Relatório criado
+          headers:
+            Location:
+              schema:
+                type: string
+        '404':
+          description: Utilizador não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    get:
+      summary: Lista relatórios
+      operationId: findAllReports
+      responses:
+        '200':
+          description: Lista de relatórios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /report/{id}:
+    get:
+      summary: Obtém relatório por id
+      operationId: findReportById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Relatório
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Relatório não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    delete:
+      summary: Apaga relatório por id
+      operationId: deleteReportById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Removido
+        '404':
+          description: Relatório não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /report/byStatus/{status}:
+    get:
+      summary: Lista relatórios por estado
+      operationId: findReportsByStatus
+      parameters:
+        - name: status
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /report/byCreator/{creatorId}:
+    get:
+      summary: Lista relatórios por criador
+      operationId: findReportsByCreator
+      parameters:
+        - name: creatorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /report/update-status/{id}:
+    post:
+      summary: Atualiza estado do relatório
+      operationId: updateReportStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatusInput'
+      responses:
+        '200':
+          description: Relatório atualizado
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Relatório não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /report/{id}/editors:
+    post:
+      summary: Adiciona editor ao relatório
+      operationId: addEditor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditorInput'
+      responses:
+        '200':
+          description: Relatório atualizado
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /report/{id}/editors/:
+    delete:
+      summary: Remove editor do relatório
+      operationId: removeEditor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditorInput'
+      responses:
+        '200':
+          description: Relatório atualizado
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /report/{reportId}/listen:
+    get:
+      summary: SSE - escuta atualizações de um relatório
+      operationId: listenReport
+      parameters:
+        - name: reportId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Stream SSE
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  # ---------------------------------
+  # OccurrenceController (/api/occurrence)
+  # ---------------------------------
+
+  /occurrence:
+    post:
+      summary: Cria ocorrência
+      operationId: createOccurrence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OccurrenceCreateInput'
+      responses:
+        '201':
+          description: Ocorrência criada
+          headers:
+            Location:
+              schema:
+                type: string
+        '400':
+          description: Dados inválidos (ex.: end date, duplicate users)
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: Utilizador não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    get:
+      summary: Lista ocorrências
+      operationId: findAllOccurrences
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /occurrence/{occurrenceId}:
+    get:
+      summary: Obtém a ocorrência pelo id
+      operationId: findOccurrenceById
+      parameters:
+        - name: occurrenceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ocorrência
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Ocorrência não encontrada
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    delete:
+      summary: Apaga a ocorrência por id
+      operationId: deleteOccurrenceById
+      parameters:
+        - name: occurrenceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Removida
+        '404':
+          description: Ocorrência não encontrada
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /occurrence/importance/{importance}:
+    get:
+      summary: Lista de ocorrências pela importância
+      operationId: findOccurrencesByImportance
+      parameters:
+        - name: importance
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /occurrence/reporter/{reporterId}:
+    get:
+      summary: Lista de ocorrências do reporter
+      operationId: findOccurrencesByReporterId
+      parameters:
+        - name: reporterId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /occurrence/{id}/intervenors:
+    post:
+      summary: Associa o interveniente à ocorrência
+      operationId: addIntervenorToOccurrence
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntervenorIdInput'
+      responses:
+        '200':
+          description: Ocorrência atualizada
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      summary: Remove o interveniente da ocorrência
+      operationId: removeIntervenorFromOccurrence
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntervenorIdInput'
+      responses:
+        '200':
+          description: Ocorrência atualizada
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /occurrence/{occurrenceId}/listen:
+    get:
+      summary: SSE - listener das atualizações de uma ocorrência
+      operationId: listenOccurrence
+      parameters:
+        - name: occurrenceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Stream SSE
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /occurrence/listen/user/{userId}:
+    get:
+      summary: SSE - listener das alterações na lista de ocorrências de um utilizador
+      operationId: listenUserOccurrences
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Stream SSE
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /intervenor:
+    post:
+      summary: Cria o interveniente
+      operationId: createIntervenor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntervenorInput'
+      responses:
+        '201':
+          description: Interveniente criado
+          headers:
+            Location:
+              schema:
+                type: string
+        '400':
+          description: Interveniente já existe
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    get:
+      summary: Lista dos intervenientes
+      operationId: findAllIntervenors
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /intervenor/update/{intervenorId}:
+    post:
+      summary: Atualiza o interveniente
+      operationId: updateIntervenor
+      parameters:
+        - name: intervenorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IntervenorUpdateInput'
+      responses:
+        '200':
+          description: Interveniente atualizado
+          headers:
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Interveniente não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /intervenor/delete/byIdNumber/{idNumber}:
+    delete:
+      summary: Apaga o interveniente pelo número de identificação
+      operationId: deleteIntervenorByIdNumber
+      parameters:
+        - name: idNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Removido
+        '404':
+          description: Interveniente não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /intervenor/byIdNumber/{idNumber}:
+    get:
+      summary: Obtém o interveniente pelo número de identificação
+      operationId: findIntervenorByIdNumber
+      parameters:
+        - name: idNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interveniente
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /intervenor/byContactInfo/{contactInfo}:
+    get:
+      summary: Obtém o interveniente pelo contacto
+      operationId: findIntervenorByContactInfo
+      parameters:
+        - name: contactInfo
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interveniente
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /intervenor/{id}:
+    get:
+      summary: Obtém o interveniente pelo id
+      operationId: findIntervenorById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Interveniente
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /intervenor/{intervenorId}/listen:
+    get:
+      summary: SSE - listener das atualizações de um interveniente
+      operationId: listenIntervenor
+      parameters:
+        - name: intervenorId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Stream SSE
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /intervenor/listen:
+    get:
+      summary: SSE - listener das alterações na lista global de intervenientes
+      operationId: listenIntervenors
+      responses:
+        '200':
+          description: Stream SSE
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /evidence:
+    post:
+      summary: Cria a evidência
+      operationId: createEvidence
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateEvidenceMultipart'
+      responses:
+        '201':
+          description: Evidência criada
+          headers:
+            Location:
+              schema:
+                type: string
+        '400':
+          description: Ficheiro inválido
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: Ocorrência ou reporter não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    get:
+      summary: Lista as evidências
+      operationId: findAllEvidence
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /evidence/{id}:
+    get:
+      summary: Obtém evidência pelo id
+      operationId: findEvidenceById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Evidência
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Evidência não encontrada
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    delete:
+      summary: Apaga a evidência
+      operationId: deleteEvidence
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Removida
+        '404':
+          description: Evidência/ocorrência não encontrada
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /evidence/{id}/download:
+    get:
+      summary: Download do ficheiro da evidência
+      operationId: downloadEvidence
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ficheiro
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Evidência/ficheiro não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /evidence/byOccurrence/{occurrenceId}:
+    get:
+      summary: Lista evidências pela ocorrência
+      operationId: findEvidenceByOccurrenceId
+      parameters:
+        - name: occurrenceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /evidence/byReporter/{reporterId}:
+    get:
+      summary: Lista evidências pelo reporter
+      operationId: findEvidenceByReporterId
+      parameters:
+        - name: reporterId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /evidence/byType:
+    get:
+      summary: Lista evidências pelo tipo (tipo vem no body como string)
+      operationId: findEvidenceByType
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /evidence/byLocation/{location}:
+    get:
+      summary: Lista evidências pela localização
+      operationId: findEvidenceByLocation
+      parameters:
+        - name: location
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /evidence/{evidenceId}/listen:
+    get:
+      summary: SSE - listener das atualizações de uma evidência
+      operationId: listenEvidence
+      parameters:
+        - name: evidenceId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Stream SSE
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+
+  /documents:
+    post:
+      summary: Upload do documento (multipart)
+      operationId: uploadDocument
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadDocumentMultipart'
+      responses:
+        '201':
+          description: Documento criado
+          headers:
+            Location:
+              schema:
+                type: string
+        '400':
+          description: Ficheiro inválido
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Ficheiro já existe
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    get:
+      summary: Lista os documentos
+      operationId: getAllDocuments
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /documents/types:
+    get:
+      summary: Lista tipos dos documentos disponíveis
+      operationId: getAllDocumentTypes
+      responses:
+        '200':
+          description: Lista de tipos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /documents/{id}:
+    get:
+      summary: Obtém documento pelo id
+      operationId: getDocumentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Documento
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Documento não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    delete:
+      summary: Apaga o documento
+      operationId: deleteDocument
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Documento apagado
+        '404':
+          description: Documento não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /documents/{id}/download:
+    get:
+      summary: Download do documento
+      operationId: downloadDocument
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ficheiro
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Documento não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /documents/name/{name}:
+    get:
+      summary: Obtém documento pelo nome
+      operationId: getDocumentByName
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Documento
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /documents/type/{type}:
+    get:
+      summary: Obtém documentos pelo tipo
+      operationId: getDocumentsByType
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de documentos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /documents/listen:
+    get:
+      summary: SSE - listener das alterações na lista global de documentos
+      operationId: listenDocuments
+      responses:
+        '200':
+          description: Stream SSE
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  # ---------------------------
+  # TypeController (/api/type)
+  # ---------------------------
+
+  /type:
+    post:
+      summary: Cria tipo
+      operationId: createType
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TypeCreateInput'
+      responses:
+        '201':
+          description: Tipo criado
+          headers:
+            Location:
+              schema:
+                type: string
+        '400':
+          description: Nome inválido ou tipo já existe
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    get:
+      summary: Lista tipos
+      operationId: findAllTypes
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /type/{id}:
+    get:
+      summary: Obtém tipo pelo id
+      operationId: findTypeById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tipo
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Tipo não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+    post:
+      summary: Atualiza tipo
+      operationId: updateType
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TypeUpdateInput'
+      responses:
+        '200':
+          description: Tipo atualizado
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      summary: Apaga tipo
+      operationId: deleteTypeById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Removido
+        '404':
+          description: Tipo não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /type/name/{name}:
+    get:
+      summary: Obtém tipo pelo nome
+      operationId: findTypeByName
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tipo
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Tipo não encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+  /type/listen:
+    get:
+      summary: SSE - listener das alterações na lista global de tipos
+      operationId: listenTypes
+      responses:
+        '200':
+          description: Stream SSE
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /stats:
+    get:
+      summary: Estatísticas gerais (overview)
+      operationId: getOverviewStats
+      responses:
+        '200':
+          description: Overview
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /stats/report/type:
+    get:
+      summary: Estatísticas de relatórios por tipo
+      operationId: getStatsReportByType
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /stats/report/status:
+    get:
+      summary: Estatísticas de relatórios por estado
+      operationId: getStatsReportByStatus
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /stats/occurrence/importance:
+    get:
+      summary: Estatísticas de ocorrências por importância
+      operationId: getStatsOccurrenceByImportance
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /stats/report/type/month:
+    get:
+      summary: Estatísticas de relatórios por tipo (mês atual)
+      operationId: getStatsReportByTypeThisMonth
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /stats/report/status/month:
+    get:
+      summary: Estatísticas de relatórios por estado (mês atual)
+      operationId: getStatsReportByStatusThisMonth
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /stats/occurrence/importance/month:
+    get:
+      summary: Estatísticas de ocorrências por importância (mês atual)
+      operationId: getStatsOccurrenceByImportanceThisMonth
+      responses:
+        '200':
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
+    Problem:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+
     UserInput:
       type: object
       properties:
@@ -205,9 +1612,9 @@ components:
         password:
           type: string
       required:
-        - name
-        - email
-        - password
+        -name
+        -email
+        -password
 
     UserCreateTokenInput:
       type: object
@@ -217,8 +1624,8 @@ components:
         password:
           type: string
       required:
-        - email
-        - password
+        -email
+        -password
 
     UserCreateTokenOutput:
       type: object
@@ -235,6 +1642,10 @@ components:
           type: string
         email:
           type: string
+        roles:
+          type: array
+          items:
+            type: object
 
     RoleInput:
       type: object
@@ -244,26 +1655,190 @@ components:
         userId:
           type: integer
       required:
-        - roleId
-        - userId
+        -roleId
+        -userId
 
     RolesInput:
       type: object
       properties:
         rolesIds:
           type: array
-          items:
-            type: integer
         userId:
           type: integer
       required:
-        - rolesIds
-        - userId
+        -rolesIds
+        -userId
 
-    Problem:
+    ReportTypePercentage:
       type: object
       properties:
         type:
           type: string
+        percentage:
+          type: number
+          format: double
+
+    CreateReportInput:
+      type: object
+      properties:
+        creatorId:
+          type: integer
+        occurrenceId:
+          type: integer
         title:
           type: string
+        description:
+          type: string
+        addons:
+          type: object
+      required:
+        -creatorId
+        -occurrenceId
+        -title
+        -description
+
+    StatusInput:
+      type: object
+      properties:
+        newStatus:
+          type: string
+      required:
+        -newStatus
+
+    EditorInput:
+      type: object
+      properties:
+        editorId:
+          type: integer
+      required:
+        -editorId-
+
+    OccurrenceCreateInput:
+      type: object
+      properties:
+        usersId:
+          type: array
+        endDate:
+          type: string
+        importance:
+          type: string
+        occurrenceType:
+          type: string
+        occurrenceInfo:
+          type: object
+      required:
+        -usersId
+        -endDate
+        -importance
+        -occurrenceType
+
+    IntervenorIdInput:
+      type: object
+      properties:
+        intervenorId:
+          type: integer
+      required:
+        -intervenorId
+
+    IntervenorInput:
+      type: object
+      properties:
+        idNumber:
+          type: string
+        idType:
+          type: string
+        name:
+          type: string
+        contactInfo:
+          type: string
+        address:
+          type: string
+      required:
+        -idNumber
+        -idType
+        -name
+
+    IntervenorUpdateInput:
+      type: object
+      properties:
+        idNumber:
+          type: string
+        idType:
+          type: string
+        name:
+          type: string
+        contactInfo:
+          type: string
+        address:
+          type: string
+
+    CreateEvidenceMultipart:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        data:
+          $ref: '#/components/schemas/CreateEvidenceInput'
+      required:
+        -file   
+        -data
+
+    CreateEvidenceInput:
+      type: object
+      properties:
+        type:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        reporterId:
+          type: integer
+        occurrenceId:
+          type: integer
+      required:
+        -type
+        -reporterId
+        -occurrenceId
+
+    UploadDocumentMultipart:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        data:
+          $ref: '#/components/schemas/DocumentInputModel'
+      required:
+        -file
+        -data
+
+    DocumentInputModel:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+      required:
+        -name
+        -type
+
+    TypeCreateInput:
+      type: object
+      properties:
+        name:
+          type: string
+        form:
+          type: object
+      required:
+        -name
+
+    TypeUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+        form:
+          type: object
