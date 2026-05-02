@@ -3,5 +3,5 @@ export interface CreateEvidenceInput{
     location: string;
     description: string;
     reporterId: number;
-    reportId: number;
+    occurrenceId: number;
 }

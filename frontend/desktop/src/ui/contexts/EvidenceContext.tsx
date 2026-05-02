@@ -1,10 +1,10 @@
 import {createContext} from "react";
 import {Json} from "@commons/models/utils/Json";
 import {api} from "@commons/api/api";
-
+import {UploadFile} from "@commons/models/utils/UploadFile";
 
 type EvidenceContextValue = {
-    createEvidence: (type: string, location: string, description: string, reporterId: number, reportId: number) => Promise<any>
+    createEvidence: (file: UploadFile, type: string, location: string, description: string, reporterId: number, occurrenceId: number) => Promise<any>
     findEvidenceById: (id: number) => Promise<any>
 }
 
@@ -12,9 +12,9 @@ export const EvidenceContext = createContext<EvidenceContextValue | undefined>(u
 
 export function EvidenceProvider({children}) {
 
-    async function createEvidence(type: string, location: string, description: string, reporterId: number, reportId: number){
+    async function createEvidence(file: UploadFile, type: string, location: string, description: string, reporterId: number, occurrenceId: number){
         try {
-            await api.createEvidence({type, location, description, reporterId, reportId})
+            await api.createEvidence(file, {type, location, description, reporterId, occurrenceId})
         } catch (err: any) {
             throw Error(err.message)
         }

@@ -27,6 +27,7 @@ import {OverviewStats} from "../models/stats/OverviewStats";
 import {StatsReportType} from "../models/stats/StatsReportType";
 import {StatsReportStatus} from "../models/stats/StatsReportStatus";
 import {StatsOccurrenceImportance} from "../models/stats/StatsOccurrenceImportance";
+import {UploadFile} from "../models/utils/UploadFile";
 
 type ApiAuthInfo = { token: string } | null;
 
@@ -81,10 +82,11 @@ export async function fetchApi<T>(
     endpoint: string,
     options: RequestInit = {}
 ): Promise<T> {
+    const isFormData = options.body instanceof FormData;
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...options,
         headers: {
-            "Content-Type": "application/json",
+            ...(isFormData ? {} : { "Content-Type": "application/json" }),
             ...options.headers,
         },
     });
@@ -334,10 +336,31 @@ export const api = {
 
     // Evidence
 
-    async createEvidence(input: CreateEvidenceInput): Promise<void> {
+    async createEvidence(file: UploadFile, input: CreateEvidenceInput): Promise<void> {
+        const formData = new FormData();
+        if (file.file) {
+            formData.append(
+                "file",
+                file.file
+            );
+        } else {
+            formData.append(
+                "file",
+                {
+                    uri: file.uri!,
+                    name: file.name,
+                    type: file.type,
+                } as any
+            );
+        }
+        formData.append(
+            "data",
+            new Blob([JSON.stringify(input)], { type: "application/json" })
+        );
+        console.log(formData);
         return fetchApi<void>("/evidence", {
             method: "POST",
-            body: JSON.stringify(input),
+            body: formData
         });
     },
 
