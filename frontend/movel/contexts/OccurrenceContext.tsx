@@ -5,6 +5,7 @@ import {userInfoRepo} from "../infrastructure/UserInfoPreferencesRepo";
 import { Occurrence } from "@commons/models/occurrence/Occurrence";
 import {useAuth} from "../hooks/useAuth";
 import {useOccurrencesListener, SSEMessage} from "../hooks/useOccurrencesListener";
+import {occurrenceInfoRepo} from "../infrastructure/OccurrenceInfoPreferencesRepo";
 
 
 type OccurrenceContextValue = {
@@ -27,13 +28,14 @@ export function OccurrenceProvider({children}) {
         listOccurrences()
     }, [user]);
 
-    const handleOnMessage = useCallback((message: SSEMessage)=>{
+    const handleOnMessage = useCallback( async (message: SSEMessage)=>{
         setLoading(true)
         const data = message.data
         const action = message.action
         switch (action) {
             case "OccurrencesChanged":
                 setOccurrence(data.occurrences)
+                await occurrenceInfoRepo.saveOccurrenceInfo(data.occurrences)
                 break
             default:
                 break
@@ -44,12 +46,21 @@ export function OccurrenceProvider({children}) {
     useOccurrencesListener(user?.id, handleOnMessage)
 
     async function listOccurrences() {
+        if (!user) return
+        setLoading(true)
         try {
-            if (!user) return;
             const response = await api.findOccurrencesByReporterId(user.id)
             setOccurrence(response)
+            await occurrenceInfoRepo.saveOccurrenceInfo(response)
         }catch (err: any) {
-            throw Error(err.message)
+            const cached = await occurrenceInfoRepo.getOccurrenceInfo()
+            if (cached) {
+                setOccurrence(cached)
+            } else {
+                setOccurrence([])
+            }
+        } finally {
+            setLoading(false)
         }
     }
 
