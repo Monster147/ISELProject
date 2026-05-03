@@ -18,10 +18,11 @@ export interface SSEMessage{
 //Precisa de ser updated depois
 export function useEvidenceListener(
     evidenceId: string | undefined,
-    onMessage: (message:SSEMessage) => void
+    onMessage: (message:SSEMessage) => void,
+    enabled: boolean | null
 ) {
     useEffect(() => {
-        if (!evidenceId) return;
+        if (!evidenceId || enabled !== true) return;
 
         const eventSource = new EventSource(`/api/evidence/${Number(evidenceId)}/listen`)
 
@@ -42,5 +43,5 @@ export function useEvidenceListener(
         return () => {
             eventSource.close();
         }
-    }, [evidenceId, onMessage]);
+    }, [evidenceId, onMessage, enabled]);
 }

@@ -13,6 +13,7 @@ import Spacer from "../../../../components/Spacer";
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {confirmAction} from "../../../../utils/confirmAction";
+import OfflineBanner from "../../../../components/ThemedOfflineBanner";
 
 const OccurrenceIntervenors = () => {
     const {t} = useTranslation()
@@ -57,13 +58,13 @@ const OccurrenceIntervenors = () => {
 
     const handleRemove = (intervenorId: number) => {
         confirmAction(
-            () => handleRemover(intervenorId),
             {
                 title: t("removeIntervenor.title"),
                 message: t("removeIntervenor.message"),
                 cancelText: t("removeIntervenor.cancel"),
                 confirmText: t("removeIntervenor.confirm"),
-            }
+            },
+            () => handleRemover(intervenorId),
         );
     };
 
@@ -109,7 +110,7 @@ const OccurrenceIntervenors = () => {
             </ThemedText>
 
             <Spacer />
-
+            <OfflineBanner/>
             {isEmpty ? (
                 <ThemedView style={styles.emptyContainer}>
                     <ThemedButton onPress={handleIntervenors} style={styles.create}>

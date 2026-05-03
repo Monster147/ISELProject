@@ -19,10 +19,11 @@ export interface SSEMessage{
 //Precisa de ser updated depois
 export function useEvidenceListener(
     evidenceId: string | undefined,
-    onMessage: (message: SSEMessage) => void
+    onMessage: (message: SSEMessage) => void,
+    enabled: boolean | null
 ) {
     useEffect(() => {
-        if (!evidenceId) return;
+        if (!evidenceId || enabled!== true) return;
 
         const es = new EventSource(
             `https://unfabricated-everett-surveyable.ngrok-free.dev/api/evidence/${Number(evidenceId)}/listen`
@@ -47,5 +48,5 @@ export function useEvidenceListener(
             es.removeAllEventListeners();
             es.close();
         };
-    }, [evidenceId, onMessage]);
+    }, [evidenceId, onMessage, enabled]);
 }

@@ -17,10 +17,11 @@ export interface SSEMessage{
 }
 
 export function useTypesListener(
-    onMessage: (message:SSEMessage) => void
+    onMessage: (message:SSEMessage) => void,
+    enabled: boolean | null
 ) {
     useEffect(() => {
-
+        if(enabled !== true) return
         const eventSource = new EventSource(`/api/type/listen`)
 
         eventSource.onmessage = (occurrence) =>{
@@ -53,5 +54,5 @@ export function useTypesListener(
             eventSource.close();
         }
 
-    }, [onMessage])
+    }, [onMessage, enabled])
 }

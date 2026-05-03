@@ -17,9 +17,11 @@ export interface SSEMessage{
 }
 
 export function useDocumentsListener(
-    onMessage: (message:SSEMessage) => void
+    onMessage: (message:SSEMessage) => void,
+    enabled: boolean | null
 ) {
     useEffect(() => {
+        if(enabled !== true) return
         const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/documents/listen`);
 
         const onEvent = (event: any) => {
@@ -54,5 +56,5 @@ export function useDocumentsListener(
             es.close();
         };
 
-    }, [onMessage])
+    }, [onMessage, enabled])
 }

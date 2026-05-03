@@ -23,10 +23,11 @@ export interface SSEMessage{
 
 export function useReportListener(
     reportId: string | undefined,
-    onMessage: (message: SSEMessage) => void
+    onMessage: (message: SSEMessage) => void,
+    enabled: boolean | null
 ) {
     useEffect(() => {
-        if (!reportId) return;
+        if (!reportId || enabled!== true) return;
 
         const es = new EventSource(
             `https://unfabricated-everett-surveyable.ngrok-free.dev/api/report/${Number(reportId)}/listen`
@@ -51,5 +52,5 @@ export function useReportListener(
             es.removeAllEventListeners();
             es.close();
         };
-    }, [reportId, onMessage]);
+    }, [reportId, onMessage, enabled]);
 }

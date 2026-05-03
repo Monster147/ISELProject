@@ -169,7 +169,10 @@ const pt = {
         },
         documents:{
             documents: "Documentos",
-            noDocument: "Sem documentos"
+            noDocument: "Sem documentos",
+            title: "Atenção!",
+            message: "Sem ligação à internet. Não é possível descarregar documentos.",
+            cancel: "Ok",
         },
         stats: {
             totalUsers: "Total de utilizadores",
@@ -196,6 +199,10 @@ const pt = {
             startDate: "Data de início",
             endDate: "Data de fim",
         },
+        warning:{
+            noConnection: "Sem ligação à internet",
+            noDownload: "Sem ligação à internet. Não é possível descarregar documentos."
+        }
     }
 }
 

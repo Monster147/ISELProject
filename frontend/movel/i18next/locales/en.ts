@@ -154,7 +154,10 @@ const en = {
         },
         documents:{
             documents: "Documents",
-            noDocument: "No documents"
+            noDocument: "No documents",
+            title: "Hold on!",
+            message:"No internet connection. Cannot download documents.",
+            cancel:"Ok",
         },
         stats:{
             totalUsers: "Total Users",
@@ -180,6 +183,10 @@ const en = {
             dateRange: "Date range",
             startDate: "Start date",
             endDate: "End date",
+        },
+        warning:{
+            noConnection: "No connection to internet",
+            noDownload: "No internet connection. Cannot download documents."
         }
     }
 }

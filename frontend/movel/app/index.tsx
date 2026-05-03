@@ -11,7 +11,7 @@ import {useTranslation} from "react-i18next";
 
 const DURATION_MS = 4000;
 
-const LoadingScreen = ()=> {
+const Index = ()=> {
     const {t} = useTranslation()
     const { token, isAuthLoading } = useAuth();
 
@@ -59,7 +59,7 @@ const LoadingScreen = ()=> {
     );
 }
 
-export default LoadingScreen
+export default Index
 
 const styles = StyleSheet.create({
     container:{

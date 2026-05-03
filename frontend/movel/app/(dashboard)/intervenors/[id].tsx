@@ -15,6 +15,7 @@ import {PaperProvider} from "react-native-paper";
 import ThemedTextInput from "../../../components/ThemedTextInput";
 import {useBackRedirect} from "../../../hooks/useBackRedirect";
 import {useTranslation} from "react-i18next";
+import OfflineBanner from "../../../components/ThemedOfflineBanner";
 
 const IntervenorUpdate = () => {
     const {t} = useTranslation()
@@ -38,10 +39,11 @@ const IntervenorUpdate = () => {
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme] ?? Colors.light;
 
-    const {findIntervenorById, updateIntervenor} = useIntervenor();
+    const {findIntervenorById, updateIntervenor, intervenor} = useIntervenor();
     const intervenorId = Number(id)
 
-    const [intervenor, setIntervenor] = useState<Intervenor | null>(null);
+    const actualIntervenor = intervenor.find(i => i.id === intervenorId);
+
     const [name, setName] = useState<string | null>(null)
     const [identifier, setIdentifier] = useState<string | null>(null)
     const [identifierType, setIdentifierType] = useState<string | null>(null)
@@ -53,13 +55,20 @@ const IntervenorUpdate = () => {
         const load = async () => {
             try {
                 setLoading(true)
-                const intervenorData = await findIntervenorById(intervenorId)
-                setIntervenor(intervenorData)
-                setName(intervenorData.name)
-                setIdentifier(intervenorData.idNumber)
-                setIdentifierType(intervenorData.idType)
-                setPhoneNumber(intervenorData.contactInfo)
-                setAddress(intervenorData.address)
+                if (actualIntervenor) {
+                    setName(actualIntervenor.name)
+                    setIdentifier(actualIntervenor.idNumber)
+                    setIdentifierType(actualIntervenor.idType)
+                    setPhoneNumber(actualIntervenor.contactInfo)
+                    setAddress(actualIntervenor.address)
+                } else {
+                    const intervenorData = await findIntervenorById(intervenorId)
+                    setName(intervenorData.name)
+                    setIdentifier(intervenorData.idNumber)
+                    setIdentifierType(intervenorData.idType)
+                    setPhoneNumber(intervenorData.contactInfo)
+                    setAddress(intervenorData.address)
+                }
             } catch (err: any) {
                 if (err instanceof Error) setError(err.message);
                 else setError(String(err));
@@ -94,7 +103,6 @@ const IntervenorUpdate = () => {
                 setName(null);
                 setError(null);
                 setChange([]);
-                setIntervenor(null);
             };
         }, [])
     );
@@ -116,6 +124,9 @@ const IntervenorUpdate = () => {
                         <ThemedText title style={[styles.title, {alignSelf: "center"}]}>
                             Update Intervenor
                         </ThemedText>
+
+                        <OfflineBanner/>
+
                         <MultiSelectDropdown
                             label={t("intervenorUpdate.selectFields")}
                             placeholder={t("intervenorUpdate.selectFields")}

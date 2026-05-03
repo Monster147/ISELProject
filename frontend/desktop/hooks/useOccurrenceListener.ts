@@ -22,10 +22,11 @@ export interface SSEMessage{
 //Precisa de ser updated depois
 export function useOccurrenceListener(
     occurrenceId: string | undefined,
-    onMessage: (message:SSEMessage) => void
+    onMessage: (message:SSEMessage) => void,
+    enabled: boolean | null
 ) {
     useEffect(() => {
-        if (!occurrenceId) return;
+        if (!occurrenceId || enabled !== true) return;
 
         const eventSource = new EventSource(`/api/occurrence/${Number(occurrenceId)}/listen`)
 
@@ -47,7 +48,7 @@ export function useOccurrenceListener(
             eventSource.close();
         };
 
-    }, [occurrenceId, onMessage]);
+    }, [occurrenceId, onMessage, enabled]);
 
 }
 

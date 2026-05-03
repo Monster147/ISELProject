@@ -4,7 +4,7 @@ import ThemedView from "../../components/ThemedView";
 import Spacer from "../../components/Spacer";
 import {useOccurrence} from "../../hooks/useOccurrence";
 import {useAuth} from "../../hooks/useAuth";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Colors} from "@commons/constants/Colors";
 import ThemedCard from "../../components/ThemedCard";
 import {useLocalSearchParams, useRouter} from "expo-router";
@@ -17,6 +17,7 @@ import {OccurrenceType} from "@commons/models/occurrence/OccurrenceType";
 import ThemedFilterButton from "../../components/ThemedFilterButton";
 import ThemedTextInput from "../../components/ThemedTextInput";
 import ThemedDateInput from "../../components/ThemedDateInput";
+import OfflineBanner from "../../components/ThemedOfflineBanner";
 
 const OccurrenceScreen = () => {
     const {t} = useTranslation()
@@ -82,7 +83,7 @@ const OccurrenceScreen = () => {
                 {t("occurrence.occurrenceList")}
             </ThemedText>
 
-            <Spacer/>
+            <OfflineBanner/>
 
             <ThemedView style={styles.toolbar}>
                 <ThemedFilterButton

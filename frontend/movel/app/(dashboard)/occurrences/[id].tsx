@@ -14,6 +14,7 @@ import {useIntervenor} from "../../../hooks/useIntervenor";
 import {useTranslation} from "react-i18next";
 import Spacer from "../../../components/Spacer";
 import {useType} from "../../../hooks/useType";
+import OfflineBanner from "../../../components/ThemedOfflineBanner";
 
 const OccurrenceDetails = () => {
     const {t} = useTranslation()
@@ -51,6 +52,8 @@ const OccurrenceDetails = () => {
             <ScrollView>
                 <ThemedCard style={styles.card}>
                     <ThemedText title={true} style={[styles.title, {alignSelf: "center"}]}>{t("occurrenceDetails.occurrenceDetails")}</ThemedText>
+
+                    <OfflineBanner/>
 
                     <Spacer/>
 

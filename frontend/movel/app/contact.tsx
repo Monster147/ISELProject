@@ -3,6 +3,7 @@ import {Link, router} from 'expo-router'
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
 import {useBackRedirect} from "../hooks/useBackRedirect";
+import OfflineBanner from "../components/ThemedOfflineBanner";
 
 const Contact = () =>{
 
@@ -11,6 +12,7 @@ const Contact = () =>{
     return(
         <ThemedView style={styles.container}>
             <ThemedText style={styles.title} title={true}>Contact Page</ThemedText>
+            <OfflineBanner/>
         </ThemedView>
     )
 }

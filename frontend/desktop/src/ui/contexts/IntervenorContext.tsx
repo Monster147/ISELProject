@@ -2,6 +2,7 @@ import {createContext, useCallback, useEffect, useMemo, useState} from "react";
 import {api, ApiError, fetchApi, getAuthHeaders} from "@commons/api/api";
 import {Intervenor} from "@commons/models/intervenor/Intervenor";
 import {useIntervenorsListener, SSEMessage} from "../../../hooks/useIntervenorsListener";
+import {useNetworkStatus} from "../../hooks/useNetworkStatus";
 
 type IntervenorContextValue = {
     createIntervenor: (idNumber: string, idType: string, name: string, contactInfo: string, address: string) => Promise<void>;
@@ -17,12 +18,11 @@ export const IntervenorContext = createContext<IntervenorContextValue | undefine
 
 export function IntervenorProvider({children}) {
     const [intervenor, setIntervenor] = useState<Intervenor[]>([])
+    const { isOnline } = useNetworkStatus()
 
     useEffect(() => {
-        loadIntervenors().catch((e) => {
-            console.error("Failed to load intervenors", e);
-        });
-    }, []);
+        loadIntervenors()
+    }, [isOnline]);
 
     const handleOnMessage = useCallback((message: SSEMessage)=>{
         const data = message.data
@@ -36,7 +36,7 @@ export function IntervenorProvider({children}) {
         }
     }, [])
 
-    useIntervenorsListener(handleOnMessage)
+    useIntervenorsListener(handleOnMessage, isOnline)
 
     async function loadIntervenors() {
         try {

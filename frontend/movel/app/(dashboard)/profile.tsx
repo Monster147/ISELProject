@@ -10,6 +10,7 @@ import {useAlertExitApp} from "../../hooks/useAlertExitApp";
 import {useTranslation} from "react-i18next";
 import {confirmAction} from "../../utils/confirmAction";
 import {Colors} from "@commons/constants/Colors";
+import OfflineBanner from "../../components/ThemedOfflineBanner";
 
 const Profile = () =>{
     const {t} = useTranslation()
@@ -19,13 +20,13 @@ const Profile = () =>{
 
     const handleLogout = async () => {
         confirmAction(
-            async ()=> await logout(),
             {
                 title: t("logout.title"),
                 message: t("logout.message"),
                 confirmText: t("logout.confirm"),
                 cancelText: t("logout.cancel")
-            }
+            },
+            async ()=> await logout()
         )
     };
 
@@ -35,6 +36,7 @@ const Profile = () =>{
             <ThemedText title={true} style={styles.heading}>
                 {t("profile.profile")}
             </ThemedText>
+            <OfflineBanner/>
 
             <ThemedText style={styles.heading}>{t("profile.name")}:{user?.name }</ThemedText>
             <ThemedText style={styles.heading}>{t("profile.email")}:{user?.email}</ThemedText>
@@ -45,6 +47,7 @@ const Profile = () =>{
             <ThemedButton onPress={handleLogout} style={styles.logoutButton}>
                 <ThemedText style={{color: '#f2f2f2', textAlign: 'center'}}>{t("profile.logout")}</ThemedText>
             </ThemedButton>
+
 
         </ThemedView>
     )

@@ -11,17 +11,31 @@ import ThemedLoader from "../../components/ThemedLoader";
 import ThemedText from "../../components/ThemedText";
 import Spacer from "../../components/Spacer";
 import ThemedCard from "../../components/ThemedCard";
+import OfflineBanner from "../../components/ThemedOfflineBanner";
+import {useNetworkStatus} from "../../hooks/useNetworkStatus";
+import {confirmAction} from "../../utils/confirmAction";
 
 const Document = () => {
     const { t } = useTranslation()
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light
     const { documents, downloadDocument, loading } = useDocument()
+    const { isOnline } = useNetworkStatus()
 
     const [expandedType, setExpandedType] = useState<string | null>(null)
     const [downloading, setDownloading] = useState<number | null>(null)
 
     const handleDownload = async (id: number, fileName: string) => {
+        if (!isOnline) {
+            confirmAction(
+                {
+                    title: t("documents.title"),
+                    message: t("documents.message"),
+                    cancelText: t("documents.cancel"),
+                },
+            );
+            return
+        }
         try {
             setDownloading(id)
             await downloadDocument(id)
@@ -124,6 +138,8 @@ const Document = () => {
             </ThemedText>
 
             <Spacer />
+
+            <OfflineBanner/>
 
             {documentTypes.length > 0 ? (
                 <FlatList

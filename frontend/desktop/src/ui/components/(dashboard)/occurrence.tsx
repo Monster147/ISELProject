@@ -82,8 +82,6 @@ const OccurrenceScreen = () => {
                 {t("occurrence.occurrenceList")}
             </ThemedText>
 
-            <Spacer/>
-
             <ThemedView style={styles.toolbar}>
                 <ThemedFilterButton
                     active={isFilterOpen}

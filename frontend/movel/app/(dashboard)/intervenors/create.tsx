@@ -14,6 +14,7 @@ import {PaperProvider} from "react-native-paper";
 import ThemedTextInput from "../../../components/ThemedTextInput";
 import {useBackRedirect} from "../../../hooks/useBackRedirect";
 import {useTranslation} from "react-i18next";
+import OfflineBanner from "../../../components/ThemedOfflineBanner";
 
 const IntervenorCreate = () => {
     const {t} = useTranslation()
@@ -101,6 +102,9 @@ const IntervenorCreate = () => {
                     <ThemedText title={true} style={styles.heading}>
                         {t("intervenorCreate.intervenorMessage")}
                     </ThemedText>
+
+                    <OfflineBanner/>
+
                     <ThemedTextInput
                         style={{width: '80%', margin: 20, backgroundColor: theme.uiBackground2, alignSelf: "center",}}
                         placeholder={t("intervenorCreate.intervenorId")}

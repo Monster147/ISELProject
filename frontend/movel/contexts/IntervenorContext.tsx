@@ -4,6 +4,9 @@ import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
 import {userInfoRepo} from "../infrastructure/UserInfoPreferencesRepo";
 import {Intervenor} from "@commons/models/intervenor/Intervenor";
 import {useIntervenorsListener, SSEMessage} from "../hooks/useIntervenorsListener";
+import {occurrenceInfoRepo} from "../infrastructure/OccurrenceInfoPreferencesRepo";
+import {intervenorInfoRepo} from "../infrastructure/IntervenorInfoPreferencesRepo";
+import {useNetworkStatus} from "../hooks/useNetworkStatus";
 
 type IntervenorContextValue = {
     createIntervenor: (idNumber: string, idType: string, name: string, contactInfo: string, address: string) => Promise<void>;
@@ -19,33 +22,39 @@ export const IntervenorContext = createContext<IntervenorContextValue | undefine
 
 export function IntervenorProvider({children}) {
     const [intervenor, setIntervenor] = useState<Intervenor[]>([])
+    const { isOnline } = useNetworkStatus()
 
     useEffect(() => {
-        loadIntervenors().catch((e) => {
-            console.error("Failed to load intervenors", e);
-        });
-    }, []);
+        loadIntervenors()
+    }, [isOnline]);
 
-    const handleOnMessage = useCallback((message: SSEMessage)=>{
+    const handleOnMessage = useCallback( async (message: SSEMessage)=>{
         const data = message.data
         const action = message.action
         switch (action) {
             case "IntervenorsChanged":
                 setIntervenor(data.intervenors)
+                await intervenorInfoRepo.saveIntervenorInfo(data.intervenors)
                 break
             default:
                 break
         }
     }, [])
 
-    useIntervenorsListener(handleOnMessage)
+    useIntervenorsListener(handleOnMessage, isOnline)
 
     async function loadIntervenors() {
         try {
             const response = await api.findAllIntervenors()
             setIntervenor(response)
+            await intervenorInfoRepo.saveIntervenorInfo(response)
         }catch (err: any) {
-            throw Error(err.message)
+            const cached = await intervenorInfoRepo.getIntervenorInfo()
+            if (cached) {
+                setIntervenor(cached)
+            } else {
+                setIntervenor([])
+            }
         }
     }
 

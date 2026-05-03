@@ -17,9 +17,11 @@ export interface SSEMessage {
 }
 
 export function useIntervenorsListener(
-    onMessage: (message: SSEMessage) => void
+    onMessage: (message: SSEMessage) => void,
+    enabled: boolean | null
 ) {
     useEffect(() => {
+        if(enabled !== true) return
         const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/intervenor/listen`);
 
         const onEvent = (event: any) => {
@@ -53,5 +55,5 @@ export function useIntervenorsListener(
             es.removeAllEventListeners();
             es.close();
         };
-    }, [onMessage]);
+    }, [onMessage, enabled]);
 }

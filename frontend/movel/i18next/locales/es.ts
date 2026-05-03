@@ -154,7 +154,10 @@ const es = {
         },
         documents:{
             documents: "Documentos",
-            noDocument: "No hay documentos"
+            noDocument: "No hay documentos",
+            title: "Atención!",
+            message: "Sin conexión a internet. No se pueden descargar documentos.",
+            cancel: "Ok",
         },
         stats: {
             totalUsers: "Usuarios totales",
@@ -181,6 +184,10 @@ const es = {
             startDate: "Fecha de inicio",
             endDate: "Fecha de fin",
         },
+        warning:{
+            noConnection: "Sin conexión a internet",
+            noDownload: "Sin conexión a internet. No se pueden descargar documentos."
+        }
     },
 };
 

@@ -17,10 +17,11 @@ export interface SSEMessage {
 
 export function useOccurrencesListener(
     userID: number | undefined,
-    onMessage: (message: SSEMessage) => void
+    onMessage: (message: SSEMessage) => void,
+    enabled: boolean | null
 ) {
     useEffect(() => {
-        if (!userID) return;
+        if (!userID || enabled !== true) return;
 
         const eventSource = new EventSource(`/api/occurrence/listen/user/${userID}`);
 
@@ -54,5 +55,5 @@ export function useOccurrencesListener(
             eventSource.close();
         };
 
-    }, [userID,onMessage]);
+    }, [userID,onMessage, enabled]);
 }

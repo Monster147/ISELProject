@@ -21,10 +21,11 @@ export interface SSEMessage{
 //Precisa de ser updated depois
 export function useReportListener(
     reportId: string | undefined,
-    onMessage: (message:SSEMessage) => void
+    onMessage: (message:SSEMessage) => void,
+    enabled: boolean | null
 ) {
     useEffect(() => {
-        if (!reportId) return;
+        if (!reportId || enabled !== true) return;
 
         const eventSource = new EventSource(`/api/report/${Number(reportId)}/listen`)
 
@@ -45,5 +46,5 @@ export function useReportListener(
         return () => {
             eventSource.close();
         }
-    }, [reportId, onMessage]);
+    }, [reportId, onMessage, enabled]);
 }

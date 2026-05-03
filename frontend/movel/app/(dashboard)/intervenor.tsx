@@ -6,7 +6,7 @@ import ThemedCard from "../../components/ThemedCard";
 import ThemedLoader from "../../components/ThemedLoader";
 import {Colors} from "@commons/constants/Colors";
 import {useFocusEffect, useLocalSearchParams, useRouter} from "expo-router";
-import {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {useIntervenor} from "../../hooks/useIntervenor";
 import {Intervenor} from "@commons/models/intervenor/Intervenor";
 import Spacer from "../../components/Spacer";
@@ -16,6 +16,7 @@ import ThemedTextInput from "../../components/ThemedTextInput";
 import {useAlertExitApp} from "../../hooks/useAlertExitApp";
 import {useOccurrence} from "../../hooks/useOccurrence";
 import {useTranslation} from "react-i18next";
+import OfflineBanner from "../../components/ThemedOfflineBanner";
 
 const IntervenorSearch = () => {
     const {t} = useTranslation()
@@ -144,6 +145,7 @@ const IntervenorSearch = () => {
                 <ScrollView>
                     <Spacer />
                     <ThemedText title={true} style={styles.heading}>{t("intervenor.intervenors")}</ThemedText>
+                    <OfflineBanner/>
                     <ThemedCard style={styles.card}>
                         <Spacer/>
                         <ThemedText>{t("intervenor.searchIntervenor")}</ThemedText>

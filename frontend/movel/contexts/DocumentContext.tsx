@@ -5,6 +5,9 @@ import {api} from "@commons/api/api";
 import {IntervenorContext} from "./IntervenorContext";
 import {useAuth} from "../hooks/useAuth";
 import {useDocumentsListener,SSEMessage} from "../hooks/useDocumentsListener";
+import {useNetworkStatus} from "../hooks/useNetworkStatus";
+import {intervenorInfoRepo} from "../infrastructure/IntervenorInfoPreferencesRepo";
+import {documentsInfoRepo} from "../infrastructure/DocumentsInfoPreferencesRepo";
 
 type DocumentContextValue = {
     documents: Documents[]
@@ -22,19 +25,21 @@ export const DocumentContext = createContext<DocumentContextValue | undefined>(u
 export function DocumentProvider({children}) {
     const [documents, setDocuments] = useState<Documents[]>([])
     const {user} = useAuth()
+    const { isOnline } = useNetworkStatus()
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         getAllDocuments()
-    }, [user]);
+    }, [user, isOnline]);
 
-    const handleOnMessage = useCallback((message: SSEMessage) => {
+    const handleOnMessage = useCallback(async (message: SSEMessage) => {
         setLoading(true)
         const data = message.data
         const action = message.action
         switch (action) {
             case "DocumentsChanged":
                 setDocuments(data.documents)
+                await documentsInfoRepo.saveDocumentsInfo(data.documents)
                 break
             default:
                 break
@@ -42,14 +47,20 @@ export function DocumentProvider({children}) {
         setTimeout(() => setLoading(false), 300);
     }, [])
 
-    useDocumentsListener(handleOnMessage)
+    useDocumentsListener(handleOnMessage, isOnline)
 
     async function getAllDocuments(){
         try {
             const response=await api.getAllDocument()
             setDocuments(response)
+            await documentsInfoRepo.saveDocumentsInfo(response)
         }catch (err: any) {
-            throw Error(err.message)
+            const cached = await documentsInfoRepo.getDocumentsInfo()
+            if (cached) {
+                setDocuments(cached)
+            } else {
+                setDocuments([])
+            }
         }
     }
 

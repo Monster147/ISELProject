@@ -16,10 +16,11 @@ export interface SSEMessage{
 }
 
 export function useDocumentsListener(
-    onMessage: (message:SSEMessage) => void
+    onMessage: (message:SSEMessage) => void,
+    enabled: boolean | null
 ) {
     useEffect(() => {
-
+        if(enabled !== true) return
         const eventSource = new EventSource(`/api/documents/listen`)
 
         eventSource.onmessage = (occurrence) =>{
@@ -52,5 +53,5 @@ export function useDocumentsListener(
             eventSource.close();
         }
 
-    }, [onMessage])
+    }, [onMessage, enabled])
 }

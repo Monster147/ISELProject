@@ -18,10 +18,11 @@ export interface SSEMessage {
 
 export function useOccurrencesListener(
     userID: number | undefined,
-    onMessage: (message: SSEMessage) => void
+    onMessage: (message: SSEMessage) => void,
+    enabled: boolean | null
 ) {
     useEffect(() => {
-        if (!userID) return;
+        if (!userID || enabled !== true) return;
         const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/occurrence/listen/user/${userID}`);
 
         const onEvent = (event: any) => {
@@ -55,5 +56,5 @@ export function useOccurrencesListener(
             es.removeAllEventListeners();
             es.close();
         };
-    }, [userID,onMessage]);
+    }, [userID,onMessage, enabled, enabled]);
 }

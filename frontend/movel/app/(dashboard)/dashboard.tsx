@@ -17,6 +17,7 @@ import {api} from "@commons/api/api";
 import {Type} from "@commons/models/type/Type";
 import {useStats} from "../../hooks/useStats";
 import {useType} from "../../hooks/useType";
+import OfflineBanner from "../../components/ThemedOfflineBanner";
 
 const Dashboard = () => {
     const {t} = useTranslation();
@@ -97,6 +98,8 @@ const Dashboard = () => {
                 <ThemedText title={true} style={styles.heading}>
                     {t("dashboard.dashboard")}
                 </ThemedText>
+
+                <OfflineBanner/>
 
                 <Spacer/>
 

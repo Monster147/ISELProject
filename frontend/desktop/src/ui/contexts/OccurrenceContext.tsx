@@ -3,6 +3,7 @@ import {api, ApiError, fetchApi, getAuthHeaders} from "@commons/api/api";
 import {Occurrence} from "@commons/models/occurrence/Occurrence";
 import {useAuth} from "../../hooks/useAuth";
 import {SSEMessage, useOccurrencesListener} from "../../../hooks/useOccurrencesListener";
+import {useNetworkStatus} from "../../hooks/useNetworkStatus";
 
 
 type OccurrenceContextValue = {
@@ -20,10 +21,11 @@ export function OccurrenceProvider({children}) {
     const [occurrence, setOccurrence] = useState<Occurrence[]>([])
     const [loading, setLoading] = useState(false)
     const {user} = useAuth()
+    const { isOnline } = useNetworkStatus()
 
     useEffect(() => {
         listOccurrences()
-    }, [user]);
+    }, [user, isOnline]);
 
     const handleOnMessage = useCallback((message: SSEMessage)=>{
         setLoading(true)
@@ -39,7 +41,7 @@ export function OccurrenceProvider({children}) {
         setTimeout(() => setLoading(false), 300);
     }, [])
 
-    useOccurrencesListener(user?.id, handleOnMessage)
+    useOccurrencesListener(user?.id, handleOnMessage, isOnline)
 
     async function listOccurrences() {
         try {

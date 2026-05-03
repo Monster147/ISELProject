@@ -6,6 +6,7 @@ import Spacer from "../components/Spacer";
 import ThemedText from "../components/ThemedText";
 import {useAlertExitApp} from "../hooks/useAlertExitApp";
 import {useTranslation} from "react-i18next";
+import OfflineBanner from "../components/ThemedOfflineBanner";
 
 
 const Home = () =>{
@@ -21,6 +22,7 @@ const Home = () =>{
             <Spacer height={10}/>
             <ThemedText title={true}> {t("home.appName")} </ThemedText>
             <Spacer/>
+            <OfflineBanner/>
 
             <Link href="/login" style={styles.link}>
                 <ThemedText>{t("home.login")}</ThemedText>

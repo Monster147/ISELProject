@@ -7,6 +7,7 @@ import {OccurrenceProvider} from "../contexts/OccurrenceContext";
 import {IntervenorProvider} from "../contexts/IntervenorContext";
 import "../i18next/i18next"
 import "../utils/ConfigureApiMobile"
+import "../hooks/useNetworkStatus"
 import {DocumentProvider} from "../contexts/DocumentContext";
 import {TypeProvider} from "../contexts/TypeContext";
 import {EvidenceProvider} from "../contexts/EvidenceContext";
@@ -31,7 +32,7 @@ const RootLayout = () => {
                                             contentStyle: {backgroundColor: theme.background},
                                             animation: "none",
                                         }}>
-                                            <Stack.Screen name="loadingscreen" options={{headerShown: false}}/>
+                                            <Stack.Screen name="index" options={{headerShown: false}}/>
                                             <Stack.Screen name="about" options={{headerShown: false}}/>
                                             <Stack.Screen name="contact" options={{headerShown: false}}/>
                                             <Stack.Screen name="(auth)" options={{headerShown: false}}/>
