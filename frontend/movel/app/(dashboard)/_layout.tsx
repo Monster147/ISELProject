@@ -106,6 +106,10 @@ const DashboardLayout = () => {
                     name="occurrences/intervenors/[id]"
                     options={{href: null}}
                 />
+                <Tabs.Screen
+                    name="occurrences/evidences/[id]"
+                    options={{href: null}}
+                />
             </Tabs>
         </UserOnly>
     )

@@ -54,8 +54,9 @@ class EvidenceControllerTest {
 
         val input = createEvidenceInput(userId, occurrenceId)
         val file = createFile()
+        val data = mapper.writeValueAsString(input)
 
-        val resp = controller.createEvidence(file, input)
+        val resp = controller.createEvidence(file, data)
 
         assertEquals(HttpStatus.CREATED, resp.statusCode)
         assertNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
@@ -69,7 +70,7 @@ class EvidenceControllerTest {
         val input = createEvidenceInput(999, occurrenceId)
         val file = createFile()
 
-        val resp = controller.createEvidence(file, input)
+        val resp = controller.createEvidence(file, mapper.writeValueAsString(input))
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -81,7 +82,7 @@ class EvidenceControllerTest {
         val input = createEvidenceInput(userId, 999)
         val file = createFile()
 
-        val resp = controller.createEvidence(file, input)
+        val resp = controller.createEvidence(file, mapper.writeValueAsString(input))
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -204,7 +205,7 @@ class EvidenceControllerTest {
         val file = createFile()
         return controller.createEvidence(
             file,
-            createEvidenceInput(userId, occurrenceId, location, type),
+            mapper.writeValueAsString(createEvidenceInput(userId, occurrenceId, location, type)),
         ).let { resp ->
             val locationHeader = requireNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
             locationHeader.substringAfterLast("/").toInt()

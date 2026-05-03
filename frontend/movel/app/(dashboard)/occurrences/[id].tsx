@@ -40,7 +40,7 @@ const OccurrenceDetails = () => {
     }
 
     const handleEvidences = async () => {
-        console.log("Navegar Evidencias")
+        router.push(`/occurrences/evidences/${occurrenceId}`)
     };
 
     const handleIntervenors = async () => {

@@ -117,6 +117,14 @@ const pt = {
             remove: "Remover",
             addIntervenors: "Adicionar intervenientes",
         },
+        occurrenceEvidences: {
+            occurrenceEvidences: "Evidências na Ocorrência",
+            type: "Tipo de evidência",
+            location: "Localização da evidência",
+            description: "Descrição da evidência",
+            uploadEvidence: "Enviar evidência",
+            uploadEvidenceFile:"Escolher arquivo",
+        },
         errorResponse: {
             duplicateUsersIds: "A lista de IDs de utilizador fornecida contém duplicados. Garante que cada ID de utilizador é único e tenta novamente.",
             emailAlreadyInUse: "Já existe um utilizador com o endereço de e-mail indicado.",

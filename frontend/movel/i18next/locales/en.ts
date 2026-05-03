@@ -102,6 +102,14 @@ const en = {
             remove:"remove",
             addIntervenors:"Add Intervenors",
         },
+        occurrenceEvidences:{
+            occurrenceEvidences: "Evidences in Occurrence",
+            type:"Evidence Type",
+            location:"Evidence Location",
+            description:"Evidence Description",
+            uploadEvidence:"Upload Evidence",
+            uploadEvidenceFile:"Choose file"
+        },
         errorResponse: {
             duplicateUsersIds:"The provided list of user IDs contains duplicates. Please ensure each user ID is unique and try again.",
             emailAlreadyInUse:"There is already a user with given email address.",

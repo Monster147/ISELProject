@@ -338,7 +338,7 @@ export const api = {
 
     async createEvidence(file: UploadFile, input: CreateEvidenceInput): Promise<void> {
         const formData = new FormData();
-        if (file.file) {
+        if (file.platform === "web") {
             formData.append(
                 "file",
                 file.file
@@ -353,10 +353,7 @@ export const api = {
                 } as any
             );
         }
-        formData.append(
-            "data",
-            new Blob([JSON.stringify(input)], { type: "application/json" })
-        );
+        formData.append("data", JSON.stringify(input));
         console.log(formData);
         return fetchApi<void>("/evidence", {
             method: "POST",

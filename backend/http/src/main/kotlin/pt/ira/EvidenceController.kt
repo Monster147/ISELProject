@@ -1,6 +1,7 @@
 package pt.ira
 
-import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -43,6 +44,7 @@ class EvidenceController(
     private val evidenceService: EvidenceService,
     private val publisher: Publishers,
 ) {
+    private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
     /**
      * Cria uma evidência a partir de um pedido multipart.
      *
@@ -61,16 +63,17 @@ class EvidenceController(
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createEvidence(
         @RequestPart("file") file: MultipartFile,
-        @RequestPart("data") data: CreateEvidenceInput,
+        @RequestPart("data") data: String,
     ): ResponseEntity<*> {
+        val input = objectMapper.readValue(data, CreateEvidenceInput::class.java)
         val result =
             evidenceService.createEvidence(
-                data.type,
+                input.type,
                 file,
-                data.location,
-                data.description,
-                data.reporterId,
-                data.occurrenceId,
+                input.location,
+                input.description,
+                input.reporterId,
+                input.occurrenceId,
             )
         return when (result) {
             is Success ->
