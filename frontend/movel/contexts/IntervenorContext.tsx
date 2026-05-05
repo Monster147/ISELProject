@@ -81,6 +81,7 @@ export function IntervenorProvider({children}) {
             if (checkIfIntervenorExistsOffline(contactInfo, idNumber, idType)) throw Error(t("errorResponse.intervenorAlreadyExists"))
             const payload = {id: Date.now(), idNumber, idType, name, contactInfo, address}
             setIntervenor(prev => [...prev, payload as Intervenor])
+            await intervenorInfoRepo.saveIntervenorInfo(intervenor)
             await offlineIntervenorQueueRepo.addAction("CREATE", payload)
         }
     }
