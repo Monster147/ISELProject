@@ -76,6 +76,21 @@ const en = {
             createIntervenor:"Create Intervenor",
             cancel:"Cancel"
         },
+        intervenorUpdate: {
+            intervenorId: "Intervenor identifier",
+            intervenorIdType: "Intervenor identification type",
+            intervenorPhoneNumber: "Intervenor phone number",
+            intervenorName: "Intervenor name",
+            intervenorAddress: "Intervenor address",
+            selectFields: "Select the fields to update",
+            enterIdNumber: "Enter the identification number",
+            enterIdType: "Enter the identification type",
+            enterName: "Enter the name",
+            enterPhoneNumber: "Enter the phone number",
+            enterAddress: "Enter the address",
+            save: "Save changes",
+            cancel: "Cancel",
+        },
         occurrence:{
             occurrenceList:"Occurrence List",
             initDate: "Initial Date",

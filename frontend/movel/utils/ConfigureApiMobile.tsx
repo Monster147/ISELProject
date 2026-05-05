@@ -11,7 +11,7 @@ configureApi(
         getErrorDescription: getErrorDescription,
         documentDownloadHandler: downloadDocument,
     },
-    "https://erosely-redemandable-rebbeca.ngrok-free.dev/api",
+    "https://unfabricated-everett-surveyable.ngrok-free.dev/api",
 );
 
 export async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {

@@ -20,6 +20,7 @@ import type { UploadFile } from "@commons/models/utils/UploadFile"
 import {useBackRedirect} from "../../../../hooks/useBackRedirect";
 
 const OccurrenceEvidences = () => {
+    /*
     const { t } = useTranslation();
     const { id } = useLocalSearchParams();
     const router = useRouter();
@@ -170,6 +171,8 @@ const OccurrenceEvidences = () => {
             </ScrollView>
         </ThemedView>
     );
+    */
+    return
 };
 
 export default OccurrenceEvidences;
