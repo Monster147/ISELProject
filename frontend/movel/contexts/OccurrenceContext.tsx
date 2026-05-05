@@ -2,7 +2,7 @@ import {createContext, useCallback, useEffect, useMemo, useState} from "react";
 import {api, ApiError, fetchApi, getAuthHeaders} from "@commons/api/api";
 import {authInfoRepo} from "../infrastructure/AuthInfoPreferencesRepo";
 import {userInfoRepo} from "../infrastructure/UserInfoPreferencesRepo";
-import { Occurrence } from "@commons/models/occurrence/Occurrence";
+import {Occurrence} from "@commons/models/occurrence/Occurrence";
 import {useAuth} from "../hooks/useAuth";
 import {useOccurrencesListener, SSEMessage} from "../hooks/useOccurrencesListener";
 import {occurrenceInfoRepo} from "../infrastructure/OccurrenceInfoPreferencesRepo";
@@ -17,7 +17,7 @@ import {intervenorInfoRepo} from "../infrastructure/IntervenorInfoPreferencesRep
 type OccurrenceContextValue = {
     listOccurrences: () => Promise<void>;
     occurrence: Occurrence[];
-    getOccurrence: (id:number) => Promise<Occurrence>;
+    getOccurrence: (id: number) => Promise<Occurrence>;
     addIntervenorToOccurrence: (intervenorId: number, occurrenceId: number) => Promise<void>;
     removeIntervenorFromOccurrence: (intervenorId: number, occurrenceId: number) => Promise<void>;
     loading: boolean;
@@ -28,21 +28,15 @@ export const OccurrenceContext = createContext<OccurrenceContextValue | undefine
 export function OccurrenceProvider({children}) {
     const [occurrence, setOccurrence] = useState<Occurrence[]>([])
     const [loading, setLoading] = useState(false)
-    const { isOnline } = useNetworkStatus()
+    const {isOnline} = useNetworkStatus()
     const {user} = useAuth()
     const {t} = useTranslation()
 
     useEffect(() => {
-        if(isOnline){
-            syncOccurenceOfflineQueue().then(() => {
-                listOccurrences()
-            })
-        } else {
-            listOccurrences()
-        }
+        listOccurrences()
     }, [user, isOnline]);
 
-    const handleOnMessage = useCallback( async (message: SSEMessage)=>{
+    const handleOnMessage = useCallback(async (message: SSEMessage) => {
         setLoading(true)
         const data = message.data
         const action = message.action
@@ -66,7 +60,7 @@ export function OccurrenceProvider({children}) {
             const response = await api.findOccurrencesByReporterId(user.id)
             setOccurrence(response)
             await occurrenceInfoRepo.saveOccurrenceInfo(response)
-        }catch (err: any) {
+        } catch (err: any) {
             const cached = await occurrenceInfoRepo.getOccurrenceInfo()
             if (cached) {
                 setOccurrence(cached)
@@ -78,18 +72,18 @@ export function OccurrenceProvider({children}) {
         }
     }
 
-    async function getOccurrence(id:number){
+    async function getOccurrence(id: number) {
         try {
             if (!user) return;
             const response = await api.findOccurrenceById(id)
             return response
-        }catch (err: any) {
+        } catch (err: any) {
             throw Error(err.message)
         }
     }
 
-    async function addIntervenorToOccurrence(intervenorId: number, occurrenceId: number){
-        if (isOnline){
+    async function addIntervenorToOccurrence(intervenorId: number, occurrenceId: number) {
+        if (isOnline) {
             try {
                 if (!user) return;
                 await api.addIntervenor({intervenorId}, occurrenceId)
@@ -114,14 +108,14 @@ export function OccurrenceProvider({children}) {
         }
     }
 
-    async function removeIntervenorFromOccurrence(intervenorId: number, occurrenceId: number){
-        if (isOnline){
+    async function removeIntervenorFromOccurrence(intervenorId: number, occurrenceId: number) {
+        if (isOnline) {
             try {
                 if (!user) return;
                 await api.removeIntervenor({intervenorId}, occurrenceId)
                 const response = await api.findOccurrencesByReporterId(user.id)
                 setOccurrence(response)
-            }catch (err: any) {
+            } catch (err: any) {
                 throw Error(err.message)
             }
             return;
@@ -139,34 +133,7 @@ export function OccurrenceProvider({children}) {
         }
     }
 
-    async function syncOccurenceOfflineQueue() {
-        const queue = await offlineOccurrenceQueueRepo.getQueue()
-        for (const action of queue) {
-            try{
-                switch (action.type) {
-                    case "ADD_INTERVENOR":
-                        const intervernorId = await api.findIntervenorByIdNumber(action.payload.intervenor.idNumber).then(i => i.id)
-                        await api.addIntervenor({intervenorId: intervernorId}, action.payload.occurrenceId)
-                        await offlineOccurrenceQueueRepo.removeAction(action.id)
-                        break
-                    case "REMOVE_INTERVENOR":
-                        const intervernorIdToRemove = await api.findIntervenorByIdNumber(action.payload.intervenor.idNumber).then(i => i.id)
-                        await api.removeIntervenor({intervenorId: intervernorIdToRemove}, action.payload.occurrenceId)
-                        await offlineOccurrenceQueueRepo.removeAction(action.id)
-                        break
-                    case "ADD_EVIDENCE":
-                        break
-                    case "REMOVE_EVIDENCE":
-                        break
-                }
-            }catch (err: any) {
-            }
-        }
-        await offlineOccurrenceQueueRepo.clearQueue()
-        listOccurrences()
-    }
-
-    function checkIfIntervenorIsInOccurrence(intervenorId: number, occurrenceId: number){
+    function checkIfIntervenorIsInOccurrence(intervenorId: number, occurrenceId: number) {
         const occ = occurrence.find(o => o.id === occurrenceId)
         if (!occ) return false
         return occ.intervenors.some(i => i === intervenorId)

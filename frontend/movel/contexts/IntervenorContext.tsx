@@ -19,6 +19,7 @@ type IntervenorContextValue = {
     findIntervenorByContactInfo: (contactInfo: string) => Promise<any>;
     findIntervenorById: (id: number) => Promise<Intervenor>;
     intervenor: Intervenor[]
+    loadIntervenors: () => Promise<any>
 };
 
 export const IntervenorContext = createContext<IntervenorContextValue | undefined>(undefined)
@@ -29,13 +30,7 @@ export function IntervenorProvider({children}) {
     const {t} = useTranslation()
 
     useEffect(() => {
-        if (isOnline) {
-            syncOfflineQueue().then(() => {
-                loadIntervenors()
-            })
-        } else {
             loadIntervenors()
-        }
     }, [isOnline]);
 
     const handleOnMessage = useCallback(async (message: SSEMessage) => {
@@ -131,33 +126,6 @@ export function IntervenorProvider({children}) {
         }
     }
 
-    async function syncOfflineQueue() {
-        const queue = await offlineIntervenorQueueRepo.getQueue()
-
-        for (const action of queue) {
-            try {
-                switch (action.type) {
-                    case "CREATE":
-                        await api.createIntervenor({
-                            idNumber: action.payload.idNumber,
-                            idType: action.payload.idType,
-                            name: action.payload.name,
-                            contactInfo: action.payload.contactInfo,
-                            address: action.payload.address
-                        })
-                        await offlineIntervenorQueueRepo.removeAction(action.id)
-                        break
-                    case "UPDATE":
-                       // fazer depois ???
-                        break
-                }
-            } catch (err: any) {
-            }
-        }
-        await offlineIntervenorQueueRepo.clearQueue()
-        loadIntervenors()
-    }
-
     function checkIfIntervenorExistsOffline(contactInfo: string, idNumber: string, idType: string): boolean {
         const existsByContact = intervenor.some(i => i.contactInfo === contactInfo)
         const existsById = intervenor.some(i => i.idNumber === idNumber && i.idType === idType)
@@ -165,15 +133,7 @@ export function IntervenorProvider({children}) {
     }
 
     return (
-        <IntervenorContext.Provider value={{
-            createIntervenor,
-            updateIntervenor,
-            deleteIntervenorByIdNumber,
-            getIntervenorByIdNumber,
-            findIntervenorByContactInfo,
-            findIntervenorById,
-            intervenor
-        }}>
+        <IntervenorContext.Provider value={{createIntervenor, updateIntervenor, deleteIntervenorByIdNumber, getIntervenorByIdNumber, findIntervenorByContactInfo, findIntervenorById, intervenor, loadIntervenors}}>
             {children}
         </IntervenorContext.Provider>
     )
