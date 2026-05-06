@@ -95,15 +95,18 @@ export function OccurrenceProvider({children}) {
             return;
         } else {
             if (checkIfIntervenorIsInOccurrence(intervenorId, occurrenceId)) throw Error(t("errorResponse.intervenorAlreadyInOccurrence"))
-            const intervenor = await intervenorInfoRepo.getIntervenorInfo().then(intervenors => intervenors?.find(i => i.id === intervenorId))
+            const intervenors = await intervenorInfoRepo.getIntervenorInfo()
+            const intervenor = intervenors?.find(i => i.id === intervenorId)
+            if (!intervenor) throw Error(t("errorResponse.intervenorNotFound"))
             const payload = {intervenor: intervenor, occurrenceId: occurrenceId}
-            setOccurrence(prev => prev.map(o => {
+            const updated = occurrence.map(o => {
                 if (o.id === occurrenceId) {
                     return {...o, intervenors: [...o.intervenors, intervenorId]}
                 }
                 return o
-            }))
-            await occurrenceInfoRepo.saveOccurrenceInfo(occurrence)
+            })
+            setOccurrence(updated)
+            await occurrenceInfoRepo.saveOccurrenceInfo(updated)
             await offlineOccurrenceQueueRepo.addAction("ADD_INTERVENOR", payload)
         }
     }
@@ -120,15 +123,18 @@ export function OccurrenceProvider({children}) {
             }
             return;
         } else {
-            const intervenor = await intervenorInfoRepo.getIntervenorInfo().then(intervenors => intervenors?.find(i => i.id === intervenorId))
+            const intervenors = await intervenorInfoRepo.getIntervenorInfo()
+            const intervenor = intervenors?.find(i => i.id === intervenorId)
+            if (!intervenor) throw Error(t("errorResponse.intervenorNotFound"))
             const payload = {intervenor: intervenor, occurrenceId: occurrenceId}
-            setOccurrence(prev => prev.map(o => {
+            const updated = occurrence.map(o => {
                 if (o.id === occurrenceId) {
                     return {...o, intervenors: o.intervenors.filter(id => id !== intervenorId)}
                 }
                 return o
-            }))
-            await occurrenceInfoRepo.saveOccurrenceInfo(occurrence)
+            })
+            setOccurrence(updated)
+            await occurrenceInfoRepo.saveOccurrenceInfo(updated)
             await offlineOccurrenceQueueRepo.addAction("REMOVE_INTERVENOR", payload)
         }
     }

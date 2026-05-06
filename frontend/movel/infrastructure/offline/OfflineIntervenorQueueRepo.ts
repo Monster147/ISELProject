@@ -6,6 +6,8 @@ export interface OfflineAction<T = any> {
     id: string
     type: OfflineActionType
     payload: T
+    retries: number
+    maxRetries: number
 }
 
 export interface OfflineIntervenorQueueRepo {
@@ -14,6 +16,7 @@ export interface OfflineIntervenorQueueRepo {
     addAction( type: OfflineActionType, payload: any): Promise<void>
     removeAction(actionId: string): Promise<void>
     clearQueue(): Promise<void>
+    updateAction(actionId: string, updatedAction: OfflineAction): Promise<void>
 }
 
 export class OfflineIntervenorQueuePreferencesRepo implements OfflineIntervenorQueueRepo {
@@ -36,7 +39,7 @@ export class OfflineIntervenorQueuePreferencesRepo implements OfflineIntervenorQ
 
     async addAction(type: OfflineActionType, payload: any): Promise<void> {
         const queue = await this.getQueue()
-        const newAction: OfflineAction = {id: `${Date.now()}-${Math.random()}`, type, payload}
+        const newAction: OfflineAction = {id: `${Date.now()}-${Math.random()}`, type, payload, retries: 0, maxRetries: 5}
         queue.push(newAction)
 
         await this.saveQueue(queue)
@@ -50,6 +53,12 @@ export class OfflineIntervenorQueuePreferencesRepo implements OfflineIntervenorQ
 
     async clearQueue(): Promise<void> {
         await SecureStore.deleteItemAsync(this.QUEUE_KEY)
+    }
+
+    async updateAction(actionId: string, updatedAction: OfflineAction): Promise<void> {
+        const queue = await this.getQueue()
+        const updated = queue.map(a => a.id === actionId ? updatedAction : a)
+        await this.saveQueue(updated)
     }
 }
 

@@ -60,17 +60,19 @@ class ClassPublisher {
         data: Any,
         action: ActionKind,
     ) {
-        listeners[id]?.forEach {
-            try {
-                it.emit(
-                    UpdatedData.Message(
-                        ++currentId,
-                        data,
-                        action,
-                    ),
-                )
-            } catch (ex: Exception) {
-                logger.info("Exception while sending Message signal - {}", ex.message)
+        lock.withLock {
+            listeners[id]?.forEach {
+                try {
+                    it.emit(
+                        UpdatedData.Message(
+                            ++currentId,
+                            data,
+                            action,
+                        ),
+                    )
+                } catch (ex: Exception) {
+                    logger.info("Exception while sending Message signal - {}", ex.message)
+                }
             }
         }
     }

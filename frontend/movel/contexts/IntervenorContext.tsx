@@ -10,6 +10,7 @@ import {useNetworkStatus} from "../hooks/useNetworkStatus";
 import {offlineIntervenorQueueRepo} from "../infrastructure/offline/OfflineIntervenorQueueRepo";
 import id from "../app/(dashboard)/intervenors/[id]";
 import {useTranslation} from "react-i18next";
+import {useAuth} from "../hooks/useAuth";
 
 type IntervenorContextValue = {
     createIntervenor: (idNumber: string, idType: string, name: string, contactInfo: string, address: string) => Promise<void>;
@@ -27,11 +28,12 @@ export const IntervenorContext = createContext<IntervenorContextValue | undefine
 export function IntervenorProvider({children}) {
     const [intervenor, setIntervenor] = useState<Intervenor[]>([])
     const {isOnline} = useNetworkStatus()
+    const {user} = useAuth()
     const {t} = useTranslation()
 
     useEffect(() => {
             loadIntervenors()
-    }, [isOnline]);
+    }, [isOnline, user]);
 
     const handleOnMessage = useCallback(async (message: SSEMessage) => {
         const data = message.data
@@ -75,8 +77,9 @@ export function IntervenorProvider({children}) {
         } else {
             if (checkIfIntervenorExistsOffline(contactInfo, idNumber, idType)) throw Error(t("errorResponse.intervenorAlreadyExists"))
             const payload = {id: Date.now(), idNumber, idType, name, contactInfo, address}
-            setIntervenor(prev => [...prev, payload as Intervenor])
-            await intervenorInfoRepo.saveIntervenorInfo(intervenor)
+            const updated = [...intervenor, payload as Intervenor]
+            setIntervenor(updated)
+            await intervenorInfoRepo.saveIntervenorInfo(updated)
             await offlineIntervenorQueueRepo.addAction("CREATE", payload)
         }
     }
