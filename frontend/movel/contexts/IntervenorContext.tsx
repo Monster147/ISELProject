@@ -32,7 +32,7 @@ export function IntervenorProvider({children}) {
     const {t} = useTranslation()
 
     useEffect(() => {
-            loadIntervenors()
+        loadIntervenors()
     }, [isOnline, user]);
 
     const handleOnMessage = useCallback(async (message: SSEMessage) => {
@@ -85,11 +85,40 @@ export function IntervenorProvider({children}) {
     }
 
     async function updateIntervenor(intervenorId: number, idNumber: string | null, idType: string | null, name: string | null, contactInfo: string | null, address: string | null) {
-        try {
-            await api.updateIntervenor({idNumber, idType, name, contactInfo, address}, intervenorId)
-            await loadIntervenors()
-        } catch (err: any) {
-            throw Error(err.message)
+        if (isOnline) {
+            try {
+                await api.updateIntervenor({idNumber, idType, name, contactInfo, address}, intervenorId)
+                await loadIntervenors()
+            } catch (err: any) {
+                throw Error(err.message)
+            }
+            return
+        } else {
+            const intervenorLocal = intervenor.find(i => i.id === intervenorId)
+            if (!intervenorLocal) {
+                throw Error(t("errorResponse.intervenorNotFound"))
+            }
+            if (!checkIfIntervenorCanUpdate(intervenorId, idNumber, idType, contactInfo)) {
+                throw Error(t("errorResponse.intervenorAlreadyExists"))
+            }
+            const updatedData = {
+                id: intervenorLocal.id,
+                idNumber: idNumber ?? intervenorLocal.idNumber,
+                idType: idType ?? intervenorLocal.idType,
+                name: name ?? intervenorLocal.name,
+                contactInfo: contactInfo ?? intervenorLocal.contactInfo,
+                address: address ?? intervenorLocal.address,
+            }
+            const updated = intervenor.map(i => i.id === intervenorId ? updatedData as Intervenor : i)
+            setIntervenor(updated)
+            await intervenorInfoRepo.saveIntervenorInfo(updated)
+            const queue = await offlineIntervenorQueueRepo.getQueue()
+            const existingAction = queue.find(a => a.type === "CREATE" && a.payload.id === intervenorId)
+            if (existingAction) {
+                await offlineIntervenorQueueRepo.updateAction(existingAction.id, {...existingAction, payload: updatedData})
+            } else {
+                await offlineIntervenorQueueRepo.addAction("UPDATE", {id: intervenorId, idNumber, idType, name, contactInfo, address})
+            }
         }
     }
 
@@ -134,9 +163,36 @@ export function IntervenorProvider({children}) {
         const existsById = intervenor.some(i => i.idNumber === idNumber && i.idType === idType)
         return existsByContact || existsById
     }
+    function checkIfIntervenorCanUpdate(intervenorId: number, idNumber: string | null, idType: string | null, contactInfo: string | null): boolean {
+        if (idNumber !== null || idType !== null) {
+            const isDuplicate = intervenor.some(i =>
+                i.id !== intervenorId &&
+                i.idNumber === (idNumber ?? intervenor.find(x => x.id === intervenorId)?.idNumber) &&
+                i.idType === (idType ?? intervenor.find(x => x.id === intervenorId)?.idType)
+            )
+            if (isDuplicate) return false
+        }
+        if (contactInfo !== null) {
+            const isDuplicateContact = intervenor.some(i =>
+                i.id !== intervenorId &&
+                i.contactInfo === contactInfo
+            )
+            if (isDuplicateContact) return false
+        }
+        return true
+    }
 
     return (
-        <IntervenorContext.Provider value={{createIntervenor, updateIntervenor, deleteIntervenorByIdNumber, getIntervenorByIdNumber, findIntervenorByContactInfo, findIntervenorById, intervenor, loadIntervenors}}>
+        <IntervenorContext.Provider value={{
+            createIntervenor,
+            updateIntervenor,
+            deleteIntervenorByIdNumber,
+            getIntervenorByIdNumber,
+            findIntervenorByContactInfo,
+            findIntervenorById,
+            intervenor,
+            loadIntervenors
+        }}>
             {children}
         </IntervenorContext.Provider>
     )

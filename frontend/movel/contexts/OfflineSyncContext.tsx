@@ -59,7 +59,14 @@ export const OfflineSyncProvider = ({children}) => {
                             await offlineIntervenorQueueRepo.removeAction(action.id)
                             break
                         case "UPDATE":
-                            // fazer depois ???
+                            await api.updateIntervenor({
+                                idNumber: action.payload.idNumber,
+                                idType: action.payload.idType,
+                                name: action.payload.name,
+                                contactInfo: action.payload.contactInfo,
+                                address: action.payload.address
+                            }, action.payload.id)
+                            await offlineIntervenorQueueRepo.removeAction(action.id)
                             break
                     }
                 } catch (err: any) {
@@ -97,12 +104,24 @@ export const OfflineSyncProvider = ({children}) => {
                             break
                     }
                 } catch (err: any) {
-                    action.retries++
-                    await offlineOccurrenceQueueRepo.updateAction(action.id, action)
+                    if(err.status >= 500 && err.status < 600){
+                        const wait = action.retries * 10
+                        await delay(wait)
+                        action.retries++
+                        await offlineOccurrenceQueueRepo.updateAction(action.id, action)
+                    }else{
+                        await offlineOccurrenceQueueRepo.removeAction(action.id)
+                    }
                 }
             }
             queue = await offlineOccurrenceQueueRepo.getQueue()
         }
+    }
+
+    function delay(delayInMs: number) {
+        return new Promise((resolve) => {
+            setTimeout(() => resolve(undefined), delayInMs);
+        });
     }
 
     return (

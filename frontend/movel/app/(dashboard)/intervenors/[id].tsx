@@ -51,33 +51,45 @@ const IntervenorUpdate = () => {
     const [address, setAddress] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
 
-    useEffect(() => {
-        const load = async () => {
-            try {
-                setLoading(true)
-                if (actualIntervenor) {
-                    setName(actualIntervenor.name)
-                    setIdentifier(actualIntervenor.idNumber)
-                    setIdentifierType(actualIntervenor.idType)
-                    setPhoneNumber(actualIntervenor.contactInfo)
-                    setAddress(actualIntervenor.address)
-                } else {
-                    const intervenorData = await findIntervenorById(intervenorId)
-                    setName(intervenorData.name)
-                    setIdentifier(intervenorData.idNumber)
-                    setIdentifierType(intervenorData.idType)
-                    setPhoneNumber(intervenorData.contactInfo)
-                    setAddress(intervenorData.address)
+    useFocusEffect(
+        useCallback(() => {
+            const load = async () => {
+                try {
+                    setLoading(true)
+                    if (actualIntervenor) {
+                        setName(actualIntervenor.name)
+                        setIdentifier(actualIntervenor.idNumber)
+                        setIdentifierType(actualIntervenor.idType)
+                        setPhoneNumber(actualIntervenor.contactInfo)
+                        setAddress(actualIntervenor.address)
+                    } else {
+                        const intervenorData = await findIntervenorById(intervenorId)
+                        setName(intervenorData.name)
+                        setIdentifier(intervenorData.idNumber)
+                        setIdentifierType(intervenorData.idType)
+                        setPhoneNumber(intervenorData.contactInfo)
+                        setAddress(intervenorData.address)
+                    }
+                } catch (err: any) {
+                    if (err instanceof Error) setError(err.message);
+                    else setError(String(err));
+                } finally {
+                    setLoading(false);
                 }
-            } catch (err: any) {
-                if (err instanceof Error) setError(err.message);
-                else setError(String(err));
-            } finally {
-                setLoading(false);
             }
-        }
-        load()
-    }, [intervenorId])
+            load()
+
+            return () => {
+                setIdentifier(null);
+                setIdentifierType(null);
+                setAddress(null);
+                setPhoneNumber(null);
+                setName(null);
+                setError(null);
+                setChange([]);
+            };
+        }, [intervenorId, actualIntervenor])
+    )
 
     const handleUpdate = async () => {
         try {
@@ -92,21 +104,6 @@ const IntervenorUpdate = () => {
             setLoading(false);
         }
     };
-
-    useFocusEffect(
-        useCallback(() => {
-            return () => {
-                setIdentifier(null);
-                setIdentifierType(null);
-                setAddress(null);
-                setPhoneNumber(null);
-                setName(null);
-                setError(null);
-                setChange([]);
-            };
-        }, [])
-    );
-
 
     if (loading) {
         return (
