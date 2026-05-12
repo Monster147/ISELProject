@@ -17,7 +17,7 @@ import "../../i18next/i18next";
 import "./utils/ConfigureApiDesktop"
 import Loadingscreen from "./components/loadingscreen";
 import Documents from "./components/(dashboard)/documents";
-import OccurrenceEvidences from "./components/(dashboard)/occurrences/evidences/[id]";
+import DynamicOccurrenceForm  from "./components/(dashboard)/occurrences/evidences/[id]";
 import Dashboard from "./components/(dashboard)/dashboard";
 import OccurrenceScreen from "./components/(dashboard)/occurrence";
 
@@ -46,7 +46,7 @@ export const router = createBrowserRouter([
                     {path: "/intervenor/create", element: <IntervenorCreate/>},
                     {path: "/intervenor/update/:intervenorId", element: <IntervenorUpdate/>},
                     {path: "/intervenor/:selectMode/:occurrenceId", element: <IntervenorSearch/>},
-                    {path: "/occurrence/evidences/:occurrenceId", element: <OccurrenceEvidences/>},
+                    {path: "/occurrence/evidences/:occurrenceId", element: <DynamicOccurrenceForm/>},
                     {path: "/dashboard", element: <Dashboard/> }
                 ]
             },
