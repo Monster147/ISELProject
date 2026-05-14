@@ -29,12 +29,9 @@ class FileSystemStorageService : StorageService {
                 .resolve("evidences")
         Files.createDirectories(reportDir)
 
-        val extension =
-            file.originalFilename
-                ?.substringAfterLast('.', "")
-                ?.let { ".$it" } ?: ""
+        val originalFileName = file.originalFilename ?: return ""
 
-        val destination = generateUniquePath(reportDir, extension)
+        val destination = generateUniquePath(reportDir, originalFileName)
 
         file.inputStream.use {
             Files.copy(it, destination)
@@ -73,10 +70,40 @@ class FileSystemStorageService : StorageService {
 
     private fun generateUniquePath(
         dir: Path,
-        extension: String,
+        originalFileName: String,
+        counter: Int = 0,
     ): Path {
-        val path = dir.resolve("${UUID.randomUUID()}$extension")
-        return if (!Files.exists(path)) path else generateUniquePath(dir, extension)
+        val baseName =
+            originalFileName.substringBeforeLast('.', originalFileName)
+
+        val extension =
+            originalFileName.substringAfterLast('.', "")
+
+        val suffix =
+            if (counter == 0) {
+                ""
+            } else {
+                "($counter)"
+            }
+
+        val fileName =
+            if (extension.isBlank()) {
+                "$baseName$suffix"
+            } else {
+                "$baseName$suffix.$extension"
+            }
+
+        val path = dir.resolve(fileName)
+
+        return if (!Files.exists(path)) {
+            path
+        } else {
+            generateUniquePath(
+                dir,
+                originalFileName,
+                counter + 1,
+            )
+        }
     }
 
     override fun loadEvidence(path: String): Resource? {

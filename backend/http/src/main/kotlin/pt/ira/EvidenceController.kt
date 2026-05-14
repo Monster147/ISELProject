@@ -82,7 +82,7 @@ class EvidenceController(
                     .header(
                         "Location",
                         "/api/evidence/${result.value.id}",
-                    ).build<Unit>()
+                    ).body(result.value)
             is Failure ->
                 when (result.value) {
                     is EvidenceError.OccurrenceNotFound ->

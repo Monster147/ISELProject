@@ -22,6 +22,17 @@ sealed class EvidenceError {
     data object FileNotFound : EvidenceError()
 }
 
+val allowedExtensions =
+    listOf(
+        "image/jpg",
+        "image/jpeg",
+        "image/png",
+        "image/heic",
+        "application/pdf",
+        "video/mp4",
+        "application/json",
+    )
+
 /**
  * Serviço responsável pela gestão do ciclo de vida das evidências.
  *
@@ -41,18 +52,9 @@ class EvidenceService(
     private val storageService: StorageService,
     private val publisher: Publishers,
 ) {
-    private val allowedExtensions =
-        listOf(
-            "image/jpg",
-            "image/jpeg",
-            "image/png",
-            "image/heic",
-            "application/pdf",
-            "video/mp4",
-        )
 
     /**
-     * Cria uma nova evidência associada a uma ocorrência.
+     * Cria uma evidência associada a uma ocorrência.
      *
      * Valida a existência do utilizador e da ocorrência, valida o ficheiro,
      * persiste os metadados na base de dados e guarda o ficheiro em armazenamento.

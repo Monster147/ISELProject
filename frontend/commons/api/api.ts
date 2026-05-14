@@ -336,7 +336,7 @@ export const api = {
 
     // Evidence
 
-    async createEvidence(file: UploadFile, input: CreateEvidenceInput): Promise<void> {
+    async createEvidence(file: UploadFile, input: CreateEvidenceInput): Promise<Evidence> {
         const formData = new FormData();
         if (file.platform === "web") {
             formData.append(
@@ -355,7 +355,7 @@ export const api = {
         }
         formData.append("data", JSON.stringify(input));
         console.log(formData);
-        return fetchApi<void>("/evidence", {
+        return fetchApi<Evidence>("/evidence", {
             method: "POST",
             body: formData
         });
@@ -367,10 +367,15 @@ export const api = {
         });
     },
 
-    //async downloadEvidence(id:number): Promise<Resource>
+    async downloadEvidence(id:number): Promise<Blob>{
+        const response = await fetch(`${API_BASE_URL}/evidence/${id}/download`, {
+            headers: await getAuthHeaders(),
+        });
+        return await response.blob();
+    },
 
-    async findEvidenceByReportId(reportId:number): Promise<Evidence> {
-        return fetchApi<Evidence>(`/evidence/byReport/${reportId}`, {
+    async findEvidenceByOccurrenceId(occurrenceId:number): Promise<Evidence> {
+        return fetchApi<Evidence>(`/evidence/byOccurrence/${occurrenceId}`, {
             method: "GET",
         });
     },
@@ -389,7 +394,7 @@ export const api = {
     },
 
     async findEvidenceByLocation(location:string): Promise<Evidence> {
-        return fetchApi<Evidence>(`/evidence//byLocation/${location}`, {
+        return fetchApi<Evidence>(`/evidence/byLocation/${location}`, {
             method: "GET",
         });
     },

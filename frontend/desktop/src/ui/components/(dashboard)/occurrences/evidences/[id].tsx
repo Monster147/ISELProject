@@ -1,16 +1,13 @@
-import {StyleSheet, FlatList, TouchableOpacity, useColorScheme,} from "react-native";
+import {StyleSheet, FlatList, useColorScheme,} from "react-native";
 import {useTranslation} from "react-i18next";
 import {useParams} from "react-router";
-import {useState} from "react";
-import Select from "react-select";
+import {useEffect, useState} from "react";
 
 import ThemedView from "../../../../../../components/ThemedView";
 import ThemedText from "../../../../../../components/ThemedText";
 import ThemedCard from "../../../../../../components/ThemedCard";
 import ThemedLoader from "../../../../../../components/ThemedLoader";
-import ThemedTextInput from "../../../../../../components/ThemedTextInput";
 import ThemedButton from "../../../../../../components/ThemedButton";
-import ThemedFileInput from "../../../../../../components/ThemedFileInput";
 
 import {Colors} from "@commons/constants/Colors";
 
@@ -20,226 +17,12 @@ import {useAuth} from "../../../../../hooks/useAuth";
 import {useIntervenor} from "../../../../../hooks/useIntervenor";
 
 import {UploadFile} from "@commons/models/utils/UploadFile";
-import {ACCEPTED_FILE_TYPES} from "@commons/models/utils/AcceptedFileTypes";
 import {OccurrenceTypeForm} from "@commons/models/type/OccorrenceTypeForm";
 import {expandSections} from "@commons/models/type/Helpers";
 import {FormField} from "@commons/models/type/FormField";
-import ThemedDateInput from "../../../../../../components/ThemedDateInput";
-
-const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, theme}) => {
-    const {t} = useTranslation();
-
-    const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selected = e.target.files?.[0];
-
-        if (!selected) return;
-
-        onFileChange(field.name, {
-            platform: "web",
-            file: selected,
-            name: selected.name,
-            type: selected.type,
-        });
-    };
-
-    if (field.dynamicOptions) {
-        const options = intervenients.map((opt) => ({
-            value: opt[field.dynamicOptions.valueField],
-            label: opt[field.dynamicOptions.labelField],
-        }));
-
-        return (
-            <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
-                <ThemedText style={styles.label}>
-                    {field.label}
-                    {field.required && (
-                        <ThemedText style={styles.required}> *</ThemedText>
-                    )}
-                </ThemedText>
-
-                <Select
-                    options={options}
-                    placeholder={t("form.selectOption", {
-                        defaultValue: "Selecione...",
-                    })}
-                    value={
-                        options.find(
-                            (o) => String(o.value) === String(value)
-                        ) ?? null
-                    }
-                    onChange={(selected) =>
-                        onChange(field.name, selected?.value)
-                    }
-                    menuPortalTarget={document.body}
-                    menuPosition="fixed"
-                />
-            </ThemedView>
-        );
-    }
-
-    if (field.type === "select" && field.options) {
-        const selectedOption =
-            field.options.find(opt => opt.value === value) ?? null;
-        return (
-            <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
-                <ThemedText style={styles.label}>
-                    {field.label}
-                    {field.required && (
-                        <ThemedText style={styles.required}> *</ThemedText>
-                    )}
-                </ThemedText>
-
-                <Select
-                    options={field.options}
-                    value={selectedOption}
-                    isDisabled={field.readOnly}
-                    onChange={(selected) =>
-                        onChange(field.name, selected?.value ?? "")
-                    }
-                    placeholder={t("form.selectOption", {
-                        defaultValue: "Selecione...",
-                    })}
-                    menuPortalTarget={document.body}
-                    menuPosition="fixed"
-                />
-            </ThemedView>
-        );
-    }
-
-    if (field.type === "boolean") {
-        return (
-            <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
-                <ThemedView style={[styles.boolRow, {backgroundColor: theme.uiBackground}]}>
-                    <ThemedText style={styles.label}>
-                        {field.label}
-                    </ThemedText>
-
-                    <TouchableOpacity
-                        style={[
-                            styles.toggle,
-                            value && styles.toggleActive,
-                        ]}
-                        onPress={() =>
-                            !field.readOnly &&
-                            onChange(field.name, !value)
-                        }
-                        activeOpacity={0.8}
-                    >
-                        <ThemedView
-                            style={[
-                                styles.toggleThumb,
-                                value && styles.toggleThumbActive,
-                            ]}
-                        />
-                    </TouchableOpacity>
-                </ThemedView>
-            </ThemedView>
-        );
-    }
-
-    if (field.type === "image" || field.type === "file") {
-        const accept =
-            field.type === "image"
-                ? "image/*"
-                : ACCEPTED_FILE_TYPES;
-
-        return (
-            <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
-                <ThemedText style={styles.label}>
-                    {field.label}
-                    {field.required && (
-                        <ThemedText style={styles.required}> *</ThemedText>
-                    )}
-                </ThemedText>
-
-                <ThemedFileInput
-                    accept={accept}
-                    onChange={handleFileInput}
-                />
-            </ThemedView>
-        );
-    }
-
-    if (field.type === "datetime") {
-        return (
-            <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
-                <ThemedText style={styles.label}>
-                    {field.label}
-                    {field.required && (
-                        <ThemedText style={styles.required}> *</ThemedText>
-                    )}
-                </ThemedText>
-
-                <ThemedDateInput
-                    value={value ?? ""}
-                    onChangeText={(val) =>
-                        onChange(field.name, val)
-                    }
-                    style={styles.dateInput}
-                />
-            </ThemedView>
-        );
-    }
-
-    if (field.type === "number") {
-        return (
-            <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
-                <ThemedText style={styles.label}>
-                    {field.label}
-                    {field.required && (
-                        <ThemedText style={styles.required}> *</ThemedText>
-                    )}
-                </ThemedText>
-
-                <ThemedTextInput
-                    placeholder={field.label}
-                    value={
-                        value !== undefined && value !== null
-                            ? String(value)
-                            : ""
-                    }
-                    onChangeText={(text) => {
-                        const num = Number(text);
-
-                        onChange(
-                            field.name,
-                            Number.isFinite(num) ? num : 0
-                        );
-                    }}
-                    keyboardType="numeric"
-                    editable={!field.readOnly}
-                    style={styles.input}
-                />
-            </ThemedView>
-        );
-    }
-
-    return (
-        <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
-            <ThemedText style={styles.label}>
-                {field.label}
-                {field.required && (
-                    <ThemedText style={styles.required}> *</ThemedText>
-                )}
-            </ThemedText>
-
-            <ThemedTextInput
-                placeholder={field.label}
-                value={value ?? ""}
-                onChangeText={(text) =>
-                    onChange(field.name, text)
-                }
-                multiline={field.type === "text"}
-                numberOfLines={field.type === "text" ? 4 : 1}
-                editable={!field.readOnly}
-                style={[
-                    styles.input,
-                    field.type === "text" && styles.textarea,
-                ]}
-            />
-        </ThemedView>
-    );
-};
+import {useEvidence} from "../../../../../hooks/useEvidence";
+import {useNetworkStatus} from "../../../../../hooks/useNetworkStatus";
+import {FieldRenderer} from "./FieldRenderer";
 
 const DynamicOccurrenceForm = () => {
     const colorScheme = useColorScheme();
@@ -250,9 +33,15 @@ const DynamicOccurrenceForm = () => {
 
     const {occurrence} = useOccurrence();
     const {intervenor} = useIntervenor();
+    const {createEvidence, findEvidenceByOccurrenceId, downloadEvidence, deleteEvidence} = useEvidence();
     const {type} = useType();
     const {user} = useAuth();
+    const { isOnline } = useNetworkStatus();
 
+
+    const [sectionEvidenceMap, setSectionEvidenceMap] = useState({});
+    const [fileEvidenceMap, setFileEvidenceMap] = useState({});
+    const [loading, setLoading] = useState(false);
     const [formValues, setFormValues] = useState({});
     const [fileValues, setFileValues] = useState({});
     const [error, setError] = useState(null);
@@ -266,6 +55,99 @@ const DynamicOccurrenceForm = () => {
     const currentType = type.find(
         (tp) => tp.id === actualOccurrence?.occurrenceType
     );
+
+    const buildFileObject = async (ev) => {
+        const blob = await downloadEvidence(ev.id);
+        const file = new File([blob], ev.filePath.split("/").pop(), {
+            type: blob.type || "application/octet-stream",
+        });
+
+        const url = URL.createObjectURL(file);
+        return {
+            platform: "web",
+            file,
+            name: ev.filePath.split("/").pop(),
+            type: blob.type,
+            previewUrl: url,
+            evidenceId: ev.id,
+        };
+    }
+
+    const populateForm = async (sections, data) => {
+        const formNext = {};
+        const fileNext = {};
+        const fileEvidenceNext = {};
+        for (const section of sections) {
+            for (const [key, value] of Object.entries(section.data)) {
+                formNext[key] = value;
+            }
+
+            if(section.files) {
+                for (const file of section.files) {
+                    const ev = data.find(e =>  e.filePath === file.filePath);
+                    if(!ev) continue;
+                    const populated = await buildFileObject(ev);
+                    fileNext[file.field] ={
+                        ...populated,
+                        remote: true
+                    }
+                    fileEvidenceNext[file.field] = ev.id;
+                }
+            }
+        }
+
+        setFormValues(prev => ({
+            ...prev,
+            ...formNext
+        }));
+        setFileValues(prev => ({
+            ...prev,
+            ...fileNext
+        }));
+
+
+        setFileEvidenceMap(prev => ({
+            ...prev,
+            ...fileEvidenceNext
+        }));
+    }
+
+    useEffect(() => {
+        const loadEvidences = async () => {
+            setLoading(true);
+            try {
+                const data = await findEvidenceByOccurrenceId(id);
+                const sectionJsons = data.filter(ev =>
+                    ev.filePath?.endsWith(".json") &&
+                    ev.filePath?.includes("section-")
+                );
+
+                const parsedSections = await Promise.all(
+                    sectionJsons.map(async (ev) => {
+                        const blob = await downloadEvidence(ev.id);
+                        const text = await blob.text();
+                        const json = JSON.parse(text);
+                        return {
+                            ...json,
+                            evidenceId: ev.id,
+                        };
+                    })
+                )
+                console.log(parsedSections);
+                await populateForm(parsedSections, data);
+                const map = {};
+                for (const sec of parsedSections){
+                    map[sec.section] = sec.evidenceId;
+                }
+                setSectionEvidenceMap(map);
+                console.log("mapa", map);
+            } catch (err: any) {
+            } finally {
+                setLoading(false);
+            }
+        }
+        if(isOnline) loadEvidences();
+    }, [actualOccurrence?.id, isOnline]);
 
     let formDef: OccurrenceTypeForm | null = null;
 
@@ -335,16 +217,147 @@ const DynamicOccurrenceForm = () => {
 
     const handleFileChange = (
         name: string,
-        file: UploadFile
+        file: UploadFile | null
     ) => {
-        setFileValues((prev) => ({
-            ...prev,
-            [name]: file,
-        }));
+        setFileValues((prev) => {
+            const next = {...prev};
+
+            if (!file) {
+                delete next[name];
+                return next;
+            }
+
+            next[name] = file;
+            return next;
+        });
     };
 
+    const replaceEvidence = async(uploadFile, type, label, sectionName?, userId) => {
+        let existingId
+        console.log("sectionEvidenceMap ANTES", sectionEvidenceMap)
+        console.log("fileEvidenceMap ANTES", fileEvidenceMap)
+        if(type === "json" && sectionName) {
+            existingId = sectionEvidenceMap[sectionName];
+        }
+
+        if(type !== "json") {
+            existingId = fileEvidenceMap[label];
+        }
+
+        if(existingId) {
+            await deleteEvidence(existingId);
+
+            if (type === "json" && sectionName) {
+                setSectionEvidenceMap(prev => {
+                    const copy = { ...prev };
+                    delete copy[sectionName];
+                    return copy;
+                });
+            }
+
+            if (type !== "json") {
+                setFileEvidenceMap(prev => {
+                    const copy = { ...prev };
+                    delete copy[label];
+                    return copy;
+                });
+            }
+        }
+
+        const created = await createEvidence(
+            uploadFile,
+            type === "json"
+                ? "json"
+                : uploadFile.type.startsWith("image/")
+                    ? "IMAGE"
+                    : "FILE",
+            "NO LOCATION",
+            label,
+            userId,
+            id
+        );
+
+        if (type === "json" && sectionName) {
+            setSectionEvidenceMap(prev => ({
+                ...prev,
+                [sectionName]: created.id,
+            }));
+        }
+
+        if (type !== "json") {
+            setFileEvidenceMap(prev => ({
+                ...prev,
+                [label]: created.id,
+            }));
+        }
+
+        console.log("sectionEvidenceMap DEPOIS", sectionEvidenceMap)
+        console.log("fileEvidenceMap DEPOIS", fileEvidenceMap)
+
+        return created;
+    }
+
     const saveSection = async (section: any) => {
+        if (!user) return;
+        const sectionData: Record<string, any> = {};
+        const uploadedFilesMetadata: any[] = [];
+        for (const field of section.fields) {
+            const value = formValues[field.name];
+            const upload = fileValues[field.name];
+            if (field.type === "file" || field.type === "image") {
+                if(!upload) continue
+
+                console.log("title", section.title)
+                const created = await replaceEvidence(
+                    upload,
+                    field.type === "image" ? "IMAGE" : "FILE",
+                    field.name,
+                    section.title,
+                    user.id
+                );
+
+                uploadedFilesMetadata.push({
+                    field: field.name,
+                    label: field.label,
+                    fileName: upload.name,
+                    mimeType: upload.type,
+                    filePath: created.filePath,
+                });
+
+                continue;
+            }
+            sectionData[field.name] = value ?? null;
+        }
+
+        console.log(sectionData);
         console.log(section);
+        let json;
+        if(uploadedFilesMetadata.length > 0) {
+            json = {
+                section: section.title,
+                occurrenceId: id,
+                data: sectionData,
+                files: uploadedFilesMetadata,
+            }
+        } else {
+            json = {
+                section: section.title,
+                occurrenceId: id,
+                data: sectionData,
+            }
+        }
+
+        const blob = new Blob([JSON.stringify(json)], { type: "application/json" });
+        const file = new File([blob], `section-${section.title}.json`, { type: "application/json" });
+
+        const uploadFile: UploadFile = {
+            platform: "web",
+            file,
+            name:file.name,
+            type: file.type,
+        }
+
+        await replaceEvidence(uploadFile, "json", section.title, section.title, user.id);
     };
 
     const handleSubmit = async () => {
@@ -364,7 +377,7 @@ const DynamicOccurrenceForm = () => {
         }
     };
 
-    if (!formDef || !actualOccurrence || !currentType) {
+    if (!formDef || !actualOccurrence || !currentType || loading) {
         return (
             <ThemedView safe style={styles.container}>
                 <ThemedLoader />
@@ -482,26 +495,9 @@ const DynamicOccurrenceForm = () => {
 
 export default DynamicOccurrenceForm;
 
-const webStyles = {
-    select: {
-        borderWidth: 1,
-        borderColor: "#000",
-        borderRadius: 6,
-        padding: "10px 12px",
-        fontSize: 14,
-        width: "100%",
-        marginTop: 4,
-        background: "transparent",
-    },
-};
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-
-    list: {
-        paddingBottom: 40,
     },
 
     card: {
@@ -510,6 +506,16 @@ const styles = StyleSheet.create({
         padding: 16,
         borderLeftWidth: 4,
         borderLeftColor: Colors.primary,
+    },
+
+    successTitle: {
+        textAlign: "center",
+        fontSize: 20,
+        paddingVertical: 20,
+    },
+
+    list: {
+        paddingBottom: 40,
     },
 
     sectionHeader: {
@@ -524,100 +530,13 @@ const styles = StyleSheet.create({
         fontWeight: "600",
     },
 
-    fieldsContainer: {
-        gap: 12,
-    },
-
-    fieldContainer: {
-        marginBottom: 10,
-    },
-
-    label: {
-        fontSize: 13,
-        opacity: 0.65,
-        marginBottom: 4,
-    },
-
-    required: {
-        color: Colors.warning,
-    },
-
-    input: {
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 6,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        fontSize: 14,
-        marginTop: 2,
-    },
-
-    textarea: {
-        minHeight: 90,
-        textAlignVertical: "top",
-    },
-
-    boolRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
-
-    toggle: {
-        width: 44,
-        height: 24,
-        borderRadius: 12,
-        backgroundColor: "#ccc",
-        justifyContent: "center",
-        padding: 2,
-    },
-
-    toggleActive: {
-        backgroundColor: Colors.success,
-    },
-
-    toggleThumb: {
-        width: 20,
-        height: 20,
-        borderRadius: 10,
-        backgroundColor: "#fff",
-    },
-
-    toggleThumbActive: {
-        alignSelf: "flex-end",
-    },
-
-    filePreview: {
-        flexDirection: "row",
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 6,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        gap: 8,
-    },
-
-    fileName: {
-        flex: 1,
-        fontSize: 13,
-    },
-
-    fileRemove: {
-        color: Colors.warning,
-        fontSize: 16,
-        paddingHorizontal: 4,
-    },
-
     saveBtn: {
         paddingHorizontal: 12,
         paddingVertical: 6,
     },
 
-    submitBtn: {
-        marginHorizontal: 20,
-        marginTop: 20,
-        marginBottom: 40,
+    fieldsContainer: {
+        gap: 12,
     },
 
     errorText: {
@@ -627,14 +546,9 @@ const styles = StyleSheet.create({
         marginTop: 8,
     },
 
-    successTitle: {
-        textAlign: "center",
-        fontSize: 20,
-        paddingVertical: 20,
-    },
-
-    dateInput: {
-        flex: 1,
-        height: 40,
+    submitBtn: {
+        marginHorizontal: 20,
+        marginTop: 20,
+        marginBottom: 40,
     },
 });
