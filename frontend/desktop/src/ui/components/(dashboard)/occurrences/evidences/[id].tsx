@@ -70,6 +70,7 @@ const DynamicOccurrenceForm = () => {
             type: blob.type,
             previewUrl: url,
             evidenceId: ev.id,
+            filePath: ev.filePath,
         };
     }
 
@@ -222,8 +223,8 @@ const DynamicOccurrenceForm = () => {
         setFileValues((prev) => {
             const next = {...prev};
 
-            if (!file) {
-                delete next[name];
+            if (file === null) {
+                next[name] = null;
                 return next;
             }
 
@@ -305,24 +306,51 @@ const DynamicOccurrenceForm = () => {
             const value = formValues[field.name];
             const upload = fileValues[field.name];
             if (field.type === "file" || field.type === "image") {
-                if(!upload) continue
+                if (upload === null) {
+                    const existingId = fileEvidenceMap[field.name];
 
-                console.log("title", section.title)
-                const created = await replaceEvidence(
-                    upload,
-                    field.type === "image" ? "IMAGE" : "FILE",
-                    field.name,
-                    section.title,
-                    user.id
-                );
+                    if (existingId) {
+                        await deleteEvidence(existingId);
 
-                uploadedFilesMetadata.push({
-                    field: field.name,
-                    label: field.label,
-                    fileName: upload.name,
-                    mimeType: upload.type,
-                    filePath: created.filePath,
-                });
+                        setFileEvidenceMap(prev => {
+                            const copy = {...prev};
+                            delete copy[field.name];
+                            return copy;
+                        });
+                    }
+
+                    continue;
+                }
+
+                if (upload?.remote) {
+                    uploadedFilesMetadata.push({
+                        field: field.name,
+                        label: field.label,
+                        fileName: upload.name,
+                        mimeType: upload.type,
+                        filePath: upload.filePath,
+                    });
+
+                    continue;
+                }
+
+                if (upload) {
+                    const created = await replaceEvidence(
+                        upload,
+                        field.type === "image" ? "IMAGE" : "FILE",
+                        field.name,
+                        section.title,
+                        user.id
+                    );
+
+                    uploadedFilesMetadata.push({
+                        field: field.name,
+                        label: field.label,
+                        fileName: upload.name,
+                        mimeType: upload.type,
+                        filePath: created.filePath,
+                    });
+                }
 
                 continue;
             }
@@ -432,16 +460,10 @@ const DynamicOccurrenceForm = () => {
                                         key={field.name}
                                         field={field}
                                         value={
-                                            field.type ===
-                                            "file" ||
-                                            field.type ===
-                                            "image"
-                                                ? fileValues[
-                                                field.name
-                                                ] ?? null
-                                                : formValues[
-                                                    field.name
-                                                    ]
+                                            field.type === "file" ||
+                                            field.type === "image"
+                                                ? fileValues[field.name]
+                                                : formValues[field.name]
                                         }
                                         intervenients={
                                             intervenients
@@ -459,6 +481,7 @@ const DynamicOccurrenceForm = () => {
                                             handleFileChange
                                         }
                                         theme={theme}
+                                        fileValues={fileValues}
                                     />
                                 )
                             )}

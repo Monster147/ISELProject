@@ -10,7 +10,7 @@ import ThemedDateInput from "../../../../../../components/ThemedDateInput";
 import ThemedTextInput from "../../../../../../components/ThemedTextInput";
 import {Colors} from "@commons/constants/Colors";
 
-export const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, theme}) => {
+export const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, theme, fileValues}) => {
     const {t} = useTranslation();
 
     const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,6 +27,11 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
     };
 
     const handleRemoveFile = (name: string) => {
+        const old = fileValues[name];
+        if (old?.previewUrl) {
+            URL.revokeObjectURL(old.previewUrl);
+        }
+
         onFileChange(name, null);
     };
 
@@ -339,6 +344,8 @@ const styles = StyleSheet.create({
     },
     textarea: { minHeight: 90, textAlignVertical: "top" },
 
+    dateInput: {flex: 1, height: 40,},
+
     boolRow: { flexDirection: "row", justifyContent: "space-between" },
     toggle: { width: 44, height: 24, borderRadius: 12, backgroundColor: "#ccc" },
     toggleActive: { backgroundColor: Colors.success },
@@ -352,11 +359,11 @@ const styles = StyleSheet.create({
 
     downloadLink: { textDecoration: "none" },
     downloadButton: { minWidth: 120 },
-    downloadButtonText: { fontWeight: "600" },
+    downloadButtonText: { fontWeight: "600", textAlign: "center" },
 
     downloadImageLink: { textDecoration: "none" },
     downloadHint: { fontSize: 13, opacity: 0.7 },
 
     removeFileButton: { marginTop: 4, minWidth: 120 },
-    removeFileButtonText: { fontWeight: "600" },
+    removeFileButtonText: { fontWeight: "600", textAlign: "center" },
 });
