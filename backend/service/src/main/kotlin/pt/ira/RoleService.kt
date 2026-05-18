@@ -4,19 +4,34 @@ import org.springframework.stereotype.Component
 import pt.ira.interfaces.TransactionManager
 import pt.ira.role.Role
 
+/**
+ * Hierarquia de erros específicos do domínio dos cargos.
+ *
+ * Encapsula as situações de erro que podem ocorrer durante operações com cargos,
+ * permitindo uma tratamento explícito e tipificado dos cenários de falha.
+ *
+ * @see ReportService
+ */
 sealed class RoleError {
+    /**
+     * Um cargo com o nome especificado já existe no sistema.
+     */
     data object RoleAlreadyExists : RoleError()
 
+    /**
+     * O cargo solicitado não foi encontrado no sistema,
+     * quer por nome quer por identificador.
+     */
     data object RoleNotFound : RoleError()
 }
 
 /**
- * Serviço responsável pela gestão do ciclo de vida dos papéis (roles).
+ * Serviço responsável pela gestão do ciclo de vida dos cargos (roles).
  *
  * Responsabilidades principais:
- * - criação, consulta e eliminação de papéis;
+ * - criação, consulta e eliminação de cargos;
  * - validação de unicidade de nomes;
- * - disponibilização de dados de papéis do sistema.
+ * - disponibilização de dados de cargos do sistema.
  *
  * @param trxManager gestor de transações usado para aceder aos repositórios dentro de unidades de trabalho.
  */
@@ -25,11 +40,11 @@ class RoleService(
     private val trxManager: TransactionManager,
 ) {
     /**
-     * Cria um papel.
+     * Cria um cargo.
      *
-     * Valida se já existe um papel com o mesmo nome.
+     * Valida se já existe um cargo com o mesmo nome.
      *
-     * @param name Nome do papel.
+     * @param name Nome do cargo.
      *
      * @return [Role] criado, ou um erro do tipo [RoleError].
      */
@@ -44,11 +59,11 @@ class RoleService(
     }
 
     /**
-     * Remove um papel com base no nome.
+     * Remove um cargo com base no nome.
      *
-     * Valida a existência do papel antes da eliminação.
+     * Valida a existência do cargo antes da eliminação.
      *
-     * @param name Nome do papel.
+     * @param name Nome do cargo.
      *
      * @return [Unit] se a eliminação for bem-sucedida, ou erro do tipo [RoleError].
      */
@@ -61,9 +76,9 @@ class RoleService(
     }
 
     /**
-     * Obtém um papel pelo nome.
+     * Obtém um cargo pelo nome.
      *
-     * @param name Nome do papel.
+     * @param name Nome do cargo.
      *
      * @return [Role] correspondente, ou erro do tipo [RoleError].
      */
@@ -75,9 +90,9 @@ class RoleService(
     }
 
     /**
-     * Obtém um papel pelo identificador.
+     * Obtém um cargo pelo identificador.
      *
-     * @param id Identificador do papel.
+     * @param id Identificador do cargo.
      *
      * @return [Role] correspondente, ou erro do tipo [RoleError].
      */
@@ -89,7 +104,7 @@ class RoleService(
     }
 
     /**
-     * Obtém todos os papéis registados no sistema.
+     * Obtém todos os cargos registados no sistema.
      *
      * @return Lista de todas as [Role].
      */

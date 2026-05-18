@@ -1,18 +1,22 @@
 package pt.ira.token
 
 /**
- * Defines the contract for encoding tokens into a validation representation.
- * Implementations are responsible for transforming a raw token into a
- * {@link TokenValidationInfo}, which can be used to verify token integrity
- * and contains the hashed token.
+ * Define o contrato para a codificação de tokens numa representação de validação.
+ *
+ * As implementações desta interface são responsáveis por transformar um token
+ * numa instância de [TokenValidationInfo], que pode ser utilizada
+ * para verificar a integridade do token e contém o seu valor codificado (hashed).
+ *
+ * @see TokenValidationInfo
  */
 interface TokenEncoder {
     /**
-     * Creates validation information for the given token.
-     * The exact encoding or hashing strategy depends on the implementation.
+     * Cria informação de validação para um dado token.
      *
-     * @param token the raw token to be transformed
-     * @return a {@link TokenValidationInfo} containing the validation representation of the token
+     * A estratégia exata de codificação (hashing) depende da implementação concreta.
+     *
+     * @param token Token a ser transformado.
+     * @return [TokenValidationInfo] contendo a representação de validação do token.
      */
     fun createValidationInformation(token: String): TokenValidationInfo
 }

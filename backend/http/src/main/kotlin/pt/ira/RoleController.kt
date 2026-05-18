@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController
 import pt.ira.model.Problem
 
 /**
- * Controlador REST responsável pela gestão de papéis (roles) no sistema.
+ * Controlador REST responsável pela gestão dos cargos (roles) no sistema.
  *
- * Expõe endpoints HTTP para criação, eliminação e consulta de papéis, permitindo
+ * Expõe endpoints HTTP para criação, eliminação e consulta de cargos, permitindo
  * a gestão centralizada de permissões ou categorias associadas a utilizadores, ou entidades.
  *
  * Atua como camada de adaptação entre o protocolo HTTP e a lógica de domínio,
@@ -22,13 +22,13 @@ import pt.ira.model.Problem
  * respostas HTTP consistentes com mapeamento explícito de erros.
  *
  * Responsabilidades principais:
- * - criação de novos papéis;
- * - eliminação de papéis por nome;
- * - consulta de papéis por nome e identificador;
- * - listagem completa de todos os papéis;
+ * - criação de novos cargos;
+ * - eliminação de cargos por nome;
+ * - consulta de cargos por nome e identificador;
+ * - listagem completa de todos os cargos;
  * - tradução de erros de domínio para respostas HTTP apropriadas.
  *
- * @param roleService serviço responsável pela lógica de negócio associada aos papéis.
+ * @param roleService serviço responsável pela lógica de negócio associada aos cargos.
  */
 @RestController
 @RequestMapping("/api/role")
@@ -36,12 +36,12 @@ class RoleController(
     private val roleService: RoleService,
 ) {
     /**
-     * Cria um papel no sistema.
+     * Cria um cargo no sistema.
      *
      * Em caso de sucesso, devolve `201 Created` com o header `Location`
      * a indicar o recurso criado.
      *
-     * @param roleName nome do papel a criar.
+     * @param roleName nome do cargo a criar.
      *
      * @return resposta HTTP com o resultado da operação.
      */
@@ -68,11 +68,11 @@ class RoleController(
     }
 
     /**
-     * Elimina um papel pelo seu nome.
+     * Elimina um cargo pelo seu nome.
      *
      * Em caso de sucesso, devolve `204 No Content`.
      *
-     * @param roleName nome do papel a eliminar.
+     * @param roleName nome do cargo a eliminar.
      *
      * @return resposta HTTP correspondente ao resultado da operação.
      */
@@ -96,11 +96,11 @@ class RoleController(
     }
 
     /**
-     * Obtém um papel pelo seu nome.
+     * Obtém um cargo pelo seu nome.
      *
-     * @param roleName nome do papel.
+     * @param roleName nome do cargo.
      *
-     * @return `200 OK` com o papel ou `404 Not Found` se não existir.
+     * @return `200 OK` com o cargo ou `404 Not Found` se não existir.
      */
     @GetMapping("/byName/{roleName}")
     fun findByName(
@@ -124,11 +124,11 @@ class RoleController(
     }
 
     /**
-     * Obtém um papel pelo seu identificador.
+     * Obtém um cargo pelo seu identificador.
      *
-     * @param id identificador do papel.
+     * @param id identificador do cargo.
      *
-     * @return `200 OK` com o papel ou `404 Not Found` se não existir.
+     * @return `200 OK` com o cargo ou `404 Not Found` se não existir.
      */
     @GetMapping("/byId/{id}")
     fun findById(
@@ -152,9 +152,9 @@ class RoleController(
     }
 
     /**
-     * Obtém todos os papéis registados no sistema.
+     * Obtém todos os cargos registados no sistema.
      *
-     * @return `200 OK` com a lista completa de papéis.
+     * @return `200 OK` com a lista completa de cargos.
      */
     @GetMapping
     fun findAll(): ResponseEntity<*> {

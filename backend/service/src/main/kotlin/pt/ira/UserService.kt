@@ -19,15 +19,39 @@ import java.util.Base64.getUrlDecoder
 import java.util.Base64.getUrlEncoder
 import kotlin.math.round
 
+/**
+ * Hierarquia de erros específicos do domínio dos utilizadores.
+ *
+ * Encapsula as situações de erro que podem ocorrer durante operações com utilizadores,
+ * permitindo uma tratamento explícito e tipificado dos cenários de falha.
+ *
+ * @see TypeService
+ */
 sealed class UserError {
+    /**
+     * O endereço de email fornecido já está registado no sistema.
+     */
     data object AlreadyUsedEmailAddress : UserError()
 
+    /**
+     * A palavra-passe fornecida não cumpre os requisitos mínimos de segurança.
+     */
     data object InsecurePassword : UserError()
 
+    /**
+     * O utilizador solicitado não foi encontrado no sistema,
+     * quer por email quer por identificador.
+     */
     data object UserNotFound : UserError()
 
+    /**
+     * Um dos cargos (roles) especificados não existe no sistema.
+     */
     data object RoleDoesntExist : UserError()
 
+    /**
+     * O utilizador não possui permissões administrativas.
+     */
     data object UserNotAdmin : UserError()
 }
 

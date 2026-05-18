@@ -8,17 +8,43 @@ import pt.ira.publishers.Publishers
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
 
+/**
+ * Hierarquia de erros específicos do domínio dos relatórios.
+ *
+ * Encapsula as situações de erro que podem ocorrer durante operações com relatórios,
+ * permitindo uma tratamento explícito e tipificado dos cenários de falha.
+ *
+ * @see ReportService
+ */
 sealed class ReportError {
+    /**
+     * O relatório solicitado não foi encontrado no sistema.
+     */
     data object ReportNotFound : ReportError()
 
+    /**
+     * O utilizador especificado não existe no sistema.
+     */
     data object UserNotFound : ReportError()
 
+    /**
+     * O interveniente especificado não existe no sistema.
+     */
     data object IntervenorNotFound : ReportError()
 
+    /**
+     * A ocorrência especificada não existe no sistema.
+     */
     data object OccurrenceNotFound : ReportError()
 
+    /**
+     * A ocorrência não foi atribuída ao utilizador solicitante
+     */
     data object OccurrenceNotAssignedToUser : ReportError()
 
+    /**
+     * Já existe um relatório associado à ocorrência especificada.
+     */
     data object OccurrenceAlreadyHasReport : ReportError()
 }
 

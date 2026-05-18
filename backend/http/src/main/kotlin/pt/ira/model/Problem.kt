@@ -8,12 +8,45 @@ private const val MEDIA_TYPE = "application/problem+json"
 private const val PROBLEM_URI_PATH =
     "https://github.com/Monster147/ISELProject/tree/main/backend/docs/problems"
 
+/**
+ * Hierarquia de problemas HTTP padronizados para respostas de erro.
+ *
+ * Implementa o padrão RFC 7807 (Problem Details for HTTP APIs), fornecendo uma representação
+ * estruturada e consistente de erros que ocorrem no sistema. Cada variante da hierarquia
+ * representa um cenário de erro específico, mapeado para uma URI descritiva e um código HTTP apropriado.
+ *
+ * A classe encapsula a lógica de construção de respostas HTTP com tipo de conteúdo padronizado
+ * (`application/problem+json`), facilitando a interpretação de erros pelos clientes.
+ *
+ * Responsabilidades principais:
+ * - Encapsulamento de erros específicos do domínio com URIs descritivas;
+ * - Construção de respostas HTTP estruturadas com status apropriado;
+ * - Fornecimento de títulos e tipos de erro consistentes;
+ * - Conformidade com o padrão RFC 7807 para representação de problemas em APIs REST.
+ *
+ * @param typeUri URI que identifica o tipo de problema, tipicamente apontando para a documentação do erro.
+ *
+ * @property type String representando a URI do tipo de problema.
+ * @property title Título descritivo extraído do último segmento da URI (automaticamente gerado).
+ *
+ * @see ResponseEntity
+ * @see HttpStatus
+ */
 sealed class Problem(
     typeUri: URI,
 ) {
     val type = typeUri.toString()
     val title = typeUri.toString().split("/").last()
 
+    /**
+     * Constrói uma resposta HTTP com o status e conteúdo apropriados para este problema.
+     *
+     * Define o header `Content-Type` como `application/problem+json` conforme o padrão RFC 7807,
+     * e serializa a instância do problema no corpo da resposta.
+     *
+     * @param status Status HTTP a ser retornado na resposta.
+     * @return [ResponseEntity] configurada com o status, header e corpo apropriados.
+     */
     fun response(status: HttpStatus): ResponseEntity<Any> =
         ResponseEntity
             .status(status)

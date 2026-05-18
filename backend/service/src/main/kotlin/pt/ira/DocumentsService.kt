@@ -10,11 +10,28 @@ import pt.ira.publishers.Publishers
 import pt.ira.storage.StorageService
 import java.text.Normalizer
 
+/**
+ * Hierarquia de erros específicos do domínio dos documentos.
+ *
+ * Encapsula as situações de erro que podem ocorrer durante operações com documentos,
+ * permitindo uma tratamento explícito e tipificado dos cenários de falha.
+ *
+ * @see DocumentsService
+ */
 sealed class DocumentsError {
+    /**
+     * Indica que o documento solicitado não foi encontrado na base de dados.
+     */
     data object DocumentNotFound : DocumentsError()
 
+    /**
+     * Indica que o ficheiro fornecido não é válido (tipo não permitido ou vazio).
+     */
     data object InvalidFile : DocumentsError()
 
+    /**
+     * Indica que um documento com o mesmo nome já existe no armazenamento.
+     */
     data object FileAlreadyExists : DocumentsError()
 }
 

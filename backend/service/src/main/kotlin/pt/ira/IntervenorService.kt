@@ -6,9 +6,24 @@ import pt.ira.interfaces.TransactionManager
 import pt.ira.intervenor.Intervenor
 import pt.ira.publishers.Publishers
 
+/**
+ * Hierarquia de erros específicos do domínio dos intervenientes.
+ *
+ * Encapsula as situações de erro que podem ocorrer durante operações com intervenientes,
+ * permitindo uma tratamento explícito e tipificado dos cenários de falha.
+ *
+ * @see IntervenorService
+ */
 sealed class IntervenorError {
+    /**
+     * Indica que já existe um interveniente com os mesmos dados identificadores
+     *  (número e tipo de identificação) ou informação de contacto.
+     */
     data object IntervenorAlreadyExists : IntervenorError()
 
+    /**
+     * Indica que o interveniente solicitado não foi encontrado na base de dados.
+     */
     data object IntervenorNotFound : IntervenorError()
 }
 

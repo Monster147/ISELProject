@@ -10,21 +10,53 @@ import pt.ira.occurrence.OccurrenceType
 import pt.ira.publishers.Publishers
 import java.time.LocalDate
 
+/**
+ * Hierarquia de erros específicos do domínio das ocorrências.
+ *
+ * Encapsula as situações de erro que podem ocorrer durante operações com ocorrências,
+ * permitindo uma tratamento explícito e tipificado dos cenários de falha.
+ *
+ * @see OccurrenceService
+ */
 sealed class OccurrenceError {
+    /**
+     * A ocorrência solicitada não foi encontrada.
+     */
     data object OccurrenceNotFound : OccurrenceError()
 
+    /**
+     *  A data de fim da ocorrência é inválida (anterior à data atual).
+     */
     data object EndDateNotValid : OccurrenceError()
 
+    /**
+     * O utilizador (reporter) solicitado não existe.
+     */
     data object UserNotFound : OccurrenceError()
 
+    /**
+     * A lista de identificadores de utilizadores contém duplicados.
+     */
     data object DuplicateUsersIds : OccurrenceError()
 
+    /**
+     * O interveniente solicitado não existe.
+     */
     data object IntervenorNotFound : OccurrenceError()
 
+    /**
+     * O interveniente já está associado à ocorrência.
+     */
     data object IntervenorAlreadyInOccurrence : OccurrenceError()
 
+    /**
+     * O interveniente não está associado à ocorrência.
+     */
     data object IntervenorNotInOccurrence : OccurrenceError()
 
+    /**
+     * O tipo de ocorrência solicitado não existe.
+     */
     data object TypeNotFound : OccurrenceError()
 }
 

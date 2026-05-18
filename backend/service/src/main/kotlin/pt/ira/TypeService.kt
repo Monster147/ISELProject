@@ -7,9 +7,27 @@ import pt.ira.interfaces.TransactionManager
 import pt.ira.publishers.Publishers
 import pt.ira.type.Type
 
+/**
+ * Hierarquia de erros específicos do domínio dos tipos.
+ *
+ * Encapsula as situações de erro que podem ocorrer durante operações com tipos,
+ * permitindo uma tratamento explícito e tipificado dos cenários de falha.
+ *
+ * @see TypeService
+ */
 sealed class TypeError {
+    /**
+     * O tipo solicitado não foi encontrado no sistema,
+     * quer por identificador quer por nome.
+     */
     data object TypeNotFound : TypeError()
+    /**
+     * Um tipo com o nome especificado já existe no sistema.
+     */
     data object TypeAlreadyExists : TypeError()
+    /**
+     * O nome fornecido para o tipo é inválido
+     */
     data object InvalidName : TypeError()
 }
 

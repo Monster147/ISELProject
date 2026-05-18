@@ -10,18 +10,48 @@ import pt.ira.interfaces.TransactionManager
 import pt.ira.publishers.Publishers
 import pt.ira.storage.StorageService
 
+/**
+ * Hierarquia de erros específicos do domínio das evidências.
+ *
+ * Encapsula as situações de erro que podem ocorrer durante operações com evidências,
+ * permitindo uma tratamento explícito e tipificado dos cenários de falha.
+ *
+ * @see EvidenceService
+ */
 sealed class EvidenceError {
+    /**
+     * Indica que a evidência solicitada não foi encontrada na base de dados.
+     */
     data object EvidenceNotFound : EvidenceError()
 
+
+    /**
+     * Indica que a ocorrência associada à evidência não existe.
+     */
     data object OccurrenceNotFound : EvidenceError()
 
+    /**
+     * Indica que o utilizador que reporta a evidência não existe.
+     */
     data object ReporterNotFound : EvidenceError()
 
+    /**
+     * Indica que o ficheiro fornecido é inválido ou tem um formato não permitido.
+     */
     data object InvalidFile : EvidenceError()
 
+    /**
+     * Indica que o ficheiro da evidência não foi encontrado no armazenamento.
+     */
     data object FileNotFound : EvidenceError()
 }
 
+/**
+ * Lista de tipos MIME permitidos para upload de evidências.
+ *
+ * Inclui formatos comuns de imagem, vídeo e documento, garantindo
+ * que apenas ficheiros seguros e validados são aceites no sistema.
+ */
 val allowedExtensions =
     listOf(
         "image/jpg",
