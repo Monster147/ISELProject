@@ -110,6 +110,10 @@ const DashboardLayout = () => {
                     name="occurrences/evidences/[id]"
                     options={{href: null}}
                 />
+                <Tabs.Screen
+                    name="occurrences/evidences/FieldRenderer"
+                    options={{href: null}}
+                />
             </Tabs>
         </UserOnly>
     )

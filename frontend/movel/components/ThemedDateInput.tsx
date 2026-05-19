@@ -16,7 +16,7 @@ const ThemedDateInput = ({value, onChangeText, style, placeholder}) => {
 
     const [show, setShow] = useState(false)
 
-    const selectedDate = new Date(value)
+    const selectedDate = value ? new Date(value) : new Date();
 
     const handleChange = (_: any, date?: Date) => {
         setShow(false)
@@ -28,19 +28,10 @@ const ThemedDateInput = ({value, onChangeText, style, placeholder}) => {
 
     return (
         <ThemedView>
-            <Pressable
-                onPress={() => setShow(true)}
-                style={[
-                    styles.input,
-                    {
-                        backgroundColor: theme.uiBackground2,
-                    },
-                    style
-                ]}
+            <Pressable onPress={() => setShow(true)}
+                style={[styles.input, {backgroundColor: theme.uiBackground2,}, style]}
             >
-                <ThemedText>
-                    {value ?? placeholder}
-                </ThemedText>
+                <ThemedText> {value || placeholder} </ThemedText>
             </Pressable>
 
             {show && (

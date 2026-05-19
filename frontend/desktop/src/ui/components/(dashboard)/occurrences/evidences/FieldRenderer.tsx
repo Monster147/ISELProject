@@ -50,8 +50,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                     )}
                 </ThemedText>
 
-                <Select
-                    options={options}
+                <Select options={options}
                     placeholder={t("form.selectOption", {
                         defaultValue: "Selecione...",
                     })}
@@ -63,8 +62,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                     onChange={(selected) =>
                         onChange(field.name, selected?.value)
                     }
-                    menuPortalTarget={document.body}
-                    menuPosition="fixed"
+                    menuPortalTarget={document.body} menuPosition="fixed"
                 />
             </ThemedView>
         );
@@ -82,18 +80,14 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                     )}
                 </ThemedText>
 
-                <Select
-                    options={field.options}
-                    value={selectedOption}
-                    isDisabled={field.readOnly}
+                <Select options={field.options} value={selectedOption} isDisabled={field.readOnly}
                     onChange={(selected) =>
                         onChange(field.name, selected?.value ?? "")
                     }
                     placeholder={t("form.selectOption", {
                         defaultValue: "Selecione...",
                     })}
-                    menuPortalTarget={document.body}
-                    menuPosition="fixed"
+                    menuPortalTarget={document.body} menuPosition="fixed"
                 />
             </ThemedView>
         );
@@ -103,27 +97,16 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedView style={[styles.boolRow, {backgroundColor: theme.uiBackground}]}>
-                    <ThemedText style={styles.label}>
-                        {field.label}
-                    </ThemedText>
+                    <ThemedText style={styles.label}> {field.label} </ThemedText>
 
-                    <TouchableOpacity
-                        style={[
-                            styles.toggle,
-                            value && styles.toggleActive,
-                        ]}
+                    <TouchableOpacity style={[styles.toggle, value && styles.toggleActive]}
                         onPress={() =>
                             !field.readOnly &&
                             onChange(field.name, !value)
                         }
                         activeOpacity={0.8}
                     >
-                        <ThemedView
-                            style={[
-                                styles.toggleThumb,
-                                value && styles.toggleThumbActive,
-                            ]}
-                        />
+                        <ThemedView style={[styles.toggleThumb, value && styles.toggleThumbActive]}/>
                     </TouchableOpacity>
                 </ThemedView>
             </ThemedView>
@@ -143,30 +126,12 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
             const fileNameWithoutExtension =
                 value.name?.replace(/\.[^/.]+$/, "");
             return (
-                <ThemedView
-                    style={[
-                        styles.fieldContainer,
-                        styles.imagePreviewContainer,
-                        {backgroundColor: theme.uiBackground},
-                    ]}
-                >
-                    <a
-                        href={value.previewUrl}
-                        download={value.name}
-                        style={styles.downloadImageLink}
-                    >
-                        <img
-                            src={value.previewUrl}
-                            style={styles.imagePreview}
-                        />
+                <ThemedView style={[styles.fieldContainer, styles.imagePreviewContainer, {backgroundColor: theme.uiBackground},]}>
+                    <a href={value.previewUrl} download={value.name} style={styles.downloadImageLink}>
+                        <img src={value.previewUrl} style={styles.imagePreview}/>
                     </a>
 
-                    <ThemedView
-                        style={[
-                            styles.imageInfoContainer,
-                            {backgroundColor: theme.uiBackground},
-                        ]}
-                    >
+                    <ThemedView style={[styles.imageInfoContainer, {backgroundColor: theme.uiBackground},]}>
                         <ThemedText style={styles.imageName}>
                             {fileNameWithoutExtension}
                         </ThemedText>
@@ -175,13 +140,8 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                             Carregar na imagem para descarregar
                         </ThemedText>
 
-                        <ThemedButton
-                            style={styles.removeFileButton}
-                            onPress={() => handleRemoveFile(field.name)}
-                        >
-                            <ThemedText style={styles.removeFileButtonText}>
-                                Remover
-                            </ThemedText>
+                        <ThemedButton style={styles.removeFileButton} onPress={() => handleRemoveFile(field.name)}>
+                            <ThemedText style={styles.removeFileButtonText}> Remover </ThemedText>
                         </ThemedButton>
                     </ThemedView>
                 </ThemedView>
@@ -195,36 +155,17 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
             const fileNameWithoutExtension =
                 value.name?.replace(/\.[^/.]+$/, "");
             return (
-                <ThemedView
-                    style={[
-                        styles.fieldContainer,
-                        styles.imagePreviewContainer,
-                        {backgroundColor: theme.uiBackground},
-                    ]}
-                >
+                <ThemedView style={[styles.fieldContainer, styles.imagePreviewContainer, {backgroundColor: theme.uiBackground}]}>
                     <ThemedView style={[styles.imageInfoContainer, {backgroundColor: theme.uiBackground}]}>
-                        <ThemedText style={styles.imageName}>
-                            {fileNameWithoutExtension}
-                        </ThemedText>
-                        <a
-                            href={value.previewUrl}
-                            download={value.name}
-                            style={styles.downloadLink}
-                        >
+                        <ThemedText style={styles.imageName}> {fileNameWithoutExtension} </ThemedText>
+                        <a href={value.previewUrl} download={value.name} style={styles.downloadLink}>
                             <ThemedButton style={styles.downloadButton}>
-                                <ThemedText style={styles.downloadButtonText}>
-                                    Download
-                                </ThemedText>
+                                <ThemedText style={styles.downloadButtonText}> Download </ThemedText>
                             </ThemedButton>
                         </a>
 
-                        <ThemedButton
-                            style={styles.removeFileButton}
-                            onPress={() => handleRemoveFile(field.name)}
-                        >
-                            <ThemedText style={styles.removeFileButtonText}>
-                                Remover
-                            </ThemedText>
+                        <ThemedButton style={styles.removeFileButton} onPress={() => handleRemoveFile(field.name)}>
+                            <ThemedText style={styles.removeFileButtonText}> Remover </ThemedText>
                         </ThemedButton>
                     </ThemedView>
                 </ThemedView>
@@ -240,10 +181,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                     )}
                 </ThemedText>
 
-                <ThemedFileInput
-                    accept={accept}
-                    onChange={handleFileInput}
-                />
+                <ThemedFileInput accept={accept} onChange={handleFileInput}/>
             </ThemedView>
         );
     }
@@ -258,8 +196,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                     )}
                 </ThemedText>
 
-                <ThemedDateInput
-                    value={value ?? ""}
+                <ThemedDateInput value={value ?? ""}
                     onChangeText={(val) =>
                         onChange(field.name, val)
                     }
@@ -279,8 +216,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                     )}
                 </ThemedText>
 
-                <ThemedTextInput
-                    placeholder={field.label}
+                <ThemedTextInput placeholder={field.label}
                     value={
                         value !== undefined && value !== null
                             ? String(value)
@@ -294,9 +230,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                             Number.isFinite(num) ? num : 0
                         );
                     }}
-                    keyboardType="numeric"
-                    editable={!field.readOnly}
-                    style={styles.input}
+                    keyboardType="numeric" editable={!field.readOnly} style={styles.input}
                 />
             </ThemedView>
         );
@@ -311,15 +245,11 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                 )}
             </ThemedText>
 
-            <ThemedTextInput
-                placeholder={field.label}
-                value={value ?? ""}
+            <ThemedTextInput placeholder={field.label} value={value ?? ""}
                 onChangeText={(text) =>
                     onChange(field.name, text)
                 }
-                multiline={field.type === "text"}
-                numberOfLines={field.type === "text" ? 4 : 1}
-                editable={!field.readOnly}
+                multiline={field.type === "text"} numberOfLines={field.type === "text" ? 4 : 1} editable={!field.readOnly}
                 style={[
                     styles.input,
                     field.type === "text" && styles.textarea,

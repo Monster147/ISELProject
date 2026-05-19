@@ -7,6 +7,7 @@ configureApi(
         getAuthInfo: () => authInfoRepo.getAuthInfo(),
         getErrorDescription: getErrorDescription,
         documentDownloadHandler: downloadDocument,
+        evidenceDownloadHandler: downloadEvidence,
     },
     "/api"
 );
@@ -33,4 +34,11 @@ async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
     link.click()
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
+}
+
+async function downloadEvidence(apiBaseUrl: string, id: number, authHeaders: HeadersInit, keep: boolean): Promise<Blob> {
+    const response = await fetch(`${apiBaseUrl}/evidence/${id}/download`, {
+        headers: authHeaders,
+    });
+    return await response.blob();
 }

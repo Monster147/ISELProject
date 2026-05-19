@@ -44,7 +44,7 @@ export function EvidenceProvider({children}) {
 
     async function downloadEvidence(evidenceId:number){
         try{
-            const response = await api.downloadEvidence(evidenceId)
+            const response = await api.downloadEvidence(evidenceId, true)
             return response
         } catch (err: any) {
             throw Error(err.message)

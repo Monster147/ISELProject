@@ -56,6 +56,15 @@ const DynamicOccurrenceForm = () => {
         (tp) => tp.id === actualOccurrence?.occurrenceType
     );
 
+    const sanitizeFileName = (name: string): string => {
+        return name
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-zA-Z0-9]/g, "-")
+            .replace(/-+/g, "-")
+            .toLowerCase();
+    };
+
     const buildFileObject = async (ev) => {
         const blob = await downloadEvidence(ev.id);
         const file = new File([blob], ev.filePath.split("/").pop(), {
@@ -137,8 +146,9 @@ const DynamicOccurrenceForm = () => {
                 console.log(parsedSections);
                 await populateForm(parsedSections, data);
                 const map = {};
-                for (const sec of parsedSections){
-                    map[sec.section] = sec.evidenceId;
+                for (const sec of parsedSections) {
+                    const sanitizedKey = sanitizeFileName(sec.section);
+                    map[sanitizedKey] = sec.evidenceId;
                 }
                 setSectionEvidenceMap(map);
                 console.log("mapa", map);
@@ -235,8 +245,6 @@ const DynamicOccurrenceForm = () => {
 
     const replaceEvidence = async(uploadFile, type, label, sectionName?, userId) => {
         let existingId
-        console.log("sectionEvidenceMap ANTES", sectionEvidenceMap)
-        console.log("fileEvidenceMap ANTES", fileEvidenceMap)
         if(type === "json" && sectionName) {
             existingId = sectionEvidenceMap[sectionName];
         }
@@ -292,9 +300,6 @@ const DynamicOccurrenceForm = () => {
             }));
         }
 
-        console.log("sectionEvidenceMap DEPOIS", sectionEvidenceMap)
-        console.log("fileEvidenceMap DEPOIS", fileEvidenceMap)
-
         return created;
     }
 
@@ -302,6 +307,7 @@ const DynamicOccurrenceForm = () => {
         if (!user) return;
         const sectionData: Record<string, any> = {};
         const uploadedFilesMetadata: any[] = [];
+        const sectionTitle = sanitizeFileName(section.title);
         for (const field of section.fields) {
             const value = formValues[field.name];
             const upload = fileValues[field.name];
@@ -339,7 +345,7 @@ const DynamicOccurrenceForm = () => {
                         upload,
                         field.type === "image" ? "IMAGE" : "FILE",
                         field.name,
-                        section.title,
+                        sectionTitle,
                         user.id
                     );
 
@@ -357,26 +363,26 @@ const DynamicOccurrenceForm = () => {
             sectionData[field.name] = value ?? null;
         }
 
-        console.log(sectionData);
-        console.log(section);
         let json;
         if(uploadedFilesMetadata.length > 0) {
             json = {
-                section: section.title,
+                section: sectionTitle,
                 occurrenceId: id,
                 data: sectionData,
                 files: uploadedFilesMetadata,
             }
         } else {
             json = {
-                section: section.title,
+                section: sectionTitle,
                 occurrenceId: id,
                 data: sectionData,
             }
         }
 
+        const fileName = `section-${sectionTitle}.json`;
+
         const blob = new Blob([JSON.stringify(json)], { type: "application/json" });
-        const file = new File([blob], `section-${section.title}.json`, { type: "application/json" });
+        const file = new File([blob], fileName, { type: "application/json" });
 
         const uploadFile: UploadFile = {
             platform: "web",
@@ -385,7 +391,7 @@ const DynamicOccurrenceForm = () => {
             type: file.type,
         }
 
-        await replaceEvidence(uploadFile, "json", section.title, section.title, user.id);
+        await replaceEvidence(uploadFile, "json", sectionTitle, sectionTitle, user.id);
     };
 
     const handleSubmit = async () => {

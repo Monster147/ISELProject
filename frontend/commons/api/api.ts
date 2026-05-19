@@ -33,10 +33,13 @@ type ApiAuthInfo = { token: string } | null;
 
 type DocumentDownloadHandler = (apiBaseUrl: string, id: number) => Promise<void>;
 
+type EvidenceDownloadHandler = (apiBaseUrl: string, evidenceId: number, authHeaders: HeadersInit, keep: boolean) => Promise<any>;
+
 type ApiRuntimeConfig = {
     getAuthInfo?: () => Promise<ApiAuthInfo>;
     getErrorDescription?: (errorType: string) => string;
     documentDownloadHandler?: DocumentDownloadHandler;
+    evidenceDownloadHandler?: EvidenceDownloadHandler;
 };
 
 const defaultGetAuthInfo = async (): Promise<ApiAuthInfo> => null;
@@ -45,9 +48,14 @@ const defaultDocumentDownloadHandler: DocumentDownloadHandler = async () => {
     throw new Error("Document download handler not configured");
 };
 
+const defaultEvidenceDownloadHandler: EvidenceDownloadHandler = async () => {
+    throw new Error("Evidence download handler not configured");
+};
+
 let getAuthInfo = defaultGetAuthInfo;
 let resolveErrorDescription = defaultGetErrorDescription;
 let documentDownloadHandler = defaultDocumentDownloadHandler;
+let evidenceDownloadHandler = defaultEvidenceDownloadHandler;
 let API_BASE_URL = ""
 
 export function configureApi(config: ApiRuntimeConfig, apiURL:string): void {
@@ -63,6 +71,10 @@ export function configureApi(config: ApiRuntimeConfig, apiURL:string): void {
 
     if (config.documentDownloadHandler) {
         documentDownloadHandler = config.documentDownloadHandler;
+    }
+
+    if (config.evidenceDownloadHandler) {
+        evidenceDownloadHandler = config.evidenceDownloadHandler;
     }
 }
 
@@ -367,11 +379,9 @@ export const api = {
         });
     },
 
-    async downloadEvidence(id:number): Promise<Blob>{
-        const response = await fetch(`${API_BASE_URL}/evidence/${id}/download`, {
-            headers: await getAuthHeaders(),
-        });
-        return await response.blob();
+    async downloadEvidence(id:number, keep: boolean): Promise<any>{
+        const authHeaders = await getAuthHeaders()
+        return evidenceDownloadHandler(API_BASE_URL, id, authHeaders, keep);
     },
 
     async findEvidenceByOccurrenceId(occurrenceId:number): Promise<Evidence> {
