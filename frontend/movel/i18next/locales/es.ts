@@ -210,6 +210,15 @@ const es = {
         warning:{
             noConnection: "Sin conexión a internet",
             noDownload: "Sin conexión a internet. No se pueden descargar documentos."
+        },
+        evidences: {
+            savingError: "Error al guardar la sección. Por favor, intenta de nuevo.",
+            save: "Guardar",
+            select: "Selecciona...",
+            clickToDownload: "Haz clic en la imagen para descargar la evidencia",
+            remove: "Eliminar",
+            download: "Descargar",
+            savedSuccess: "Sección guardada con éxito!",
         }
     },
 };

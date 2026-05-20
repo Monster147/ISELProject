@@ -2,7 +2,7 @@ import {useTranslation} from "react-i18next";
 import ThemedView from "../../../../../../components/ThemedView";
 import ThemedText from "../../../../../../components/ThemedText";
 import Select from "react-select";
-import {TouchableOpacity, StyleSheet} from "react-native";
+import {TouchableOpacity, StyleSheet, Image} from "react-native";
 import {ACCEPTED_FILE_TYPES} from "@commons/models/utils/AcceptedFileTypes";
 import ThemedButton from "../../../../../../components/ThemedButton";
 import ThemedFileInput from "../../../../../../components/ThemedFileInput";
@@ -52,7 +52,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
 
                 <Select options={options}
                     placeholder={t("form.selectOption", {
-                        defaultValue: "Selecione...",
+                        defaultValue: t("evidences.select")
                     })}
                     value={
                         options.find(
@@ -85,7 +85,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                         onChange(field.name, selected?.value ?? "")
                     }
                     placeholder={t("form.selectOption", {
-                        defaultValue: "Selecione...",
+                        defaultValue: t("evidences.select"),
                     })}
                     menuPortalTarget={document.body} menuPosition="fixed"
                 />
@@ -127,8 +127,15 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                 value.name?.replace(/\.[^/.]+$/, "");
             return (
                 <ThemedView style={[styles.fieldContainer, styles.imagePreviewContainer, {backgroundColor: theme.uiBackground},]}>
+                    <ThemedText style={styles.label}>
+                        {field.label}
+                        {field.required && (
+                            <ThemedText style={styles.required}> *</ThemedText>
+                        )}
+                    </ThemedText>
+
                     <a href={value.previewUrl} download={value.name} style={styles.downloadImageLink}>
-                        <img src={value.previewUrl} style={styles.imagePreview}/>
+                        <Image src={value.previewUrl} style={styles.imagePreview}/>
                     </a>
 
                     <ThemedView style={[styles.imageInfoContainer, {backgroundColor: theme.uiBackground},]}>
@@ -137,11 +144,11 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                         </ThemedText>
 
                         <ThemedText style={styles.downloadHint}>
-                            Carregar na imagem para descarregar
+                            {t("evidences.clickToDownload")}
                         </ThemedText>
 
                         <ThemedButton style={styles.removeFileButton} onPress={() => handleRemoveFile(field.name)}>
-                            <ThemedText style={styles.removeFileButtonText}> Remover </ThemedText>
+                            <ThemedText style={styles.removeFileButtonText}> {t("evidences.remove")} </ThemedText>
                         </ThemedButton>
                     </ThemedView>
                 </ThemedView>
@@ -160,12 +167,12 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                         <ThemedText style={styles.imageName}> {fileNameWithoutExtension} </ThemedText>
                         <a href={value.previewUrl} download={value.name} style={styles.downloadLink}>
                             <ThemedButton style={styles.downloadButton}>
-                                <ThemedText style={styles.downloadButtonText}> Download </ThemedText>
+                                <ThemedText style={styles.downloadButtonText}> {t("evidences.download")} </ThemedText>
                             </ThemedButton>
                         </a>
 
                         <ThemedButton style={styles.removeFileButton} onPress={() => handleRemoveFile(field.name)}>
-                            <ThemedText style={styles.removeFileButtonText}> Remover </ThemedText>
+                            <ThemedText style={styles.removeFileButtonText}> {t("evidences.remove")} </ThemedText>
                         </ThemedButton>
                     </ThemedView>
                 </ThemedView>

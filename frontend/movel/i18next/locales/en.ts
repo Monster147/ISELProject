@@ -210,6 +210,15 @@ const en = {
         warning:{
             noConnection: "No connection to internet",
             noDownload: "No internet connection. Cannot download documents."
+        },
+        evidences: {
+            savingError: "Error saving section. Please try again.",
+            save: "Save",
+            select: "Select...",
+            clickToDownload: "Click on the image to download the evidence",
+            remove: "Remove",
+            download: "Download",
+            savedSuccess: "Section saved successfully!",
         }
     }
 }

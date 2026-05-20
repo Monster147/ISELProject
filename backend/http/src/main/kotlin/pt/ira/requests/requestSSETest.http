@@ -1,4 +1,5 @@
-@token_user = Nc-5fd5g0e_LM1xFrVY7MROq3BfpKbZkaBfIpLxg0cc=
+@token_user = jIzCq_HDkbXaw-USWXAZ7DAxFtfhuVlhYjEiRRN7PeY=
+@accident-form = ../../../../../../docs/form/accident-form.json
 
 ### Create Admin User
 POST http://localhost:8080/api/user
@@ -25,10 +26,7 @@ POST http://localhost:8080/api/type
 Content-Type: application/json
 Authorization: Bearer {{token_user}}
 
-{
-  "name": "Fire",
-  "form": { "type": "fire", "sub": { "a": 1 } }
-}
+< ../../../../../../../docs/forms/accident-form.json
 
 ### Create occurrence
 POST http://localhost:8080/api/occurrence

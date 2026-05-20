@@ -210,6 +210,26 @@ const pt = {
         warning:{
             noConnection: "Sem ligação à internet",
             noDownload: "Sem ligação à internet. Não é possível descarregar documentos."
+        },
+        evidences:{
+            savingError: "Erro ao guardar a secção. Tente novamente.",
+            save: "Guardar",
+            select: "Selecione...",
+            clickToDownload: "Carregar na imagem para descarregar a evidência",
+            remove: "Remover",
+            download: "Descarregar",
+            savedSuccess: "Secção guardada com sucesso!",
+            permissionNeeded: "Permissão necessária",
+            cameraPermission: "É necessária permissão para usar a câmara.",
+            galleryPermission: "É necessária permissão para aceder à galeria.",
+            cancel: "Ok",
+            error: "Error",
+            noEvidenceId: "Não foi possível encontrar o identificador da evidência.",
+            failedDownload: "Falha ao descarregar a evidência.",
+            confirmDownload: "Confirmar download",
+            downloadMessage: "Deseja descarregar este ficheiro?",
+            downloadConfirm: "Sim",
+            downloadCancel: "Cancelar",
         }
     }
 }

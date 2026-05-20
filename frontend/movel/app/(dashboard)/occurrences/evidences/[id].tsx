@@ -1,5 +1,5 @@
 import {StyleSheet, ScrollView, Text, useColorScheme, FlatList} from "react-native";
-import { useTranslation } from "react-i18next";
+import {useTranslation} from "react-i18next";
 import {useLocalSearchParams, useRouter} from "expo-router";
 import {useEffect, useState} from "react";
 import * as FileSystem from "expo-file-system";
@@ -11,16 +11,16 @@ import ThemedLoader from "../../../../components/ThemedLoader";
 import ThemedButton from "../../../../components/ThemedButton";
 import OfflineBanner from "../../../../components/ThemedOfflineBanner";
 
-import { useOccurrence } from "../../../../hooks/useOccurrence";
-import { useType } from "../../../../hooks/useType";
-import { useEvidence } from "../../../../hooks/useEvidence";
-import { useAuth } from "../../../../hooks/useAuth";
+import {useOccurrence} from "../../../../hooks/useOccurrence";
+import {useType} from "../../../../hooks/useType";
+import {useEvidence} from "../../../../hooks/useEvidence";
+import {useAuth} from "../../../../hooks/useAuth";
 import {useNetworkStatus} from "../../../../hooks/useNetworkStatus";
 import {useIntervenor} from "../../../../hooks/useIntervenor";
 import {useBackRedirect} from "../../../../hooks/useBackRedirect";
 
-import { Colors } from "@commons/constants/Colors";
-import type { UploadFile } from "@commons/models/utils/UploadFile"
+import {Colors} from "@commons/constants/Colors";
+import type {UploadFile} from "@commons/models/utils/UploadFile"
 import {OccurrenceTypeForm} from "@commons/models/type/OccorrenceTypeForm";
 import {FormField} from "@commons/models/type/FormField";
 import {expandSections} from "@commons/models/type/Helpers";
@@ -28,38 +28,31 @@ import FieldRenderer from "./FieldRenderer";
 import {PaperProvider} from "react-native-paper";
 import {Paths, File} from "expo-file-system";
 
-const LOG_PREFIX = "[EVIDENCES]";
-
-export const log = (...args: any[]) =>
-    console.log(LOG_PREFIX, ...args);
-
-const logError = (...args: any[]) =>
-    console.error(LOG_PREFIX, ...args);
-
-const DynamicOccurrenceForm  = () => {
+const DynamicOccurrenceForm = () => {
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme] ?? Colors.light;
+    const {t} = useTranslation();
 
-    const { t } = useTranslation();
-    const { id } = useLocalSearchParams();
+    const {id} = useLocalSearchParams();
     const router = useRouter();
     const occurrenceId = Number(id);
 
-    const { occurrence } = useOccurrence();
-    const { intervenor } = useIntervenor();
-    const { type } = useType();
+    const {occurrence} = useOccurrence();
+    const {intervenor} = useIntervenor();
+    const {type} = useType();
     const {createEvidence, findEvidenceByOccurrenceId, downloadEvidence, deleteEvidence} = useEvidence();
-    const { user } = useAuth();
-    const { isOnline } = useNetworkStatus();
+    const {user} = useAuth();
+    const {isOnline} = useNetworkStatus();
 
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [sectionEvidenceMap, setSectionEvidenceMap] = useState({});
     const [fileEvidenceMap, setFileEvidenceMap] = useState({});
     const [formValues, setFormValues] = useState({});
     const [fileValues, setFileValues] = useState({});
-    const [submitted, setSubmitted] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState<{ section: string, message: string } | null>(null);
+    const [loadingFields, setLoadingFields] = useState<Record<string, boolean>>({});
+    const [successMessage, setSuccessMessage] = useState<{ section: string, message: string } | null>(null);
+
 
     useBackRedirect(() => router.back())
 
@@ -131,8 +124,8 @@ const DynamicOccurrenceForm  = () => {
             try {
                 const data = await findEvidenceByOccurrenceId(occurrenceId);
                 const sectionJsons = data.filter((ev) =>
-                        ev.filePath?.endsWith(".json") &&
-                        ev.filePath?.includes("section-")
+                    ev.filePath?.endsWith(".json") &&
+                    ev.filePath?.includes("section-")
                 );
 
                 const parsedSections = await Promise.all(
@@ -241,7 +234,7 @@ const DynamicOccurrenceForm  = () => {
         file: UploadFile | null
     ) => {
         setFileValues((prev) => {
-            const next = { ...prev };
+            const next = {...prev};
 
             if (file === null) {
                 next[name] = null;
@@ -253,22 +246,22 @@ const DynamicOccurrenceForm  = () => {
         });
     };
 
-    const replaceEvidence = async(uploadFile, type, label, sectionName?, userId) => {
+    const replaceEvidence = async (uploadFile, type, label, sectionName?, userId) => {
         let existingId;
-        if(type === "json" && sectionName) {
+        if (type === "json" && sectionName) {
             existingId = sectionEvidenceMap[sectionName];
         }
 
-        if(type !== "json") {
+        if (type !== "json") {
             existingId = fileEvidenceMap[label];
         }
 
-        if(existingId) {
+        if (existingId) {
             await deleteEvidence(existingId);
 
             if (type === "json" && sectionName) {
                 setSectionEvidenceMap(prev => {
-                    const copy = { ...prev };
+                    const copy = {...prev};
                     delete copy[sectionName];
                     return copy;
                 });
@@ -276,7 +269,7 @@ const DynamicOccurrenceForm  = () => {
 
             if (type !== "json") {
                 setFileEvidenceMap(prev => {
-                    const copy = { ...prev };
+                    const copy = {...prev};
                     delete copy[label];
                     return copy;
                 });
@@ -302,6 +295,21 @@ const DynamicOccurrenceForm  = () => {
 
         if (type !== "json") {
             setFileEvidenceMap(prev => ({...prev, [label]: created.id}));
+            const res = await downloadEvidence(created.id, false);
+            const fileUri = res.path();
+
+            setFileValues(prev => ({
+                ...prev,
+                [label]: {
+                    platform: "mobile",
+                    uri: `file://${fileUri}`,
+                    name: uploadFile.name,
+                    type: uploadFile.type,
+                    evidenceId: created.id,
+                    filePath: created.filePath,
+                    remote: true
+                }
+            }));
         }
 
         return created;
@@ -317,72 +325,72 @@ const DynamicOccurrenceForm  = () => {
     };
 
     const saveSection = async (section: any) => {
+        if (!user) return;
+
+        setLoadingFields(prev => ({
+            ...prev,
+            [section.title]: true
+        }));
+        setSuccessMessage(null)
+        setError(null)
+
         try {
-            if (!user) return;
             const sectionData: Record<string, any> = {};
             const uploadedFilesMetadata: any[] = [];
             const sectionTitle = sanitizeFileName(section.title);
-
             for (const field of section.fields) {
-                try {
-                    const value = formValues[field.name];
-                    const upload = fileValues[field.name];
+                const value = formValues[field.name];
+                const upload = fileValues[field.name];
+                if (field.type === "file" || field.type === "image") {
+                    if (upload === null) {
+                        const existingId = fileEvidenceMap[field.name];
 
+                        if (existingId) {
+                            await deleteEvidence(existingId);
 
-                    if (field.type === "file" || field.type === "image") {
-                        if (upload === null) {
-                            const existingId = fileEvidenceMap[field.name];
-
-                            if (existingId) {
-                                await deleteEvidence(existingId);
-
-                                setFileEvidenceMap(prev => {
-                                    const copy = {...prev};
-                                    delete copy[field.name];
-                                    return copy;
-                                });
-                            }
-
-                            continue;
-                        }
-
-                        if (upload?.remote) {
-                            uploadedFilesMetadata.push({
-                                field: field.name,
-                                label: field.label,
-                                fileName: upload.name,
-                                mimeType: upload.type,
-                                filePath: upload.filePath,
-                            });
-
-                            continue;
-                        }
-
-                        if (upload) {
-                            const created = await replaceEvidence(
-                                upload,
-                                field.type === "image" ? "IMAGE" : "FILE",
-                                field.name,
-                                sectionTitle,
-                                user.id
-                            );
-
-                            uploadedFilesMetadata.push({
-                                field: field.name,
-                                label: field.label,
-                                fileName: upload.name,
-                                mimeType: upload.type,
-                                filePath: created.filePath,
+                            setFileEvidenceMap(prev => {
+                                const copy = {...prev};
+                                delete copy[field.name];
+                                return copy;
                             });
                         }
 
                         continue;
                     }
-                    sectionData[field.name] = value ?? null;
-                } catch (fieldErr: any) {
-                    logError(`Erro ao processar campo ${field.name}:`, fieldErr);
-                    setError(`Erro ao processar campo ${field.name}: ${fieldErr.message}`);
+
+                    if (upload?.remote) {
+                        uploadedFilesMetadata.push({
+                            field: field.name,
+                            label: field.label,
+                            fileName: upload.name,
+                            mimeType: upload.type,
+                            filePath: upload.filePath,
+                        });
+
+                        continue;
+                    }
+
+                    if (upload) {
+                        const created = await replaceEvidence(
+                            upload,
+                            field.type === "image" ? "IMAGE" : "FILE",
+                            field.name,
+                            sectionTitle,
+                            user.id
+                        );
+
+                        uploadedFilesMetadata.push({
+                            field: field.name,
+                            label: field.label,
+                            fileName: upload.name,
+                            mimeType: upload.type,
+                            filePath: created.filePath,
+                        });
+                    }
+
+                    continue;
                 }
+                sectionData[field.name] = value ?? null;
             }
 
             const json =
@@ -399,78 +407,35 @@ const DynamicOccurrenceForm  = () => {
                         data: sectionData,
                     };
 
-            if (!json.section || !json.data) {
-                logError("JSON incompleto: secção ou dados faltam")
-                throw new Error("JSON incompleto: secção ou dados faltam");
-            }
-
             const fileName = `section-${sectionTitle}.json`;
-            try {
-                const file = new File(Paths.cache, fileName);
+            const file = new File(Paths.cache, fileName);
 
-                file.create({ overwrite: true });
-                file.write(JSON.stringify(json));
+            file.create({overwrite: true});
+            file.write(JSON.stringify(json));
 
-                log("Verificação:", file.textSync());
+            const uploadFile: UploadFile = {
+                platform: "mobile",
+                uri: file.uri,
+                name: fileName,
+                type: "application/json",
+            };
 
-                const uploadFile: UploadFile = {
-                    platform: "mobile",
-                    uri: file.uri,
-                    name: fileName,
-                    type: "application/json",
-                };
-
-                await replaceEvidence(uploadFile, "json", sectionTitle, sectionTitle, user.id);
-            } catch (err: any) {
-                logError("Falha ao escrever ficheiro:", err.message);
-                throw err;
-            }
+            await replaceEvidence(uploadFile, "json", sectionTitle, sectionTitle, user.id);
+            setSuccessMessage({section: section.title, message: t("evidences.savedSuccess")})
         } catch (err: any) {
-            console.error("Erro em saveSection:", err);
-            console.error("Stack:", err.stack);
-            setError(`Erro ao guardar secção: ${err.message}`);
-        }
-    };
-
-    const handleSubmit = async () => {
-        try {
-            setSubmitting(true);
-            console.log({
-                occurrenceId: id,
-                userId: user?.id,
-                fields: formValues,
-                files: fileValues,
-            });
-            setSubmitted(true);
-        } catch (err) {
-            console.error(err);
-            setError(
-                "Erro ao submeter formulário."
-            );
+            setError({section: section.title, message: t("evidences.savingError")})
         } finally {
-            setSubmitting(false);
+            setLoadingFields(prev => ({
+                ...prev,
+                [section.title]: false
+            }))
         }
     };
 
     if (!formDef || !actualOccurrence || !currentType || loading) {
         return (
             <ThemedView safe={true} style={styles.container}>
-                <ThemedLoader />
-            </ThemedView>
-        );
-    }
-
-    if (submitted) {
-        return (
-            <ThemedView safe style={styles.container}>
-                <ThemedCard style={styles.card}>
-                    <ThemedText
-                        title
-                        style={styles.successTitle}
-                    >
-                        Formulário submetido com sucesso
-                    </ThemedText>
-                </ThemedCard>
+                <ThemedLoader/>
             </ThemedView>
         );
     }
@@ -495,74 +460,68 @@ const DynamicOccurrenceForm  = () => {
                                     style={styles.saveBtn}
                                 >
                                     <ThemedText>
-                                        Guardar
+                                        {t("evidences.save")}
                                     </ThemedText>
                                 </ThemedButton>
                             </ThemedView>
 
                             <ThemedView style={[styles.fieldsContainer, {backgroundColor: theme.uiBackground}]}>
-                                {section.fields.map(
-                                    (field: FormField) => (
-                                        <FieldRenderer
-                                            key={field.name}
-                                            field={field}
-                                            value={
-                                                field.type === "file" ||
-                                                field.type === "image"
-                                                    ? fileValues[field.name]
-                                                    : formValues[field.name]
-                                            }
-                                            intervenients={
-                                                intervenients
-                                            }
-                                            onChange={(
-                                                name,
-                                                value
-                                            ) =>
-                                                handleFieldChange(
-                                                    field,
-                                                    value
-                                                )
-                                            }
-                                            onFileChange={
-                                                handleFileChange
-                                            }
-                                            theme={theme}
-                                            downloadEvidence={downloadEvidence}
-                                        />
-                                    )
+                                {loadingFields[section.title] ? (
+                                    <ThemedView>
+                                        <ThemedLoader style={[{backgroundColor: theme.uiBackground}]}/>
+                                    </ThemedView>
+                                ) : (
+                                        section.fields.map(
+                                            (field: FormField) => (
+                                                <FieldRenderer
+                                                    key={field.name}
+                                                    field={field}
+                                                    value={
+                                                        field.type === "file" ||
+                                                        field.type === "image"
+                                                            ? fileValues[field.name]
+                                                            : formValues[field.name]
+                                                    }
+                                                    intervenients={
+                                                        intervenients
+                                                    }
+                                                    onChange={(
+                                                        name,
+                                                        value
+                                                    ) =>
+                                                        handleFieldChange(
+                                                            field,
+                                                            value
+                                                        )
+                                                    }
+                                                    onFileChange={
+                                                        handleFileChange
+                                                    }
+                                                    theme={theme}
+                                                    downloadEvidence={downloadEvidence}
+                                                />
+                                            )
+                                        )
                                 )}
                             </ThemedView>
-                        </ThemedCard>
-                    )}
-                    ListFooterComponent={
-                        <>
-                            {error && (
-                                <ThemedText
-                                    style={styles.errorText}
-                                >
-                                    {error}
+                            {successMessage && successMessage.section === section.title && (
+                                <ThemedText style={{...styles.errorText, color: Colors.success, marginTop: 12}}>
+                                    {successMessage.message}
                                 </ThemedText>
                             )}
-
-                            <ThemedButton
-                                onPress={handleSubmit}
-                                disabled={submitting}
-                                style={styles.submitBtn}
-                            >
-                                <ThemedText>
-                                    {submitting
-                                        ? "A submeter..."
-                                        : "Submeter"}
+                            {error && error.section === section.title && (
+                                <ThemedText
+                                    style={{...styles.errorText, marginTop: 12}}
+                                >
+                                    {error.message}
                                 </ThemedText>
-                            </ThemedButton>
-                        </>
-                    }
+                            )}
+                        </ThemedCard>
+                    )}
                 />
             </ThemedView>
         </PaperProvider>
     );
-    return
 };
 
 export default DynamicOccurrenceForm;

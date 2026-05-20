@@ -208,6 +208,15 @@ const pt = {
             startDate: "Data de início",
             endDate: "Data de fim",
         },
+        evidences:{
+            savingError: "Erro ao guardar a secção. Tente novamente.",
+            save: "Guardar",
+            select: "Selecione...",
+            clickToDownload: "Carregar na imagem para descarregar a evidência",
+            remove: "Remover",
+            download: "Descarregar",
+            savedSuccess: "Secção guardada com sucesso!",
+        }
     }
 }
 

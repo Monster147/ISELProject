@@ -192,6 +192,15 @@ const en = {
             dateRange: "Date range",
             startDate: "Start date",
             endDate: "End date",
+        },
+        evidences: {
+            savingError: "Error saving section. Please try again.",
+            save: "Save",
+            select: "Select...",
+            clickToDownload: "Click on the image to download the evidence",
+            remove: "Remove",
+            download: "Download",
+            savedSuccess: "Section saved successfully!",
         }
     }
 }

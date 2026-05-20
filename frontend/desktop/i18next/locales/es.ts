@@ -193,6 +193,15 @@ const es = {
             startDate: "Fecha de inicio",
             endDate: "Fecha de fin",
         },
+        evidences: {
+            savingError: "Error al guardar la sección. Por favor, intenta de nuevo.",
+            save: "Guardar",
+            select: "Selecciona...",
+            clickToDownload: "Haz clic en la imagen para descargar la evidencia",
+            remove: "Eliminar",
+            download: "Descargar",
+            savedSuccess: "Sección guardada con éxito!",
+        }
     },
 };
 

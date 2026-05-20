@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next";
-import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import {useTranslation} from "react-i18next";
+import {Alert, Image, StyleSheet, TouchableOpacity, View} from "react-native";
 import {Dropdown} from "react-native-paper-dropdown";
 import * as ImagePicker from "expo-image-picker";
-import { pick } from '@react-native-documents/picker'
+import {pick} from '@react-native-documents/picker'
 import * as Sharing from "expo-sharing";
 
 import ThemedView from "../../../../components/ThemedView";
@@ -14,7 +14,7 @@ import ThemedTextInput from "../../../../components/ThemedTextInput";
 import {Colors} from "@commons/constants/Colors";
 import ThemedFileInput from "../../../../components/ThemedFileInput";
 import {useState} from "react";
-import {log} from "./[id]";
+import {confirmAction} from "../../../../utils/confirmAction";
 
 const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, theme, downloadEvidence}) => {
     const {t} = useTranslation();
@@ -29,12 +29,13 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                 : await ImagePicker.requestMediaLibraryPermissionsAsync();
 
             if (!permission.granted) {
-                Alert.alert(
-                    "Permissão necessária",
-                    source === "camera"
-                        ? "É necessária permissão para usar a câmara."
-                        : "É necessária permissão para aceder à galeria."
-                );
+                confirmAction({
+                    title: t("evidences.permissionNeeded"),
+                    message: source === "camera"
+                        ? t("evidences.cameraPermission")
+                        : t("evidences.galleryPermission"),
+                    cancelText: t("evidences.cancel")
+                });
                 return;
             }
 
@@ -91,28 +92,33 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
     const handleDownloadFile = async (file: any) => {
         try {
             if (!value?.evidenceId) {
-                Alert.alert(
-                    "Erro",
-                    "Ficheiro sem evidenceId"
-                );
+                confirmAction({
+                    title: t("evidences.error"),
+                    message: t("evidences.noEvidenceId"),
+                    cancelText: t("evidences.cancel")
+                });
                 return;
             }
 
-            await downloadEvidence(
-                value.evidenceId,
-                true
-            );
+            confirmAction(
+                {
+                title: t("evidences.confirmDownload"),
+                message: t("evidences.downloadMessage"),
+                confirmText: t("evidences.downloadConfirm"),
+                cancelText: t("evidences.downloadCancel")
+                },
+                async () => await downloadEvidence(value.evidenceId, true)
+            )
         } catch (err) {
-            console.error(err);
-
-            Alert.alert(
-                "Erro",
-                "Falha no download"
-            );
+            confirmAction({
+                title: t("evidences.error"),
+                message: t("evidences.failedDownload"),
+                cancelText: t("evidences.cancel")
+            });
         }
     };
 
-    if (field.dynamicOptions){
+    if (field.dynamicOptions) {
         const options = intervenients.map((opt) => ({
             value: opt[field.dynamicOptions.valueField],
             label: opt[field.dynamicOptions.labelField],
@@ -130,7 +136,7 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                 <Dropdown
                     options={options}
                     placeholder={t("form.selectOption", {
-                        defaultValue: "Selecione...",
+                        defaultValue: t("evidences.select")
                     })}
                     value={value}
                     onSelect={(selected) => {
@@ -141,7 +147,7 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
         );
     }
 
-    if ( field.type === "select" && field.options ){
+    if (field.type === "select" && field.options) {
         const selectedOption =
             field.options.find(opt => opt.value === value) ?? null;
         return (
@@ -161,14 +167,14 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                         onChange(field.name, selected ?? "")
                     }
                     placeholder={t("form.selectOption", {
-                        defaultValue: "Selecione...",
+                        defaultValue: t("evidences.select")
                     })}
                 />
             </ThemedView>
         );
     }
 
-    if (field.type === "boolean"){
+    if (field.type === "boolean") {
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedView style={[styles.boolRow, {backgroundColor: theme.uiBackground}]}>
@@ -205,11 +211,12 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                 "image/"
             );
 
-        if(isImage){
+        if (isImage) {
             const fileNameWithoutExtension = value.name?.replace(/\.[^/.]+$/, "");
 
             return (
-                <ThemedView style={[styles.fieldContainer, styles.imagePreviewContainer, {backgroundColor: theme.uiBackground}]}>
+                <ThemedView
+                    style={[styles.fieldContainer, styles.imagePreviewContainer, {backgroundColor: theme.uiBackground}]}>
                     <ThemedText style={styles.label}>
                         {field.label}
                         {field.required && (
@@ -222,14 +229,14 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                     </TouchableOpacity>
 
                     <ThemedText style={styles.downloadHint}>
-                        Carregar na imagem para descarregar
+                        {t("evidences.clickToDownload")}
                     </ThemedText>
 
                     <ThemedView style={[styles.imageInfoContainer, {backgroundColor: theme.uiBackground},]}>
                         <ThemedText style={styles.imageName}> {fileNameWithoutExtension} </ThemedText>
 
                         <ThemedButton style={styles.removeFileButton} onPress={() => handleRemoveFile(field.name)}>
-                            <ThemedText style={styles.removeFileButtonText}> Remover </ThemedText>
+                            <ThemedText style={styles.removeFileButtonText}> {t("evidences.remove")} </ThemedText>
                         </ThemedButton>
                     </ThemedView>
                 </ThemedView>
@@ -241,7 +248,7 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                 "application/"
             );
 
-        if(isFile){
+        if (isFile) {
             const fileNameWithoutExtension =
                 value.name?.replace(
                     /\.[^/.]+$/,
@@ -249,7 +256,8 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                 );
 
             return (
-                <ThemedView style={[styles.fieldContainer, styles.imagePreviewContainer, {backgroundColor: theme.uiBackground}]}>
+                <ThemedView
+                    style={[styles.fieldContainer, styles.imagePreviewContainer, {backgroundColor: theme.uiBackground}]}>
                     <ThemedText style={styles.label}>
                         {field.label}
                         {field.required && (
@@ -261,12 +269,12 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
 
                         <ThemedButton style={styles.downloadButton} onPress={() => handleDownloadFile(value)}>
                             <ThemedText style={styles.downloadButtonText}>
-                                Download
+                                {t("evidences.download")}
                             </ThemedText>
                         </ThemedButton>
 
                         <ThemedButton style={styles.removeFileButton} onPress={() => handleRemoveFile(field.name)}>
-                            <ThemedText style={styles.removeFileButtonText}> Remover </ThemedText>
+                            <ThemedText style={styles.removeFileButtonText}> {t("evidences.remove")} </ThemedText>
                         </ThemedButton>
                     </ThemedView>
                 </ThemedView>
@@ -293,7 +301,7 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                         </ThemedButton>
                     </ThemedView>
                 ) : (
-                    <ThemedFileInput label={t("occurrenceEvidences.uploadEvidenceFile")} onPress={handleFileInput} />
+                    <ThemedFileInput label={t("occurrenceEvidences.uploadEvidenceFile")} onPress={handleFileInput}/>
                 )}
             </ThemedView>
         );
@@ -314,8 +322,8 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                     value={value}
                     onChangeText={(val) => {
                         log("DATEINPUT", val)
-                            onChange(field.name, val)
-                        }
+                        onChange(field.name, val)
+                    }
                     }
                     style={styles.dateInput}
                 />
@@ -334,20 +342,20 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                 </ThemedText>
 
                 <ThemedTextInput placeholder={field.label}
-                    value={
-                     value !== undefined && value !== null
-                         ? String(value)
-                         : ""
-                    }
-                    onChangeText={(text) => {
-                        const num = Number(text);
+                                 value={
+                                     value !== undefined && value !== null
+                                         ? String(value)
+                                         : ""
+                                 }
+                                 onChangeText={(text) => {
+                                     const num = Number(text);
 
-                        onChange(
-                            field.name,
-                            Number.isFinite(num) ? num : 0
-                        );
-                    }}
-                    keyboardType="numeric" editable={!field.readOnly} style={styles.input}
+                                     onChange(
+                                         field.name,
+                                         Number.isFinite(num) ? num : 0
+                                     );
+                                 }}
+                                 keyboardType="numeric" editable={!field.readOnly} style={styles.input}
                 />
             </ThemedView>
         );
@@ -363,14 +371,15 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
             </ThemedText>
 
             <ThemedTextInput placeholder={field.label} value={value ?? ""}
-                onChangeText={(text) =>
-                    onChange(field.name, text)
-                }
-                multiline={field.type === "text"} numberOfLines={field.type === "text" ? 4 : 1} editable={!field.readOnly}
-                style={[
-                    styles.input,
-                    field.type === "text" && styles.textarea,
-                ]}
+                             onChangeText={(text) =>
+                                 onChange(field.name, text)
+                             }
+                             multiline={field.type === "text"} numberOfLines={field.type === "text" ? 4 : 1}
+                             editable={!field.readOnly}
+                             style={[
+                                 styles.input,
+                                 field.type === "text" && styles.textarea,
+                             ]}
             />
         </ThemedView>
     );
@@ -379,21 +388,36 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
 export default FieldRenderer;
 
 const styles = StyleSheet.create({
-    fieldContainer: { marginBottom: 10, },
+    fieldContainer: {marginBottom: 10,},
 
-    label: { fontSize: 13, opacity: 0.65, marginBottom: 4, },
+    label: {fontSize: 13, opacity: 0.65, marginBottom: 4,},
 
-    required: { color: Colors.warning, },
+    required: {color: Colors.warning,},
 
-    input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 6, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14, marginTop: 2, },
+    input: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 6,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        fontSize: 14,
+        marginTop: 2,
+    },
 
-    textarea: {minHeight: 90, textAlignVertical: "top", },
+    textarea: {minHeight: 90, textAlignVertical: "top",},
 
     dateInput: {flex: 1, height: 40,},
 
     boolRow: {flexDirection: "row", justifyContent: "space-between", alignItems: "center",},
 
-    toggle: {width: 44, height: 24, borderRadius: 12, backgroundColor: "#ccc", justifyContent: "center", paddingHorizontal: 2,},
+    toggle: {
+        width: 44,
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: "#ccc",
+        justifyContent: "center",
+        paddingHorizontal: 2,
+    },
     toggleActive: {backgroundColor: Colors.success,},
 
     toggleThumb: {width: 20, height: 20, borderRadius: 10, backgroundColor: "#fff",},
@@ -405,13 +429,19 @@ const styles = StyleSheet.create({
     imagePreviewContainer: {alignItems: "center", gap: 12,},
     imagePreview: {width: 220, height: 220, borderRadius: 12,},
     imageInfoContainer: {alignItems: "center", gap: 8,},
-    imageButtonsContainer: {alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 8, marginTop: 8,},
+    imageButtonsContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "row",
+        gap: 8,
+        marginTop: 8,
+    },
     imageActionButton: {minWidth: 120, justifyContent: "center", alignItems: "center",},
     imageName: {fontSize: 15, fontWeight: "600",},
 
     downloadButton: {minWidth: 140,},
     downloadButtonText: {fontWeight: "600", textAlign: "center",},
-    downloadHint: { fontSize: 13, opacity: 0.7 },
+    downloadHint: {fontSize: 13, opacity: 0.7},
 
     removeFileButton: {marginTop: 4, minWidth: 120,},
     removeFileButtonText: {fontWeight: "600", textAlign: "center",},
