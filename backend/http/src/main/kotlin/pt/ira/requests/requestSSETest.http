@@ -1,5 +1,4 @@
-@token_user = jIzCq_HDkbXaw-USWXAZ7DAxFtfhuVlhYjEiRRN7PeY=
-@accident-form = ../../../../../../docs/form/accident-form.json
+@token_user = 40UsuWJwt58s37zARJ7xb2chvLDLWaOuvHOyy6m6LD0=
 
 ### Create Admin User
 POST http://localhost:8080/api/user

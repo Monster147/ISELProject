@@ -1,7 +1,7 @@
 import {StyleSheet, FlatList, useColorScheme,} from "react-native";
 import {useTranslation} from "react-i18next";
 import {useParams} from "react-router";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 
 import ThemedView from "../../../../../../components/ThemedView";
 import ThemedText from "../../../../../../components/ThemedText";
@@ -23,6 +23,7 @@ import {FormField} from "@commons/models/type/FormField";
 import {useEvidence} from "../../../../../hooks/useEvidence";
 import {useNetworkStatus} from "../../../../../hooks/useNetworkStatus";
 import {FieldRenderer} from "./FieldRenderer";
+import { useOccurrenceListener, SSEMessage } from "../../../../../../hooks/useOccurrenceListener"
 
 const DynamicOccurrenceForm = () => {
     const colorScheme = useColorScheme();
@@ -89,8 +90,10 @@ const DynamicOccurrenceForm = () => {
         const fileNext = {};
         const fileEvidenceNext = {};
         for (const section of sections) {
-            for (const [key, value] of Object.entries(section.data)) {
-                formNext[key] = value;
+            if (section.data) {
+                for (const [key, value] of Object.entries(section.data)) {
+                    formNext[key] = value;
+                }
             }
 
             if(section.files) {
@@ -424,6 +427,62 @@ const DynamicOccurrenceForm = () => {
             }))
         }
     };
+
+    const handleOccurrenceUpdate = useCallback(async (message: SSEMessage) => {
+        if (message.action === "EvidenceCreated" || message.action === "EvidenceDeleted") {
+            try {
+                const data = await findEvidenceByOccurrenceId(id);
+                const sectionJsons = data.filter(ev =>
+                    ev.filePath?.endsWith(".json") &&
+                    ev.filePath?.includes("section-")
+                );
+
+                const parsedSections = await Promise.all(
+                    sectionJsons.map(async (ev) => {
+                        const blob = await downloadEvidence(ev.id)
+                        const text = await blob.text()
+                        const json = JSON.parse(text)
+                        return { ...json, evidenceId: ev.id }
+                    })
+                );
+
+                await populateForm(parsedSections, data)
+                const map = {};
+                for (const sec of parsedSections) {
+                    const sanitizedKey = sanitizeFileName(sec.section)
+                    map[sanitizedKey] = sec.evidenceId
+                }
+                setSectionEvidenceMap(map)
+                const remoteFileIds = data.map(ev => ev.id)
+                setFileEvidenceMap(prev => {
+                    const updated = { ...prev }
+                    for (const key in updated) {
+                        if (!remoteFileIds.includes(updated[key])) {
+                            delete updated[key]
+                        }
+                    }
+                    return updated
+                });
+                setFileValues(prev => {
+                    const updated = { ...prev };
+                    for (const key in updated) {
+                        const file = updated[key]
+                        if (file?.remote && file?.evidenceId && !remoteFileIds.includes(file.evidenceId)) {
+                            if (file.previewUrl) {
+                                URL.revokeObjectURL(file.previewUrl)
+                            }
+                            delete updated[key]
+                        }
+                    }
+                    return updated
+                });
+            } catch (err) {
+                console.error(err)
+            }
+        }
+    }, [id, findEvidenceByOccurrenceId, downloadEvidence, populateForm])
+
+    useOccurrenceListener(String(id), handleOccurrenceUpdate, isOnline)
 
     if (!formDef || !actualOccurrence || !currentType || loading) {
         return (

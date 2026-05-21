@@ -135,7 +135,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                     </ThemedText>
 
                     <a href={value.previewUrl} download={value.name} style={styles.downloadImageLink}>
-                        <Image src={value.previewUrl} style={styles.imagePreview}/>
+                        <Image source={value.previewUrl} style={styles.imagePreview} resizeMode="cover"/>
                     </a>
 
                     <ThemedView style={[styles.imageInfoContainer, {backgroundColor: theme.uiBackground},]}>

@@ -1258,7 +1258,7 @@
         "title": "AUTORIZAÇÃO PARA OBTENÇÃO DE DOCUMENTAÇÃO",
         "fields": [
           {
-            "name": "authorization",
+            "name": "authorizationVS",
             "label": "Autorização para obtenção de documentação junto de entidades oficiais",
             "type": "file",
             "required": false
@@ -1307,10 +1307,11 @@
         ]
       },
       {
-        "title": "AUTORIZAÇÃO PARA OBTENÇÃO DE DOCUMENTAÇÃO",
+        "title": "AUTORIZAÇÃO PARA OBTENÇÃO DE DOCUMENTAÇÃO {index}",
+        "repeatFor": "numberOfThirdParties",
         "fields": [
           {
-            "name": "authorization",
+            "name": "authorizationVT_{index}",
             "label": "Autorização para obtenção de documentação junto de entidades oficiais",
             "type": "file",
             "required": false

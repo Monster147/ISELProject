@@ -19,7 +19,7 @@ export interface SSEMessage{
     data: OccurrenceUpdateData
     action: OccurrenceUpdateAction
 }
-//Precisa de ser updated depois
+
 export function useOccurrenceListener(
     occurrenceId: string | undefined,
     onMessage: (message:SSEMessage) => void,
