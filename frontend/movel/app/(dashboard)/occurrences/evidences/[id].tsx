@@ -28,11 +28,12 @@ import FieldRenderer from "./FieldRenderer";
 import {PaperProvider} from "react-native-paper";
 import {Paths, File} from "expo-file-system";
 import {SSEMessage, useOccurrenceListener} from "../../../../hooks/useOccurrenceListener";
+import {getLabelByLanguage} from "@commons/utils/getLabelByLanguage";
 
 const DynamicOccurrenceForm = () => {
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme] ?? Colors.light;
-    const {t} = useTranslation();
+    const {t, i18n} = useTranslation();
 
     const {id} = useLocalSearchParams();
     const router = useRouter();
@@ -190,7 +191,7 @@ const DynamicOccurrenceForm = () => {
     );
 
     const expandedSections = formDef?.sections
-        ? expandSections(formDef.sections, formValues)
+        ? expandSections(formDef.sections, formValues, i18n.language)
         : [];
 
     const handleChange = (
@@ -330,9 +331,11 @@ const DynamicOccurrenceForm = () => {
     const saveSection = async (section: any) => {
         if (!user) return;
 
+        const displayTitle = getLabelByLanguage(section.title, i18n.language);
+
         setLoadingFields(prev => ({
             ...prev,
-            [section.title]: true
+            [displayTitle]: true
         }));
         setSuccessMessage(null)
         setError(null)
@@ -340,7 +343,7 @@ const DynamicOccurrenceForm = () => {
         try {
             const sectionData: Record<string, any> = {};
             const uploadedFilesMetadata: any[] = [];
-            const sectionTitle = sanitizeFileName(section.title);
+            const sectionTitle = sanitizeFileName(displayTitle);
             for (const field of section.fields) {
                 const value = formValues[field.name];
                 const upload = fileValues[field.name];
@@ -424,13 +427,13 @@ const DynamicOccurrenceForm = () => {
             };
 
             await replaceEvidence(uploadFile, "json", sectionTitle, sectionTitle, user.id);
-            setSuccessMessage({section: section.title, message: t("evidences.savedSuccess")})
+            setSuccessMessage({section: sectionTitle, message: t("evidences.savedSuccess")})
         } catch (err: any) {
-            setError({section: section.title, message: t("evidences.savingError")})
+            setError({section: displayTitle, message: t("evidences.savingError")})
         } finally {
             setLoadingFields(prev => ({
                 ...prev,
-                [section.title]: false
+                [displayTitle]: false
             }))
         }
     };
@@ -505,79 +508,65 @@ const DynamicOccurrenceForm = () => {
             <ThemedView safe style={styles.container}>
                 <FlatList
                     data={expandedSections}
-                    keyExtractor={(item, index) =>
-                        `${item.title}-${index}`}
+                    keyExtractor={(item, index) => `${item.title}-${index}`}
                     contentContainerStyle={styles.list}
-                    renderItem={({item: section}) => (
-                        <ThemedCard style={styles.card}>
-                            <ThemedView style={[styles.sectionHeader, {backgroundColor: theme.uiBackground,}]}>
-                                <ThemedText style={styles.sectionTitle}>
-                                    {section.title}
-                                </ThemedText>
+                    renderItem={({ item: section }) => {
+                        const displayTitle = getLabelByLanguage(section.title, i18n.language);
 
-                                <ThemedButton
-                                    onPress={() => saveSection(section)}
-                                    style={styles.saveBtn}
-                                >
-                                    <ThemedText>
-                                        {t("evidences.save")}
+                        return (
+                            <ThemedCard style={styles.card}>
+                                <ThemedView style={[styles.sectionHeader, { backgroundColor: theme.uiBackground }]}>
+                                    <ThemedText style={styles.sectionTitle}>
+                                        {displayTitle}
                                     </ThemedText>
-                                </ThemedButton>
-                            </ThemedView>
 
-                            <ThemedView style={[styles.fieldsContainer, {backgroundColor: theme.uiBackground}]}>
-                                {loadingFields[section.title] ? (
-                                    <ThemedView>
-                                        <ThemedLoader style={[{backgroundColor: theme.uiBackground}]}/>
-                                    </ThemedView>
-                                ) : (
-                                        section.fields.map(
-                                            (field: FormField) => (
-                                                <FieldRenderer
-                                                    key={field.name}
-                                                    field={field}
-                                                    value={
-                                                        field.type === "file" ||
-                                                        field.type === "image"
-                                                            ? fileValues[field.name]
-                                                            : formValues[field.name]
-                                                    }
-                                                    intervenients={
-                                                        intervenients
-                                                    }
-                                                    onChange={(
-                                                        name,
-                                                        value
-                                                    ) =>
-                                                        handleFieldChange(
-                                                            field,
-                                                            value
-                                                        )
-                                                    }
-                                                    onFileChange={
-                                                        handleFileChange
-                                                    }
-                                                    theme={theme}
-                                                    downloadEvidence={downloadEvidence}
-                                                />
-                                            )
-                                        )
+                                    <ThemedButton
+                                        onPress={() => saveSection(section)}
+                                        style={styles.saveBtn}
+                                    >
+                                        <ThemedText>
+                                            {t("evidences.save")}
+                                        </ThemedText>
+                                    </ThemedButton>
+                                </ThemedView>
+
+                                <ThemedView style={[styles.fieldsContainer, { backgroundColor: theme.uiBackground }]}>
+                                    {loadingFields[displayTitle] ? (
+                                        <ThemedView>
+                                            <ThemedLoader style={[{ backgroundColor: theme.uiBackground }]} />
+                                        </ThemedView>
+                                    ) : (
+                                        section.fields.map((field: FormField) => (
+                                            <FieldRenderer
+                                                key={field.name}
+                                                field={field}
+                                                value={
+                                                    field.type === "file" || field.type === "image"
+                                                        ? fileValues[field.name]
+                                                        : formValues[field.name]
+                                                }
+                                                intervenients={intervenients}
+                                                onChange={(name, value) => handleFieldChange(field, value)}
+                                                onFileChange={handleFileChange}
+                                                theme={theme}
+                                                fileValues={fileValues}
+                                            />
+                                        ))
+                                    )}
+                                </ThemedView>
+                                {successMessage && successMessage.section === displayTitle && (
+                                    <ThemedText style={{ ...styles.errorText, color: Colors.success, marginTop: 12 }}>
+                                        {successMessage.message}
+                                    </ThemedText>
                                 )}
-                            </ThemedView>
-                            {successMessage && successMessage.section === section.title && (
-                                <ThemedText style={{...styles.errorText, color: Colors.success, marginTop: 12}}>
-                                    {successMessage.message}
-                                </ThemedText>
-                            )}
-                            {error && error.section === section.title && (
-                                <ThemedText
-                                    style={{...styles.errorText, marginTop: 12}}
-                                >
-                                    {error.message}
-                                </ThemedText>
-                            )}
-                        </ThemedCard>
-                    )}
+                                {error && error.section === displayTitle && (
+                                    <ThemedText style={{ ...styles.errorText, marginTop: 12 }}>
+                                        {error.message}
+                                    </ThemedText>
+                                )}
+                            </ThemedCard>
+                        );
+                    }}
                 />
             </ThemedView>
         </PaperProvider>

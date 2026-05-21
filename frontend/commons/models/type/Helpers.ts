@@ -1,9 +1,16 @@
 import { FormSection } from "./FormSection";
+import { getLabelByLanguage } from "@commons/utils/getLabelByLanguage";
+
+function replaceLabelText(label: string | { pt: string; en: string; es: string } | undefined, searchValue: RegExp | string, replaceValue: string, language: string = 'pt'): string {
+    const labelStr = getLabelByLanguage(label, language)
+    return labelStr.replace(searchValue, replaceValue)
+}
 
 function expandFields(
     fields: any[],
     formValues: Record<string, any>,
-    sectionIndex?: string
+    sectionIndex?: string,
+    language: string = 'en'
 ) {
     const result: any[] = [];
 
@@ -19,7 +26,7 @@ function expandFields(
                 result.push({
                     ...field,
                     name: field.name.replace(/\{index\}/g, index),
-                    label: field.label.replace(/\{index\}/g, String(i + 1)),
+                    label: replaceLabelText(field.label, /\{index\}/g, String(i + 1), language),
                 });
             }
 
@@ -32,7 +39,7 @@ function expandFields(
                 ? field.name.replace(/\{index\}/g, sectionIndex)
                 : field.name,
             label: sectionIndex
-                ? field.label.replace(/\{index\}/g, sectionIndex)
+                ? replaceLabelText(field.label, /\{index\}/g, sectionIndex, language)
                 : field.label,
         });
     }
@@ -42,7 +49,8 @@ function expandFields(
 
 export function expandSections(
     sections: FormSection[],
-    formValues: Record<string, any>
+    formValues: Record<string, any>,
+    language: string = 'en'
 ): FormSection[] {
     const result: FormSection[] = [];
 
@@ -57,8 +65,8 @@ export function expandSections(
 
                 result.push({
                     ...section,
-                    title: section.title.replace(/\{index\}/g, String(i + 1)),
-                    fields: expandFields(section.fields, formValues, index),
+                    title: replaceLabelText(section.title, /\{index\}/g, String(i + 1), language),
+                    fields: expandFields(section.fields, formValues, index, language),
                 });
             }
 
@@ -67,7 +75,7 @@ export function expandSections(
 
         result.push({
             ...section,
-            fields: expandFields(section.fields, formValues),
+            fields: expandFields(section.fields, formValues, undefined, language),
         });
     }
 

@@ -15,9 +15,11 @@ import {Colors} from "@commons/constants/Colors";
 import ThemedFileInput from "../../../../components/ThemedFileInput";
 import {useState} from "react";
 import {confirmAction} from "../../../../utils/confirmAction";
+import {getLabelByLanguage} from "@commons/utils/getLabelByLanguage";
 
 const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, theme, downloadEvidence}) => {
-    const {t} = useTranslation();
+    const {t, i18n} = useTranslation();
+    const displayLabel = getLabelByLanguage(field.label, i18n.language);
     const handleRemoveFile = (name: string) => {
         onFileChange(name, null);
     };
@@ -127,7 +129,7 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedText style={styles.label}>
-                    {field.label}
+                    {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
                     )}
@@ -153,7 +155,7 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedText style={styles.label}>
-                    {field.label}
+                    {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
                     )}
@@ -179,7 +181,7 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedView style={[styles.boolRow, {backgroundColor: theme.uiBackground}]}>
                     <ThemedText style={styles.label}>
-                        {field.label}
+                        {displayLabel}
                     </ThemedText>
 
                     <TouchableOpacity
@@ -218,7 +220,7 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                 <ThemedView
                     style={[styles.fieldContainer, styles.imagePreviewContainer, {backgroundColor: theme.uiBackground}]}>
                     <ThemedText style={styles.label}>
-                        {field.label}
+                        {displayLabel}
                         {field.required && (
                             <ThemedText style={styles.required}> *</ThemedText>
                         )}
@@ -259,7 +261,7 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                 <ThemedView
                     style={[styles.fieldContainer, styles.imagePreviewContainer, {backgroundColor: theme.uiBackground}]}>
                     <ThemedText style={styles.label}>
-                        {field.label}
+                        {displayLabel}
                         {field.required && (
                             <ThemedText style={styles.required}> *</ThemedText>
                         )}
@@ -284,7 +286,7 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedText style={styles.label}>
-                    {field.label}
+                    {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
                     )}
@@ -311,7 +313,7 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedText style={styles.label}>
-                    {field.label}
+                    {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
                     )}
@@ -321,7 +323,6 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                     placeholder={t("form.selectDateTime", {defaultValue: "Selecione data e hora..."})}
                     value={value}
                     onChangeText={(val) => {
-                        log("DATEINPUT", val)
                         onChange(field.name, val)
                     }
                     }
@@ -335,13 +336,13 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedText style={styles.label}>
-                    {field.label}
+                    {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
                     )}
                 </ThemedText>
 
-                <ThemedTextInput placeholder={field.label}
+                <ThemedTextInput placeholder={displayLabel}
                                  value={
                                      value !== undefined && value !== null
                                          ? String(value)
@@ -364,13 +365,13 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
     return (
         <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground,},]}>
             <ThemedText style={styles.label}>
-                {field.label}
+                {displayLabel}
                 {field.required && (
                     <ThemedText style={styles.required}> *</ThemedText>
                 )}
             </ThemedText>
 
-            <ThemedTextInput placeholder={field.label} value={value ?? ""}
+            <ThemedTextInput placeholder={displayLabel} value={value ?? ""}
                              onChangeText={(text) =>
                                  onChange(field.name, text)
                              }

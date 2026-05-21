@@ -9,9 +9,12 @@ import ThemedFileInput from "../../../../../../components/ThemedFileInput";
 import ThemedDateInput from "../../../../../../components/ThemedDateInput";
 import ThemedTextInput from "../../../../../../components/ThemedTextInput";
 import {Colors} from "@commons/constants/Colors";
+import {getLabelByLanguage} from "@commons/utils/getLabelByLanguage";
 
 export const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, theme, fileValues}) => {
-    const {t} = useTranslation();
+    const {t, i18n} = useTranslation();
+
+    const displayLabel = getLabelByLanguage(field.label, i18n.language);
 
     const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selected = e.target.files?.[0];
@@ -44,7 +47,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedText style={styles.label}>
-                    {field.label}
+                    {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
                     )}
@@ -74,7 +77,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedText style={styles.label}>
-                    {field.label}
+                    {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
                     )}
@@ -97,7 +100,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedView style={[styles.boolRow, {backgroundColor: theme.uiBackground}]}>
-                    <ThemedText style={styles.label}> {field.label} </ThemedText>
+                    <ThemedText style={styles.label}> {displayLabel} </ThemedText>
 
                     <TouchableOpacity style={[styles.toggle, value && styles.toggleActive]}
                         onPress={() =>
@@ -128,7 +131,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
             return (
                 <ThemedView style={[styles.fieldContainer, styles.imagePreviewContainer, {backgroundColor: theme.uiBackground},]}>
                     <ThemedText style={styles.label}>
-                        {field.label}
+                        {displayLabel}
                         {field.required && (
                             <ThemedText style={styles.required}> *</ThemedText>
                         )}
@@ -182,7 +185,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedText style={styles.label}>
-                    {field.label}
+                    {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
                     )}
@@ -197,7 +200,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedText style={styles.label}>
-                    {field.label}
+                    {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
                     )}
@@ -217,13 +220,13 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedText style={styles.label}>
-                    {field.label}
+                    {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
                     )}
                 </ThemedText>
 
-                <ThemedTextInput placeholder={field.label}
+                <ThemedTextInput placeholder={displayLabel}
                     value={
                         value !== undefined && value !== null
                             ? String(value)
@@ -246,13 +249,13 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
     return (
         <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
             <ThemedText style={styles.label}>
-                {field.label}
+                {displayLabel}
                 {field.required && (
                     <ThemedText style={styles.required}> *</ThemedText>
                 )}
             </ThemedText>
 
-            <ThemedTextInput placeholder={field.label} value={value ?? ""}
+            <ThemedTextInput placeholder={displayLabel} value={value ?? ""}
                 onChangeText={(text) =>
                     onChange(field.name, text)
                 }
