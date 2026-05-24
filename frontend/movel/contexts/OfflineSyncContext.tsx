@@ -30,6 +30,7 @@ export const OfflineSyncProvider = ({children}) => {
     }, [isOnline])
 
     const syncAllOfflineQueues = useCallback(async () => {
+        if (isSyncing) return
         setIsSyncing(true)
         try {
             await syncIntervenorQueue()
