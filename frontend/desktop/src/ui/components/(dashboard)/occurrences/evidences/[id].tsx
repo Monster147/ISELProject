@@ -435,6 +435,7 @@ const DynamicOccurrenceForm = () => {
         if (message.action === "EvidenceCreated" || message.action === "EvidenceDeleted") {
             try {
                 const data = await findEvidenceByOccurrenceId(id);
+                console.log(data);
                 const sectionJsons = data.filter(ev =>
                     ev.filePath?.endsWith(".json") &&
                     ev.filePath?.includes("section-")

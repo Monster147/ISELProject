@@ -384,14 +384,14 @@ export const api = {
         return evidenceDownloadHandler(API_BASE_URL, id, authHeaders, keep);
     },
 
-    async findEvidenceByOccurrenceId(occurrenceId:number): Promise<Evidence> {
-        return fetchApi<Evidence>(`/evidence/byOccurrence/${occurrenceId}`, {
+    async findEvidenceByOccurrenceId(occurrenceId:number): Promise<Evidence[]> {
+        return fetchApi<Evidence[]>(`/evidence/byOccurrence/${occurrenceId}`, {
             method: "GET",
         });
     },
 
-    async findEvidenceByReporterId(reporterId:number): Promise<Evidence> {
-        return fetchApi<Evidence>(`/evidence/byReporter/${reporterId}`, {
+    async findEvidenceByReporterId(reporterId:number): Promise<Evidence[]> {
+        return fetchApi<Evidence[]>(`/evidence/byReporter/${reporterId}`, {
             method: "GET",
         });
     },

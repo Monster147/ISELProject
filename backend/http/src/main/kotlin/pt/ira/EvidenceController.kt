@@ -284,21 +284,21 @@ class EvidenceController(
      * Fornece um endpoint SSE para escuta de atualizações de uma evidência.
      *
      * Permite ao cliente subscrever eventos em tempo real relacionados com
-     * alterações numa evidência específica.
+     * alterações de uma lista de evidências de um averiguador.
      *
-     * Endpoint: GET /{evidenceId}/listen
+     * Endpoint: GET /{userId}/listen
      *
-     * @param evidenceId identificador da evidência a observar.
+     * @param userId identificador do averiguador das evidências a observar.
      *
      * @return [SseEmitter] com ligação persistente para envio de eventos.
      */
-    @GetMapping("/{evidenceId}/listen")
+    @GetMapping("/{userId}/listen")
     fun listen(
-        @PathVariable evidenceId: Int,
+        @PathVariable userId: Int,
     ): SseEmitter {
         val sseEmitter = SseEmitter(Long.MAX_VALUE)
         publisher.evidencePublisher.addEmitter(
-            evidenceId,
+            userId,
             SSEUpdatedDataAdapter(
                 sseEmitter,
             ),

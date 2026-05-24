@@ -125,8 +125,8 @@ class EvidenceService(
                     type = type,
                 )
             publisher.evidencePublisher.sendMessageToAll(
-                evidence.id,
-                evidence,
+                reporterId,
+                repoEvidence.findByReporterId(reporterId),
                 ActionKind.EvidenceCreated,
             )
             publisher.occurrencePublisher.sendMessageToAll(
@@ -264,8 +264,8 @@ class EvidenceService(
             repoEvidence.deleteById(evidence.id)
             storageService.deleteEvidence(evidence.filePath)
             publisher.evidencePublisher.sendMessageToAll(
-                evidence.occurrenceId,
-                Unit,
+                evidence.reporterId,
+                repoEvidence.findByReporterId(evidence.reporterId),
                 ActionKind.EvidenceDeleted,
             )
             publisher.occurrencePublisher.sendMessageToAll(

@@ -10,6 +10,7 @@ import {offlineIntervenorQueueRepo} from "../infrastructure/offline/OfflineInter
 import {offlineOccurrenceQueueRepo} from "../infrastructure/offline/OfflineOccurrenceQueueRepo";
 import {useIntervenor} from "../hooks/useIntervenor";
 import {useOccurrence} from "../hooks/useOccurrence";
+import {offlineEvidenceQueueRepo} from "../infrastructure/offline/OfflineEvidenceQueueRepo";
 
 type OfflineSyncContextValue = {
     syncAllOfflineQueues: () => Promise<void>
@@ -33,6 +34,7 @@ export const OfflineSyncProvider = ({children}) => {
         try {
             await syncIntervenorQueue()
             await syncOccurrenceQueue()
+            await syncEvidenceQueue()
         } finally {
             setIsSyncing(false)
         }
@@ -70,8 +72,14 @@ export const OfflineSyncProvider = ({children}) => {
                             break
                     }
                 } catch (err: any) {
-                    action.retries++
-                    await offlineIntervenorQueueRepo.updateAction(action.id, action)
+                    if(err.status >= 500 && err.status < 600){
+                        const wait = action.retries * 10
+                        await delay(wait)
+                        action.retries++
+                        await offlineIntervenorQueueRepo.updateAction(action.id, action)
+                    }else{
+                        await offlineIntervenorQueueRepo.removeAction(action.id)
+                    }
                 }
             }
             queue = await offlineIntervenorQueueRepo.getQueue()
@@ -115,6 +123,46 @@ export const OfflineSyncProvider = ({children}) => {
                 }
             }
             queue = await offlineOccurrenceQueueRepo.getQueue()
+        }
+    }
+
+    async function syncEvidenceQueue() {
+        let queue = await offlineEvidenceQueueRepo.getQueue()
+        while (queue.length > 0) {
+            for (const action of queue) {
+                if (action.retries >= action.maxRetries) {
+                    await offlineEvidenceQueueRepo.removeAction(action.id)
+                    continue
+                }
+                try {
+                    switch (action.type) {
+                        case "CREATE":
+                            await api.createEvidence(action.payload.file, {
+                                type: action.payload.type,
+                                location: action.payload.location,
+                                description: action.payload.description,
+                                reporterId: action.payload.reporterId,
+                                occurrenceId: action.payload.reportId
+                            })
+                            await offlineEvidenceQueueRepo.removeAction(action.id)
+                            break
+                        case "DELETE":
+                            await api.deleteEvidence(action.payload.evidenceId)
+                            await offlineEvidenceQueueRepo.removeAction(action.id)
+                            break
+                    }
+                } catch (err: any) {
+                    if(err.status >= 500 && err.status < 600){
+                        const wait = action.retries * 10
+                        await delay(wait)
+                        action.retries++
+                        await offlineEvidenceQueueRepo.updateAction(action.id, action)
+                    } else {
+                        await offlineEvidenceQueueRepo.removeAction(action.id)
+                    }
+                }
+            }
+            queue = await offlineEvidenceQueueRepo.getQueue()
         }
     }
 
