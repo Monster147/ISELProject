@@ -261,7 +261,12 @@ const DynamicOccurrenceForm = () => {
         }
 
         if (existingId) {
-            await deleteEvidence(existingId);
+            const current = await findEvidenceByOccurrenceId(occurrenceId);
+            const stillExists = current?.some(e => e.id === existingId);
+
+            if (stillExists) {
+                await deleteEvidence(existingId);
+            }
 
             if (type === "json" && sectionName) {
                 setSectionEvidenceMap(prev => {
@@ -352,7 +357,12 @@ const DynamicOccurrenceForm = () => {
                         const existingId = fileEvidenceMap[field.name];
 
                         if (existingId) {
-                            await deleteEvidence(existingId);
+                            const current = await findEvidenceByOccurrenceId(occurrenceId);
+                            const stillExists = current?.some(e => e.id === existingId);
+
+                            if (stillExists) {
+                                await deleteEvidence(existingId);
+                            }
 
                             setFileEvidenceMap(prev => {
                                 const copy = {...prev};
@@ -442,7 +452,7 @@ const DynamicOccurrenceForm = () => {
     const handleOccurrenceUpdate = useCallback(async (message: SSEMessage) => {
         if (message.action === "EvidenceCreated" || message.action === "EvidenceDeleted") {
             try {
-                const data = await findEvidenceByOccurrenceId(id);
+                const data = await findEvidenceByOccurrenceId(occurrenceId);
                 const sectionJsons = data.filter(ev =>
                     ev.filePath?.endsWith(".json") &&
                     ev.filePath?.includes("section-")
@@ -450,7 +460,7 @@ const DynamicOccurrenceForm = () => {
 
                 const parsedSections = await Promise.all(
                     sectionJsons.map(async (ev) => {
-                        const blob = await downloadEvidence(ev.id)
+                        const blob = await downloadEvidence(ev.id, false)
                         const text = await blob.text()
                         const json = JSON.parse(text)
                         return { ...json, evidenceId: ev.id }
@@ -493,7 +503,7 @@ const DynamicOccurrenceForm = () => {
         }
     }, [id, findEvidenceByOccurrenceId, downloadEvidence, populateForm])
 
-    useOccurrenceListener(String(id), handleOccurrenceUpdate, isOnline)
+    useOccurrenceListener(String(occurrenceId), handleOccurrenceUpdate, isOnline)
 
     if (!formDef || !actualOccurrence || !currentType || loading) {
         return (
@@ -523,6 +533,7 @@ const DynamicOccurrenceForm = () => {
                                     <ThemedButton
                                         onPress={() => saveSection(section)}
                                         style={styles.saveBtn}
+                                        disabled={loadingFields[displayTitle]}
                                     >
                                         <ThemedText>
                                             {t("evidences.save")}

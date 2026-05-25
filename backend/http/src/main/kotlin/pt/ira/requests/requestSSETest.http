@@ -1,4 +1,4 @@
-@token_user = ia-dXsobk-uHDArmR8FJlgxMkEohPT30o1u-CoZ_DQM=
+@token_user = ZNg3PqbpL0rn0iKAfzq4uWMn0J26f5-yzPIIy_GLFDY=
 
 ### Create Admin User
 POST http://localhost:8080/api/user

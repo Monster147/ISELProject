@@ -44,9 +44,7 @@ export function EvidenceProvider({children}) {
                 break
         }
     }, [])
-
-     */
-
+    */
     //useEvidenceListener(user?.id, handleOnMessage, isOnline)
 
     async function loadEvidences(){
@@ -68,6 +66,7 @@ export function EvidenceProvider({children}) {
         if (isOnline) {
             try {
                 const result = await api.createEvidence(file, {type, location, description, reporterId, occurrenceId})
+                await loadEvidences()
                 return result
             } catch (err: any) {
                 throw Error(err.message)
@@ -85,7 +84,7 @@ export function EvidenceProvider({children}) {
     }
 
     async function findEvidenceById(id:number){
-        if(!isOnline){
+        if(isOnline){
             try {
                 const response= await api.findEvidenceById(id)
                 return response

@@ -72,19 +72,25 @@ class ClassesPublisher {
         data: Any,
         action: ActionKind,
     ) {
+        val messageId: Long
+        val currentListeners: List<UpdatedDataEmitter>
+
         lock.withLock {
-            listeners.forEach {
-                try {
-                    it.emit(
-                        UpdatedData.Message(
-                            ++currentId,
-                            data,
-                            action,
-                        ),
-                    )
-                } catch (ex: Exception) {
-                    logger.info("Exception while sending Message signal - {}", ex.message)
-                }
+            messageId = ++currentId
+            currentListeners = listeners.toList()
+        }
+
+        currentListeners.forEach {
+            try {
+                it.emit(
+                    UpdatedData.Message(
+                        messageId,
+                        data,
+                        action,
+                    ),
+                )
+            } catch (ex: Exception) {
+                logger.info("Exception while sending Message signal - {}", ex.message)
             }
         }
     }
@@ -134,17 +140,21 @@ class ClassesPublisher {
      *
      * Chamado periodicamente pelo scheduler; captura e regista excepções lançadas pelos emissores.
      */
-    private fun keepAlive() =
-        lock.withLock {
-            val signal = UpdatedData.KeepAlive(Instant.now())
-            listeners.forEach {
-                try {
-                    it.emit(signal)
-                } catch (ex: Exception) {
-                    logger.info("Exception while sending keepAlive signal - {}", ex.message)
-                }
+    private fun keepAlive() {
+        val currentListeners = lock.withLock {
+            listeners.toList()
+        }
+
+        val signal = UpdatedData.KeepAlive(Instant.now())
+
+        currentListeners.forEach {
+            try {
+                it.emit(signal)
+            } catch (ex: Exception) {
+                logger.info("Exception while sending keepAlive signal - {}", ex.message)
             }
         }
+    }
 
     /**
      * Encerra o scheduler que envia sinais de keep-alive.

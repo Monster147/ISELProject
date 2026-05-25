@@ -257,7 +257,10 @@ const DynamicOccurrenceForm = () => {
         }
 
         if(existingId) {
-            await deleteEvidence(existingId);
+            const stillExists = (await findEvidenceByOccurrenceId(id))?.some(e => e.id === existingId);
+            if (stillExists) {
+                await deleteEvidence(existingId);
+            }
 
             if (type === "json" && sectionName) {
                 setSectionEvidenceMap(prev => {
@@ -515,6 +518,7 @@ const DynamicOccurrenceForm = () => {
                                 <ThemedButton
                                     onPress={() => saveSection(section)}
                                     style={styles.saveBtn}
+                                    disabled={loadingFields[displayTitle]}
                                 >
                                     <ThemedText>
                                         {t("evidences.save")}
