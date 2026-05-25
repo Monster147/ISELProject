@@ -10,6 +10,7 @@ type EvidenceContextValue = {
     findEvidenceByOccurrenceId: (occurrenceId: number) => Promise<any>
     downloadEvidence: (evidenceId: number) => Promise<any>
     deleteEvidence: (evidenceId: number) => Promise<any>
+    updateEvidence: (file: UploadFile, evidenceId: number) => Promise<any>
 }
 
 export const EvidenceContext = createContext<EvidenceContextValue | undefined>(undefined)
@@ -59,8 +60,17 @@ export function EvidenceProvider({children}) {
         }
     }
 
+    async function updateEvidence(file: UploadFile, evidenceId: number){
+        try {
+            const response = await api.updateEvidence(file, evidenceId)
+            return response
+        } catch (err: any) {
+            throw Error(err.message)
+        }
+    }
+
     return (
-        <EvidenceContext.Provider value={{createEvidence, findEvidenceById, findEvidenceByOccurrenceId, downloadEvidence, deleteEvidence}}>
+        <EvidenceContext.Provider value={{createEvidence, findEvidenceById, findEvidenceByOccurrenceId, downloadEvidence, deleteEvidence, updateEvidence}}>
             {children}
         </EvidenceContext.Provider>
     )

@@ -281,6 +281,40 @@ class EvidenceController(
     }
 
     /**
+     * Atualiza uma evidência existente com novo JSON.
+     *
+     * Endpoint: POST /{id}
+     *
+     * @param id Identificador da evidência a atualizar.
+     * @param file Novo ficheiro, JSON com dados atualizados.
+     * @param data Metadados atualizados (description, location).
+     *
+     * @return `200 OK` com a evidência atualizada, ou erro apropriado.
+     */
+    @PostMapping("/update/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun updateEvidence(
+        @PathVariable id: Int,
+        @RequestPart("file") file: MultipartFile,
+    ): ResponseEntity<*> {
+        val result = evidenceService.updateEvidence(id, file)
+        return when (result) {
+            is Success ->
+                ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(result.value)
+
+            is Failure ->
+                when (result.value) {
+                    is EvidenceError.EvidenceNotFound ->
+                        Problem.EvidenceNotFound.response(HttpStatus.NOT_FOUND)
+                    is EvidenceError.InvalidFile ->
+                        Problem.InvalidFile.response(HttpStatus.BAD_REQUEST)
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+                }
+        }
+    }
+
+    /**
      * Fornece um endpoint SSE para escuta de atualizações de uma evidência.
      *
      * Permite ao cliente subscrever eventos em tempo real relacionados com

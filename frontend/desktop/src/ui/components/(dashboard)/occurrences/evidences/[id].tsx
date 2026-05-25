@@ -36,7 +36,7 @@ const DynamicOccurrenceForm = () => {
 
     const {occurrence} = useOccurrence();
     const {intervenor} = useIntervenor();
-    const {createEvidence, findEvidenceByOccurrenceId, downloadEvidence, deleteEvidence} = useEvidence();
+    const {createEvidence, findEvidenceByOccurrenceId, downloadEvidence, deleteEvidence, updateEvidence} = useEvidence();
     const {type} = useType();
     const {user} = useAuth();
     const { isOnline } = useNetworkStatus();
@@ -258,7 +258,7 @@ const DynamicOccurrenceForm = () => {
 
         if(existingId) {
             const stillExists = (await findEvidenceByOccurrenceId(id))?.some(e => e.id === existingId);
-            if (stillExists) {
+            if (stillExists && type !== "json") {
                 await deleteEvidence(existingId);
             }
 
@@ -279,20 +279,24 @@ const DynamicOccurrenceForm = () => {
             }
         }
 
-        const created = await createEvidence(
-            uploadFile,
-            type === "json"
-                ? "json"
-                : uploadFile.type.startsWith("image/")
-                    ? "IMAGE"
-                    : "FILE",
-            "NO LOCATION",
-            label,
-            userId,
-            id
-        );
+        let evidence;
 
         if (type === "json" && sectionName) {
+            let created;
+            if (existingId) {
+                created = await updateEvidence(uploadFile, existingId)
+            } else {
+                created = await createEvidence(
+                    uploadFile,
+                    "json",
+                    "NO LOCATION",
+                    label,
+                    userId,
+                    id
+                );
+            }
+            evidence = created
+
             setSectionEvidenceMap(prev => ({
                 ...prev,
                 [sectionName]: created.id,
@@ -300,10 +304,23 @@ const DynamicOccurrenceForm = () => {
         }
 
         if (type !== "json") {
+            const created = await createEvidence(
+                uploadFile,
+                uploadFile.type.startsWith("image/")
+                        ? "IMAGE"
+                        : "FILE",
+                "NO LOCATION",
+                label,
+                userId,
+                id
+            );
+
             setFileEvidenceMap(prev => ({
                 ...prev,
                 [label]: created.id,
             }));
+
+            evidence = created;
 
             const blob = await downloadEvidence(created.id)
             const previewUrl = URL.createObjectURL(blob)
@@ -322,7 +339,7 @@ const DynamicOccurrenceForm = () => {
             }))
         }
 
-        return created;
+        return evidence;
     }
 
     const saveSection = async (section: any) => {
@@ -435,7 +452,7 @@ const DynamicOccurrenceForm = () => {
     };
 
     const handleOccurrenceUpdate = useCallback(async (message: SSEMessage) => {
-        if (message.action === "EvidenceCreated" || message.action === "EvidenceDeleted") {
+        if (message.action === "EvidenceCreated" || message.action === "EvidenceDeleted" || message.action === "EvidenceUpdated") {
             try {
                 const data = await findEvidenceByOccurrenceId(id);
                 console.log(data);

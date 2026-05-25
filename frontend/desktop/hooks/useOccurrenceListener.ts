@@ -4,10 +4,12 @@ import {useEffect} from "react";
 export type OccurrenceUpdateAction =
     | "EvidenceCreated"
     | "EvidenceDeleted"
+    | "EvidenceUpdated"
     | "OccurrenceCreated"
     | "OccurrenceDeleted"
     | "IntervenorAdded"
     | "IntervenorRemoved"
+
 
 export interface OccurrenceUpdateData{
     occurrence?: Occurrence

@@ -82,4 +82,13 @@ interface StorageService {
      * @return true se a eliminação foi bem-sucedida, false caso contrário.
      */
     fun deleteDocument(path: String): Boolean
+
+    /**
+     * Atualiza um ficheiro de evidência existente, reescrevendo-o completamente.
+     *
+     * @param path Caminho relativo do ficheiro a reescrever.
+     * @param file Novo ficheiro com conteúdo atualizado.
+     * @return true se a atualização foi bem-sucedida, false caso contrário.
+     */
+    fun updateEvidence(path: String, file: MultipartFile): Boolean
 }

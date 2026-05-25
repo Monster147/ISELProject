@@ -421,6 +421,30 @@ export const api = {
         });
     },
 
+    async updateEvidence(file: UploadFile, id: number): Promise<Evidence> {
+        const formData = new FormData();
+        if (file.platform === "web") {
+            formData.append(
+                "file",
+                file.file
+            );
+        } else {
+            formData.append(
+                "file",
+                {
+                    uri: file.uri!,
+                    name: file.name,
+                    type: file.type,
+                } as any
+            );
+        }
+
+        return fetchApi<Evidence>(`/evidence/update/${id}`, {
+            method: "POST",
+            body: formData
+        });
+    },
+
     //Occurrence
 
     async createOccurrence(input: OccurrenceCreateInput): Promise<void> {

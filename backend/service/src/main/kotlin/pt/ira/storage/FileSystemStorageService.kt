@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import java.util.UUID
 
 /**
@@ -227,6 +228,31 @@ class FileSystemStorageService : StorageService {
             Files.deleteIfExists(filePath)
         } catch (e: Exception) {
             false
+        }
+    }
+
+    /**
+     * Atualiza um ficheiro de evidência existente, reescrevendo-o completamente.
+     *
+     * @param path Caminho relativo do ficheiro a reescrever.
+     * @param file Novo ficheiro com conteúdo atualizado.
+     * @return true se a atualização foi bem-sucedida, false caso contrário.
+     */
+    override fun updateEvidence(
+        path: String,
+        file: MultipartFile
+    ): Boolean {
+        val filePath = rootEvidence.resolve(path).normalize()
+        if (!filePath.startsWith(rootEvidence)) return false
+        if (!Files.exists(filePath)) return false
+
+        try {
+            file.inputStream.use {
+                Files.copy(it, filePath, StandardCopyOption.REPLACE_EXISTING)
+            }
+            return true
+        } catch (e: Exception) {
+            return false
         }
     }
 

@@ -282,4 +282,42 @@ class EvidenceService(
             success(true)
         }
     }
+
+    /**
+     * Atualiza uma evidência existente com novos dados, reescrevendo o ficheiro JSON.
+     *
+     * Valida a existência da evidência, atualiza os metadados na base de dados
+     * e sobrescreve o ficheiro JSON com os novos dados.
+     * Publica eventos de atualização após a operação.
+     *
+     * @param id Identificador da evidência a atualizar.
+     * @param newData Novo ficheiro contendo os dados atualizados.
+     *
+     * @return [Evidence], ou um erro do tipo [EvidenceError].
+     */
+    fun updateEvidence(
+        id: Int,
+        newData: MultipartFile,
+    ): Either<EvidenceError, Evidence> {
+        return trxManager.run {
+            val evidence = repoEvidence.findById(id) ?: return@run failure(EvidenceError.EvidenceNotFound)
+
+            if(newData.contentType != "application/json") return@run failure(EvidenceError.InvalidFile)
+
+            storageService.updateEvidence(evidence.filePath, newData)
+
+            publisher.evidencePublisher.sendMessageToAll(
+                evidence.reporterId,
+                repoEvidence.findByReporterId(evidence.reporterId),
+                ActionKind.EvidenceUpdated,
+            )
+            publisher.occurrencePublisher.sendMessageToAll(
+                evidence.occurrenceId,
+                evidence,
+                ActionKind.EvidenceUpdated,
+            )
+
+            success(evidence)
+        }
+    }
 }

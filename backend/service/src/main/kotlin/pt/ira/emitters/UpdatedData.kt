@@ -70,4 +70,6 @@ enum class ActionKind(val message: String) {
     EditorRemoved("Editor removed"),
     DocumentsChanged("Documents changed"),
     TypesChanged("Types changed"),
+
+    EvidenceUpdated("Evidence updated"),
 }
