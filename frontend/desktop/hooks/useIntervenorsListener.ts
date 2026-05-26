@@ -1,5 +1,5 @@
 import {Intervenor} from "@commons/models/intervenor/Intervenor";
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 
 export type IntervenorsUpdateAction =
     | "IntervenorsChanged"
@@ -32,11 +32,17 @@ export function useIntervenorsListener(
     enabled: boolean | null,
     debounceMs: number = 1000
 ) {
+    const onMessageRef = useRef(onMessage)
+    const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        onMessageRef.current = onMessage
+    }, [onMessage])
+
     useEffect(() => {
         if(enabled !== true) return
         const eventSource = new EventSource(`/api/intervenor/listen`)
 
-        const debouncedOnMessage = debounce(onMessage, debounceMs)
 
         eventSource.onmessage = (intervenor) =>{
             try {
@@ -52,7 +58,12 @@ export function useIntervenorsListener(
                     },
                 };
 
-                debouncedOnMessage(message)
+                if (debounceTimeoutRef.current) {
+                    clearTimeout(debounceTimeoutRef.current)
+                }
+                debounceTimeoutRef.current = setTimeout(() => {
+                    onMessageRef.current(message)
+                }, debounceMs)
 
             }catch (error){
                 console.log(error)
@@ -69,5 +80,5 @@ export function useIntervenorsListener(
             eventSource.close();
         };
 
-    }, [enabled]);
+    }, [enabled, debounceMs]);
 }

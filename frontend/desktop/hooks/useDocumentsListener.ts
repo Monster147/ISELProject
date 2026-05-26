@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import {Documents} from "@commons/models/documents/Documents";
 
 export type DocumentsUpdateAction=
@@ -15,28 +15,20 @@ export interface SSEMessage{
     action: DocumentsUpdateAction
 }
 
-function debounce(cb, delay) {
-    let timeout
-    return function(message) {
-        if (timeout) {
-            clearTimeout(timeout)
-        }
-        timeout = setTimeout(() => {
-            cb(message)
-        }, delay)
-    };
-}
-
 export function useDocumentsListener(
     onMessage: (message:SSEMessage) => void,
     enabled: boolean | null,
     debounceMs: number = 1000
 ) {
+    const onMessageRef = useRef(onMessage)
+    const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        onMessageRef.current = onMessage
+    }, [onMessage])
     useEffect(() => {
         if(enabled !== true) return
         const eventSource = new EventSource(`/api/documents/listen`)
-
-        const debouncedOnMessage = debounce(onMessage, debounceMs)
 
         eventSource.onmessage = (occurrence) =>{
             try {
@@ -52,7 +44,12 @@ export function useDocumentsListener(
                     },
                 };
 
-                debouncedOnMessage(message)
+                if (debounceTimeoutRef.current) {
+                    clearTimeout(debounceTimeoutRef.current)
+                }
+                debounceTimeoutRef.current = setTimeout(() => {
+                    onMessageRef.current(message)
+                }, debounceMs)
 
             }catch (error){
                 console.log(error)
@@ -62,12 +59,18 @@ export function useDocumentsListener(
 
         eventSource.onerror = (error) => {
             console.error("SSE Error:", error);
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current)
+            }
             eventSource.close();
         };
 
         return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current)
+            }
             eventSource.close();
         }
 
-    }, [enabled])
+    }, [enabled, debounceMs])
 }

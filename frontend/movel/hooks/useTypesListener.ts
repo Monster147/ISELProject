@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import {Documents} from "@commons/models/documents/Documents";
 import {Type} from "../../commons/models/type/Type";
 import EventSource from "react-native-sse"
@@ -34,11 +34,16 @@ export function useTypesListener(
     enabled: boolean | null,
     debounceMs: number = 1000
 ) {
+    const onMessageRef = useRef(onMessage)
+    const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        onMessageRef.current = onMessage
+    }, [onMessage])
+
     useEffect(() => {
         if(enabled !== true) return
         const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/type/listen`);
-
-        const debouncedOnMessage = debounce(onMessage, debounceMs)
 
         const onEvent = (event: any) => {
             try {
@@ -55,7 +60,13 @@ export function useTypesListener(
                     },
                 };
 
-                debouncedOnMessage(message)
+                if (debounceTimeoutRef.current) {
+                    clearTimeout(debounceTimeoutRef.current)
+                }
+                debounceTimeoutRef.current = setTimeout(() => {
+                    onMessageRef.current(message)
+                }, debounceMs)
+
             } catch (error) {
                 console.error("Error parsing SSE message:", error);
             }
@@ -64,13 +75,19 @@ export function useTypesListener(
         es.addEventListener("message", onEvent);
         es.addEventListener("error", (event) => {
             console.error("SSE Error:", event);
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current)
+            }
             es.removeAllEventListeners();
             es.close();
         });
 
         return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current)
+            }
             es.removeAllEventListeners();
             es.close();
         };
-    }, [enabled])
+    }, [enabled, debounceMs])
 }

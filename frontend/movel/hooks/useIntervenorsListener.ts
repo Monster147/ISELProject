@@ -1,5 +1,5 @@
 import {Intervenor} from "@commons/models/intervenor/Intervenor";
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import EventSource from "react-native-sse";
 
 export type IntervenorsUpdateAction =
@@ -16,28 +16,21 @@ export interface SSEMessage {
     action: IntervenorsUpdateAction
 }
 
-function debounce(cb, delay) {
-    let timeout
-    return function(message) {
-        if (timeout) {
-            clearTimeout(timeout)
-        }
-        timeout = setTimeout(() => {
-            cb(message)
-        }, delay)
-    };
-}
-
 export function useIntervenorsListener(
     onMessage: (message: SSEMessage) => void,
     enabled: boolean | null,
     debounceMs: number = 1000
 ) {
+    const onMessageRef = useRef(onMessage)
+    const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        onMessageRef.current = onMessage
+    }, [onMessage])
+
     useEffect(() => {
         if(enabled !== true) return
         const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/intervenor/listen`);
-
-        const debouncedOnMessage = debounce(onMessage, debounceMs)
 
         const onEvent = (event: any) => {
             try {
@@ -54,7 +47,13 @@ export function useIntervenorsListener(
                     },
                 };
 
-                debouncedOnMessage(message)
+                if (debounceTimeoutRef.current) {
+                    clearTimeout(debounceTimeoutRef.current)
+                }
+                debounceTimeoutRef.current = setTimeout(() => {
+                    onMessageRef.current(message)
+                }, debounceMs)
+
             } catch (error) {
                 console.error("Error parsing SSE message:", error);
             }
@@ -63,13 +62,19 @@ export function useIntervenorsListener(
         es.addEventListener("message", onEvent);
         es.addEventListener("error", (event) => {
             console.error("SSE Error:", event);
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current)
+            }
             es.removeAllEventListeners();
             es.close();
         });
 
         return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current)
+            }
             es.removeAllEventListeners();
             es.close();
         };
-    }, [enabled]);
+    }, [enabled, debounceMs]);
 }

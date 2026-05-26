@@ -1,5 +1,5 @@
 import {Occurrence} from "@commons/models/intervenor/Occurrence";
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 
 export type OccurrenceUpdateAction =
     | "EvidenceCreated"
@@ -40,17 +40,28 @@ export function useOccurrenceListener(
     enabled: boolean | null,
     debounceMs: number = 1000
 ) {
+    const onMessageRef = useRef(onMessage)
+    const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        onMessageRef.current = onMessage
+    }, [onMessage])
+
+
     useEffect(() => {
         if (!occurrenceId || enabled !== true) return;
 
         const eventSource = new EventSource(`/api/occurrence/${Number(occurrenceId)}/listen`)
 
-        const debouncedOnMessage = debounce(onMessage, debounceMs)
-
         eventSource.onmessage = (occurrence) =>{
             try {
                 const message: SSEMessage = JSON.parse(occurrence.data)
-                debouncedOnMessage(message)
+                if (debounceTimeoutRef.current) {
+                    clearTimeout(debounceTimeoutRef.current)
+                }
+                debounceTimeoutRef.current = setTimeout(() => {
+                    onMessageRef.current(message)
+                }, debounceMs)
             }catch (error){
                 console.error("Failed to parse SSE message", error)
             }
@@ -58,14 +69,20 @@ export function useOccurrenceListener(
 
         eventSource.onerror = (error) => {
             console.error("SSE Error:", error);
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current)
+            }
             eventSource.close();
         };
 
         return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current)
+            }
             eventSource.close();
         };
 
-    }, [occurrenceId, enabled]);
+    }, [occurrenceId, enabled, debounceMs]);
 
 }
 

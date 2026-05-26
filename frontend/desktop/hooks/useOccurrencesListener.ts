@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import {Occurrence} from "@commons/models/intervenor/Occurrence";
 
 export type OccurrencesUpdateAction =
@@ -15,30 +15,24 @@ export interface SSEMessage {
     action: OccurrencesUpdateAction
 }
 
-function debounce(cb, delay) {
-    let timeout
-    return function(message) {
-        if (timeout) {
-            clearTimeout(timeout)
-        }
-        timeout = setTimeout(() => {
-            cb(message)
-        }, delay)
-    };
-}
-
 export function useOccurrencesListener(
     userID: number | undefined,
     onMessage: (message: SSEMessage) => void,
     enabled: boolean | null,
     debounceMs: number = 1000
 ) {
+    const onMessageRef = useRef(onMessage)
+    const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        onMessageRef.current = onMessage
+    }, [onMessage])
+
     useEffect(() => {
         if (!userID || enabled !== true) return;
 
         const eventSource = new EventSource(`/api/occurrence/listen/user/${userID}`);
 
-        const debouncedOnMessage = debounce(onMessage, debounceMs)
 
         eventSource.onmessage = (occurrence) =>{
             try {
@@ -54,7 +48,12 @@ export function useOccurrencesListener(
                     },
                 };
 
-                debouncedOnMessage(message)
+                if (debounceTimeoutRef.current) {
+                    clearTimeout(debounceTimeoutRef.current)
+                }
+                debounceTimeoutRef.current = setTimeout(() => {
+                    onMessageRef.current(message)
+                }, debounceMs)
 
             }catch (error){
                 console.log(error)
@@ -64,10 +63,16 @@ export function useOccurrencesListener(
 
         eventSource.onerror = (error) => {
             console.error("SSE Error:", error);
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current)
+            }
             eventSource.close();
         };
 
         return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current)
+            }
             eventSource.close();
         };
 

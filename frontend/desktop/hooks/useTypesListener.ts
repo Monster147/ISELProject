@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import {Documents} from "@commons/models/documents/Documents";
 import {Type} from "../../commons/models/type/Type";
 
@@ -33,11 +33,16 @@ export function useTypesListener(
     enabled: boolean | null,
     debounceMs: number = 1000
 ) {
+    const onMessageRef = useRef(onMessage)
+    const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        onMessageRef.current = onMessage
+    }, [onMessage])
+
     useEffect(() => {
         if(enabled !== true) return
         const eventSource = new EventSource(`/api/type/listen`)
-
-        const debouncedOnMessage = debounce(onMessage, debounceMs)
 
         eventSource.onmessage = (occurrence) =>{
             try {
@@ -53,7 +58,12 @@ export function useTypesListener(
                     },
                 };
 
-                debouncedOnMessage(message)
+                if (debounceTimeoutRef.current) {
+                    clearTimeout(debounceTimeoutRef.current)
+                }
+                debounceTimeoutRef.current = setTimeout(() => {
+                    onMessageRef.current(message)
+                }, debounceMs)
 
             }catch (error){
                 console.log(error)
@@ -63,12 +73,18 @@ export function useTypesListener(
 
         eventSource.onerror = (error) => {
             console.error("SSE Error:", error);
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current)
+            }
             eventSource.close();
         };
 
         return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current)
+            }
             eventSource.close();
         }
 
-    }, [enabled])
+    }, [enabled, debounceMs])
 }

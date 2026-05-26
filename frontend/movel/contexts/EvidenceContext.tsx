@@ -28,6 +28,7 @@ export function EvidenceProvider({children}) {
         loadEvidences()
     }, [isOnline, user]);
 
+    /*
     const handleOnMessage = useCallback(async (message: SSEMessage) => {
         const data = message.data
         const action = message.action
@@ -48,8 +49,9 @@ export function EvidenceProvider({children}) {
                 break
         }
     }, [])
+    */
 
-    useEvidenceListener(user?.id, handleOnMessage, isOnline)
+    //useEvidenceListener(user?.id, handleOnMessage, isOnline)
 
     async function loadEvidences(){
         try {
@@ -70,7 +72,7 @@ export function EvidenceProvider({children}) {
         if (isOnline) {
             try {
                 const result = await api.createEvidence(file, {type, location, description, reporterId, occurrenceId})
-                await loadEvidences()
+               await loadEvidences()
                 return result
             } catch (err: any) {
                 throw Error(err.message)
