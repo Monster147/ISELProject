@@ -21,7 +21,7 @@ const IntervenorCreate = () => {
     const router = useRouter()
     const [error, setError] = useState<string | null>(null);
 
-    useBackRedirect(() => router.back())
+    useBackRedirect(() => router.push('/intervenor'))
 
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme] ?? Colors.light;
@@ -41,7 +41,7 @@ const IntervenorCreate = () => {
             if (checkErrors()) return
             setLoading(true)
             await createIntervenor(identifier, identifierType, name, phoneNumber, address)
-            router.back()
+            router.push('/intervenor')
         } catch (err: any) {
             if (err instanceof Error) setError(err.message);
             else setError(String(err));

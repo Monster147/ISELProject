@@ -16,13 +16,28 @@ export interface SSEMessage{
     action: DocumentsUpdateAction
 }
 
+function debounce(cb, delay) {
+    let timeout
+    return function(message) {
+        if (timeout) {
+            clearTimeout(timeout)
+        }
+        timeout = setTimeout(() => {
+            cb(message)
+        }, delay)
+    };
+}
+
 export function useDocumentsListener(
     onMessage: (message:SSEMessage) => void,
-    enabled: boolean | null
+    enabled: boolean | null,
+    debounceMs: number = 1000
 ) {
     useEffect(() => {
         if(enabled !== true) return
         const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/documents/listen`);
+
+        const debouncedOnMessage = debounce(onMessage, debounceMs)
 
         const onEvent = (event: any) => {
             try {
@@ -39,7 +54,7 @@ export function useDocumentsListener(
                     },
                 };
 
-                onMessage(message);
+                debouncedOnMessage(message)
             } catch (error) {
                 console.error("Error parsing SSE message:", error);
             }

@@ -15,13 +15,28 @@ export interface SSEMessage {
     action: IntervenorsUpdateAction
 }
 
+function debounce(cb, delay) {
+    let timeout
+    return function(message) {
+        if (timeout) {
+            clearTimeout(timeout)
+        }
+        timeout = setTimeout(() => {
+            cb(message)
+        }, delay)
+    };
+}
+
 export function useIntervenorsListener(
     onMessage: (message: SSEMessage) => void,
-    enabled: boolean | null
+    enabled: boolean | null,
+    debounceMs: number = 1000
 ) {
     useEffect(() => {
         if(enabled !== true) return
         const eventSource = new EventSource(`/api/intervenor/listen`)
+
+        const debouncedOnMessage = debounce(onMessage, debounceMs)
 
         eventSource.onmessage = (intervenor) =>{
             try {
@@ -36,7 +51,8 @@ export function useIntervenorsListener(
                         intervenors,
                     },
                 };
-                onMessage(message);
+
+                debouncedOnMessage(message)
 
             }catch (error){
                 console.log(error)

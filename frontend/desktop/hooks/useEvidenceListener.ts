@@ -1,11 +1,12 @@
 import {useEffect} from "react";
+import {Evidence} from "../../commons/models/evidence/Evidence";
 
 export type EvidenceUpdateAction=
     | "EvidenceCreated"
     | "EvidenceDeleted"
 
 export interface EvidenceUpdateData{
-    occurrenceId: number
+    evidences: Evidence[]
     action: EvidenceUpdateAction
 }
 
@@ -15,21 +16,47 @@ export interface SSEMessage{
     action: EvidenceUpdateAction
 }
 
-//Precisa de ser updated depois
+function debounce(cb, delay) {
+    let timeout
+    return function(message) {
+        if (timeout) {
+            clearTimeout(timeout)
+        }
+        timeout = setTimeout(() => {
+            cb(message)
+        }, delay)
+    };
+}
+
 export function useEvidenceListener(
     evidenceId: string | undefined,
     onMessage: (message:SSEMessage) => void,
-    enabled: boolean | null
+    enabled: boolean | null,
+    debounceMs: number = 1000
 ) {
     useEffect(() => {
         if (!evidenceId || enabled !== true) return;
 
         const eventSource = new EventSource(`/api/evidence/${Number(evidenceId)}/listen`)
 
+        const debouncedOnMessage = debounce(onMessage, debounceMs)
+
         eventSource.onmessage = (evidence) => {
             try {
-                const message: SSEMessage = JSON.parse(evidence.data);
-                onMessage(message);
+                const receivedMessage = JSON.parse(evidence.data);
+                const value = receivedMessage?.data
+                const evidences: Evidence[] = Array.isArray(value) ? value : [];
+
+                const message: SSEMessage = {
+                    id: receivedMessage.id,
+                    action: receivedMessage.action,
+                    data: {
+                        action: receivedMessage.action,
+                        evidences,
+                    },
+                };
+
+                debouncedOnMessage(message)
             } catch (error) {
                 console.error("Error parsing SSE message:", error);
             }

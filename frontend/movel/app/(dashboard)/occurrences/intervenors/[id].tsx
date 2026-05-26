@@ -24,7 +24,7 @@ const OccurrenceIntervenors = () => {
     const [error, setError] = useState<string | null>(null);
     const [refreshing, setRefreshing] = useState(false)
 
-    useBackRedirect(() => router.back())
+    useBackRedirect(() => router.push(`/occurrences/${occurrenceId}`))
 
     const {occurrence, removeIntervenorFromOccurrence} = useOccurrence()
     const actualOccurrence = occurrence.find(o => o.id === occurrenceId);

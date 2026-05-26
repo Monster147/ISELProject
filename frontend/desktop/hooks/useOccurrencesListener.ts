@@ -15,15 +15,30 @@ export interface SSEMessage {
     action: OccurrencesUpdateAction
 }
 
+function debounce(cb, delay) {
+    let timeout
+    return function(message) {
+        if (timeout) {
+            clearTimeout(timeout)
+        }
+        timeout = setTimeout(() => {
+            cb(message)
+        }, delay)
+    };
+}
+
 export function useOccurrencesListener(
     userID: number | undefined,
     onMessage: (message: SSEMessage) => void,
-    enabled: boolean | null
+    enabled: boolean | null,
+    debounceMs: number = 1000
 ) {
     useEffect(() => {
         if (!userID || enabled !== true) return;
 
         const eventSource = new EventSource(`/api/occurrence/listen/user/${userID}`);
+
+        const debouncedOnMessage = debounce(onMessage, debounceMs)
 
         eventSource.onmessage = (occurrence) =>{
             try {
@@ -38,7 +53,8 @@ export function useOccurrencesListener(
                         occurrences,
                     },
                 };
-                onMessage(message);
+
+                debouncedOnMessage(message)
 
             }catch (error){
                 console.log(error)
@@ -55,5 +71,5 @@ export function useOccurrencesListener(
             eventSource.close();
         };
 
-    }, [userID,onMessage, enabled]);
+    }, [userID,onMessage, enabled, debounceMs]);
 }

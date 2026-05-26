@@ -50,6 +50,7 @@ const DynamicOccurrenceForm = () => {
     const [error, setError] = useState<{section: string, message: string} | null>(null);
     const [loadingFields, setLoadingFields] = useState<Record<string, boolean>>({});
     const [successMessage, setSuccessMessage] = useState<{section: string, message: string} | null>(null);
+    const [isUpdatingFromSSE, setIsUpdatingFromSSE] = useState(false);
 
     const actualOccurrence = occurrence.find(
         (o) => o.id === id
@@ -315,15 +316,16 @@ const DynamicOccurrenceForm = () => {
                 id
             );
 
+            evidence = created;
+
+            const blob = await downloadEvidence(created.id)
+            const previewUrl = URL.createObjectURL(blob)
+
             setFileEvidenceMap(prev => ({
                 ...prev,
                 [label]: created.id,
             }));
 
-            evidence = created;
-
-            const blob = await downloadEvidence(created.id)
-            const previewUrl = URL.createObjectURL(blob)
             setFileValues(prev => ({
                 ...prev,
                 [label]: {
@@ -463,12 +465,16 @@ const DynamicOccurrenceForm = () => {
 
                 const parsedSections = await Promise.all(
                     sectionJsons.map(async (ev) => {
-                        const blob = await downloadEvidence(ev.id)
-                        const text = await blob.text()
-                        const json = JSON.parse(text)
-                        return { ...json, evidenceId: ev.id }
+                        try{
+                            const blob = await downloadEvidence(ev.id)
+                            const text = await blob.text()
+                            const json = JSON.parse(text)
+                            return { ...json, evidenceId: ev.id }
+                        }catch(err: any){
+                            return null
+                        }
                     })
-                );
+                ).then(results => results.filter(res => res !== null));
 
                 await populateForm(parsedSections, data)
                 const map = {};

@@ -56,7 +56,7 @@ const DynamicOccurrenceForm = () => {
     const [successMessage, setSuccessMessage] = useState<{ section: string, message: string } | null>(null);
 
 
-    useBackRedirect(() => router.back())
+    useBackRedirect(() => router.push(`/occurrences/${occurrenceId}`))
 
     const actualOccurrence = occurrence.find(o => o.id === occurrenceId);
     const currentType = type.find(
@@ -317,11 +317,11 @@ const DynamicOccurrenceForm = () => {
                 occurrenceId
             );
 
-            setFileEvidenceMap(prev => ({...prev, [label]: created.id}));
-
             evidence = created;
             const res = await downloadEvidence(created.id, false);
             const fileUri = res.path();
+
+            setFileEvidenceMap(prev => ({...prev, [label]: created.id}));
 
             setFileValues(prev => ({
                 ...prev,
@@ -476,12 +476,16 @@ const DynamicOccurrenceForm = () => {
 
                 const parsedSections = await Promise.all(
                     sectionJsons.map(async (ev) => {
-                        const blob = await downloadEvidence(ev.id, false)
-                        const text = await blob.text()
-                        const json = JSON.parse(text)
-                        return { ...json, evidenceId: ev.id }
+                        try{
+                            const blob = await downloadEvidence(ev.id,false)
+                            const text = await blob.text()
+                            const json = JSON.parse(text)
+                            return { ...json, evidenceId: ev.id }
+                        }catch(err: any){
+                            return null
+                        }
                     })
-                );
+                ).then(results => results.filter(res => res !== null));
 
                 await populateForm(parsedSections, data)
                 const map = {};

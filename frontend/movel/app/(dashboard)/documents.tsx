@@ -14,6 +14,7 @@ import ThemedCard from "../../components/ThemedCard";
 import OfflineBanner from "../../components/ThemedOfflineBanner";
 import {useNetworkStatus} from "../../hooks/useNetworkStatus";
 import {confirmAction} from "../../utils/confirmAction";
+import {useAlertExitApp} from "../../hooks/useAlertExitApp";
 
 const Document = () => {
     const { t } = useTranslation()
@@ -24,6 +25,8 @@ const Document = () => {
 
     const [expandedType, setExpandedType] = useState<string | null>(null)
     const [downloading, setDownloading] = useState<number | null>(null)
+
+    useAlertExitApp()
 
     const handleDownload = async (id: number, fileName: string) => {
         if (!isOnline) {

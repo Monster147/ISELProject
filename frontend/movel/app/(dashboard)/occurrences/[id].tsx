@@ -22,7 +22,7 @@ const OccurrenceDetails = () => {
     const router = useRouter();
     const { intervenor } = useIntervenor();
 
-    useBackRedirect(() => router.back())
+    useBackRedirect(() => router.push('/occurrence'))
 
     const occurrenceId = Number(id)
     const {occurrence} = useOccurrence()

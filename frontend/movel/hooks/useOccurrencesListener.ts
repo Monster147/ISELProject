@@ -16,14 +16,30 @@ export interface SSEMessage {
     action: OccurrencesUpdateAction
 }
 
+function debounce(cb, delay) {
+    let timeout
+    return function(message) {
+        if (timeout) {
+            clearTimeout(timeout)
+        }
+        timeout = setTimeout(() => {
+            cb(message)
+        }, delay)
+    };
+}
+
+
 export function useOccurrencesListener(
     userID: number | undefined,
     onMessage: (message: SSEMessage) => void,
-    enabled: boolean | null
+    enabled: boolean | null,
+    debounceMs: number = 1000
 ) {
     useEffect(() => {
         if (!userID || enabled !== true) return;
         const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/occurrence/listen/user/${userID}`);
+
+        const debouncedOnMessage = debounce(onMessage, debounceMs)
 
         const onEvent = (event: any) => {
             try {
@@ -40,7 +56,7 @@ export function useOccurrencesListener(
                     },
                 };
 
-                onMessage(message);
+                debouncedOnMessage(message)
             } catch (error) {
                 console.error("Error parsing SSE message:", error);
             }

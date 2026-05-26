@@ -18,6 +18,7 @@ import {Type} from "@commons/models/type/Type";
 import {useStats} from "../../hooks/useStats";
 import {useType} from "../../hooks/useType";
 import OfflineBanner from "../../components/ThemedOfflineBanner";
+import {useAlertExitApp} from "../../hooks/useAlertExitApp";
 
 const Dashboard = () => {
     const {t} = useTranslation();
@@ -40,6 +41,8 @@ const Dashboard = () => {
     const [byTypeMonth, setByTypeMonth] = useState<StatsReportType[]>([])
     const [byStatusMonth, setByStatusMonth] = useState<StatsReportStatus[]>([])
     const [byImportanceMonth, setByImportanceMonth] = useState<StatsOccurrenceImportance[]>([])
+
+    useAlertExitApp()
 
     useEffect(() => {
         let cancelled = false;

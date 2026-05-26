@@ -22,20 +22,35 @@ export interface SSEMessage{
     action: OccurrenceUpdateAction
 }
 
+function debounce(cb, delay) {
+    let timeout
+    return function(message) {
+        if (timeout) {
+            clearTimeout(timeout)
+        }
+        timeout = setTimeout(() => {
+            cb(message)
+        }, delay)
+    };
+}
+
 export function useOccurrenceListener(
     occurrenceId: string | undefined,
     onMessage: (message:SSEMessage) => void,
-    enabled: boolean | null
+    enabled: boolean | null,
+    debounceMs: number = 1000
 ) {
     useEffect(() => {
         if (!occurrenceId || enabled !== true) return;
 
         const eventSource = new EventSource(`/api/occurrence/${Number(occurrenceId)}/listen`)
 
+        const debouncedOnMessage = debounce(onMessage, debounceMs)
+
         eventSource.onmessage = (occurrence) =>{
             try {
                 const message: SSEMessage = JSON.parse(occurrence.data)
-                onMessage(message)
+                debouncedOnMessage(message)
             }catch (error){
                 console.error("Failed to parse SSE message", error)
             }
