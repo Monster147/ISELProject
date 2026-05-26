@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 
 export const useNetworkStatus = () => {
     const [isOnline, setIsOnline] = useState(navigator.onLine)
+    const [shouldResetListeners, setShouldResetListeners] = useState(false);
+    const previousStateRef = useRef<boolean | null>(null);
 
     useEffect(() => {
         const online = () => setIsOnline(true)

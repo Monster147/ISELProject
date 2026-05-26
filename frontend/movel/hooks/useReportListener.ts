@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import EventSource from "react-native-sse";
 
 export type ReportUpdateAction=
@@ -28,11 +28,11 @@ export function useReportListener(
 ) {
     useEffect(() => {
         if (!reportId || enabled!== true) return;
-
+        const esRef = useRef<EventSource | null>(null);
         const es = new EventSource(
             `https://unfabricated-everett-surveyable.ngrok-free.dev/api/report/${Number(reportId)}/listen`
         );
-
+        esRef.current = es;
         const onEvent = (event: any) => {
             try {
                 const message: SSEMessage = JSON.parse(event.data);
@@ -45,13 +45,22 @@ export function useReportListener(
         es.addEventListener("message", onEvent);
         es.addEventListener("error", (event) => {
             console.error("SSE Error:", event);
-            es.removeAllEventListeners();
-            es.close();
+            try {
+                es.removeAllEventListeners();
+                es.close();
+            } catch (e) {
+                console.warn("Error closing EventSource:", e);
+            }
         });
 
         return () => {
-            es.removeAllEventListeners();
-            es.close();
+            try {
+                es.removeAllEventListeners();
+                es.close();
+            } catch (e) {
+                console.warn("Error closing EventSource:", e);
+            }
+            esRef.current = null;
         };
     }, [reportId, enabled]);
 }

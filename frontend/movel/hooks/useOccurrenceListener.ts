@@ -30,7 +30,7 @@ export function useOccurrenceListener(
 ) {
     const onMessageRef = useRef(onMessage)
     const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+    const esRef = useRef<EventSource | null>(null);
     useEffect(() => {
         onMessageRef.current = onMessage
     }, [onMessage])
@@ -41,7 +41,7 @@ export function useOccurrenceListener(
         const es = new EventSource(
             `https://unfabricated-everett-surveyable.ngrok-free.dev/api/occurrence/${Number(occurrenceId)}/listen`
         );
-
+        esRef.current = es;
         const listener = (event: any) => {
             try {
                 const message: SSEMessage = JSON.parse(event.data);
@@ -63,16 +63,25 @@ export function useOccurrenceListener(
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
             }
-            es.removeAllEventListeners();
-            es.close();
+            try {
+                es.removeAllEventListeners();
+                es.close();
+            } catch (e) {
+                console.warn("Error closing EventSource:", e);
+            }
         });
 
         return () => {
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
             }
-            es.removeAllEventListeners();
-            es.close();
+            try {
+                es.removeAllEventListeners();
+                es.close();
+            } catch (e) {
+                console.warn("Error closing EventSource:", e);
+            }
+            esRef.current = null;
         };
     }, [occurrenceId, enabled, debounceMs]);
 }

@@ -19,7 +19,7 @@ export const TypeProvider = ({children})=> {
     const [type, setType]= useState<Type[]>([])
     const {user}= useAuth()
     const [loading, setLoading] = useState(false)
-    const { isOnline } = useNetworkStatus()
+    const { isOnline, shouldResetListeners } = useNetworkStatus()
 
     useEffect(() => {
         findAllTypes()
@@ -40,7 +40,7 @@ export const TypeProvider = ({children})=> {
         setTimeout(() => setLoading(false), 300);
     }, [])
 
-    useTypesListener(handleOnMessage, isOnline)
+    useTypesListener(handleOnMessage, isOnline && !shouldResetListeners)
 
     async function findAllTypes(){
         try {

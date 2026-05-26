@@ -28,7 +28,7 @@ export const OccurrenceContext = createContext<OccurrenceContextValue | undefine
 export function OccurrenceProvider({children}) {
     const [occurrence, setOccurrence] = useState<Occurrence[]>([])
     const [loading, setLoading] = useState(false)
-    const {isOnline} = useNetworkStatus()
+    const { isOnline, shouldResetListeners } = useNetworkStatus()
     const {user} = useAuth()
     const {t} = useTranslation()
 
@@ -51,7 +51,7 @@ export function OccurrenceProvider({children}) {
         setTimeout(() => setLoading(false), 300);
     }, [])
 
-    useOccurrencesListener(user?.id, handleOnMessage, isOnline)
+    useOccurrencesListener(user?.id, handleOnMessage, isOnline && !shouldResetListeners)
 
     async function listOccurrences() {
         if (!user) return

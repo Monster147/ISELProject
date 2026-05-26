@@ -27,7 +27,7 @@ export const IntervenorContext = createContext<IntervenorContextValue | undefine
 
 export function IntervenorProvider({children}) {
     const [intervenor, setIntervenor] = useState<Intervenor[]>([])
-    const {isOnline} = useNetworkStatus()
+    const { isOnline, shouldResetListeners } = useNetworkStatus()
     const {user} = useAuth()
     const {t} = useTranslation()
 
@@ -48,7 +48,7 @@ export function IntervenorProvider({children}) {
         }
     }, [])
 
-    useIntervenorsListener(handleOnMessage, isOnline)
+    useIntervenorsListener(handleOnMessage, isOnline && !shouldResetListeners)
 
     async function loadIntervenors() {
         try {

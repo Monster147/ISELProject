@@ -22,7 +22,7 @@ export const EvidenceContext = createContext<EvidenceContextValue | undefined>(u
 export function EvidenceProvider({children}) {
     const [evidence, setEvidence] = useState<Evidence[]>([])
     const {user} = useAuth()
-    const {isOnline} = useNetworkStatus()
+    const { isOnline, shouldResetListeners } = useNetworkStatus()
 
     useEffect(() => {
         loadEvidences()
@@ -51,7 +51,7 @@ export function EvidenceProvider({children}) {
     }, [])
     */
 
-    //useEvidenceListener(user?.id, handleOnMessage, isOnline)
+    //useEvidenceListener(user?.id, handleOnMessage, isOnline && !shouldResetListeners)
 
     async function loadEvidences(){
         try {

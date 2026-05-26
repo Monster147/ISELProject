@@ -27,7 +27,7 @@ export function useEvidenceListener(
 ) {
     const onMessageRef = useRef(onMessage)
     const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+    const esRef = useRef<EventSource | null>(null);
     useEffect(() => {
         onMessageRef.current = onMessage
     }, [onMessage])
@@ -38,7 +38,7 @@ export function useEvidenceListener(
         const es = new EventSource(
             `https://unfabricated-everett-surveyable.ngrok-free.dev/api/evidence/${Number(userId)}/listen`
         );
-
+        esRef.current = es;
         const onEvent = (event: any) => {
             try {
                 const receivedMessage = JSON.parse(event.data);
@@ -72,16 +72,25 @@ export function useEvidenceListener(
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
             }
-            es.removeAllEventListeners();
-            es.close();
+            try {
+                es.removeAllEventListeners();
+                es.close();
+            } catch (e) {
+                console.warn("Error closing EventSource:", e);
+            }
         });
 
         return () => {
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
             }
-            es.removeAllEventListeners();
-            es.close();
+            try {
+                es.removeAllEventListeners();
+                es.close();
+            } catch (e) {
+                console.warn("Error closing EventSource:", e);
+            }
+            esRef.current = null;
         };
     }, [userId, enabled, debounceMs]);
 }

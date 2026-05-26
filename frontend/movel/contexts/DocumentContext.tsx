@@ -25,7 +25,7 @@ export const DocumentContext = createContext<DocumentContextValue | undefined>(u
 export function DocumentProvider({children}) {
     const [documents, setDocuments] = useState<Documents[]>([])
     const {user} = useAuth()
-    const { isOnline } = useNetworkStatus()
+    const { isOnline, shouldResetListeners } = useNetworkStatus()
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
@@ -47,7 +47,7 @@ export function DocumentProvider({children}) {
         setTimeout(() => setLoading(false), 300);
     }, [])
 
-    useDocumentsListener(handleOnMessage, isOnline)
+    useDocumentsListener(handleOnMessage, isOnline && !shouldResetListeners)
 
     async function getAllDocuments(){
         try {
