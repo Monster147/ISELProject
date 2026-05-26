@@ -71,5 +71,5 @@ export function useDocumentsListener(
             es.close();
         };
 
-    }, [onMessage, enabled])
+    }, [enabled])
 }

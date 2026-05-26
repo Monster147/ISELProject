@@ -109,7 +109,7 @@ class EvidenceService(
     ): Either<EvidenceError, Evidence> {
         return trxManager.run {
             repoUsers.findById(reporterId) ?: return@run failure(EvidenceError.ReporterNotFound)
-            repoOccurrence.findById(occurrenceId) ?: return@run failure(EvidenceError.OccurrenceNotFound)
+            val occurrence = repoOccurrence.findById(occurrenceId) ?: return@run failure(EvidenceError.OccurrenceNotFound)
             if (file.isEmpty) return@run failure(EvidenceError.InvalidFile)
             if (file.contentType !in allowedExtensions) return@run failure(EvidenceError.InvalidFile)
 
@@ -124,6 +124,7 @@ class EvidenceService(
                     occurrenceId = occurrenceId,
                     type = type,
                 )
+            val updatedOccurrence = repoOccurrence.addEvidence(occurrence, evidence)
             publisher.evidencePublisher.sendMessageToAll(
                 reporterId,
                 repoEvidence.findByReporterId(reporterId),
@@ -131,7 +132,7 @@ class EvidenceService(
             )
             publisher.occurrencePublisher.sendMessageToAll(
                 occurrenceId,
-                evidence,
+                updatedOccurrence,
                 ActionKind.EvidenceCreated,
             )
             val occurrences = repoOccurrence.findOccurrenceByReporterId(reporterId)
@@ -263,16 +264,18 @@ class EvidenceService(
 
             repoEvidence.deleteById(evidence.id)
             storageService.deleteEvidence(evidence.filePath)
+            val occurrence = repoOccurrence.findById(evidence.occurrenceId) ?: return@run failure(EvidenceError.OccurrenceNotFound)
+            repoOccurrence.removeEvidence(occurrence, evidence)
             publisher.evidencePublisher.sendMessageToAll(
                 evidence.reporterId,
                 repoEvidence.findByReporterId(evidence.reporterId),
                 ActionKind.EvidenceDeleted,
             )
-            publisher.occurrencePublisher.sendMessageToAll(
+            /*publisher.occurrencePublisher.sendMessageToAll(
                 evidence.occurrenceId,
                 Unit,
                 ActionKind.EvidenceDeleted,
-            )
+            )*/
             val occurrences = repoOccurrence.findOccurrenceByReporterId(evidence.reporterId)
             publisher.occurrencesPublisher.sendMessageToAll(
                 evidence.reporterId,
@@ -301,6 +304,7 @@ class EvidenceService(
     ): Either<EvidenceError, Evidence> {
         return trxManager.run {
             val evidence = repoEvidence.findById(id) ?: return@run failure(EvidenceError.EvidenceNotFound)
+            val occurrence = repoOccurrence.findById(evidence.occurrenceId) ?: return@run failure(EvidenceError.OccurrenceNotFound)
 
             if(newData.contentType != "application/json") return@run failure(EvidenceError.InvalidFile)
 
@@ -311,9 +315,10 @@ class EvidenceService(
                 repoEvidence.findByReporterId(evidence.reporterId),
                 ActionKind.EvidenceUpdated,
             )
+
             publisher.occurrencePublisher.sendMessageToAll(
                 evidence.occurrenceId,
-                evidence,
+                occurrence,
                 ActionKind.EvidenceUpdated,
             )
 

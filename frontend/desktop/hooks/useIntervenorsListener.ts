@@ -69,5 +69,5 @@ export function useIntervenorsListener(
             eventSource.close();
         };
 
-    }, [onMessage, enabled]);
+    }, [enabled]);
 }

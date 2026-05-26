@@ -71,5 +71,5 @@ export function useOccurrencesListener(
             eventSource.close();
         };
 
-    }, [userID,onMessage, enabled, debounceMs]);
+    }, [userID, enabled, debounceMs]);
 }

@@ -46,5 +46,5 @@ export function useReportListener(
         return () => {
             eventSource.close();
         }
-    }, [reportId, onMessage, enabled]);
+    }, [reportId, enabled]);
 }

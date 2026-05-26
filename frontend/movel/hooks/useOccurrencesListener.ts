@@ -72,5 +72,5 @@ export function useOccurrencesListener(
             es.removeAllEventListeners();
             es.close();
         };
-    }, [userID,onMessage, enabled, enabled]);
+    }, [userID, enabled]);
 }

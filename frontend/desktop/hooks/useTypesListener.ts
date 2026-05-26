@@ -70,5 +70,5 @@ export function useTypesListener(
             eventSource.close();
         }
 
-    }, [onMessage, enabled])
+    }, [enabled])
 }

@@ -3,6 +3,7 @@ package pt.ira.jdbi
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.jdbi.v3.core.Handle
+import pt.ira.evindence.Evidence
 import pt.ira.interfaces.RepositoryOccurrence
 import pt.ira.intervenor.Intervenor
 import pt.ira.occurrence.Occurrence
@@ -109,6 +110,32 @@ class RepositoryOccurrenceJdbi(
         val updated =
             occurrence.copy(
                 intervenors = occurrence.intervenors - intervenor.id,
+            )
+        save(updated)
+        return updated
+    }
+
+    override fun addEvidence(
+        occurrence: Occurrence,
+        evidence: Evidence
+    ): Occurrence {
+        if (occurrence.evidences.any { it == evidence.id }) return occurrence
+        val updated =
+            occurrence.copy(
+                evidences = occurrence.evidences + evidence.id,
+            )
+        save(updated)
+        return updated
+    }
+
+    override fun removeEvidence(
+        occurrence: Occurrence,
+        evidence: Evidence
+    ): Occurrence {
+        if (occurrence.evidences.none { it == evidence.id }) return occurrence
+        val updated =
+            occurrence.copy(
+                evidences = occurrence.evidences - evidence.id,
             )
         save(updated)
         return updated

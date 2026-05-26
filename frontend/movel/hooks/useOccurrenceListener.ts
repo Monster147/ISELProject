@@ -5,6 +5,7 @@ import EventSource from "react-native-sse";
 export type OccurrenceUpdateAction =
     | "EvidenceCreated"
     | "EvidenceDeleted"
+    | "EvidenceUpdated"
     | "OccurrenceCreated"
     | "OccurrenceDeleted"
     | "IntervenorAdded"
@@ -68,5 +69,5 @@ export function useOccurrenceListener(
             es.removeAllEventListeners();
             es.close();
         };
-    }, [occurrenceId, onMessage, enabled]);
+    }, [occurrenceId, enabled]);
 }

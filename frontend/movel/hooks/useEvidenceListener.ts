@@ -75,5 +75,5 @@ export function useEvidenceListener(
             es.removeAllEventListeners();
             es.close();
         };
-    }, [userId, onMessage, enabled]);
+    }, [userId, enabled]);
 }

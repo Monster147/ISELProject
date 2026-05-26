@@ -69,5 +69,5 @@ export function useDocumentsListener(
             eventSource.close();
         }
 
-    }, [onMessage, enabled])
+    }, [enabled])
 }

@@ -70,5 +70,5 @@ export function useEvidenceListener(
         return () => {
             eventSource.close();
         }
-    }, [evidenceId, onMessage, enabled]);
+    }, [evidenceId, enabled]);
 }

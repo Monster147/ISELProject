@@ -52,5 +52,5 @@ export function useReportListener(
             es.removeAllEventListeners();
             es.close();
         };
-    }, [reportId, onMessage, enabled]);
+    }, [reportId, enabled]);
 }

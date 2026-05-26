@@ -70,5 +70,5 @@ export function useIntervenorsListener(
             es.removeAllEventListeners();
             es.close();
         };
-    }, [onMessage, enabled]);
+    }, [enabled]);
 }

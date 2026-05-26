@@ -65,7 +65,7 @@ export function useOccurrenceListener(
             eventSource.close();
         };
 
-    }, [occurrenceId, onMessage, enabled]);
+    }, [occurrenceId, enabled]);
 
 }
 
