@@ -56,7 +56,7 @@ class ClassesPublisher {
         Executors
             .newScheduledThreadPool(1)
             .also {
-                it.scheduleAtFixedRate({ keepAlive() }, 2, 2, TimeUnit.SECONDS)
+                it.scheduleAtFixedRate({ keepAlive() }, 10, 10, TimeUnit.SECONDS)
             }
 
     /**
@@ -130,8 +130,6 @@ class ClassesPublisher {
     private fun removeEmitter(listener: UpdatedDataEmitter) =
         lock.withLock {
             logger.info("removing listener")
-            val oldListeners = listeners
-            requireNotNull(oldListeners)
             listeners.remove(listener)
         }
 

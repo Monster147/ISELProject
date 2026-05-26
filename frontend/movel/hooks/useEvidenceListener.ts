@@ -5,6 +5,7 @@ import {Evidence} from "@commons/models/evidence/Evidence";
 export type EvidenceUpdateAction=
     | "EvidenceCreated"
     | "EvidenceDeleted"
+    | "EvidenceUpdated"
 
 export interface EvidenceUpdateData{
     evidences: Evidence[]
@@ -68,6 +69,7 @@ export function useEvidenceListener(
         es.addEventListener("message", onEvent);
         es.addEventListener("error", (event) => {
             console.error("SSE Error:", event);
+            es.removeAllEventListeners();
             es.close();
         });
 

@@ -28,7 +28,6 @@ export function EvidenceProvider({children}) {
         loadEvidences()
     }, [isOnline, user]);
 
-    /*
     const handleOnMessage = useCallback(async (message: SSEMessage) => {
         const data = message.data
         const action = message.action
@@ -41,12 +40,16 @@ export function EvidenceProvider({children}) {
                 setEvidence(data.evidences)
                 await evidenceInfoRepo.saveEvidenceInfo(data.evidences)
                 break
+            case "EvidenceUpdated":
+                setEvidence(data.evidences)
+                await evidenceInfoRepo.saveEvidenceInfo(data.evidences)
+                break
             default:
                 break
         }
     }, [])
-    */
-    //useEvidenceListener(user?.id, handleOnMessage, isOnline)
+
+    useEvidenceListener(user?.id, handleOnMessage, isOnline)
 
     async function loadEvidences(){
         try {

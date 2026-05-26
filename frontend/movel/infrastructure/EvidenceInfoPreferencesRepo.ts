@@ -25,20 +25,20 @@ export interface EvidenceInfoRepo {
 
 export class EvidenceInfoPreferencesRepo implements EvidenceInfoRepo {
 
-    private OCCURRENCE_KEY = "evidence"
+    private EVIDENCE_KEY = "evidence"
 
-    async saveEvidenceInfo(occurrenceInfo: EvidenceInfo[]): Promise<void> {
-        await SecureStore.setItemAsync(this.OCCURRENCE_KEY, JSON.stringify(occurrenceInfo))
+    async saveEvidenceInfo(evidenceInfo: EvidenceInfo[]): Promise<void> {
+        await SecureStore.setItemAsync(this.EVIDENCE_KEY, JSON.stringify(evidenceInfo))
     }
 
     async getEvidenceInfo(): Promise<EvidenceInfo[] | null> {
-        const evidence = await SecureStore.getItemAsync(this.OCCURRENCE_KEY)
+        const evidence = await SecureStore.getItemAsync(this.EVIDENCE_KEY)
         if (!evidence) return null
         return JSON.parse(evidence) as EvidenceInfo[]
     }
 
     async clearEvidenceInfo(): Promise<void> {
-        await SecureStore.deleteItemAsync(this.OCCURRENCE_KEY)
+        await SecureStore.deleteItemAsync(this.EVIDENCE_KEY)
     }
 }
 

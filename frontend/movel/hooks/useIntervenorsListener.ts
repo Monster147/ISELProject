@@ -63,6 +63,7 @@ export function useIntervenorsListener(
         es.addEventListener("message", onEvent);
         es.addEventListener("error", (event) => {
             console.error("SSE Error:", event);
+            es.removeAllEventListeners();
             es.close();
         });
 

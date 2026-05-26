@@ -1,9 +1,10 @@
 import {useEffect} from "react";
-import {Evidence} from "../../commons/models/evidence/Evidence";
+import {Evidence} from "@commons/models/evidence/Evidence";
 
 export type EvidenceUpdateAction=
     | "EvidenceCreated"
     | "EvidenceDeleted"
+    | "EvidenceUpdated"
 
 export interface EvidenceUpdateData{
     evidences: Evidence[]
@@ -29,15 +30,15 @@ function debounce(cb, delay) {
 }
 
 export function useEvidenceListener(
-    evidenceId: string | undefined,
+    userId: number | undefined,
     onMessage: (message:SSEMessage) => void,
     enabled: boolean | null,
     debounceMs: number = 1000
 ) {
     useEffect(() => {
-        if (!evidenceId || enabled !== true) return;
+        if (!userId || enabled !== true) return;
 
-        const eventSource = new EventSource(`/api/evidence/${Number(evidenceId)}/listen`)
+        const eventSource = new EventSource(`/api/evidence/${Number(userId)}/listen`)
 
         const debouncedOnMessage = debounce(onMessage, debounceMs)
 
@@ -70,5 +71,5 @@ export function useEvidenceListener(
         return () => {
             eventSource.close();
         }
-    }, [evidenceId, enabled]);
+    }, [userId, enabled]);
 }
