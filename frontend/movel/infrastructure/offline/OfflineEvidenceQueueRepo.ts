@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store'
 
-export type OfflineActionType = "CREATE" | "DELETE"
+export type OfflineActionType = "CREATE" | "DELETE" | "UPDATE"
 
 export interface OfflineAction<T = any> {
     id: string

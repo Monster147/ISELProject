@@ -151,6 +151,10 @@ export const OfflineSyncProvider = ({children}) => {
                             await api.deleteEvidence(action.payload.evidenceId)
                             await offlineEvidenceQueueRepo.removeAction(action.id)
                             break
+                        case "UPDATE":
+                            await api.updateEvidence(action.payload.file, action.payload.evidenceId)
+                            await offlineEvidenceQueueRepo.removeAction(action.id)
+                            break
                     }
                 } catch (err: any) {
                     if(err.status >= 500 && err.status < 600){

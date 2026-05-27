@@ -7,6 +7,7 @@ import {Evidence} from "@commons/models/evidence/Evidence";
 import {useAuth} from "../hooks/useAuth";
 import {useEvidenceListener, SSEMessage} from "../hooks/useEvidenceListener";
 import {evidenceInfoRepo} from "../infrastructure/EvidenceInfoPreferencesRepo";
+import ReactNativeBlobUtil from "react-native-blob-util";
 
 type EvidenceContextValue = {
     createEvidence: (file: UploadFile, type: string, location: string, description: string, reporterId: number, occurrenceId: number) => Promise<any>
@@ -28,7 +29,6 @@ export function EvidenceProvider({children}) {
         loadEvidences()
     }, [isOnline, user]);
 
-    /*
     const handleOnMessage = useCallback(async (message: SSEMessage) => {
         const data = message.data
         const action = message.action
@@ -49,9 +49,8 @@ export function EvidenceProvider({children}) {
                 break
         }
     }, [])
-    */
 
-    //useEvidenceListener(user?.id, handleOnMessage, isOnline && !shouldResetListeners)
+    useEvidenceListener(user?.id, handleOnMessage, isOnline && !shouldResetListeners)
 
     async function loadEvidences(){
         try {
@@ -120,11 +119,41 @@ export function EvidenceProvider({children}) {
     }
 
     async function downloadEvidence(evidenceId:number, keep: boolean){
-        try{
-            const response = await api.downloadEvidence(evidenceId, keep)
-            return response
-        } catch (err: any) {
-            throw Error(err.message)
+        if (isOnline){
+            try{
+                const response = await api.downloadEvidence(evidenceId, keep)
+                return response
+            } catch (err: any) {
+                throw Error(err.message)
+            }
+        } else {
+            const cached = await evidenceInfoRepo.getEvidenceInfo()
+            const evidence = cached?.find(e => e.id === evidenceId)
+
+            if (evidence && evidence.filePath) {
+                const cacheDir = ReactNativeBlobUtil.fs.dirs.CacheDir;
+                const localPath = `${cacheDir}/${evidence.filePath}`;
+
+                const fileExists = await ReactNativeBlobUtil.fs.exists(localPath);
+
+                if (fileExists) {
+                    return {
+                        path: () => localPath,
+                        text: async () => {
+                            const content = await ReactNativeBlobUtil.fs.readFile(localPath, 'utf8');
+                            return content;
+                        },
+                        respInfo: {
+                            headers: {
+                                'content-type': evidence.filePath.endsWith('.json')
+                                    ? 'application/json'
+                                    : 'application/octet-stream'
+                            }
+                        },
+                        flush: async () => {}
+                    };
+                }
+            }
         }
     }
 
@@ -157,11 +186,48 @@ export function EvidenceProvider({children}) {
     }
 
     async function updateEvidence(file: UploadFile, evidenceId: number){
-        try {
-            const response = await api.updateEvidence(file, evidenceId)
-            return response
-        } catch (err: any) {
-            throw Error(err.message)
+        if(isOnline){
+            try {
+                const response = await api.updateEvidence(file, evidenceId)
+                return response
+            } catch (err: any) {
+                throw Error(err.message)
+            }
+        } else{
+            const queue = await offlineEvidenceQueueRepo.getQueue()
+
+            const createAction = queue.find(a =>
+                a.type === "CREATE" &&
+                a.payload.evidenceId === evidenceId
+            )
+
+            if (createAction) {
+                const updatedCreateAction = {
+                    ...createAction,
+                    payload: {
+                        ...createAction.payload,
+                        file: file,
+                    }
+                }
+                await offlineEvidenceQueueRepo.updateAction(createAction.id, updatedCreateAction)
+            } else {
+                await offlineEvidenceQueueRepo.addAction("UPDATE", {file, evidenceId})
+            }
+
+            const updated = evidence.map(e => {
+                if (e.id === evidenceId) {
+                    return {
+                        ...e,
+                        filePath: file.name,
+                        updatedAt: Date.now()
+                    }
+                }
+                return e
+            })
+
+            setEvidence(updated)
+            await evidenceInfoRepo.saveEvidenceInfo(updated)
+            return { id: evidenceId, filePath: file.name }
         }
     }
 

@@ -1,4 +1,4 @@
-@token_user = rWJQ34N-oYTtBDAUtn1Ht-PaN2AW6rN04pJC2sZZzVQ=
+@token_user = Xxl1M6qcmDyVzEdyZfnjO6LSo9gDZMN_uTKDbnjhOGw=
 
 ### Create Admin User
 POST http://localhost:8080/api/user
@@ -222,3 +222,6 @@ Authorization: Bearer {{token_user}}
 
 ### Get overview Stats
 GET http://localhost:8080/api/stats
+
+### Get http protocol details
+GET http://localhost:8080/api/debug/protocol

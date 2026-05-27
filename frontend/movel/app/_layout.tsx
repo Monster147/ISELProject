@@ -14,6 +14,10 @@ import {EvidenceProvider} from "../contexts/EvidenceContext";
 import {StatsProvider} from "../contexts/StatsContext";
 import {OfflineSyncProvider} from "../contexts/OfflineSyncContext";
 
+if (__DEV__) {
+    global.XMLHttpRequest = (global as any).originalXMLHttpRequest || global.XMLHttpRequest;
+}
+
 const RootLayout = () => {
     const colorScheme = useColorScheme()
     const theme = Colors[colorScheme] ?? Colors.light

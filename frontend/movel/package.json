@@ -33,6 +33,7 @@
     "react-native": "0.81.5",
     "react-native-blob-util": "^0.24.7",
     "react-native-event-source": "^1.1.0",
+    "react-native-fetch-event-source": "^1.0.1",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-nitro-modules": "^0.35.2",
     "react-native-paper": "^5.15.0",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
+    "@types/react-native-event-source": "^1.1.2",
     "babel-plugin-module-resolver": "^5.0.3",
     "typescript": "~5.9.2"
   },

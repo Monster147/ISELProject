@@ -1,6 +1,6 @@
 import {useEffect, useRef} from "react";
 import {Occurrence} from "@commons/models/intervenor/Occurrence";
-import EventSource from "react-native-sse";
+import RNEventSource from "react-native-event-source";
 
 export type OccurrencesUpdateAction =
     | "OccurrencesChanged"
@@ -16,19 +16,6 @@ export interface SSEMessage {
     action: OccurrencesUpdateAction
 }
 
-function debounce(cb, delay) {
-    let timeout
-    return function(message) {
-        if (timeout) {
-            clearTimeout(timeout)
-        }
-        timeout = setTimeout(() => {
-            cb(message)
-        }, delay)
-    };
-}
-
-
 export function useOccurrencesListener(
     userID: number | undefined,
     onMessage: (message: SSEMessage) => void,
@@ -37,14 +24,22 @@ export function useOccurrencesListener(
 ) {
     const onMessageRef = useRef(onMessage)
     const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const esRef = useRef<EventSource | null>(null);
+    const esRef = useRef<RNEventSource | null>(null);
     useEffect(() => {
         onMessageRef.current = onMessage
     }, [onMessage])
 
     useEffect(() => {
         if (!userID || enabled !== true) return;
-        const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/occurrence/listen/user/${userID}`);
+        const es = new RNEventSource(
+            `https://unfabricated-everett-surveyable.ngrok-free.dev/api/occurrence/listen/user/${userID}`,
+            {
+                headers: {
+                    "ngrok-skip-browser-warning": "true",
+                    "Accept": "text/event-stream",
+                }
+            }
+        );
         esRef.current = es;
         const onEvent = (event: any) => {
             try {
@@ -73,26 +68,29 @@ export function useOccurrencesListener(
             }
         };
 
-        es.addEventListener("message", onEvent);
-        es.addEventListener("error", (event) => {
+        const onError = (event: any) => {
             console.error("SSE Error:", event);
             if (debounceTimeoutRef.current) {
-                clearTimeout(debounceTimeoutRef.current)
+                clearTimeout(debounceTimeoutRef.current);
             }
             try {
-                es.removeAllEventListeners();
+                es.removeAllListeners();
                 es.close();
             } catch (e) {
                 console.warn("Error closing EventSource:", e);
             }
-        });
+        };
+
+        es.addEventListener("message", onEvent);
+        es.addEventListener("error", onError);
 
         return () => {
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
             }
             try {
-                es.removeAllEventListeners();
+                es.removeListener("message", onEvent);
+                es.removeListener("error", onError);
                 es.close();
             } catch (e) {
                 console.warn("Error closing EventSource:", e);
