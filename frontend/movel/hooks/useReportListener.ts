@@ -1,5 +1,5 @@
 import {useEffect, useRef} from "react";
-import RNEventSource from "react-native-sse";
+import EventSource from "react-native-sse";
 
 export type ReportUpdateAction=
     | "ReportCreated"
@@ -28,8 +28,8 @@ export function useReportListener(
 ) {
     useEffect(() => {
         if (!reportId || enabled!== true) return;
-        const esRef = useRef<RNEventSource | null>(null);
-        const es = new RNEventSource(
+        const esRef = useRef<EventSource | null>(null);
+        const es = new EventSource(
             `https://unfabricated-everett-surveyable.ngrok-free.dev/api/report/${Number(reportId)}/listen`
         );
         esRef.current = es;

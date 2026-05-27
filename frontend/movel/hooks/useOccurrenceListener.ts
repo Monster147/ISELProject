@@ -1,6 +1,6 @@
 import { Occurrence } from "@commons/models/intervenor/Occurrence";
 import {useEffect, useRef} from "react";
-import RNEventSource from "react-native-event-source";
+import EventSource from "react-native-sse";
 
 export type OccurrenceUpdateAction =
     | "EvidenceCreated"
@@ -30,7 +30,7 @@ export function useOccurrenceListener(
 ) {
     const onMessageRef = useRef(onMessage)
     const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const esRef = useRef<RNEventSource | null>(null);
+    const esRef = useRef<EventSource | null>(null);
     useEffect(() => {
         onMessageRef.current = onMessage
     }, [onMessage])
@@ -38,7 +38,7 @@ export function useOccurrenceListener(
     useEffect(() => {
         if (!occurrenceId || enabled!==true) return;
 
-        const es = new RNEventSource(
+        const es = new EventSource(
             `https://unfabricated-everett-surveyable.ngrok-free.dev/api/occurrence/${Number(occurrenceId)}/listen`
         );
         esRef.current = es;
@@ -56,29 +56,27 @@ export function useOccurrenceListener(
             }
         };
 
-        const onError = (event: any) => {
+        es.addEventListener("message", listener);
+
+        es.addEventListener("error", (event) => {
             console.error("SSE Error:", event);
             if (debounceTimeoutRef.current) {
-                clearTimeout(debounceTimeoutRef.current);
+                clearTimeout(debounceTimeoutRef.current)
             }
             try {
-                es.removeAllListeners();
+                es.removeAllEventListeners();
                 es.close();
             } catch (e) {
                 console.warn("Error closing EventSource:", e);
             }
-        };
-
-        es.addEventListener("message", listener);
-        es.addEventListener("error", onError);
+        });
 
         return () => {
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
             }
             try {
-                es.removeListener("message", listener);
-                es.removeListener("error", onError);
+                es.removeAllEventListeners();
                 es.close();
             } catch (e) {
                 console.warn("Error closing EventSource:", e);
