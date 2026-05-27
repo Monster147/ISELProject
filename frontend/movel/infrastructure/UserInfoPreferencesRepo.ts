@@ -4,6 +4,7 @@ import { MMKV } from 'react-native-mmkv'
 const storage = new MMKV()
 */
 import * as SecureStore from 'expo-secure-store'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import {User} from "../../commons/models/user/User";
 
 export interface UserInfo{
@@ -28,17 +29,17 @@ export class UserInfoPreferencesRepo implements UserInfoRepo {
 
 
     async saveUserInfo(userInfo: UserInfo): Promise<void> {
-        await SecureStore.setItemAsync(this.USER_KEY, JSON.stringify(userInfo))
+        await AsyncStorage.setItem(this.USER_KEY, JSON.stringify(userInfo))
     }
 
     async getUserInfo(): Promise<UserInfo | null> {
-        const user = await SecureStore.getItemAsync(this.USER_KEY)
+        const user = await AsyncStorage.getItem(this.USER_KEY)
         if (!user) return null
         return JSON.parse(user) as UserInfo
     }
 
     async clearUserInfo(): Promise<void> {
-        await SecureStore.deleteItemAsync(this.USER_KEY)
+        await AsyncStorage.removeItem(this.USER_KEY)
     }
 }
 

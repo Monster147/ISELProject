@@ -56,7 +56,7 @@ class ClassesPublisher {
         Executors
             .newScheduledThreadPool(1)
             .also {
-                it.scheduleAtFixedRate({ keepAlive() }, 10, 10, TimeUnit.SECONDS)
+                it.scheduleAtFixedRate({ keepAlive() }, 0, 15, TimeUnit.SECONDS)
             }
 
     /**

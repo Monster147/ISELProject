@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import {OccurrenceType} from "@commons/models/occurrence/OccurrenceType";
 import {Json} from "@commons/models/utils/Json";
 
@@ -28,17 +29,17 @@ export class EvidenceInfoPreferencesRepo implements EvidenceInfoRepo {
     private EVIDENCE_KEY = "evidence"
 
     async saveEvidenceInfo(evidenceInfo: EvidenceInfo[]): Promise<void> {
-        await SecureStore.setItemAsync(this.EVIDENCE_KEY, JSON.stringify(evidenceInfo))
+        await AsyncStorage.setItem(this.EVIDENCE_KEY, JSON.stringify(evidenceInfo))
     }
 
     async getEvidenceInfo(): Promise<EvidenceInfo[] | null> {
-        const evidence = await SecureStore.getItemAsync(this.EVIDENCE_KEY)
+        const evidence = await AsyncStorage.getItem(this.EVIDENCE_KEY)
         if (!evidence) return null
         return JSON.parse(evidence) as EvidenceInfo[]
     }
 
     async clearEvidenceInfo(): Promise<void> {
-        await SecureStore.deleteItemAsync(this.EVIDENCE_KEY)
+        await AsyncStorage.removeItem(this.EVIDENCE_KEY)
     }
 }
 

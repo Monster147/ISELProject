@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import {OccurrenceType} from "@commons/models/occurrence/OccurrenceType";
 import {Json} from "@commons/models/utils/Json";
 
@@ -28,17 +29,17 @@ export class OccurrenceInfoPreferencesRepo implements OccurrenceInfoRepo {
     private OCCURRENCE_KEY = "occurrence"
 
     async saveOccurrenceInfo(occurrenceInfo: OccurrenceInfo[]): Promise<void> {
-        await SecureStore.setItemAsync(this.OCCURRENCE_KEY, JSON.stringify(occurrenceInfo))
+        await AsyncStorage.setItem(this.OCCURRENCE_KEY, JSON.stringify(occurrenceInfo))
     }
 
     async getOccurrenceInfo(): Promise<OccurrenceInfo[] | null> {
-        const occurrence = await SecureStore.getItemAsync(this.OCCURRENCE_KEY)
+        const occurrence = await AsyncStorage.getItem(this.OCCURRENCE_KEY)
         if (!occurrence) return null
         return JSON.parse(occurrence) as OccurrenceInfo[]
     }
 
     async clearOccurrenceInfo(): Promise<void> {
-        await SecureStore.deleteItemAsync(this.OCCURRENCE_KEY)
+        await AsyncStorage.removeItem(this.OCCURRENCE_KEY)
     }
 }
 
