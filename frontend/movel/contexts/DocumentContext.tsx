@@ -8,6 +8,8 @@ import {useDocumentsListener,SSEMessage} from "../hooks/useDocumentsListener";
 import {useNetworkStatus} from "../hooks/useNetworkStatus";
 import {intervenorInfoRepo} from "../infrastructure/IntervenorInfoPreferencesRepo";
 import {documentsInfoRepo} from "../infrastructure/DocumentsInfoPreferencesRepo";
+import {useSyncSSE} from "../hooks/useSyncSSE";
+import {Occurrence} from "@commons/models/occurrence/Occurrence";
 
 type DocumentContextValue = {
     documents: Documents[]
@@ -27,11 +29,31 @@ export function DocumentProvider({children}) {
     const {user} = useAuth()
     const { isOnline, shouldResetListeners } = useNetworkStatus()
     const [loading, setLoading] = useState(false)
+    const {lastEvent} = useSyncSSE();
 
     useEffect(() => {
-        getAllDocuments()
+        if (user && isOnline){
+            getAllDocuments()
+        }
     }, [user, isOnline]);
 
+    useEffect(() => {
+        const handleDocumentsChanged = async () => {
+            if (!lastEvent) return
+            if (lastEvent?.action === "DocumentsChanged") {
+                setLoading(true)
+                const value = lastEvent.data
+                const documents: Documents[] = Array.isArray(value) ? value : [];
+                setDocuments(documents)
+                await documentsInfoRepo.saveDocumentsInfo(documents)
+                const timer = setTimeout(() => setLoading(false), 300)
+                return () => clearTimeout(timer)
+            }
+        }
+
+        handleDocumentsChanged()
+    }, [lastEvent])
+    /*
     const handleOnMessage = useCallback(async (message: SSEMessage) => {
         setLoading(true)
         const data = message.data
@@ -47,7 +69,9 @@ export function DocumentProvider({children}) {
         setTimeout(() => setLoading(false), 300);
     }, [])
 
-    useDocumentsListener(handleOnMessage, isOnline && !shouldResetListeners)
+    useDocumentsListener(user?.id,handleOnMessage, isOnline)
+
+     */
 
     async function getAllDocuments(){
         try {

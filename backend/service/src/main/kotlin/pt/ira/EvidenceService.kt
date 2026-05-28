@@ -128,12 +128,12 @@ class EvidenceService(
             publisher.evidencePublisher.sendMessageToAll(
                 reporterId,
                 repoEvidence.findByReporterId(reporterId),
-                ActionKind.EvidenceCreated,
+                ActionKind.EvidenceChanged,
             )
             publisher.occurrencePublisher.sendMessageToAll(
                 occurrenceId,
                 updatedOccurrence,
-                ActionKind.EvidenceCreated,
+                ActionKind.EvidenceChanged,
             )
             val occurrences = repoOccurrence.findOccurrenceByReporterId(reporterId)
             publisher.occurrencesPublisher.sendMessageToAll(
@@ -269,7 +269,7 @@ class EvidenceService(
             publisher.evidencePublisher.sendMessageToAll(
                 evidence.reporterId,
                 repoEvidence.findByReporterId(evidence.reporterId),
-                ActionKind.EvidenceDeleted,
+                ActionKind.EvidenceChanged,
             )
             /*publisher.occurrencePublisher.sendMessageToAll(
                 evidence.occurrenceId,
@@ -313,13 +313,13 @@ class EvidenceService(
             publisher.evidencePublisher.sendMessageToAll(
                 evidence.reporterId,
                 repoEvidence.findByReporterId(evidence.reporterId),
-                ActionKind.EvidenceUpdated,
+                ActionKind.EvidenceChanged,
             )
 
             publisher.occurrencePublisher.sendMessageToAll(
                 evidence.occurrenceId,
                 occurrence,
-                ActionKind.EvidenceUpdated,
+                ActionKind.EvidenceChanged,
             )
 
             success(evidence)

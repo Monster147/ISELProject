@@ -15,8 +15,8 @@ POST http://localhost:8080/api/user/token
 Content-Type: application/json
 
 {
-  "email": "user1@gmail.com",
-  "password": "user12"
+  "email": "dadada",
+  "password": "dadada"
 }
 
 ###Get user info

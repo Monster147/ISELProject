@@ -2,6 +2,8 @@ import {useEffect, useRef} from "react";
 import {Documents} from "@commons/models/documents/Documents";
 import {Type} from "../../commons/models/type/Type";
 import EventSource from "react-native-sse"
+import {API_URL} from "@commons/constants/apiurl";
+import {log} from "./useDocumentsListener";
 
 export type TypesUpdateAction=
     | "TypesChanged"
@@ -18,6 +20,7 @@ export interface SSEMessage{
 }
 
 export function useTypesListener(
+    userId: number | undefined,
     onMessage: (message:SSEMessage) => void,
     enabled: boolean | null,
     debounceMs: number = 1000
@@ -30,8 +33,24 @@ export function useTypesListener(
     }, [onMessage])
 
     useEffect(() => {
-        if(enabled !== true) return
-        const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/type/listen`);
+        if(enabled !== true || !userId) {
+            log('[SSE Types] disabled, skipping')
+            return
+        }
+
+        if (esRef.current) {
+            try {
+                esRef.current.removeAllEventListeners();
+                esRef.current.close();
+            } catch (e) {
+                console.warn("Error closing previous SSE", e);
+            }
+
+            esRef.current = null;
+        }
+
+        log('[SSE Types] connecting...')
+        const es = new EventSource(`${API_URL}/api/type/listen`);
         esRef.current = es;
         const onEvent = (event: any) => {
             try {
@@ -62,6 +81,7 @@ export function useTypesListener(
 
         es.addEventListener("message", onEvent);
         es.addEventListener("error", (event) => {
+            log('[SSE Types] error')
             console.error("SSE Error:", event);
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
@@ -72,9 +92,11 @@ export function useTypesListener(
             } catch (e) {
                 console.warn("Error closing EventSource:", e);
             }
+            esRef.current = null;
         });
 
         return () => {
+            log('[SSE Types] cleanup')
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
             }
@@ -86,5 +108,5 @@ export function useTypesListener(
             }
             esRef.current = null;
         };
-    }, [enabled, debounceMs])
+    }, [enabled, debounceMs, userId])
 }

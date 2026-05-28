@@ -1,6 +1,7 @@
 import {defineConfig} from 'vite'
 import react from '@vitejs/plugin-react'
 import path from "path";
+import { API_URL } from '../commons/constants/apiurl';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -14,7 +15,7 @@ export default defineConfig({
         strictPort: true,
         proxy: {
             '/api': {
-                target: "https://unfabricated-everett-surveyable.ngrok-free.dev",
+                target: API_URL,
                 changeOrigin: true,
                 headers: {
                     'ngrok-skip-browser-warning': 'true',

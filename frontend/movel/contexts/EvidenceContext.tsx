@@ -8,6 +8,9 @@ import {useAuth} from "../hooks/useAuth";
 import {useEvidenceListener, SSEMessage} from "../hooks/useEvidenceListener";
 import {evidenceInfoRepo} from "../infrastructure/EvidenceInfoPreferencesRepo";
 import ReactNativeBlobUtil from "react-native-blob-util";
+import {useSyncSSE} from "../hooks/useSyncSSE";
+import {documentsInfoRepo} from "../infrastructure/DocumentsInfoPreferencesRepo";
+import {Documents} from "@commons/models/documents/Documents";
 
 type EvidenceContextValue = {
     createEvidence: (file: UploadFile, type: string, location: string, description: string, reporterId: number, occurrenceId: number) => Promise<any>
@@ -24,24 +27,34 @@ export function EvidenceProvider({children}) {
     const [evidence, setEvidence] = useState<Evidence[]>([])
     const {user} = useAuth()
     const { isOnline, shouldResetListeners } = useNetworkStatus()
+    const {lastEvent} = useSyncSSE();
 
     useEffect(() => {
-        loadEvidences()
+        if (user && isOnline) {
+            loadEvidences()
+        }
     }, [isOnline, user]);
 
+    useEffect(() => {
+        const handleEvidencesChanged = async () => {
+            if (!lastEvent) return
+            if (lastEvent?.action === "EvidenceChanged") {
+                const value = lastEvent.data
+                const evidences: Evidence[] = Array.isArray(value) ? value : [];
+                setEvidence(evidences)
+                await evidenceInfoRepo.saveEvidenceInfo(evidences)
+            }
+        }
+
+        handleEvidencesChanged()
+    }, [lastEvent])
+
+    /*
     const handleOnMessage = useCallback(async (message: SSEMessage) => {
         const data = message.data
         const action = message.action
         switch (action) {
-            case "EvidenceCreated":
-                setEvidence(data.evidences)
-                await evidenceInfoRepo.saveEvidenceInfo(data.evidences)
-                break
-            case "EvidenceDeleted":
-                setEvidence(data.evidences)
-                await evidenceInfoRepo.saveEvidenceInfo(data.evidences)
-                break
-            case "EvidenceUpdated":
+            case "EvidenceChanged":
                 setEvidence(data.evidences)
                 await evidenceInfoRepo.saveEvidenceInfo(data.evidences)
                 break
@@ -50,7 +63,9 @@ export function EvidenceProvider({children}) {
         }
     }, [])
 
-    useEvidenceListener(user?.id, handleOnMessage, isOnline && !shouldResetListeners)
+    useEvidenceListener(user?.id, handleOnMessage, isOnline)
+
+     */
 
     async function loadEvidences(){
         try {

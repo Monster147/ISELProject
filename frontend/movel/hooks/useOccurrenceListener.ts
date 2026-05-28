@@ -1,11 +1,11 @@
 import { Occurrence } from "@commons/models/intervenor/Occurrence";
 import {useEffect, useRef} from "react";
 import EventSource from "react-native-sse";
+import {API_URL} from "@commons/constants/apiurl";
+import {log} from "./useDocumentsListener";
 
 export type OccurrenceUpdateAction =
-    | "EvidenceCreated"
-    | "EvidenceDeleted"
-    | "EvidenceUpdated"
+    | "EvidenceChanged"
     | "OccurrenceCreated"
     | "OccurrenceDeleted"
     | "IntervenorAdded"
@@ -23,6 +23,7 @@ export interface SSEMessage {
 }
 
 export function useOccurrenceListener(
+    userId: number | undefined,
     occurrenceId: string | undefined,
     onMessage: (message: SSEMessage) => void,
     enabled: boolean | null,
@@ -36,11 +37,27 @@ export function useOccurrenceListener(
     }, [onMessage])
 
     useEffect(() => {
-        if (!occurrenceId || enabled!==true) return;
+        if (!occurrenceId || enabled!==true || !userId){
+            log('[SSE Occurrence] disabled, skipping')
+            return;
+        }
+
+        if (esRef.current) {
+            try {
+                esRef.current.removeAllEventListeners();
+                esRef.current.close();
+            } catch (e) {
+                console.warn("Error closing previous SSE", e);
+            }
+
+            esRef.current = null;
+        }
 
         const es = new EventSource(
-            `https://unfabricated-everett-surveyable.ngrok-free.dev/api/occurrence/${Number(occurrenceId)}/listen`
+            `${API_URL}/api/occurrence/${Number(occurrenceId)}/listen`
         );
+
+        log('[SSE Occurrence] connecting...')
         esRef.current = es;
         const listener = (event: any) => {
             try {
@@ -59,6 +76,7 @@ export function useOccurrenceListener(
         es.addEventListener("message", listener);
 
         es.addEventListener("error", (event) => {
+            log('[SSE Occurrence] error')
             console.error("SSE Error:", event);
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
@@ -69,9 +87,11 @@ export function useOccurrenceListener(
             } catch (e) {
                 console.warn("Error closing EventSource:", e);
             }
+            esRef.current = null;
         });
 
         return () => {
+            log('[SSE Occurrence] cleanup')
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
             }
@@ -83,5 +103,5 @@ export function useOccurrenceListener(
             }
             esRef.current = null;
         };
-    }, [occurrenceId, enabled, debounceMs]);
+    }, [occurrenceId, enabled, debounceMs, userId]);
 }

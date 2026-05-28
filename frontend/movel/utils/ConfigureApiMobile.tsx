@@ -4,6 +4,7 @@ import {getErrorDescription} from "../errors/ErrorDescriptions";
 import ReactNativeBlobUtil from 'react-native-blob-util'
 import {Platform, Alert} from "react-native";
 import {getExtensionFromMime} from "./ConfigureApiMobileUtils";
+import {API_URL} from "@commons/constants/apiurl";
 
 configureApi(
     {
@@ -12,7 +13,7 @@ configureApi(
         documentDownloadHandler: downloadDocument,
         evidenceDownloadHandler: downloadEvidence,
     },
-    "https://unfabricated-everett-surveyable.ngrok-free.dev/api",
+    `${API_URL}/api`,
 );
 
 async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {

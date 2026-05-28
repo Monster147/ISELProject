@@ -2,9 +2,7 @@ import {useEffect, useRef} from "react";
 import {Evidence} from "@commons/models/evidence/Evidence";
 
 export type EvidenceUpdateAction=
-    | "EvidenceCreated"
-    | "EvidenceDeleted"
-    | "EvidenceUpdated"
+    | "EvidenceChanged"
 
 export interface EvidenceUpdateData{
     evidences: Evidence[]

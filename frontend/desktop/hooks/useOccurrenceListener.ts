@@ -2,9 +2,7 @@ import {Occurrence} from "@commons/models/intervenor/Occurrence";
 import {useEffect, useRef} from "react";
 
 export type OccurrenceUpdateAction =
-    | "EvidenceCreated"
-    | "EvidenceDeleted"
-    | "EvidenceUpdated"
+    | "EvidenceChanged"
     | "OccurrenceCreated"
     | "OccurrenceDeleted"
     | "IntervenorAdded"

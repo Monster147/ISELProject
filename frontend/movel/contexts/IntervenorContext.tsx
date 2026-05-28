@@ -11,6 +11,9 @@ import {offlineIntervenorQueueRepo} from "../infrastructure/offline/OfflineInter
 import id from "../app/(dashboard)/intervenors/[id]";
 import {useTranslation} from "react-i18next";
 import {useAuth} from "../hooks/useAuth";
+import {useSyncSSE} from "../hooks/useSyncSSE";
+import {documentsInfoRepo} from "../infrastructure/DocumentsInfoPreferencesRepo";
+import {Evidence} from "@commons/models/evidence/Evidence";
 
 type IntervenorContextValue = {
     createIntervenor: (idNumber: string, idType: string, name: string, contactInfo: string, address: string) => Promise<void>;
@@ -30,11 +33,29 @@ export function IntervenorProvider({children}) {
     const { isOnline, shouldResetListeners } = useNetworkStatus()
     const {user} = useAuth()
     const {t} = useTranslation()
+    const {lastEvent} = useSyncSSE();
 
     useEffect(() => {
-        loadIntervenors()
+        if (user && isOnline){
+            loadIntervenors()
+        }
     }, [isOnline, user]);
 
+    useEffect(() => {
+        const handleIntervenorsChanged = async () => {
+            if (!lastEvent) return
+            if (lastEvent?.action === "IntervenorsChanged") {
+                const value = lastEvent.data
+                const intervenors: Intervenor[] = Array.isArray(value) ? value : [];
+                setIntervenor(intervenors)
+                await intervenorInfoRepo.saveIntervenorInfo(intervenors)
+            }
+        }
+
+        handleIntervenorsChanged()
+    }, [lastEvent])
+
+    /*
     const handleOnMessage = useCallback(async (message: SSEMessage) => {
         const data = message.data
         const action = message.action
@@ -48,7 +69,8 @@ export function IntervenorProvider({children}) {
         }
     }, [])
 
-    useIntervenorsListener(handleOnMessage, isOnline && !shouldResetListeners)
+    useIntervenorsListener(user?.id,handleOnMessage, isOnline)
+     */
 
     async function loadIntervenors() {
         try {

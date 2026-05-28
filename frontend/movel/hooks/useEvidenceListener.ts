@@ -1,11 +1,11 @@
 import {useEffect, useRef} from "react";
 import EventSource from "react-native-sse";
 import {Evidence} from "@commons/models/evidence/Evidence";
+import {API_URL} from "@commons/constants/apiurl";
+import {log} from "./useDocumentsListener";
 
 export type EvidenceUpdateAction=
-    | "EvidenceCreated"
-    | "EvidenceDeleted"
-    | "EvidenceUpdated"
+    | "EvidenceChanged"
 
 export interface EvidenceUpdateData{
     evidences: Evidence[]
@@ -33,11 +33,27 @@ export function useEvidenceListener(
     }, [onMessage])
 
     useEffect(() => {
-        if (!userId || enabled!== true) return;
+        if (!userId || enabled!== true) {
+            log('[SSE Evidences] disabled, skipping')
+            return;
+        }
+
+        if (esRef.current) {
+            try {
+                esRef.current.removeAllEventListeners();
+                esRef.current.close();
+            } catch (e) {
+                console.warn("Error closing previous SSE", e);
+            }
+
+            esRef.current = null;
+        }
 
         const es = new EventSource(
-            `https://unfabricated-everett-surveyable.ngrok-free.dev/api/evidence/${Number(userId)}/listen`
+            `${API_URL}/api/evidence/${Number(userId)}/listen`
         );
+
+        log('[SSE EVIDENCE] connecting...')
         esRef.current = es;
         const onEvent = (event: any) => {
             try {
@@ -68,6 +84,7 @@ export function useEvidenceListener(
 
         es.addEventListener("message", onEvent);
         es.addEventListener("error", (event) => {
+            log('[SSE EVIDENCE] error')
             console.error("SSE Error:", event);
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
@@ -78,9 +95,11 @@ export function useEvidenceListener(
             } catch (e) {
                 console.warn("Error closing EventSource:", e);
             }
+            esRef.current = null;
         });
 
         return () => {
+            log('[SSE EVIDENCE] cleanup')
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
             }

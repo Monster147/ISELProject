@@ -1,6 +1,7 @@
 import {useEffect, useRef} from "react";
 import {Documents} from "../../commons/models/Documents/Documents";
 import EventSource from "react-native-sse"
+import {API_URL} from "@commons/constants/apiurl";
 
 export type DocumentsUpdateAction =
     | "DocumentsChanged"
@@ -16,7 +17,14 @@ export interface SSEMessage {
     action: DocumentsUpdateAction
 }
 
+const LOG_PREFIX = "[SSE]";
+
+export const log = (...args: any[]) =>
+    console.log(LOG_PREFIX, ...args);
+
+
 export function useDocumentsListener(
+    userId: number | undefined,
     onMessage: (message: SSEMessage) => void,
     enabled: boolean | null,
     debounceMs: number = 1000
@@ -30,8 +38,24 @@ export function useDocumentsListener(
     }, [onMessage])
 
     useEffect(() => {
-        if (enabled !== true) return
-        const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/documents/listen`);
+        if (enabled !== true || !userId) {
+            log('[SSE Documents] disabled, skipping')
+            return
+        }
+
+        if (esRef.current) {
+            try {
+                esRef.current.removeAllEventListeners();
+                esRef.current.close();
+            } catch (e) {
+                console.warn("Error closing previous SSE", e);
+            }
+
+            esRef.current = null;
+        }
+
+        log('[SSE Documents] connecting...')
+        const es = new EventSource(`${API_URL}/api/documents/listen`);
         esRef.current = es;
         const onEvent = (event: any) => {
             try {
@@ -62,6 +86,7 @@ export function useDocumentsListener(
 
         es.addEventListener("message", onEvent);
         es.addEventListener("error", (event) => {
+            log('[SSE Documents] error')
             console.error("SSE Error:", event);
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
@@ -72,9 +97,11 @@ export function useDocumentsListener(
             } catch (e) {
                 console.warn("Error closing EventSource:", e);
             }
+            esRef.current = null;
         });
 
         return () => {
+            log('[SSE Documents] cleanup')
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
             }
@@ -87,5 +114,5 @@ export function useDocumentsListener(
             esRef.current = null;
         };
 
-    }, [enabled, debounceMs])
+    }, [enabled, debounceMs, userId])
 }

@@ -12,6 +12,9 @@ import {useTranslation} from "react-i18next";
 import {offlineOccurrenceQueueRepo} from "../infrastructure/offline/OfflineOccurrenceQueueRepo";
 import {offlineIntervenorQueueRepo} from "../infrastructure/offline/OfflineIntervenorQueueRepo";
 import {intervenorInfoRepo} from "../infrastructure/IntervenorInfoPreferencesRepo";
+import {useSyncSSE} from "../hooks/useSyncSSE";
+import {documentsInfoRepo} from "../infrastructure/DocumentsInfoPreferencesRepo";
+import {log} from "../hooks/useDocumentsListener";
 
 
 type OccurrenceContextValue = {
@@ -31,11 +34,32 @@ export function OccurrenceProvider({children}) {
     const { isOnline, shouldResetListeners } = useNetworkStatus()
     const {user} = useAuth()
     const {t} = useTranslation()
+    const {lastEvent} = useSyncSSE();
 
     useEffect(() => {
-        listOccurrences()
+        if (user && isOnline){
+            listOccurrences()
+        }
     }, [user, isOnline]);
 
+    useEffect(() => {
+        const handleOccurrencesChanged = async () => {
+            if (!lastEvent) return
+            if (lastEvent?.action === "OccurrencesChanged") {
+                setLoading(true)
+                const value = lastEvent.data
+                const occurrences: Occurrence[] = Array.isArray(value) ? value : [];
+                setOccurrence(occurrences)
+                await occurrenceInfoRepo.saveOccurrenceInfo(occurrences)
+                const timer = setTimeout(() => setLoading(false), 300)
+                return () => clearTimeout(timer)
+            }
+        }
+
+        handleOccurrencesChanged()
+    }, [lastEvent])
+
+    /*
     const handleOnMessage = useCallback(async (message: SSEMessage) => {
         setLoading(true)
         const data = message.data
@@ -51,7 +75,8 @@ export function OccurrenceProvider({children}) {
         setTimeout(() => setLoading(false), 300);
     }, [])
 
-    useOccurrencesListener(user?.id, handleOnMessage, isOnline && !shouldResetListeners)
+    useOccurrencesListener(user?.id, handleOnMessage, isOnline)
+     */
 
     async function listOccurrences() {
         if (!user) return

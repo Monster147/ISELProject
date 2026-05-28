@@ -466,7 +466,7 @@ const DynamicOccurrenceForm = () => {
 
 
     const handleOccurrenceUpdate = useCallback(async (message: SSEMessage) => {
-        if (message.action === "EvidenceCreated" || message.action === "EvidenceUpdated") {
+        if (message.action === "EvidenceChanged") {
             try {
                 const data = await findEvidenceByOccurrenceId(occurrenceId);
                 const sectionJsons = data.filter(ev =>

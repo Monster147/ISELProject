@@ -1,6 +1,8 @@
 import {Intervenor} from "@commons/models/intervenor/Intervenor";
 import {useEffect, useRef} from "react";
 import EventSource from "react-native-sse";
+import {API_URL} from "@commons/constants/apiurl";
+import {log} from "./useDocumentsListener";
 
 export type IntervenorsUpdateAction =
     | "IntervenorsChanged"
@@ -17,6 +19,7 @@ export interface SSEMessage {
 }
 
 export function useIntervenorsListener(
+    userId: number | undefined,
     onMessage: (message: SSEMessage) => void,
     enabled: boolean | null,
     debounceMs: number = 1000
@@ -29,8 +32,24 @@ export function useIntervenorsListener(
     }, [onMessage])
 
     useEffect(() => {
-        if(enabled !== true) return
-        const es = new EventSource(`https://unfabricated-everett-surveyable.ngrok-free.dev/api/intervenor/listen`);
+        if(enabled !== true || !userId) {
+            log('[SSE Intervenors] disabled, skipping')
+            return
+        }
+
+        if (esRef.current) {
+            try {
+                esRef.current.removeAllEventListeners();
+                esRef.current.close();
+            } catch (e) {
+                console.warn("Error closing previous SSE", e);
+            }
+
+            esRef.current = null;
+        }
+
+        log('[SSE Intervenors] connecting...')
+        const es = new EventSource(`${API_URL}/api/intervenor/listen`);
         esRef.current = es;
         const onEvent = (event: any) => {
             try {
@@ -61,6 +80,7 @@ export function useIntervenorsListener(
 
         es.addEventListener("message", onEvent);
         es.addEventListener("error", (event) => {
+            log('[SSE Intervenors] error')
             console.error("SSE Error:", event);
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
@@ -71,9 +91,11 @@ export function useIntervenorsListener(
             } catch (e) {
                 console.warn("Error closing EventSource:", e);
             }
+            esRef.current = null;
         });
 
         return () => {
+            log('[SSE Intervenors] cleanup')
             if (debounceTimeoutRef.current) {
                 clearTimeout(debounceTimeoutRef.current)
             }
@@ -85,5 +107,5 @@ export function useIntervenorsListener(
             }
             esRef.current = null;
         };
-    }, [enabled, debounceMs]);
+    }, [enabled, debounceMs, userId]);
 }

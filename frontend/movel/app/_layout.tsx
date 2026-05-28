@@ -13,6 +13,7 @@ import {TypeProvider} from "../contexts/TypeContext";
 import {EvidenceProvider} from "../contexts/EvidenceContext";
 import {StatsProvider} from "../contexts/StatsContext";
 import {OfflineSyncProvider} from "../contexts/OfflineSyncContext";
+import {SyncSSEProvider} from "../contexts/SyncSSEContext";
 
 const RootLayout = () => {
     const colorScheme = useColorScheme()
@@ -21,33 +22,35 @@ const RootLayout = () => {
     return (
         <OfflineSyncProvider>
             <AuthProvider>
-                <OccurrenceProvider>
-                    <IntervenorProvider>
-                        <DocumentProvider>
-                            <TypeProvider>
-                                <EvidenceProvider>
-                                    <StatsProvider>
-                                        <ThemedView style={{flex: 1}}>
-                                            <Stack screenOptions={{
-                                                headerStyle: {backgroundColor: theme.navBackground},
-                                                headerTintColor: theme.title,
-                                                contentStyle: {backgroundColor: theme.background},
-                                                animation: "none",
-                                            }}>
-                                                <Stack.Screen name="index" options={{headerShown: false}}/>
-                                                <Stack.Screen name="about" options={{headerShown: false}}/>
-                                                <Stack.Screen name="contact" options={{headerShown: false}}/>
-                                                <Stack.Screen name="(auth)" options={{headerShown: false}}/>
-                                                <Stack.Screen name="(dashboard)" options={{headerShown: false}}/>
-                                                <Stack.Screen name="home" options={{headerShown: false}}/>
-                                            </Stack>
-                                        </ThemedView>
-                                    </StatsProvider>
-                                </EvidenceProvider>
-                            </TypeProvider>
-                        </DocumentProvider>
-                    </IntervenorProvider>
-                </OccurrenceProvider>
+                <SyncSSEProvider>
+                    <OccurrenceProvider>
+                        <IntervenorProvider>
+                            <DocumentProvider>
+                                <TypeProvider>
+                                    <EvidenceProvider>
+                                        <StatsProvider>
+                                            <ThemedView style={{flex: 1}}>
+                                                <Stack screenOptions={{
+                                                    headerStyle: {backgroundColor: theme.navBackground},
+                                                    headerTintColor: theme.title,
+                                                    contentStyle: {backgroundColor: theme.background},
+                                                    animation: "none",
+                                                }}>
+                                                    <Stack.Screen name="index" options={{headerShown: false}}/>
+                                                    <Stack.Screen name="about" options={{headerShown: false}}/>
+                                                    <Stack.Screen name="contact" options={{headerShown: false}}/>
+                                                    <Stack.Screen name="(auth)" options={{headerShown: false}}/>
+                                                    <Stack.Screen name="(dashboard)" options={{headerShown: false}}/>
+                                                    <Stack.Screen name="home" options={{headerShown: false}}/>
+                                                </Stack>
+                                            </ThemedView>
+                                        </StatsProvider>
+                                    </EvidenceProvider>
+                                </TypeProvider>
+                            </DocumentProvider>
+                        </IntervenorProvider>
+                    </OccurrenceProvider>
+                </SyncSSEProvider>
             </AuthProvider>
         </OfflineSyncProvider>
     )

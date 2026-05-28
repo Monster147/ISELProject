@@ -1,5 +1,6 @@
 import {useEffect, useRef} from "react";
 import EventSource from "react-native-sse";
+import {API_URL} from "@commons/constants/apiurl";
 
 export type ReportUpdateAction=
     | "ReportCreated"
@@ -30,7 +31,7 @@ export function useReportListener(
         if (!reportId || enabled!== true) return;
         const esRef = useRef<EventSource | null>(null);
         const es = new EventSource(
-            `https://unfabricated-everett-surveyable.ngrok-free.dev/api/report/${Number(reportId)}/listen`
+            `${API_URL}/api/report/${Number(reportId)}/listen`
         );
         esRef.current = es;
         const onEvent = (event: any) => {
