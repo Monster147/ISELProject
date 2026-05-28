@@ -523,7 +523,7 @@ const DynamicOccurrenceForm = () => {
         }
     }, [id, findEvidenceByOccurrenceId, downloadEvidence, populateForm])
 
-    useOccurrenceListener(String(occurrenceId), handleOccurrenceUpdate, isOnline)
+    useOccurrenceListener(user?.id, String(occurrenceId), handleOccurrenceUpdate, isOnline)
 
     if (!formDef || !actualOccurrence || !currentType || loading) {
         return (

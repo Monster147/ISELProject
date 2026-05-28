@@ -16,6 +16,7 @@ export interface SSEMessage{
 }
 
 export function useDocumentsListener(
+    userId: number | undefined,
     onMessage: (message:SSEMessage) => void,
     enabled: boolean | null,
     debounceMs: number = 1000
@@ -27,7 +28,7 @@ export function useDocumentsListener(
         onMessageRef.current = onMessage
     }, [onMessage])
     useEffect(() => {
-        if(enabled !== true) return
+        if(enabled !== true || !userId) return
         const eventSource = new EventSource(`/api/documents/listen`)
 
         eventSource.onmessage = (occurrence) =>{
@@ -72,5 +73,5 @@ export function useDocumentsListener(
             eventSource.close();
         }
 
-    }, [enabled, debounceMs])
+    }, [enabled, debounceMs, userId])
 }

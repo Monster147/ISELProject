@@ -33,6 +33,7 @@ function debounce(cb, delay) {
 }
 
 export function useOccurrenceListener(
+    userId: number | undefined,
     occurrenceId: string | undefined,
     onMessage: (message:SSEMessage) => void,
     enabled: boolean | null,
@@ -47,7 +48,7 @@ export function useOccurrenceListener(
 
 
     useEffect(() => {
-        if (!occurrenceId || enabled !== true) return;
+        if (!userId || !occurrenceId || enabled !== true) return;
 
         const eventSource = new EventSource(`/api/occurrence/${Number(occurrenceId)}/listen`)
 
@@ -80,7 +81,7 @@ export function useOccurrenceListener(
             eventSource.close();
         };
 
-    }, [occurrenceId, enabled, debounceMs]);
+    }, [occurrenceId, enabled, debounceMs, userId]);
 
 }
 

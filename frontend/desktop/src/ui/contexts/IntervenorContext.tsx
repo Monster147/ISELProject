@@ -23,7 +23,9 @@ export function IntervenorProvider({children}) {
     const {user} = useAuth()
 
     useEffect(() => {
-        loadIntervenors()
+        if(user && isOnline){
+            loadIntervenors()
+        }
     }, [isOnline, user]);
 
     const handleOnMessage = useCallback((message: SSEMessage)=>{
@@ -38,7 +40,7 @@ export function IntervenorProvider({children}) {
         }
     }, [])
 
-    useIntervenorsListener(handleOnMessage, isOnline)
+    useIntervenorsListener(user?.id, handleOnMessage, isOnline)
 
     async function loadIntervenors() {
         try {

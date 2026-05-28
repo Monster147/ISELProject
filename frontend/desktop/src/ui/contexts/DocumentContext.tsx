@@ -27,7 +27,9 @@ export function DocumentProvider({children}) {
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        getAllDocuments()
+        if(user && isOnline) {
+            getAllDocuments()
+        }
     }, [user, isOnline]);
 
     const handleOnMessage = useCallback((message: SSEMessage) => {
@@ -44,7 +46,7 @@ export function DocumentProvider({children}) {
         setTimeout(() => setLoading(false), 300);
     }, [])
 
-    useDocumentsListener(handleOnMessage, isOnline)
+    useDocumentsListener(user?.id, handleOnMessage, isOnline)
 
     async function getAllDocuments(){
         try {

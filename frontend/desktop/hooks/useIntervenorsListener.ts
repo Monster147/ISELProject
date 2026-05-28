@@ -28,6 +28,7 @@ function debounce(cb, delay) {
 }
 
 export function useIntervenorsListener(
+    userId: number | undefined,
     onMessage: (message: SSEMessage) => void,
     enabled: boolean | null,
     debounceMs: number = 1000
@@ -40,7 +41,7 @@ export function useIntervenorsListener(
     }, [onMessage])
 
     useEffect(() => {
-        if(enabled !== true) return
+        if(enabled !== true || !userId) return
         const eventSource = new EventSource(`/api/intervenor/listen`)
 
 
@@ -80,5 +81,5 @@ export function useIntervenorsListener(
             eventSource.close();
         };
 
-    }, [enabled, debounceMs]);
+    }, [enabled, debounceMs, userId]);
 }

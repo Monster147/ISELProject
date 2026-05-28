@@ -29,6 +29,7 @@ function debounce(cb, delay) {
 }
 
 export function useTypesListener(
+    userId: number | undefined,
     onMessage: (message:SSEMessage) => void,
     enabled: boolean | null,
     debounceMs: number = 1000
@@ -41,7 +42,7 @@ export function useTypesListener(
     }, [onMessage])
 
     useEffect(() => {
-        if(enabled !== true) return
+        if(enabled !== true || !userId) return
         const eventSource = new EventSource(`/api/type/listen`)
 
         eventSource.onmessage = (occurrence) =>{
@@ -86,5 +87,5 @@ export function useTypesListener(
             eventSource.close();
         }
 
-    }, [enabled, debounceMs])
+    }, [enabled, debounceMs, userId])
 }

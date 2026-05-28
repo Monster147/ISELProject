@@ -24,7 +24,9 @@ export function OccurrenceProvider({children}) {
     const { isOnline } = useNetworkStatus()
 
     useEffect(() => {
-        listOccurrences()
+        if(user && isOnline) {
+            listOccurrences()
+        }
     }, [user, isOnline]);
 
     const handleOnMessage = useCallback((message: SSEMessage)=>{

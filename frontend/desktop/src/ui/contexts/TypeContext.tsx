@@ -20,7 +20,9 @@ export const TypeProvider = ({children})=> {
     const { isOnline } = useNetworkStatus()
 
     useEffect(() => {
-        findAllTypes()
+        if(user && isOnline) {
+            findAllTypes()
+        }
     }, [user, isOnline]);
 
     const handleOnMessage = useCallback((message: SSEMessage) => {
@@ -37,7 +39,7 @@ export const TypeProvider = ({children})=> {
         setTimeout(() => setLoading(false), 300);
     }, [])
 
-    useTypesListener(handleOnMessage, isOnline)
+    useTypesListener(user?.id, handleOnMessage, isOnline)
 
     async function findAllTypes(){
         try {
