@@ -36,8 +36,12 @@ export function IntervenorProvider({children}) {
     const {lastEvent} = useSyncSSE();
 
     useEffect(() => {
-        if (user && isOnline){
-            loadIntervenors()
+        if (user){
+            if (isOnline){
+                loadIntervenors()
+            } else {
+                loadCachedIntervenors()
+            }
         }
     }, [isOnline, user]);
 
@@ -78,12 +82,16 @@ export function IntervenorProvider({children}) {
             setIntervenor(response)
             await intervenorInfoRepo.saveIntervenorInfo(response)
         } catch (err: any) {
-            const cached = await intervenorInfoRepo.getIntervenorInfo()
-            if (cached) {
-                setIntervenor(cached)
-            } else {
-                setIntervenor([])
-            }
+            loadCachedIntervenors()
+        }
+    }
+
+    async function loadCachedIntervenors() {
+        const cached = await intervenorInfoRepo.getIntervenorInfo()
+        if (cached) {
+            setIntervenor(cached)
+        } else {
+            setIntervenor([])
         }
     }
 

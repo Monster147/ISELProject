@@ -15,6 +15,7 @@ import {intervenorInfoRepo} from "../infrastructure/IntervenorInfoPreferencesRep
 import {useSyncSSE} from "../hooks/useSyncSSE";
 import {documentsInfoRepo} from "../infrastructure/DocumentsInfoPreferencesRepo";
 import {log} from "../hooks/useDocumentsListener";
+import {typeInfoRepo} from "../infrastructure/TypeInfopreferencesRepo";
 
 
 type OccurrenceContextValue = {
@@ -37,8 +38,13 @@ export function OccurrenceProvider({children}) {
     const {lastEvent} = useSyncSSE();
 
     useEffect(() => {
-        if (user && isOnline){
-            listOccurrences()
+        if (user){
+            if (isOnline){
+                listOccurrences()
+            }
+            else {
+                loadCachedOccurrences()
+            }
         }
     }, [user, isOnline]);
 
@@ -86,15 +92,21 @@ export function OccurrenceProvider({children}) {
             setOccurrence(response)
             await occurrenceInfoRepo.saveOccurrenceInfo(response)
         } catch (err: any) {
-            const cached = await occurrenceInfoRepo.getOccurrenceInfo()
-            if (cached) {
-                setOccurrence(cached)
-            } else {
-                setOccurrence([])
-            }
+            loadCachedOccurrences()
         } finally {
             setLoading(false)
         }
+    }
+
+    async function loadCachedOccurrences() {
+        setLoading(true)
+        const cached = await occurrenceInfoRepo.getOccurrenceInfo()
+        if (cached) {
+            setOccurrence(cached)
+        } else {
+            setOccurrence([])
+        }
+        setLoading(false)
     }
 
     async function getOccurrence(id: number) {

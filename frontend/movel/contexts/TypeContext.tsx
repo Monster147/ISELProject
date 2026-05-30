@@ -26,8 +26,12 @@ export const TypeProvider = ({children})=> {
     const {lastEvent} = useSyncSSE();
 
     useEffect(() => {
-        if (user && isOnline) {
-            findAllTypes()
+        if (user) {
+            if (isOnline) {
+                findAllTypes()
+            } else {
+                loadCachedTypes()
+            }
         }
     }, [user, isOnline]);
 
@@ -70,12 +74,16 @@ export const TypeProvider = ({children})=> {
             setType(response)
             await typeInfoRepo.saveTypeInfo(response)
         }catch (err: any) {
-            const cached = await typeInfoRepo.getTypeInfo()
-            if (cached) {
-                setType(cached)
-            } else {
-                setType([])
-            }
+            loadCachedTypes()
+        }
+    }
+
+    async function loadCachedTypes() {
+        const cached = await typeInfoRepo.getTypeInfo()
+        if (cached) {
+            setType(cached)
+        } else {
+            setType([])
         }
     }
 

@@ -29,6 +29,7 @@ import {PaperProvider} from "react-native-paper";
 import {Paths, File} from "expo-file-system";
 import {SSEMessage, useOccurrenceListener} from "../../../../hooks/useOccurrenceListener";
 import {getLabelByLanguage} from "@commons/utils/getLabelByLanguage";
+import {log} from "../../../../hooks/useDocumentsListener";
 
 const DynamicOccurrenceForm = () => {
     const colorScheme = useColorScheme();
@@ -127,15 +128,21 @@ const DynamicOccurrenceForm = () => {
             setLoading(true);
             try {
                 const data = await findEvidenceByOccurrenceId(occurrenceId);
+                log(`Found ${data.length} evidences for occurrence ${occurrenceId}`);
+
                 const sectionJsons = data.filter((ev) =>
                     ev.filePath?.endsWith(".json") &&
                     ev.filePath?.includes("section-")
                 );
 
+                log(sectionJsons)
+
                 const parsedSections = await Promise.all(
                     sectionJsons.map(async (ev) => {
                         const res = await downloadEvidence(ev.id, false);
                         const text = await res.text();
+                        log(text)
+                        log(res.path())
                         await res.flush();
                         const json = JSON.parse(text);
                         return {
@@ -162,9 +169,8 @@ const DynamicOccurrenceForm = () => {
             }
         };
 
-        if (isOnline) {
-            loadEvidences();
-        }
+        loadEvidences();
+
     }, [actualOccurrence?.id, isOnline]);
 
     let formDef: OccurrenceTypeForm | null = null;

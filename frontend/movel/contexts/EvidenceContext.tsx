@@ -11,6 +11,8 @@ import ReactNativeBlobUtil from "react-native-blob-util";
 import {useSyncSSE} from "../hooks/useSyncSSE";
 import {documentsInfoRepo} from "../infrastructure/DocumentsInfoPreferencesRepo";
 import {Documents} from "@commons/models/documents/Documents";
+import {intervenorInfoRepo} from "../infrastructure/IntervenorInfoPreferencesRepo";
+import {log} from "../utils/ConfigureApiMobile";
 
 type EvidenceContextValue = {
     createEvidence: (file: UploadFile, type: string, location: string, description: string, reporterId: number, occurrenceId: number) => Promise<any>
@@ -30,8 +32,12 @@ export function EvidenceProvider({children}) {
     const {lastEvent} = useSyncSSE();
 
     useEffect(() => {
-        if (user && isOnline) {
-            loadEvidences()
+        if (user) {
+            if (isOnline) {
+                 loadEvidences()
+            } else {
+                 loadCachedEvidences()
+            }
         }
     }, [isOnline, user]);
 
@@ -73,12 +79,16 @@ export function EvidenceProvider({children}) {
             setEvidence(response)
             await evidenceInfoRepo.saveEvidenceInfo(response)
         } catch (err: any) {
-            const cached = await evidenceInfoRepo.getEvidenceInfo()
-            if (cached) {
-                setEvidence(cached)
-            } else {
-                setEvidence([])
-            }
+            loadCachedEvidences()
+        }
+    }
+
+    async function loadCachedEvidences() {
+        const cached = await evidenceInfoRepo.getEvidenceInfo()
+        if (cached) {
+            setEvidence(cached)
+        } else {
+            setEvidence([])
         }
     }
 
@@ -128,7 +138,11 @@ export function EvidenceProvider({children}) {
                 throw Error(err.message)
             }
         } else{
-            const filtered = evidence.filter(e => e.reportId === occurrenceId)
+            const cached = await evidenceInfoRepo.getEvidenceInfo()
+            log("Cached value",cached)
+            log("Vai ser igual ao cacher", evidence)
+            const filtered = evidence.filter(e => e.occurrenceId === occurrenceId)
+            log("as evidences filtradas corretamente como o occurrenceId", filtered)
             return filtered
         }
     }
@@ -137,37 +151,32 @@ export function EvidenceProvider({children}) {
         if (isOnline){
             try{
                 const response = await api.downloadEvidence(evidenceId, keep)
+                log("downloadEvidence",response)
                 return response
             } catch (err: any) {
                 throw Error(err.message)
             }
         } else {
-            const cached = await evidenceInfoRepo.getEvidenceInfo()
-            const evidence = cached?.find(e => e.id === evidenceId)
+            if (!keep){
+                const cached = await evidenceInfoRepo.getEvidenceInfo()
+                const evidence = cached?.find(e => e.id === evidenceId)
 
-            if (evidence && evidence.filePath) {
-                const cacheDir = ReactNativeBlobUtil.fs.dirs.CacheDir;
-                const localPath = `${cacheDir}/${evidence.filePath}`;
-
-                const fileExists = await ReactNativeBlobUtil.fs.exists(localPath);
-
-                if (fileExists) {
+                if (evidence) {
                     return {
-                        path: () => localPath,
-                        text: async () => {
-                            const content = await ReactNativeBlobUtil.fs.readFile(localPath, 'utf8');
-                            return content;
-                        },
+                        path: () => null,
+                        text: async () => JSON.stringify(evidence),
                         respInfo: {
                             headers: {
-                                'content-type': evidence.filePath.endsWith('.json')
-                                    ? 'application/json'
-                                    : 'application/octet-stream'
+                                'content-type': 'application/json'
                             }
                         },
                         flush: async () => {}
                     };
                 }
+                return null;
+            }
+            else {
+                throw Error("Offline não download")
             }
         }
     }

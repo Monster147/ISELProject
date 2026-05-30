@@ -10,6 +10,7 @@ import {intervenorInfoRepo} from "../infrastructure/IntervenorInfoPreferencesRep
 import {documentsInfoRepo} from "../infrastructure/DocumentsInfoPreferencesRepo";
 import {useSyncSSE} from "../hooks/useSyncSSE";
 import {Occurrence} from "@commons/models/occurrence/Occurrence";
+import {evidenceInfoRepo} from "../infrastructure/EvidenceInfoPreferencesRepo";
 
 type DocumentContextValue = {
     documents: Documents[]
@@ -32,8 +33,12 @@ export function DocumentProvider({children}) {
     const {lastEvent} = useSyncSSE();
 
     useEffect(() => {
-        if (user && isOnline){
-            getAllDocuments()
+        if (user){
+            if (isOnline){
+                getAllDocuments()
+            } else {
+                loadCachedDocuments()
+            }
         }
     }, [user, isOnline]);
 
@@ -74,18 +79,27 @@ export function DocumentProvider({children}) {
      */
 
     async function getAllDocuments(){
+        setLoading(true)
         try {
             const response=await api.getAllDocument()
             setDocuments(response)
             await documentsInfoRepo.saveDocumentsInfo(response)
         }catch (err: any) {
-            const cached = await documentsInfoRepo.getDocumentsInfo()
-            if (cached) {
-                setDocuments(cached)
-            } else {
-                setDocuments([])
-            }
+            loadCachedDocuments()
+        } finally {
+            setLoading(false)
         }
+    }
+
+    async function loadCachedDocuments() {
+        setLoading(true)
+        const cached = await documentsInfoRepo.getDocumentsInfo()
+        if (cached) {
+            setDocuments(cached)
+        } else {
+            setDocuments([])
+        }
+        setLoading(false)
     }
 
     async function getDocumentById(id:number){

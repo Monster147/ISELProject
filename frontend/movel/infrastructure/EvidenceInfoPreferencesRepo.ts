@@ -10,7 +10,7 @@ export interface EvidenceInfo{
     location: string;
     description: string;
     reporterId: number;
-    reportId: number;
+    occurrenceId: number;
     createdAt: number;
     updatedAt: number;
 }

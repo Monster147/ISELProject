@@ -212,13 +212,24 @@ const en = {
             noDownload: "No internet connection. Cannot download documents."
         },
         evidences: {
-            savingError: "Error saving section. Please try again.",
+            savingError: "Error saving the section. Please try again.",
             save: "Save",
             select: "Select...",
-            clickToDownload: "Click on the image to download the evidence",
+            clickToDownload: "Click the image to download the evidence",
             remove: "Remove",
             download: "Download",
             savedSuccess: "Section saved successfully!",
+            permissionNeeded: "Permission required",
+            cameraPermission: "Permission is required to use the camera.",
+            galleryPermission: "Permission is required to access the gallery.",
+            cancel: "Ok",
+            error: "Error",
+            noEvidenceId: "Could not find the evidence identifier.",
+            failedDownload: "Failed to download the evidence. Please check if you have an active connection.",
+            confirmDownload: "Confirm download",
+            downloadMessage: "Do you want to download this file?",
+            downloadConfirm: "Yes",
+            downloadCancel: "Cancel",
         }
     }
 }

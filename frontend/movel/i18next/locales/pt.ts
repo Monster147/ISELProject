@@ -225,7 +225,7 @@ const pt = {
             cancel: "Ok",
             error: "Error",
             noEvidenceId: "Não foi possível encontrar o identificador da evidência.",
-            failedDownload: "Falha ao descarregar a evidência.",
+            failedDownload: "Falha ao descarregar a evidência. Confirme se existe conexão ativa.",
             confirmDownload: "Confirmar download",
             downloadMessage: "Deseja descarregar este ficheiro?",
             downloadConfirm: "Sim",
