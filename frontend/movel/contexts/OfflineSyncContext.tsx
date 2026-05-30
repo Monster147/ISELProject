@@ -143,7 +143,7 @@ export const OfflineSyncProvider = ({children}) => {
                                 location: action.payload.location,
                                 description: action.payload.description,
                                 reporterId: action.payload.reporterId,
-                                occurrenceId: action.payload.reportId
+                                occurrenceId: action.payload.occurrenceId
                             })
                             await offlineEvidenceQueueRepo.removeAction(action.id)
                             break

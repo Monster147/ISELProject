@@ -16,9 +16,11 @@ import ThemedFileInput from "../../../../components/ThemedFileInput";
 import {useState} from "react";
 import {confirmAction} from "../../../../utils/confirmAction";
 import {getLabelByLanguage} from "@commons/utils/getLabelByLanguage";
+import {useNetworkStatus} from "../../../../hooks/useNetworkStatus";
 
 const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, theme, downloadEvidence}) => {
     const {t, i18n} = useTranslation();
+    const {isOnline} = useNetworkStatus();
     const displayLabel = getLabelByLanguage(field.label, i18n.language);
     const handleRemoveFile = (name: string) => {
         onFileChange(name, null);
@@ -102,15 +104,26 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                 return;
             }
 
-            confirmAction(
-                {
-                title: t("evidences.confirmDownload"),
-                message: t("evidences.downloadMessage"),
-                confirmText: t("evidences.downloadConfirm"),
-                cancelText: t("evidences.downloadCancel")
-                },
-                async () => await downloadEvidence(value.evidenceId, true)
-            )
+            if(isOnline) {
+                confirmAction(
+                    {
+                        title: t("evidences.confirmDownload"),
+                        message: t("evidences.downloadMessage"),
+                        confirmText: t("evidences.downloadConfirm"),
+                        cancelText: t("evidences.downloadCancel")
+                    },
+                    async () => await downloadEvidence(value.evidenceId, true)
+                )
+            } else {
+                confirmAction({
+                    title: t("warning.noConnection"),
+                    message: t("warning.noDownload"),
+                    cancelText: t("evidences.cancel")
+                });
+            }
+
+
+
         } catch (err) {
             confirmAction({
                 title: t("evidences.error"),

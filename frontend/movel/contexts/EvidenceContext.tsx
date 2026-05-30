@@ -13,6 +13,7 @@ import {documentsInfoRepo} from "../infrastructure/DocumentsInfoPreferencesRepo"
 import {Documents} from "@commons/models/documents/Documents";
 import {intervenorInfoRepo} from "../infrastructure/IntervenorInfoPreferencesRepo";
 import {log} from "../utils/ConfigureApiMobile";
+import {evidenceCacheService} from "../infrastructure/service/EvidenceCacheService";
 
 type EvidenceContextValue = {
     createEvidence: (file: UploadFile, type: string, location: string, description: string, reporterId: number, occurrenceId: number) => Promise<any>
@@ -78,8 +79,34 @@ export function EvidenceProvider({children}) {
             const response = await api.findEvidenceByReporterId(user?.id as number)
             setEvidence(response)
             await evidenceInfoRepo.saveEvidenceInfo(response)
+            await preCacheEvidences(response)
         } catch (err: any) {
             loadCachedEvidences()
+        }
+    }
+
+    async function preCacheEvidences(response: Evidence[]) {
+        for (const evidence of response) {
+            try{
+                const file = await api.downloadEvidence(evidence.id, false)
+                if (file) {
+                    if (evidence.filePath.endsWith(".json")) {
+                        const text = await file.text();
+                        await cacheJsonEvidence(evidence.id, text);
+                    }
+                    else {
+                        const localPath =
+                            await evidenceCacheService.cacheFile(
+                                evidence.id,
+                                file.path(),
+                                evidence.filePath
+                            );
+                        await cacheBinaryEvidence(evidence.id, localPath);
+                    }
+                }
+            } catch (err) {
+                log("ERRO NO PRE-CACHE", err);
+            }
         }
     }
 
@@ -96,7 +123,7 @@ export function EvidenceProvider({children}) {
         if (isOnline) {
             try {
                 const result = await api.createEvidence(file, {type, location, description, reporterId, occurrenceId})
-               await loadEvidences()
+                await loadEvidences()
                 return result
             } catch (err: any) {
                 throw Error(err.message)
@@ -104,12 +131,13 @@ export function EvidenceProvider({children}) {
         }
         else {
             const tempId = Date.now()
-            const payload = {id: tempId, type, filePath: file.name, location, description, reporterId, reportId: occurrenceId, createdAt: tempId, updatedAt: tempId }
+            const realFilePath = `occurrences/${occurrenceId}/evidences/${file.name}`
+            const payload = {id: tempId, type, filePath: realFilePath, location, description, reporterId, occurrenceId, createdAt: tempId, updatedAt: tempId }
             const updated = [...evidence, payload as Evidence]
             setEvidence(updated)
             await evidenceInfoRepo.saveEvidenceInfo(updated)
             await offlineEvidenceQueueRepo.addAction("CREATE", {file, type, location, description, reporterId, occurrenceId, evidenceId: tempId})
-            return { id: tempId, filePath: file.name }
+            return { id: tempId, filePath: realFilePath }
         }
     }
 
@@ -138,46 +166,103 @@ export function EvidenceProvider({children}) {
                 throw Error(err.message)
             }
         } else{
-            const cached = await evidenceInfoRepo.getEvidenceInfo()
-            log("Cached value",cached)
-            log("Vai ser igual ao cacher", evidence)
             const filtered = evidence.filter(e => e.occurrenceId === occurrenceId)
-            log("as evidences filtradas corretamente como o occurrenceId", filtered)
             return filtered
         }
+    }
+
+    async function cacheJsonEvidence(
+        evidenceId: number,
+        content: string
+    ) {
+        const cached = await evidenceInfoRepo.getEvidenceInfo() ?? [];
+        const updated =
+            cached.map(e =>
+                e.id === evidenceId
+                    ? {
+                        ...e,
+                        cachedContent: content
+                    } : e
+            );
+        await evidenceInfoRepo.saveEvidenceInfo(updated);
+    }
+
+    async function cacheBinaryEvidence(
+        evidenceId: number,
+        localPath: string
+    ) {
+        const cached = await evidenceInfoRepo.getEvidenceInfo() ?? [];
+        const updated =
+            cached.map(e =>
+                e.id === evidenceId
+                    ? {
+                        ...e,
+                        cachedLocalPath: localPath
+                    } : e
+            );
+        await evidenceInfoRepo.saveEvidenceInfo(updated);
     }
 
     async function downloadEvidence(evidenceId:number, keep: boolean){
         if (isOnline){
             try{
                 const response = await api.downloadEvidence(evidenceId, keep)
-                log("downloadEvidence",response)
+                const evidences = await evidenceInfoRepo.getEvidenceInfo();
+                const evidence = evidences?.find(e => e.id === evidenceId);
+                if (evidence) {
+                    if (evidence.filePath.endsWith(".json")) {
+                        try {
+                            const text = await response.text();
+                            await cacheJsonEvidence(evidenceId, text);
+                        } catch {}
+                    }
+                    else {
+                        try {
+                            const localPath =
+                                await evidenceCacheService.cacheFile(
+                                    evidenceId,
+                                    response.path(),
+                                    evidence.filePath
+                                );
+                            await cacheBinaryEvidence(evidenceId, localPath);
+                        } catch {}
+                    }
+                }
+
                 return response
             } catch (err: any) {
                 throw Error(err.message)
             }
         } else {
-            if (!keep){
-                const cached = await evidenceInfoRepo.getEvidenceInfo()
-                const evidence = cached?.find(e => e.id === evidenceId)
+            const cached = await evidenceInfoRepo.getEvidenceInfo()
+            const evidence = cached?.find(e => e.id === evidenceId)
 
-                if (evidence) {
+            if (evidence.filePath.endsWith(".json")){
+                if(evidence.cachedContent){
                     return {
-                        path: () => null,
-                        text: async () => JSON.stringify(evidence),
+                        text: async () =>
+                            evidence.cachedContent,
+                        flush: async () => {}
+                    };
+                }
+            }
+
+            if (evidence.cachedLocalPath) {
+                const exists = await ReactNativeBlobUtil.fs.exists(evidence.cachedLocalPath)
+                if (exists) {
+                    return {
+                        path: () => evidence.cachedLocalPath,
                         respInfo: {
                             headers: {
-                                'content-type': 'application/json'
+                                'content-type': "application/octet-stream"
                             }
                         },
                         flush: async () => {}
                     };
                 }
-                return null;
             }
-            else {
-                throw Error("Offline não download")
-            }
+
+            return null;
         }
     }
 

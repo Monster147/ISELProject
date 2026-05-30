@@ -13,6 +13,8 @@ export interface EvidenceInfo{
     occurrenceId: number;
     createdAt: number;
     updatedAt: number;
+    cachedContent?: string;
+    cachedLocalPath?: string;
 }
 
 export interface EvidenceInfoRepo {

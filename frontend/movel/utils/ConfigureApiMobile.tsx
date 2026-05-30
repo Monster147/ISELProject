@@ -17,7 +17,7 @@ configureApi(
 );
 
 async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
-    /*const url = `${apiBaseUrl}/documents/${id}/download`;
+    const url = `${apiBaseUrl}/documents/${id}/download`;
 
     const response = await fetch(url);
     if (!response.ok) {
@@ -61,7 +61,7 @@ async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
         path: path,
     }).fetch("GET", url);
 
-    console.log("Guardado em iOS:", res.path());*/
+    console.log("Guardado em iOS:", res.path());
 }
 
 const LOG_PREFIX = "[EVIDENCES DOWNLOAD]";
