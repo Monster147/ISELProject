@@ -26,18 +26,18 @@ interface RepositoryIntervenor : Repository<Intervenor> {
     ): Intervenor
 
     /**
-     * Actualiza um interveniente existente.
+     * Atualiza um interveniente existente.
      *
-     * Apenas os parâmetros não nulos são actualizados.
+     * Apenas os parâmetros não nulos são atualizados.
      *
-     * @param intervenor Instância actual do interveniente a actualizar.
+     * @param intervenor Instância actual do interveniente a atualizar.
      * @param idNumber Novo número de identificação (opcional).
      * @param idType Novo tipo de identificação (opcional).
      * @param name Novo nome (opcional).
      * @param contactInfo Nova informação de contacto (opcional).
      * @param address Nova morada (opcional).
      *
-     * @return [Intervenor] actualizado.
+     * @return [Intervenor] atualizado.
      */
     fun updateIntervenor(
         intervenor: Intervenor,

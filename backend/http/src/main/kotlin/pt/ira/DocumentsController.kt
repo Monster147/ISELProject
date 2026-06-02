@@ -21,7 +21,7 @@ import java.nio.file.Paths
 /**
  * Controlador REST responsável pela gestão de documentos no sistema.
  *
- * Expõe endpoints HTTP para upload, consulta e eliminação de documentos,
+ * Expõe endpoints HTTP para *upload*, consulta e eliminação de documentos,
  * bem como listagem de tipos de documentos disponíveis.
  *
  * Atua como camada de adaptação entre o protocolo HTTP e a lógica de domínio,
@@ -29,7 +29,7 @@ import java.nio.file.Paths
  * com mapeamento explícito de erros de domínio.
  *
  * Responsabilidades principais:
- * - upload de documentos;
+ * - *upload* de documentos;
  * - obtenção de documentos por identificador, nome ou tipo;
  * - consulta de tipos de documentos disponíveis;
  * - eliminação de documentos;
@@ -44,7 +44,7 @@ class DocumentsController(
     private val publisher: Publishers,
 ) {
     /**
-     * Faz upload de um documento.
+     * Faz *upload* de um documento.
      *
      * Em caso de sucesso, devolve `201 Created` com o header `Location`
      * a apontar para o recurso criado.
@@ -140,7 +140,7 @@ class DocumentsController(
     /**
      * Obtém todos os documentos de um determinado tipo.
      *
-     * @param type tipo MIME do documento.
+     * @param type tipo do documento.
      *
      * @return `200 OK` com a lista de documentos ou `404 Not Found` se não houver documentos desse tipo.
      */
@@ -167,7 +167,7 @@ class DocumentsController(
     /**
      * Obtém todos os tipos de documentos disponíveis.
      *
-     * @return `200 OK` com a lista de tipos MIME únicos.
+     * @return `200 OK` com a lista de tipos únicos.
      */
     @GetMapping("/types")
     fun getAllDocumentTypes(): ResponseEntity<List<String>> {
@@ -191,7 +191,7 @@ class DocumentsController(
     }
 
     /**
-     * Faz download de um documento.
+     * Faz *download* de um documento.
      *
      * @param id identificador do documento a fazer download.
      *

@@ -11,14 +11,14 @@ import pt.ira.type.Type
  * Hierarquia de erros específicos do domínio dos tipos.
  *
  * Encapsula as situações de erro que podem ocorrer durante operações com tipos,
- * permitindo uma tratamento explícito e tipificado dos cenários de falha.
+ * permitindo um tratamento explícito e tipificado dos cenários de falha.
  *
  * @see TypeService
  */
 sealed class TypeError {
     /**
      * O tipo solicitado não foi encontrado no sistema,
-     * quer por identificador quer por nome.
+     * quer por identificador, quer por nome.
      */
     data object TypeNotFound : TypeError()
     /**

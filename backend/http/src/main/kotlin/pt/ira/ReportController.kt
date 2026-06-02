@@ -67,6 +67,7 @@ class ReportController(
                 title = reportInput.title,
                 description = reportInput.description,
                 addons = reportInput.addons,
+                language = reportInput.language,
             )
         return when (result) {
             is Success ->

@@ -172,7 +172,8 @@ Content-Type: application/json
   "addons": {
     "photos": [1],
     "documents": [1]
-  }
+  },
+  "language": "pt"
 }
 
 ### SSE for Report

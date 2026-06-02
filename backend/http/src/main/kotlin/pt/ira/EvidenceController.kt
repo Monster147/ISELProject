@@ -32,7 +32,7 @@ import java.nio.file.Paths
  * - receção e validação de pedidos HTTP (incluindo multipart/form-data);
  * - mapeamento de resultados de domínio para códigos de estado HTTP;
  * - serialização de respostas e gestão de headers (ex.: Location, Content-Disposition);
- * - disponibilização de endpoints de consulta, criação, download e eliminação;
+ * - disponibilização de endpoints de consulta, criação, *download* e eliminação;
  * - suporte a Server-Sent Events (SSE) para notificações em tempo real.
  *
  * @param evidenceService serviço responsável pela lógica de negócio associada às evidências.
@@ -124,9 +124,9 @@ class EvidenceController(
     }
 
     /**
-     * Permite o download do ficheiro associado a uma evidência.
+     * Permite o *download* do ficheiro associado a uma evidência.
      *
-     * Define o header `Content-Disposition` para forçar download
+     * Define o header `Content-Disposition` para forçar *download*
      * com o nome original do ficheiro.
      *
      * @param id identificador da evidência.

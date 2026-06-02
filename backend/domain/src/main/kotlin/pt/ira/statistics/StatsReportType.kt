@@ -3,7 +3,7 @@ package pt.ira.statistics
 /**
  * Representa estatísticas agregadas dos relatórios pelo tipo.
  *
- * Este modelo encapsula a distribuição de relatórios de acordo com a sua
+ * Este modelo encapsula a distribuição de relatórios conforme a sua
  * categoria, fornecendo tanto o volume absoluto como a percentagem relativa de cada tipo,
  * permitindo uma análise comparativa dos diferentes tipos de relatórios.
  *

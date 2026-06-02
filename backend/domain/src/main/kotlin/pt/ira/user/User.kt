@@ -9,7 +9,7 @@ package pt.ira.user
  * @property id Identificador único do utilizador.
  * @property name Nome do utilizador.
  * @property email Endereço de email do utilizador (tipicamente único no sistema).
- * @property passwordValidation Informação associada à validação da password.
+ * @property passwordValidation Informação associada à validação da *password*.
  * @property roles Lista de identificadores dos roles atribuídos ao utilizador.
  *
  * @constructor Cria uma instância de [User] com os dados fornecidos.

@@ -24,7 +24,7 @@ import pt.ira.publishers.Publishers
  * bem como para gestão de intervenientes associados e subscrição de eventos em tempo real
  * através de Server-Sent Events (SSE).
  *
- * Este controlador atua como camada de interface entre o protocolo HTTP e a lógica de domínio,
+ * Este controlador atua como camada de *interface* entre o protocolo HTTP e a lógica de domínio,
  * delegando toda a execução ao [OccurrenceService] e convertendo os resultados em respostas HTTP
  * normalizadas com mapeamento explícito de erros.
  *

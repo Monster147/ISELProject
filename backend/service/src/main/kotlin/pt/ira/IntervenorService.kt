@@ -10,7 +10,7 @@ import pt.ira.publishers.Publishers
  * Hierarquia de erros específicos do domínio dos intervenientes.
  *
  * Encapsula as situações de erro que podem ocorrer durante operações com intervenientes,
- * permitindo uma tratamento explícito e tipificado dos cenários de falha.
+ * permitindo um tratamento explícito e tipificado dos cenários de falha.
  *
  * @see IntervenorService
  */

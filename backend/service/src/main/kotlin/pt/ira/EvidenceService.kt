@@ -14,7 +14,7 @@ import pt.ira.storage.StorageService
  * Hierarquia de erros específicos do domínio das evidências.
  *
  * Encapsula as situações de erro que podem ocorrer durante operações com evidências,
- * permitindo uma tratamento explícito e tipificado dos cenários de falha.
+ * permitindo um tratamento explícito e tipificado dos cenários de falha.
  *
  * @see EvidenceService
  */
@@ -47,7 +47,7 @@ sealed class EvidenceError {
 }
 
 /**
- * Lista de tipos MIME permitidos para upload de evidências.
+ * Lista de tipos MIME permitidos para *upload* de evidências.
  *
  * Inclui formatos comuns de imagem, vídeo e documento, garantindo
  * que apenas ficheiros seguros e validados são aceites no sistema.
@@ -69,7 +69,7 @@ val allowedExtensions =
  * Responsabilidades principais:
  * - criação, consulta, descarga e eliminação de evidências;
  * - validação de ocorrências e utilizadores associados;
- * - gestão de ficheiros através de armazenamento interno;
+ * - gestão de ficheiros por meio de armazenamento interno;
  * - publicação de eventos relacionados com alterações de evidências.
  *
  * @param trxManager gestor de transações usado para aceder aos repositórios dentro de unidades de trabalho.

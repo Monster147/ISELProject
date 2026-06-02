@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 /**
- * Publicador de actualizações de uma lista de class (Intervenor, Evidence, Occurrence ou Report).
+ * Publicador de atualizações de uma lista de class (Intervenor, Evidence, Occurrence ou Report).
  *
  * Mantém uma lista de emissores `UpdatedDataEmitter` e envia sinais de
  * `Message` e `KeepAlive` para todos os listeners registados.
@@ -63,10 +63,10 @@ class ClassesPublisher {
      * Envia uma `Message` para todos os emissores registados.
      *
      * O `id` da mensagem é gerado incrementando `currentId`.
-     * Excepções lançadas pelos emissores são capturadas e registadas.
+     * Exceções lançadas pelos emissores são capturadas e registadas.
      *
      * @param data conteúdo da mensagem (payload).
-     * @param action tipo de acção associado à mensagem.
+     * @param action tipo de ação associado à mensagem.
      */
     fun sendMessageToAll(
         data: Any,
@@ -123,7 +123,7 @@ class ClassesPublisher {
     /**
      * Remove um emissor da lista de listeners.
      *
-     * Protegido por `lock`. Lança excepción se a lista for nula (invariante).
+     * Protegido por `lock`. Lança exceção se a lista for nula (invariante).
      *
      * @param listener emissor a remover.
      */
@@ -136,7 +136,7 @@ class ClassesPublisher {
     /**
      * Envia um sinal de `KeepAlive` para todos os emissores registados.
      *
-     * Chamado periodicamente pelo scheduler; captura e regista excepções lançadas pelos emissores.
+     * Chamado periodicamente pelo scheduler; captura e regista exceções lançadas pelos emissores.
      */
     private fun keepAlive() {
         val currentListeners = lock.withLock {
@@ -157,7 +157,7 @@ class ClassesPublisher {
     /**
      * Encerra o scheduler que envia sinais de keep-alive.
      *
-     * Marcado com `@PreDestroy` para ser invocado pelo contentor quando a
+     * Marcado com `@PreDestroy` para ser invocado pelo contentor, quando a
      * aplicação estiver a terminar.
      */
     @PreDestroy

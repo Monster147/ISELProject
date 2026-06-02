@@ -1,5 +1,6 @@
 package pt.ira.storage
 
+import org.apache.pdfbox.pdmodel.PDDocument
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Component
@@ -29,21 +30,12 @@ import java.util.UUID
 class FileSystemStorageService : StorageService {
     private val rootEvidence = Paths.get(System.getProperty("user.dir")).resolve("uploads")
     private val rootDocuments = Paths.get(System.getProperty("user.dir")).resolve("documents")
+    private val rootReports = Paths.get(System.getProperty("user.dir")).resolve("reports")
 
     init {
         Files.createDirectories(rootEvidence)
     }
 
-    /**
-     * Armazena uma evidência no sistema de ficheiros, organizando-a sob a ocorrência específica.
-     *
-     * Cria uma estrutura de diretórios hierárquica e garante que não existem conflitos de nomes
-     * através de geração automática de sufixos.
-     *
-     * @param occurrenceId Identificador da ocorrência à qual a evidência está associada.
-     * @param file Ficheiro da evidência a ser armazenado.
-     * @return Caminho relativo (em relação a `rootEvidence`) onde o ficheiro foi guardado.
-     */
     override fun save(
         occurrenceId: Int,
         file: MultipartFile,
@@ -66,18 +58,6 @@ class FileSystemStorageService : StorageService {
         return rootEvidence.relativize(destination).toString()
     }
 
-    /**
-     * Armazena um documento de apoio no sistema de ficheiros, organizando-o por categoria.
-     *
-     * Documentos são guardados em diretórios segregados pela sua categoria (ex: "Automovel", "Pessoal").
-     * Não sobrescreve ficheiros existentes com o mesmo nome.
-     *
-     * @param file Ficheiro do documento a ser armazenado.
-     * @param documentName Nome descritivo do documento (será utilizado como nome do ficheiro base).
-     * @param documentType Categoria do documento (cria subdiretório correspondente).
-     * @return Caminho relativo (em relação a `rootDocuments`) onde o ficheiro foi guardado,
-     *         ou string vazia se o ficheiro já existe.
-     */
     override fun saveDocument(
         file: MultipartFile,
         documentName: String,
@@ -104,6 +84,21 @@ class FileSystemStorageService : StorageService {
         }
 
         return rootDocuments.relativize(destination).toString()
+    }
+
+    override fun saveReport(fileName: String, document: PDDocument): String {
+        val reportDir = rootReports
+        Files.createDirectories(reportDir)
+
+        val destination = reportDir.resolve(fileName)
+
+        if (Files.exists(destination)) {
+            return ""
+        }
+
+        document.save(destination.toFile())
+
+        return rootReports.relativize(destination).toString()
     }
 
     /**
@@ -155,15 +150,6 @@ class FileSystemStorageService : StorageService {
         }
     }
 
-    /**
-     * Carrega uma evidência do sistema de ficheiros.
-     *
-     * Valida o caminho para prevenir path traversal attacks, garantindo que
-     * o ficheiro solicitado encontra-se dentro do diretório de evidências.
-     *
-     * @param path Caminho relativo (em relação a `rootEvidence`) do ficheiro a carregar.
-     * @return [Resource] representando o ficheiro, ou null se não for encontrado ou legível.
-     */
     override fun loadEvidence(path: String): Resource? {
         val filePath = rootEvidence.resolve(path).normalize()
         if (!filePath.startsWith(rootEvidence)) return null
@@ -175,15 +161,6 @@ class FileSystemStorageService : StorageService {
         }
     }
 
-    /**
-     * Carrega um documento do sistema de ficheiros.
-     *
-     * Valida o caminho para prevenir path traversal attacks, garantindo que
-     * o ficheiro solicitado encontra-se dentro do diretório de documentos.
-     *
-     * @param path Caminho relativo (em relação a `rootDocuments`) do ficheiro a carregar.
-     * @return [Resource] representando o ficheiro, ou null se não for encontrado ou legível.
-     */
     override fun loadDocument(path: String): Resource? {
         val filePath = rootDocuments.resolve(path).normalize()
         if (!filePath.startsWith(rootDocuments)) return null
@@ -195,14 +172,6 @@ class FileSystemStorageService : StorageService {
         }
     }
 
-    /**
-     * Elimina uma evidência do sistema de ficheiros.
-     *
-     * Valida o caminho antes de eliminar para prevenir acessos indevidos.
-     *
-     * @param path Caminho relativo (em relação a `rootEvidence`) do ficheiro a eliminar.
-     * @return true se a eliminação foi bem-sucedida, false caso contrário.
-     */
     override fun deleteEvidence(path: String): Boolean {
         val filePath = rootEvidence.resolve(path).normalize()
         if (!filePath.startsWith(rootEvidence)) return false
@@ -213,14 +182,6 @@ class FileSystemStorageService : StorageService {
         }
     }
 
-    /**
-     * Elimina um documento do sistema de ficheiros.
-     *
-     * Valida o caminho antes de eliminar para prevenir acessos indevidos.
-     *
-     * @param path Caminho relativo (em relação a `rootDocuments`) do ficheiro a eliminar.
-     * @return true se a eliminação foi bem-sucedida, false caso contrário.
-     */
     override fun deleteDocument(path: String): Boolean {
         val filePath = rootDocuments.resolve(path).normalize()
         if (!filePath.startsWith(rootDocuments)) return false
@@ -231,13 +192,6 @@ class FileSystemStorageService : StorageService {
         }
     }
 
-    /**
-     * Atualiza um ficheiro de evidência existente, reescrevendo-o completamente.
-     *
-     * @param path Caminho relativo do ficheiro a reescrever.
-     * @param file Novo ficheiro com conteúdo atualizado.
-     * @return true se a atualização foi bem-sucedida, false caso contrário.
-     */
     override fun updateEvidence(
         path: String,
         file: MultipartFile
@@ -256,15 +210,6 @@ class FileSystemStorageService : StorageService {
         }
     }
 
-    /**
-     * Elimina todas as evidências associadas a uma ocorrência específica.
-     *
-     * Remove recursivamente todo o diretório da ocorrência, incluindo todas as suas evidências.
-     * Valida o caminho para prevenir acessos indevidos.
-     *
-     * @param occurrenceId Identificador da ocorrência cujas evidências serão eliminadas.
-     * @return true se todas as eliminações foram bem-sucedidas, false caso contrário.
-     */
     override fun deleteOccurrenceEvidences(occurrenceId: Int): Boolean {
         val reportDir =
             rootEvidence

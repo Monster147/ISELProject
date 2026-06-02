@@ -6,7 +6,7 @@ package pt.ira.model.user
  * Encapsula os dados públicos de um utilizador autenticado a ser devolvidos ao cliente.
  * Este modelo é utilizado como contrato entre o controlador e o cliente HTTP,
  * permitindo que o servidor forneça uma vista segura e filtrada das informações do utilizador
- * sem expor dados sensíveis como palavras-passe ou tokens.
+ * sem expor dados sensíveis como palavras-passe ou *tokens*.
  *
  * @property id Identificador único do utilizador.
  * @property name Nome completo do utilizador.

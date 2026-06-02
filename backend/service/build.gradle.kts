@@ -28,6 +28,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(kotlin("test"))
+
+    implementation("org.apache.pdfbox:pdfbox:2.0.1")
 }
 
 kotlin {

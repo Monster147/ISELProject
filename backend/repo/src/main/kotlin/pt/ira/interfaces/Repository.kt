@@ -1,7 +1,7 @@
 package pt.ira.interfaces
 
 /**
- * Interface genérica de repositório para operações básicas de CRUD.
+ * *Interface* genérica de repositório para operações básicas de CRUD.
  */
 interface Repository<T> {
     fun findById(id: Int): T? // Obtém uma entidade pelo seu identificador

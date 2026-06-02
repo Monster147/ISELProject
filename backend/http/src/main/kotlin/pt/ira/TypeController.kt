@@ -18,7 +18,7 @@ import pt.ira.type.Type
  *
  * Responsabilidades:
  * - criação de tipos;
- * - consulta por id e nome;
+ * - consulta por *id* e nome;
  * - listagem de tipos;
  * - atualização e remoção;
  * - mapeamento de erros de domínio para respostas HTTP.
@@ -34,9 +34,14 @@ class TypeController(
 ) {
 
     /**
-     * Cria um tipo.
+     * Cria um tipo de ocorrência no sistema.
      *
-     * @param input dados do tipo.
+     * Caso a operação seja bem-sucedida, é devolvido `201 Created` com o header
+     * `Location` a indicar o recurso criado.
+     *
+     * Em caso de erro de domínio, a resposta é mapeada para o código HTTP apropriado.
+     *
+     * @param input dados necessários para criação do tipo de ocorrência.
      *
      * @return `201 Created` ou erro de domínio.
      */
@@ -63,7 +68,11 @@ class TypeController(
     }
 
     /**
-     * Obtém um tipo pelo id.
+     * Obtém um tipo de ocorrência pelo seu identificador único.
+     *
+     * @param id identificador do tipo.
+     *
+     * @return `200 OK` com o tipo encontrado ou `404 Not Found` se não existir.
      */
     @GetMapping("/{id}")
     fun findById(
@@ -82,7 +91,13 @@ class TypeController(
     }
 
     /**
-     * Obtém um tipo pelo nome.
+     * Obtém um tipo de ocorrência através do seu nome.
+     *
+     * A pesquisa é realizada com base no nome exato do tipo.
+     *
+     * @param name nome do tipo.
+     *
+     * @return `200 OK` com o tipo correspondente ou `404 Not Found` se não existir.
      */
     @GetMapping("/name/{name}")
     fun findByName(
@@ -101,17 +116,23 @@ class TypeController(
     }
 
     /**
-     * Lista todos os tipos.
+     * Lista todos os tipos de ocorrência registados no sistema.
+     *
+     * @return `200 OK` com a lista completa de tipos.
      */
     @GetMapping
     fun findAll(): ResponseEntity<List<Type>> =
         ResponseEntity.ok(typeService.findAll())
 
     /**
-     * Atualiza um tipo.
+     * Atualiza os dados de um tipo de ocorrência existente.
      *
-     * @param id identificador do tipo
-     * @param input dados a atualizar
+     * Permite modificar o nome e a definição do formulário associado ao tipo.
+     *
+     * @param id identificador do tipo a atualizar.
+     * @param input novos dados do tipo.
+     *
+     * @return `200 OK` com o tipo atualizado ou erro de domínio mapeado.
      */
     @PostMapping("/{id}")
     fun updateType(
@@ -131,7 +152,7 @@ class TypeController(
     }
 
     /**
-     * Remove um tipo.
+     * Remove um tipo de ocorrência do sistema pelo seu identificador.
      *
      * @param id identificador do tipo.
      *

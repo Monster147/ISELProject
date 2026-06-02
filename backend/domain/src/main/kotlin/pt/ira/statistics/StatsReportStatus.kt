@@ -5,7 +5,7 @@ import pt.ira.report.ReportStatus
 /**
  * Representa estatísticas agregadas dos relatórios pelo seu estado.
  *
- * Este modelo encapsula a distribuição de relatórios de acordo com o seu estado
+ * Este modelo encapsula a distribuição de relatórios conforme o seu estado
  * (EDITING, SUBMITTED, APPROVED, REJECTED), fornecendo tanto o volume
  * absoluto como a percentagem relativa de cada estado, permitindo análise do progresso
  * e dos relatórios.

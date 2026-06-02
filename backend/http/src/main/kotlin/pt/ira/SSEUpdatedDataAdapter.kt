@@ -5,10 +5,10 @@ import pt.ira.emitters.UpdatedData
 import pt.ira.emitters.UpdatedDataEmitter
 
 /**
- * Adaptador que implementa a interface [UpdatedDataEmitter] utilizando SSE do Spring.
+ * Adaptador que implementa a *interface* [UpdatedDataEmitter] utilizando SSE do Spring.
  *
  * Esta classe atua como uma ponte entre a abstração interna de emissão de dados ([UpdatedDataEmitter])
- * e a infraestrutura concreta do SSE providenciada pelo framework Spring. Encapsula a lógica
+ * e a infraestrutura concreta do SSE providenciada pelo *framework* Spring. Encapsula a lógica
  * de transformação de sinais de atualização em eventos Server-Sent Events, permitindo comunicação
  * em tempo real bidirecional com os clientes conectados.
  *

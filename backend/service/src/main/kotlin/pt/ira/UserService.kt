@@ -23,7 +23,7 @@ import kotlin.math.round
  * Hierarquia de erros específicos do domínio dos utilizadores.
  *
  * Encapsula as situações de erro que podem ocorrer durante operações com utilizadores,
- * permitindo uma tratamento explícito e tipificado dos cenários de falha.
+ * permitindo um tratamento explícito e tipificado dos cenários de falha.
  *
  * @see TypeService
  */
@@ -40,7 +40,7 @@ sealed class UserError {
 
     /**
      * O utilizador solicitado não foi encontrado no sistema,
-     * quer por email quer por identificador.
+     * quer por email, quer por identificador.
      */
     data object UserNotFound : UserError()
 
@@ -66,14 +66,14 @@ sealed class TokenCreationError {
  * - criação e consulta de utilizadores;
  * - validação e gestão de palavras-passe;
  * - gestão de papéis (roles) dos utilizadores;
- * - geração, validação e revogação de tokens de autenticação;
+ * - geração, validação e revogação de *tokens* de autenticação;
  * - cálculo de métricas associadas a relatórios.
  *
  * @param passwordEncoder codificador de palavras-passe.
  * @param tokenEncoder codificador de tokens.
  * @param config configuração do domínio de utilizadores.
  * @param trxManager gestor de transações usado para aceder aos repositórios dentro de unidades de trabalho.
- * @param clock fonte de tempo usada para validação temporal de tokens.
+ * @param clock fonte de tempo usada para validação temporal de *tokens*.
  */
 @Component
 class UserService(
@@ -312,14 +312,14 @@ class UserService(
     }
 
     /**
-     * Cria um token de autenticação para um utilizador.
+     * Cria um *token* de autenticação para um utilizador.
      *
-     * Valida as credenciais e gera um novo token com informação temporal associada.
+     * Valida as credenciais e gera um novo *token* com informação temporal associada.
      *
      * @param email Endereço de email.
      * @param password Palavra-passe.
      *
-     * @return Informação externa do token, ou erro do tipo [TokenCreationError].
+     * @return Informação externa do *token*, ou erro do tipo [TokenCreationError].
      */
     fun createToken(
         email: String,
@@ -355,7 +355,7 @@ class UserService(
     }
 
     /**
-     * Revoga um token de autenticação.
+     * Revoga um *token* de autenticação.
      *
      * @param token Valor do token.
      *
@@ -370,9 +370,9 @@ class UserService(
     }
 
     /**
-     * Obtém um utilizador com base num token válido.
+     * Obtém um utilizador com base num *token* válido.
      *
-     * Valida o formato e validade temporal do token.
+     * Valida o formato e validade temporal do *token*.
      *
      * @param token Valor do token.
      *

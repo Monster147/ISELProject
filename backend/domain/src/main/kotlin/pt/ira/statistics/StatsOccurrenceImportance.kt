@@ -5,7 +5,7 @@ import pt.ira.occurrence.OccurrenceType
 /**
  * Representa estatísticas agregadas das ocorrências pelo nível de importância.
  *
- * Este modelo encapsula a distribuição de ocorrências de acordo com o seu nível
+ * Este modelo encapsula a distribuição de ocorrências conforme o seu nível
  * de prioridade, fornecendo tanto o volume absoluto como a percentagem relativa
  * de cada categoria, permitindo uma análise comparativa da urgência das ocorrências.
  *

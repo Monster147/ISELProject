@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 /**
- * Publicador de actualizações de uma classe (Intervenor, Evidence, Occurrence ou Report).
+ * Publicador de atualizações de uma classe (Intervenor, Evidence, Occurrence ou Report).
  *
  * Mantém um mapa de listeners por class e envia sinais de
  * `Message` e `KeepAlive` para todos os listeners registados.
@@ -49,7 +49,7 @@ class ClassPublisher {
      * Envia uma `Message` para todos os emissores registados do `id`.
      *
      * O `id` da mensagem é obtido incrementando `currentId`.
-     * Excepções lançadas pelos emissores são capturadas e registadas.
+     * Exceções lançadas pelos emissores são capturadas e registadas.
      *
      * @param id identificador da classe cujos listeners devem receber a mensagem.
      * @param data conteúdo da mensagem.
@@ -133,7 +133,7 @@ class ClassPublisher {
     /**
      * Envia periodicamente um sinal de `KeepAlive` para todos os emissores.
      *
-     * Chamado pelo scheduler; captura e regista excepções lançadas pelos emissores.
+     * Chamado pelo scheduler; captura e regista exceções lançadas pelos emissores.
      */
     private fun keepAlive() {
         val currentListeners = lock.withLock {
@@ -154,7 +154,7 @@ class ClassPublisher {
     /**
      * Encerra o scheduler que envia sinais de keep-alive.
      *
-     * Marcado com `@PreDestroy` para ser invocado pelo contêiner quando a aplicação
+     * Marcado com `@PreDestroy` para ser invocado pelo contentor, quando a aplicação
      * estiver a terminar.
      */
     @PreDestroy

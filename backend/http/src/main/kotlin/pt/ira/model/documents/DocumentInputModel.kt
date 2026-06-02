@@ -1,7 +1,7 @@
 package pt.ira.model.documents
 
 /**
- * Modelo de transferência de dados para o upload de documentos.
+ * Modelo de transferência de dados para o *upload* de documentos.
  *
  * Encapsula os metadados necessários para a criação de um novo documento no sistema.
  * Este modelo é utilizado como contrato entre o cliente HTTP e o controlador,

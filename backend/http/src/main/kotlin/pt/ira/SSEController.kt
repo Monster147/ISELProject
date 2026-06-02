@@ -12,6 +12,27 @@ import pt.ira.publishers.Publishers
 class SSEController (
     private val publisher: Publishers,
 ) {
+    /**
+     * Estabelece uma ligação SSE agregada para um utilizador específico.
+     *
+     * Esta subscrição permite ao cliente receber eventos em tempo real relacionados com:
+     * - ocorrências do utilizador;
+     * - intervenientes;
+     * - evidências associadas;
+     * - documentos do sistema;
+     * - tipos de ocorrência.
+     *
+     * Após a ligação ser estabelecida, o cliente recebe atualizações sempre que
+     * ocorrerem alterações nos recursos subscritos, sem necessidade de requisições
+     * adicionais (polling).
+     *
+     * A ligação permanece ativa até ser explicitamente encerrada pelo cliente
+     * ou pelo servidor.
+     *
+     * @param userId identificador do utilizador que irá receber os eventos.
+     *
+     * @return [SseEmitter] ligação persistente SSE utilizada para envio de eventos em tempo real.
+     */
     @GetMapping("/user/{userId}")
     fun listenAll(
         @PathVariable userId: Int,

@@ -228,6 +228,7 @@ class StatisticsService(
             reportMonth == month
         }
     }
+
     /**
      * Filtra as ocorrências criadas no mês e ano atual.
      *

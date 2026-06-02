@@ -28,7 +28,7 @@ import pt.ira.publishers.Publishers
  *
  * Responsabilidades principais:
  * - criação e atualização de intervenientes;
- * - consulta por diferentes critérios (id, número de identificação, contacto);
+ * - consulta por diferentes critérios (*id*, número de identificação, contacto);
  * - eliminação de intervenientes;
  * - exposição de streams SSE para notificações de alterações individuais e globais;
  * - mapeamento de erros de domínio para códigos de estado HTTP e modelos de erro.

@@ -11,13 +11,13 @@ import java.time.Instant
  */
 interface RepositoryUser : Repository<User> {
     /**
-     * Cria um novo utilizador no sistema.
+     * Cria um utilizador no sistema.
      *
      * @param name Nome do utilizador.
      * @param email Email do utilizador (deve ser único).
      * @param passwordValidation Informação de validação da palavra-passe (encriptação da palavra-passe).
      * @param roles Lista de identificadores de roles atribuídos ao utilizador.
-     *              Por omissão, é atribuído o role com id 2.
+     *              Por omissão, é atribuído o role com *id* 2.
      *
      * @return [User] criado.
      */
@@ -38,19 +38,19 @@ interface RepositoryUser : Repository<User> {
     fun findByEmail(email: String): User?
 
     /**
-     * Obtém o utilizador associado a um token válido.
+     * Obtém o utilizador associado a um *token* válido.
      *
-     * @param tokenValidationInfo Informação de validação do token.
+     * @param tokenValidationInfo Informação de validação do *token*.
      *
      * @return Par composto por [User] e [Token], ou null caso não exista.
      */
     fun getTokenByTokenValidationInfo(tokenValidationInfo: TokenValidationInfo): Pair<User, Token>?
 
     /**
-     * Cria e persiste um novo token de autenticação.
+     * Cria e persiste um novo *token* de autenticação.
      *
      * @param token Token a criar.
-     * @param maxTokens Número máximo de tokens permitidos por utilizador.
+     * @param maxTokens Número máximo de *tokens* permitidos por utilizador.
      */
     fun createToken(
         token: Token,
@@ -58,7 +58,7 @@ interface RepositoryUser : Repository<User> {
     )
 
     /**
-     * Atualiza o timestamp da última utilização de um token.
+     * Atualiza o timestamp da última utilização de um *token*.
      *
      * @param token Token a atualizar.
      * @param now Instante atual a registar como última utilização.
@@ -71,7 +71,7 @@ interface RepositoryUser : Repository<User> {
     /**
      * Remove um token com base na sua informação de validação.
      *
-     * @param tokenValidationInfo Informação de validação do token.
+     * @param tokenValidationInfo Informação de validação do *token*.
      *
      * @return Número de tokens removidos.
      */

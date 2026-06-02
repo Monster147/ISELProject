@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode
  * @property status Estado atual do relatório no workflow. Por defeito é [ReportStatus.EDITING].
  * @property type Tipo do relatório, representado por um inteiro que pode ser mapeado para categorias específicas.
  * @property addons Dados adicionais em formato JSON, podendo incluir extensões
- *                  específicas ao domínio ou metainformação.
+ *                  específicas ao domínio ou meta informação.
  * @property createdAt Timestamp (epoch millis) que indica quando o relatório foi criado.
  * @property updatedAt Timestamp (epoch millis) que indica a última atualização do relatório.
  * @property editors Lista de identificadores dos utilizadores com permissões de edição.

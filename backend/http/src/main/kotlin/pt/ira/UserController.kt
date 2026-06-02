@@ -32,7 +32,7 @@ import pt.ira.user.User
  *
  * Responsabilidades principais:
  * - criação de utilizadores;
- * - autenticação e geração/revogação de tokens;
+ * - autenticação e geração/revogação de *tokens*;
  * - obtenção de dados do utilizador autenticado;
  * - consulta de utilizadores por identificador e por papel;
  * - gestão de papéis atribuídos a utilizadores (adicionar, remover, definir);
@@ -94,13 +94,13 @@ class UserController(
     }
 
     /**
-     * Gera um token de autenticação para um utilizador.
+     * Gera um *token* de autenticação para um utilizador.
      *
-     * Utilizado para autenticação no sistema com base em email e password.
+     * Utilizado para autenticação no sistema com base em email e *password*.
      *
      * @param tokenInput credenciais do utilizador.
      *
-     * @return `201 Created` com o token gerado ou erro de autenticação.
+     * @return `201 Created` com o *token* gerado ou erro de autenticação.
      */
     @PostMapping("/token")
     fun token(
@@ -128,7 +128,7 @@ class UserController(
     /**
      * Termina a sessão do utilizador autenticado.
      *
-     * Revoga o token ativo associado ao utilizador.
+     * Revoga o *token* ativo associado ao utilizador.
      *
      * @param user utilizador autenticado.
      */

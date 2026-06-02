@@ -14,7 +14,7 @@ import java.text.Normalizer
  * Hierarquia de erros específicos do domínio dos documentos.
  *
  * Encapsula as situações de erro que podem ocorrer durante operações com documentos,
- * permitindo uma tratamento explícito e tipificado dos cenários de falha.
+ * permitindo um tratamento explícito e tipificado dos cenários de falha.
  *
  * @see DocumentsService
  */
@@ -25,7 +25,7 @@ sealed class DocumentsError {
     data object DocumentNotFound : DocumentsError()
 
     /**
-     * Indica que o ficheiro fornecido não é válido (tipo não permitido ou vazio).
+     * Indica que o ficheiro fornecido é inválido (tipo não permitido ou vazio).
      */
     data object InvalidFile : DocumentsError()
 
@@ -45,7 +45,7 @@ sealed class DocumentsError {
  *
  * @param trxManager gestor de transações usado para aceder aos repositórios dentro de unidades de trabalho.
  * @param storageService serviço responsável pelo armazenamento físico dos ficheiros.
- * @param publisher conjunto de publicadores de eventos do sistema.
+ * @param publishers conjunto de publicadores de eventos do sistema.
  */
 @Component
 class DocumentsService(
@@ -66,12 +66,13 @@ class DocumentsService(
         )
 
     /**
-     * Faz upload de um documento.
+     * Faz *upload* de um documento.
      *
      * Valida o tipo de ficheiro, armazena-o no sistema de ficheiros
      * e persiste os metadados na base de dados.
      *
      * @param name Nome do documento.
+     * @param type Categoria do documento (ex. "Automovel").
      * @param file Ficheiro a fazer upload.
      *
      * @return [Documents] criado, ou um erro do tipo [DocumentsError].
@@ -152,7 +153,7 @@ class DocumentsService(
     /**
      * Obtém todos os documentos de um determinado tipo.
      *
-     * @param type Tipo MIME do documento.
+     * @param type Tipo do documento.
      *
      * @return Lista de [Documents] do tipo especificado.
      */
@@ -169,7 +170,7 @@ class DocumentsService(
     /**
      * Obtém todos os tipos de documentos disponíveis.
      *
-     * @return Lista de tipos MIME únicos.
+     * @return Lista de tipos únicos.
      */
     fun findAllDocumentTypes(): List<String> =
         trxManager.run {
@@ -213,7 +214,7 @@ class DocumentsService(
         }
 
     /**
-     * Faz download de um documento.
+     * Faz *download* de um documento.
      *
      * Carrega o ficheiro do sistema de ficheiros usando o caminho armazenado.
      *
