@@ -1,0 +1,7 @@
+# Repository
+
+A camada de repositórios é composta pelas interfaces e implementações responsáveis pelo acesso à base de dados *PostgreSQL*. Para otimizar a interação e o mapeamento objeto-relacional, utilizou-se a biblioteca JDBI. Esta escolha justifica-se pela sua API mais declarativa e intuitiva, que permite manter o controlo total sobre o SQL, de forma semelhante ao JDBC, oferecendo simultaneamente o mapeamento automático de objetos (*Object Mapping*). Adicionalmente, o principal motivo para a sua adoção foi a sua excelente integração nativa com o *framework Spring*, facilitando a configuração e o uso de recursos comuns.
+
+De forma a garantir a consistência dos dados e a correta gestão do ciclo de vida das ligações, a arquitetura implementa o padrão *unit of work* através de duas interfaces fundamentais: `Transaction` e `TransactionManager`. A interface `Transaction` define o contrato para os diversos repositórios do sistema. Esta interface assegura que todas as operações de persistência partilham o mesmo contexto de base de dados durante uma execução.
+
+A implementação destas interfaces é concretizada pelas classes `TransactionInJdbi` e `TransactionManagerJdbi`. Esta abordagem, fundamentada nos princípios de Desenvolvimento de Aplicações Web, permite que o método `run` execute blocos de código utilizando o nível de isolamento por omissão do *PostgreSQL*. Caso ocorra uma exceção durante a execução, a transação é automaticamente revertida (*rollback*), garantindo que a base de dados nunca permaneça num estado inconsistente.

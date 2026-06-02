@@ -1,20 +1,7 @@
-# Command line reference
+# App
 
-## Build images
+Esta camada concentra toda a configuração do servidor, sendo responsável pela sua inicialização, integração entre componentes e definição da infraestrutura necessária ao funcionamento do sistema.
 
-* `./gradlew buildImageJvm` - builds the JVM image with backend HTTP API
-* `./gradlew buildImagePostgres` - builds the Postgres image
-* `./gradlew buildImageUbuntu` - builds an image with Ubuntu and the DIG DNS tool
-* `./gradlew buildImageAll` - builds all images
+No contexto do *Spring Boot*, esta camada inclui as classes de configuração, mecanismos de segurança e definição de componentes globais utilizados pelas restantes camadas da aplicação.
 
-## Start and stop services
-
-* `./gradlew allUp` - starts all services.
-* `./gradlew allDown` - stops all services.
-
-## Ubuntu
-
-* `docker exec -ti ubuntu bash` - open shell on contained running Ubuntu.
-* `dig agenda-jvm` - uses `dig` to resolve the addresses for the `agenda-jvm` hostname.
-
-
+Esta camada é responsável pela definição de mecanismos de autenticação e autorização, através da configuração de filtros e *interceptors* utilizados no processamento dos pedidos HTTP. Estes componentes permitem validar credenciais, verificar permissões de acesso e controlar o fluxo de execução antes da invocação dos *controllers*.
