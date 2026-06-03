@@ -143,6 +143,8 @@ const en = {
             invalidName:"That name is not valid. Please choose a different name.",
             occurrenceNotAssignedToUser:"This occurrence is not assigned to your account, so you can't create a report for it.",
             occurrenceNotFound:"No occurrence was found with the provided information.",
+            reportAlreadySubmittedOrApproved: "That report is already submitted or was already approved.",
+            reportNotFound: "That report was not found. Please check the report and try again. If you continue to experience issues, please contact support for further assistance.",
             reporterNotFound:"That investigator is not found in the system. Please check the reporter's information and try again. If the problem persists, contact support for further assistance.",
             roleAlreadyExists:"That role already exists. Please choose a different name for the role you are trying to create.",
             roleNotFound:"No role was found or role does not exist.",

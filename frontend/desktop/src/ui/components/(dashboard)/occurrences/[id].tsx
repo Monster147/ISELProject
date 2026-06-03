@@ -26,8 +26,6 @@ const OccurrenceDetails = () => {
 
     const currentJsonType = type.find(t => t.id === actualOccurrence?.occurrenceType)
 
-    //fazer mostrar o refresh devido ao sse
-
     if (!actualOccurrence) {
         return (
             <ThemedView safe={true} style={styles.container}>
@@ -42,6 +40,10 @@ const OccurrenceDetails = () => {
 
     const handleIntervenors = async () => {
         navigate(`/occurrence/intervenors/${occurrenceId}`)
+    }
+
+    const handleReport = async () => {
+        navigate(`/occurrence/report/${occurrenceId}`)
     }
 
     return (
@@ -67,6 +69,10 @@ const OccurrenceDetails = () => {
                     </ThemedButton>
                     <ThemedButton onPress={handleIntervenors} style={styles.create}>
                         <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("occurrenceDetails.seeIntervenors")}</ThemedText>
+                    </ThemedButton>
+
+                    <ThemedButton onPress={handleReport} style={styles.create}>
+                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("occurrenceDetails.seeReport")}</ThemedText>
                     </ThemedButton>
                 </ThemedCard>
             </ScrollView>

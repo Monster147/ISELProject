@@ -106,6 +106,7 @@ const pt = {
             occurrenceInfo: "Informação da ocorrência",
             goEvidences: "Ir para as evidências",
             seeIntervenors: "Ver intervenientes",
+            seeReport: "Relatório da ocorrência",
         },
         occurrenceIntervenors: {
             occurrenceIntervenors: "Intervenientes na ocorrência",
@@ -142,6 +143,8 @@ const pt = {
             invalidName: "Esse nome não é válido. Por favor, escolha um nome diferente.",
             occurrenceNotAssignedToUser: "Esta ocorrência não está associada à tua conta, por isso não podes criar um relatório para ela.",
             occurrenceNotFound: "Não foi encontrada nenhuma ocorrência com a informação fornecida.",
+            reportAlreadySubmittedOrApproved: "Esse relatório já foi submetido ou já foi aprovado.",
+            reportNotFound: "Esse relatório não foi encontrado. Verifique o relatório e tente novamente. Se o problema persistir, contacte o suporte para obter mais assistência.",
             reporterNotFound: "Esse investigador não foi encontrado no sistema. Verifica a informação do investigador e tenta novamente. Se o problema persistir, contacta o suporte para obter assistência adicional.",
             roleAlreadyExists: "Esse cargo/função já existe. Escolhe um nome diferente para o cargo/função que estás a tentar criar.",
             roleNotFound: "Não foi encontrado nenhum cargo/função ou o cargo/função não existe.",
@@ -216,6 +219,8 @@ const pt = {
             remove: "Remover",
             download: "Descarregar",
             savedSuccess: "Secção guardada com sucesso!",
+        },
+        report: {
         }
     }
 }

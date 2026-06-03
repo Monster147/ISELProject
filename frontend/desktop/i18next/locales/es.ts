@@ -91,6 +91,7 @@ const es = {
             occurrenceInfo: "Información de la ocurrencia",
             goEvidences: "Ir a las evidencias",
             seeIntervenors: "Ver intervinientes",
+            seeReport: "Informe de la ocurrencia"
         },
         occurrenceIntervenors: {
             occurrenceIntervenors: "Intervinientes en la ocurrencia",
@@ -127,6 +128,8 @@ const es = {
             invalidName: "Ese nombre no es válido. Por favor, elija un nombre diferente.",
             occurrenceNotAssignedToUser: "Esta ocurrencia no está asignada a tu cuenta, por lo que no puedes crear un informe para ella.",
             occurrenceNotFound: "No se encontró ninguna ocurrencia con la información proporcionada.",
+            reportAlreadySubmittedOrApproved: "Ese informe ya ha sido presentado o ya ha sido aprobado.",
+            reportNotFound: "No se encontró ese informe. Por favor, revíselo e inténtelo de nuevo. Si el problema persiste, póngase en contacto con el servicio de asistencia técnica.",
             reporterNotFound: "No se encontró a ese investigador en el sistema. Comprueba la información del investigador e inténtalo de nuevo. Si el problema persiste, ponte en contacto con el soporte para obtener más ayuda.",
             roleAlreadyExists: "Ese rol ya existe. Elige un nombre diferente para el rol que estás intentando crear.",
             roleNotFound: "No se encontró ningún rol o el rol no existe.",
@@ -201,6 +204,8 @@ const es = {
             remove: "Eliminar",
             download: "Descargar",
             savedSuccess: "Sección guardada con éxito!",
+        },
+        report: {
         }
     },
 };

@@ -6,4 +6,5 @@ export interface CreateReportInput{
     title: string;
     description: string;
     addons: Json;
+    language: string;
 }

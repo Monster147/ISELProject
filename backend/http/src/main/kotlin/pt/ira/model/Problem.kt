@@ -80,6 +80,8 @@ sealed class Problem(
     // report
     data object ReportNotFound : Problem(URI("${PROBLEM_URI_PATH}/report-not-found"))
 
+    data object ReportAlreadySubmittedOrApproved : Problem(URI("${PROBLEM_URI_PATH}/report-already-submitted-or-approved"))
+
     // evidence
     data object ReporterNotFound : Problem(URI("${PROBLEM_URI_PATH}/reporter-not-found"))
 

@@ -17,6 +17,8 @@ export const errorDescriptions: Record<string, string> = {
     "invalid-name": "errorResponse.invalidName",
     "occurrence-not-assigned-to-user": "errorResponse.occurrenceNotAssignedToUser",
     "occurrence-not-found": "errorResponse.occurrenceNotFound",
+    "report-already-submitted-or-approved": "errorResponse.reportAlreadySubmittedOrApproved",
+    "report-not-found": "errorResponse.reportNotFound",
     "reporter-not-found": "errorResponse.reporterNotFound",
     "role-already-exists": "errorResponse.roleAlreadyExists",
     "role-not-found": "errorResponse.roleNotFound",

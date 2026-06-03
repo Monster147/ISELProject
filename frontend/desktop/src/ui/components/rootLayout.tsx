@@ -15,6 +15,7 @@ import {DocumentProvider} from "../contexts/DocumentContext";
 import {TypeProvider} from "../contexts/TypeContext";
 import {EvidenceProvider} from "../contexts/EvidenceContext";
 import {StatsProvider} from "../contexts/StatsContext";
+import {ReportProvider} from "../contexts/ReportContext";
 
 const RootLayoutContent = () => {
     const colorScheme = useColorScheme()
@@ -67,7 +68,9 @@ const RootLayout = () => {
                         <TypeProvider>
                             <EvidenceProvider>
                                 <StatsProvider>
-                                    <RootLayoutContent/>
+                                    <ReportProvider>
+                                        <RootLayoutContent/>
+                                    </ReportProvider>
                                 </StatsProvider>
                             </EvidenceProvider>
                         </TypeProvider>

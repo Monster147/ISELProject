@@ -239,6 +239,18 @@ export const api = {
         });
     },
 
+    async findReportByOccurrenceId(occurrenceId:number): Promise<Report> {
+        return fetchApi<Report>(`/report/byOccurrence/${occurrenceId}`, {
+            method: "GET",
+        });
+    },
+
+    async submitReport(id:number): Promise<Boolean> {
+        return fetchApi<Boolean>(`/report/submit/${id}`, {
+            method: "POST",
+        });
+    },
+
     async findAllReports(): Promise<Report[]> {
         return fetchApi<Report[]>("/report", {
             method: "GET",

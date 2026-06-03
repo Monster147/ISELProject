@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
+import pt.ira.Failure
+import pt.ira.Success
 import pt.ira.model.Problem
 import pt.ira.model.report.CreateReportInput
 import pt.ira.model.report.EditorInput
@@ -95,6 +97,51 @@ class ReportController(
         @PathVariable id: Int,
     ): ResponseEntity<*> {
         val result = reportService.findById(id)
+        return when (result) {
+            is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)
+            is Failure ->
+                when (result.value) {
+                    ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+                }
+        }
+    }
+
+    /**
+     *  Atualiza o status do relatório para "SUBMITTED", indicando que foi submetido para revisão.
+     *
+     *  @param id Identificador do relatório a submeter.
+     *
+     *  @return `200 OK`, `404 Not Found` caso não exista ou `409 Conflict` se o relatório já estiver submetido ou aprovado.
+     */
+    @PostMapping("/submit/{id}")
+    fun submitReport(
+        @PathVariable id: Int,
+    ) : ResponseEntity<*> {
+        val result = reportService.submitReport(id)
+        return when (result) {
+            is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)
+            is Failure ->
+                when (result.value) {
+                    ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
+                    ReportError.ReportAlreadySubmittedOrApproved -> Problem.ReportAlreadySubmittedOrApproved.response(HttpStatus.CONFLICT)
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+                }
+        }
+    }
+
+    /**
+     * Obtém um relatório pelo identificador da ocorrência.
+     *
+     * @param occurrenceId Identificador da ocorrência.
+     *
+     * @return `200 OK` com o relatório ou `404 Not Found` caso não exista.
+     */
+    @GetMapping("byOccurrence/{occurrenceId}")
+    fun findReportByOccurrenceId(
+        @PathVariable occurrenceId: Int,
+    ): ResponseEntity<*> {
+        val result = reportService.findByOccurrenceId(occurrenceId)
         return when (result) {
             is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)
             is Failure ->

@@ -55,6 +55,11 @@ sealed class ReportError {
      * Já existe um relatório associado à ocorrência especificada.
      */
     data object OccurrenceAlreadyHasReport : ReportError()
+
+    /**
+     * Já existe um relatório submetido ou aprovado.
+     */
+    data object ReportAlreadySubmittedOrApproved : ReportError()
 }
 
 /**
@@ -260,6 +265,41 @@ class ReportService(
                     ?: return@run failure(ReportError.ReportNotFound)
             success(report)
         }
+    }
+
+    /**
+     * Obtém um relatório pelo identificador da ocorrência.
+     *
+     * @param occurrenceId Identificador da ocorrência.
+     *
+     * @return [Report] correspondente, ou erro do tipo [ReportError].
+     */
+    fun findByOccurrenceId(occurrenceId: Int): Either<ReportError, Report> {
+        return trxManager.run {
+            val report = repoReport.findByOccurrenceId(occurrenceId) ?: return@run failure(ReportError.ReportNotFound)
+            success(report)
+        }
+    }
+
+    /**
+     * Atualiza o status do relatório para "SUBMITTED", indicando que foi submetido para revisão.
+     *
+     * @param id Identificador do relatório a submeter.
+     *
+     * @return [Boolean] indicando sucesso da operação, ou erro do tipo [ReportError] caso o relatório não exista ou já esteja submetido/aprovado.
+     */
+    fun submitReport(id: Int): Either<ReportError, Boolean> {
+        return trxManager.run {
+            val report =
+                repoReport.findById(id)
+                    ?: return@run failure(ReportError.ReportNotFound)
+            if (report.status == ReportStatus.SUBMITTED || report.status == ReportStatus.APPROVED) {
+                return@run failure(ReportError.ReportAlreadySubmittedOrApproved)
+            }
+            repoReport.updateStatus(report, ReportStatus.SUBMITTED)
+            success(true)
+        }
+
     }
 
     /**

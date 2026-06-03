@@ -20,6 +20,7 @@ import Documents from "./components/(dashboard)/documents";
 import DynamicOccurrenceForm  from "./components/(dashboard)/occurrences/evidences/[id]";
 import Dashboard from "./components/(dashboard)/dashboard";
 import OccurrenceScreen from "./components/(dashboard)/occurrence";
+import OccurrenceReport from "./components/(dashboard)/occurrences/report/[id]";
 
 export const router = createBrowserRouter([
     {
@@ -47,7 +48,8 @@ export const router = createBrowserRouter([
                     {path: "/intervenor/update/:intervenorId", element: <IntervenorUpdate/>},
                     {path: "/intervenor/:selectMode/:occurrenceId", element: <IntervenorSearch/>},
                     {path: "/occurrence/evidences/:occurrenceId", element: <DynamicOccurrenceForm/>},
-                    {path: "/dashboard", element: <Dashboard/> }
+                    {path: "/dashboard", element: <Dashboard/> },
+                    {path: "occurrence/report/:occurrenceId", element: <OccurrenceReport/>}
                 ]
             },
         ],
