@@ -8,6 +8,7 @@ import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.apache.pdfbox.pdmodel.font.PDType1Font
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import pt.ira.emitters.ActionKind
 import pt.ira.interfaces.TransactionManager
@@ -109,10 +110,10 @@ class ReportService(
         return trxManager.run {
             repoUsers.findById(creatorId) ?: return@run failure(ReportError.UserNotFound)
             val occurrence = repoOccurrence.findById(occurrenceId) ?: return@run failure(ReportError.OccurrenceNotFound)
-            val existingReport = repoReport.findByOccurrenceId(occurrenceId)
+            /*val existingReport = repoReport.findByOccurrenceId(occurrenceId)
             if (existingReport != null) {
                 return@run failure(ReportError.OccurrenceAlreadyHasReport)
-            }
+            }*/
             if (occurrence.reporterId != creatorId) {
                 return@run failure(ReportError.OccurrenceNotAssignedToUser)
             }
@@ -134,6 +135,10 @@ class ReportService(
             )
             success(report)
         }
+    }
+
+    companion object{
+        private val logger = LoggerFactory.getLogger(ReportService::class.java)
     }
 
     /**
@@ -159,6 +164,8 @@ class ReportService(
         trxManager.run {
             val type = repoType.findById(occurrenceType) ?: return@run
             val sections = type.form["sections"]
+            val savedSections = findSavedSections(occurrenceId)
+            logger.info("Saved sections found: {}", savedSections)
 
             PDDocument().use{ doc ->
                 var page = PDPage(PDRectangle.A4)
@@ -192,29 +199,28 @@ class ReportService(
                     y-=lineHeight
                 }
 
-                fun sanatizeSectionName(name: String?): String =
+                fun sanitizeSectionName(name: String?): String =
                     Normalizer.normalize(name, Normalizer.Form.NFD)
                         .replace(Regex("[\\u0300-\\u036f]"), "")
                         .replace(Regex("[^a-zA-Z0-9]"), "-")
                         .replace(Regex("-+"), "-")
                         .lowercase()
 
-                sections?.forEach { section ->
-                    val titleNode = section["title"]
-                    val title = titleNode?.get(language)?.asText()
-                    val fieldLabelMap = section["fields"]
-                        .associate { field ->
-                            val key = field["name"].asText()
-                            val label = field["label"]?.get(language)?.asText()
-                            key to label
-                        }
-                    val sectionKey = sanatizeSectionName(title)
-                    writeLine(sectionKey)
+                fun renderSection(
+                    title: String,
+                    sectionData: JsonNode,
+                    fieldLabelMap: Map<String, String>
+                ){
+                    writeLine(makeTitle(title), true)
                     y-=5
-                    val savedSection = loadSavedSection(occurrenceId, sectionKey)
-                    val data = savedSection?.get("data")
-                    data?.fields()?.forEach {
-                        val label = fieldLabelMap[it.key] ?: it.key
+                    val data = sectionData["data"] ?: return
+                    data.properties()?.forEach {
+                        val normalizedKey =
+                            it.key.replace(Regex("_\\d+$"), "_{index}")
+                        val label =
+                            fieldLabelMap[normalizedKey]
+                                ?: fieldLabelMap[it.key]
+                                ?: it.key
                         val value = it.value?.takeIf { v -> v.asText() != "null" }?.asText()
                         if (value == null) {
                             val notAvailable = when (language) {
@@ -230,6 +236,67 @@ class ReportService(
                     y-=10
                 }
 
+                fun reportTitle(language: String): String =
+                    when(language) {
+                        "pt" -> "Relatório da Ocorrência ${occurrenceId}"
+                        "es" -> "Informe de Incidencia ${occurrenceId}"
+                        else -> "Occurrence ${occurrenceId} Report"
+                    }
+
+                writeLine(reportTitle(language), true)
+                y-=15
+
+                sections?.forEach { section ->
+                    val titleNode = section["title"]
+                    val fieldLabelMap = section["fields"]
+                        .associate { field ->
+                            val key = field["name"].asText()
+                            val label = field["label"]?.get(language)?.asText() ?: key
+                            key to label
+                        }
+
+                    val title = titleNode?.get(language)?.asText()
+                    val templateKey = sanitizeSectionName(title)
+                    val isIndexed = templateKey.contains("index")
+                    if(!isIndexed){
+                        val savedSection = savedSections.firstOrNull{
+                            it["section"]?.asText() == templateKey
+                        }
+                        if(savedSection != null && title != null) {
+                            renderSection(
+                                title, savedSection, fieldLabelMap
+                            )
+                        }
+                    } else {
+                        val prefix = templateKey.replace("-index-", "")
+                        val matches = savedSections
+                                .filter {
+                                    it["section"]?.asText()?.startsWith(prefix)
+                                        ?: false
+                                }
+                                .sortedBy {
+                                    it["section"].asText()?.substringAfterLast("-")
+                                        ?.toIntOrNull()
+                                }
+                        matches.forEach { saved ->
+                            val index = saved["section"].asText().substringAfterLast("-")
+                            val sectionTitle =
+                                title?.replace(
+                                    "{index}",
+                                    index,
+                                    ignoreCase = true
+                                )
+                            if(sectionTitle != null) {
+                                renderSection(
+                                    sectionTitle,
+                                    saved,
+                                    fieldLabelMap
+                                )
+                            }
+                        }
+                    }
+                }
+
                 content.close()
                 val filename = "report_$occurrenceId.pdf"
                 storageService.saveReport(filename, doc)
@@ -237,6 +304,38 @@ class ReportService(
             }
         }
 
+    private fun findSavedSections(occurrenceId: Int):List<JsonNode> =
+        trxManager.run {
+            val evidenceList = repoEvidence.findByOccurrenceId(occurrenceId)
+            if (evidenceList.isEmpty()) return@run listOf()
+            evidenceList
+                .filter {
+                    it.filePath.endsWith(".json") && it.filePath.contains("section-")
+                }
+                .mapNotNull {
+                    try{
+                        val file = storageService.loadEvidence(it.filePath)
+                        val text = file?.inputStream?.bufferedReader()?.readText()
+                        objectMapper.readTree(text)
+                    } catch (e: Exception) {
+                        logger.warn("Failed to load evidence ${it.filePath} for occurrence $occurrenceId", e)
+                        null
+                    }
+                }
+        }
+
+    private fun makeTitle(title: String?): String {
+        if (title == null) return ""
+        val exceptions = listOf(
+            "de", "da", "do", "das", "dos", "e"
+        )
+
+        return title.split(" ")
+            .mapIndexed { index, string ->
+                if (index > 0 && string.lowercase() in exceptions) string
+                else string.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+            }.joinToString(" ")
+    }
     private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
 
     private fun loadSavedSection(occurrenceId: Int, sectionKey: String) : JsonNode? {

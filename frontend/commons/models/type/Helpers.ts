@@ -22,11 +22,27 @@ function expandFields(
 
             for (let i = 0; i < count; i++) {
                 const index = String(i);
-
+                const expandedAutofill =
+                    field.dynamicOptions?.autofill
+                        ? Object.fromEntries(
+                            Object.entries(field.dynamicOptions.autofill).map(
+                                ([key, value]) => [
+                                    key.replace(/\{index\}/g, index),
+                                    value,
+                                ]
+                            )
+                        )
+                        : undefined;
                 result.push({
                     ...field,
                     name: field.name.replace(/\{index\}/g, index),
                     label: replaceLabelText(field.label, /\{index\}/g, String(i + 1), language),
+                    dynamicOptions: field.dynamicOptions
+                        ? {
+                            ...field.dynamicOptions,
+                            autofill: expandedAutofill,
+                        }
+                        : undefined,
                 });
             }
 
@@ -41,6 +57,19 @@ function expandFields(
             label: sectionIndex
                 ? replaceLabelText(field.label, /\{index\}/g, sectionIndex, language)
                 : field.label,
+            dynamicOptions: sectionIndex && field.dynamicOptions?.autofill
+                ? {
+                    ...field.dynamicOptions,
+                    autofill: Object.fromEntries(
+                        Object.entries(field.dynamicOptions.autofill).map(
+                            ([key, value]) => [
+                                key.replace(/\{index\}/g, sectionIndex),
+                                value,
+                            ]
+                        )
+                    ),
+                }
+                : field.dynamicOptions
         });
     }
 
