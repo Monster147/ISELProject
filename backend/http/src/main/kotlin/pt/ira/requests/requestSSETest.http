@@ -33,7 +33,7 @@ Content-Type: application/json
 Authorization: Bearer {{token_user}}
 
 {
-  "usersId": 1,
+  "usersId": 2,
   "endDate": "2030-12-31",
   "importance": "URGENT",
   "occurrenceType": 1 ,
@@ -218,7 +218,7 @@ Content-Type: application/json
 }
 
 ### Delete Report
-DELETE http://localhost:8080/api/report/1
+DELETE http://localhost:8080/api/report/3
 Authorization: Bearer {{token_user}}
 
 ### Get overview Stats

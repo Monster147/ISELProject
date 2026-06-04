@@ -13,5 +13,6 @@ export interface Report {
     updatedAt: number;
     editors: number[];
     intervenors: number[];
+    language: string;
 }
 

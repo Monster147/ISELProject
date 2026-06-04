@@ -141,6 +141,8 @@ const es = {
             intervenorNotInOccurrence: "Ese interviniente no está asociado a esta ocurrencia.",
             invalidFile: "El archivo no existe o no es un archivo válido. Por favor, compruebe la ruta del archivo e inténtelo de nuevo.",
             invalidName: "Ese nombre no es válido. Por favor, elija un nombre diferente.",
+            missingRequiredFields: "Faltan uno o más campos obligatorios o están vacíos. Por favor, complete todos los campos obligatorios antes de enviar el informe.",
+            occurrenceAlreadyHasReport: "Ese ocurrencia ya tiene un informe asociado. No se pueden crear varios informes para el mismo ocurrencia.",
             occurrenceNotAssignedToUser: "Esta ocurrencia no está asignada a tu cuenta, por lo que no puedes crear un informe para ella.",
             occurrenceNotFound: "No se encontró ninguna ocurrencia con la información proporcionada.",
             reportAlreadySubmittedOrApproved: "Ese informe ya ha sido presentado o ya ha sido aprobado.",

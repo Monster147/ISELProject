@@ -141,6 +141,8 @@ const pt = {
             intervenorNotInOccurrence: "Esse interveniente não está associado a esta ocorrência.",
             invalidFile: "O ficheiro não existe ou não é um ficheiro válido. Por favor, verifique o caminho do ficheiro e tente novamente.",
             invalidName: "Esse nome não é válido. Por favor, escolha um nome diferente.",
+            missingRequiredFields: "Um ou mais campos obrigatórios estão em falta ou vazios. Preencha todos os campos obrigatórios antes de submeter o relatório.",
+            occurrenceAlreadyHasReport: "Esta ocorrência já tem um relatório associado. Não é possível criar vários relatórios para a mesma ocorrência.",
             occurrenceNotAssignedToUser: "Esta ocorrência não está associada à tua conta, por isso não podes criar um relatório para ela.",
             occurrenceNotFound: "Não foi encontrada nenhuma ocorrência com a informação fornecida.",
             reportAlreadySubmittedOrApproved: "Esse relatório já foi submetido ou já foi aprovado.",
@@ -221,6 +223,22 @@ const pt = {
             savedSuccess: "Secção guardada com sucesso!",
         },
         report: {
+            report: "Relatório",
+            createReport: "Criar relatório",
+            title: "Titulo do relatório",
+            description: "Descrição do relatório",
+            create: "Criar",
+            status: "Estado do relatório",
+            update: "Atualizar relatório",
+            download: "Descarregar relatório",
+            submit: "Submeter relatório",
+            submitMessage: "Tem a certeza de que pretende enviar o relatório?",
+            cancel: "Cancelar",
+            submitConfirm: "Submeter",
+            downloadMessage: "Tem a certeza de que quer descarregar o relatório?",
+            downloadConfirm: "Descarregar",
+            updateMessage: "Tem a certeza de que quer atualizar o relatório?",
+            updateConfirm: "Atualizar",
         }
     }
 }

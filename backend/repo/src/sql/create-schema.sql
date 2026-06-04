@@ -71,7 +71,8 @@ CREATE TABLE dbo.report
     created_at              bigint             NOT NULL,
     updated_at              bigint             NOT NULL,
     editors                 INT[]              ,
-    intervenors             INT[]
+    intervenors             INT[]              ,
+    language                VARCHAR(255)       NOT NULL
 );
 
 CREATE TABLE dbo.report_users(

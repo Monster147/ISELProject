@@ -30,6 +30,7 @@ interface RepositoryReport : Repository<Report> {
         type: Int,
         addons: JsonNode,
         intervenors: List<Int>,
+        language: String,
     ): Report
 
     /**

@@ -82,6 +82,10 @@ sealed class Problem(
 
     data object ReportAlreadySubmittedOrApproved : Problem(URI("${PROBLEM_URI_PATH}/report-already-submitted-or-approved"))
 
+    data object MissingRequiredFields : Problem(URI("${PROBLEM_URI_PATH}/missing-required-fields"))
+
+    data object OccurrenceAlreadyHasReport : Problem(URI("${PROBLEM_URI_PATH}/occurrence-already-has-report"))
+
     // evidence
     data object ReporterNotFound : Problem(URI("${PROBLEM_URI_PATH}/reporter-not-found"))
 

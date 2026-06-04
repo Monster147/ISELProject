@@ -126,6 +126,8 @@ const en = {
             intervenorNotInOccurrence:"That intervenor is not associated with this occurrence.",
             invalidFile:"The file doesn't exist or is not a valid file. Please check the file path and try again.",
             invalidName:"That name is not valid. Please choose a different name.",
+            missingRequiredFields: "One or more required fields are missing or empty. Please complete all mandatory fields before submitting the report.",
+            occurrenceAlreadyHasReport: "That occurrence already has a report associated with it. You cannot create multiple reports for the same occurrence.",
             occurrenceNotAssignedToUser:"This occurrence is not assigned to your account, so you can't create a report for it.",
             occurrenceNotFound:"No occurrence was found with the provided information.",
             reportAlreadySubmittedOrApproved: "That report is already submitted or was already approved.",
@@ -206,6 +208,22 @@ const en = {
             savedSuccess: "Section saved successfully!",
         },
         report:{
+            report: "Report",
+            createReport: "Create Report",
+            title: "Report Title",
+            description: "Report Description",
+            create: "Create",
+            status: "Report Status",
+            update: "Update Report",
+            download: "Download Report",
+            submit: "Submit Report",
+            submitMessage: "Are you sure you want to submit the report?",
+            cancel: "Cancel",
+            submitConfirm: "Submit",
+            downloadMessage: "Are you sure you want to download the report?",
+            downloadConfirm: "Download",
+            updateMessage: "Are you sure you want to update the report?",
+            updateConfirm: "Update",
         }
     }
 }

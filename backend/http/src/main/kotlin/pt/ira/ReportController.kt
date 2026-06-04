@@ -1,5 +1,6 @@
 package pt.ira
 
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -19,6 +20,7 @@ import pt.ira.model.report.StatusInput
 import pt.ira.publishers.Publishers
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
+import java.util.logging.Logger
 
 /**
  * Controlador REST responsável pela gestão de relatórios no sistema.
@@ -80,6 +82,9 @@ class ReportController(
             is Failure ->
                 when (result.value) {
                     ReportError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+                    ReportError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
+                    ReportError.OccurrenceNotAssignedToUser -> Problem.OccurrenceNotAssignedToUser.response(HttpStatus.FORBIDDEN)
+                    ReportError.OccurrenceAlreadyHasReport -> Problem.OccurrenceAlreadyHasReport.response(HttpStatus.CONFLICT)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }
@@ -125,6 +130,8 @@ class ReportController(
                 when (result.value) {
                     ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
                     ReportError.ReportAlreadySubmittedOrApproved -> Problem.ReportAlreadySubmittedOrApproved.response(HttpStatus.CONFLICT)
+                    ReportError.MissingRequiredFields -> Problem.MissingRequiredFields.response(HttpStatus.BAD_REQUEST)
+                    ReportError.TypeNotFound -> Problem.TypeNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }

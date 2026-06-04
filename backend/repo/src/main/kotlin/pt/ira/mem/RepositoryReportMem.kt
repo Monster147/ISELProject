@@ -17,6 +17,7 @@ class RepositoryReportMem : RepositoryReport {
         type: Int,
         addons: JsonNode,
         intervenors: List<Int>,
+        language: String,
     ): Report =
         Report(
             id = reports.size + 1,
@@ -28,6 +29,7 @@ class RepositoryReportMem : RepositoryReport {
             addons = addons,
             editors = listOf(creatorId),
             intervenors = intervenors,
+            language = language,
         ).also { reports.add(it) }
 
     override fun findByOccurrenceId(occurrenceId: Int): Report? = reports.find { it.occurrenceId == occurrenceId }

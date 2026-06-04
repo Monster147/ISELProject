@@ -15,6 +15,8 @@ export const errorDescriptions: Record<string, string> = {
     "intervenor-not-in-occurrence": "errorResponse.intervenorNotInOccurrence",
     "invalid-file": "errorResponse.invalidFile",
     "invalid-name": "errorResponse.invalidName",
+    "missing-required-fields": "errorResponse.missingRequiredFields",
+    "occurrence-already-has-report": "errorResponse.occurrenceAlreadyHasReport",
     "occurrence-not-assigned-to-user": "errorResponse.occurrenceNotAssignedToUser",
     "occurrence-not-found": "errorResponse.occurrenceNotFound",
     "report-already-submitted-or-approved": "errorResponse.reportAlreadySubmittedOrApproved",

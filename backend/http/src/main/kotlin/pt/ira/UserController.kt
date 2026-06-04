@@ -88,6 +88,9 @@ class UserController(
                             HttpStatus.BAD_REQUEST,
                         )
 
+                    is UserError.RoleDoesntExist ->
+                        Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
+
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }

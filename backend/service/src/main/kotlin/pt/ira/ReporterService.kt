@@ -61,6 +61,18 @@ sealed class ReportError {
      * Já existe um relatório submetido ou aprovado.
      */
     data object ReportAlreadySubmittedOrApproved : ReportError()
+
+    /**
+     * O tipo solicitado não foi encontrado no sistema,
+     * quer por identificador, quer por nome.
+     */
+    data object TypeNotFound : ReportError()
+
+
+    /**
+     * O relatório não preenche todos os campos obrigatórios definidos no formulário do tipo de ocorrência.
+     */
+    data object MissingRequiredFields : ReportError()
 }
 
 /**
@@ -126,6 +138,7 @@ class ReportService(
                     type = occurrence.occurrenceType,
                     addons = addons,
                     intervenors = occurrence.intervenors,
+                    language = language,
                 )
             generateReport(occurrenceId, occurrence.occurrenceType ,language)
             publisher.reportPublisher.sendMessageToAll(
@@ -395,11 +408,92 @@ class ReportService(
             if (report.status == ReportStatus.SUBMITTED || report.status == ReportStatus.APPROVED) {
                 return@run failure(ReportError.ReportAlreadySubmittedOrApproved)
             }
+            val type = repoType.findById(report.type)
+                ?: return@run failure(ReportError.TypeNotFound)
+
+            if (!areAllRequiredFieldsFilled(type.form, report.occurrenceId, report.language)) {
+                return@run failure(ReportError.MissingRequiredFields)
+            }
+
             repoReport.updateStatus(report, ReportStatus.SUBMITTED)
             success(true)
         }
 
     }
+
+    private fun areAllRequiredFieldsFilled(
+        formJson: JsonNode,
+        occurrenceId: Int,
+        language: String
+    ): Boolean {
+        val sections = formJson["sections"]
+
+        for (section in sections) {
+            val repeatFor = section["repeatFor"]?.asText()
+
+            if (repeatFor != null) {
+                val repeatCount = findFieldValue(formJson, occurrenceId, repeatFor, language)?.asInt() ?: 0
+                if (repeatCount == 0) {
+                    continue
+                }
+                for (i in 0 until repeatCount) {
+                    val sectionTitle = section["title"]
+                    val expandedTitle = sectionTitle?.get(language)?.asText()?.replace("{index}", i.toString())
+                    val sanitizedTitle = sanitizeSectionName(expandedTitle)
+                    val savedSection = loadSavedSection(occurrenceId, sanitizedTitle)
+                    val data = savedSection?.get("data")
+                    for (field in section["fields"]) {
+                        if (!field["required"].asBoolean()) {
+                            continue
+                        }
+                        val fieldName = field["name"].asText().replace("{index}", i.toString())
+                        val value = data?.get(fieldName)
+                        if (value == null || value.asText().isBlank()) {
+                            return false
+                        }
+                    }
+                }
+            } else {
+                val sectionTitle = section["title"]
+                val sanitizedTitle = sanitizeSectionName(sectionTitle?.get(language)?.asText())
+                val savedSection = loadSavedSection(occurrenceId, sanitizedTitle)
+                val data = savedSection?.get("data")
+                for (field in section["fields"]) {
+                    if (!field["required"].asBoolean()) {
+                        continue
+                    }
+                    val fieldName = field["name"].asText()
+                    val value = data?.get(fieldName)
+                    if (value == null || value.asText().isBlank()) {
+                        return false
+                    }
+                }
+            }
+        }
+        return true
+    }
+
+    private fun findFieldValue(formJson: JsonNode, occurrenceId: Int, fieldName: String, language: String): JsonNode? {
+        val sections = formJson["sections"]
+        for (section in sections) {
+            val sectionTitle = section["title"]
+            val sanitizedTitle = sanitizeSectionName(sectionTitle?.get(language)?.asText())
+            val savedSection = loadSavedSection(occurrenceId, sanitizedTitle)
+            val data = savedSection?.get("data")
+            val value = data?.get(fieldName)
+            if (value != null) {
+                return value
+            }
+        }
+        return null
+    }
+
+    private fun sanitizeSectionName(name: String?): String =
+        Normalizer.normalize(name, Normalizer.Form.NFD)
+            .replace(Regex("[\\u0300-\\u036f]"), "")
+            .replace(Regex("[^a-zA-Z0-9]"), "-")
+            .replace(Regex("-+"), "-")
+            .lowercase()
 
     /**
      * Obtém todos os relatórios com um determinado estado.

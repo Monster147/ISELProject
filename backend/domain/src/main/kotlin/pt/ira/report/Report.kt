@@ -38,4 +38,5 @@ data class Report(
     val updatedAt: Long = System.currentTimeMillis(),
     val editors: List<Int> = listOf(),
     val intervenors: List<Int>,
+    val language: String,
 )

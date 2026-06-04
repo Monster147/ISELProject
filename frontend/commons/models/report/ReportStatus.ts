@@ -1,5 +1,5 @@
 export enum ReportStatus {
-    SUBMITED = "SUBMITED",
+    SUBMITTED = "SUBMITTED",
     APPROVED = "APPROVED",
     REJECTED = "REJECTED",
     EDITING = "EDITING",
