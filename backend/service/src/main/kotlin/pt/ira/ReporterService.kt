@@ -8,6 +8,8 @@ import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.apache.pdfbox.pdmodel.font.PDType1Font
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import pt.ira.emitters.ActionKind
@@ -17,6 +19,8 @@ import pt.ira.report.Report
 import pt.ira.report.ReportStatus
 import pt.ira.storage.StorageService
 import java.text.Normalizer
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 /**
  * Hierarquia de erros específicos do domínio dos relatórios.
@@ -199,11 +203,23 @@ class ReportService(
                     y = page.mediaBox.height - margin
                 }
 
+                fun drawLine() {
+                    content.saveGraphicsState()
+                    content.setStrokingColor(4f / 255f, 58f / 255f, 35f / 255f)
+                    content.setLineWidth(1f)
+                    content.moveTo(margin, y)
+                    content.lineTo(page.mediaBox.width - margin, y)
+                    content.stroke()
+                    content.restoreGraphicsState()
+                }
+
                 fun writeLine(text: String, isTitle: Boolean = false) {
                     if (y<margin) newPage()
                     content.beginText()
+                    val font = if (isTitle) PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD)
+                    else PDType1Font(Standard14Fonts.FontName.HELVETICA)
                     content.setFont(
-                        if(isTitle) PDType1Font.HELVETICA_BOLD else PDType1Font.HELVETICA,
+                        font,
                         if(isTitle) 16f else 12f
                     )
                     content.newLineAtOffset(margin, y)
@@ -212,20 +228,14 @@ class ReportService(
                     y-=lineHeight
                 }
 
-                fun sanitizeSectionName(name: String?): String =
-                    Normalizer.normalize(name, Normalizer.Form.NFD)
-                        .replace(Regex("[\\u0300-\\u036f]"), "")
-                        .replace(Regex("[^a-zA-Z0-9]"), "-")
-                        .replace(Regex("-+"), "-")
-                        .lowercase()
-
                 fun renderSection(
                     title: String,
                     sectionData: JsonNode,
                     fieldLabelMap: Map<String, String>
                 ){
+                    y-=12
                     writeLine(makeTitle(title), true)
-                    y-=5
+                    y-=8
                     val data = sectionData["data"] ?: return
                     data.properties()?.forEach {
                         val normalizedKey =
@@ -247,6 +257,8 @@ class ReportService(
                         }
                     }
                     y-=10
+                    drawLine()
+                    y-=15
                 }
 
                 fun reportTitle(language: String): String =
@@ -256,8 +268,60 @@ class ReportService(
                         else -> "Occurrence ${occurrenceId} Report"
                     }
 
-                writeLine(reportTitle(language), true)
-                y-=15
+                fun writeTitle (title:String, dateTime: String){
+                    val logoImage = loadImage(doc, "/images/logo.png", "logo.png")
+                    val logoWidth = 80f
+                    val spacing = 8f
+                    val logoHeight =
+                        if (logoImage != null)
+                            logoWidth * logoImage.height.toFloat() / logoImage.width.toFloat()
+                        else
+                            0f
+
+                    val logoX = margin
+                    val logoY = y - logoHeight
+
+                    if(logoImage != null) {
+                        content.saveGraphicsState()
+                        content.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight)
+                        content.restoreGraphicsState()
+                    }
+
+                    val textX = logoX  + logoWidth + spacing
+                    val textStartY = y - 18f
+                    content.beginText()
+                    val font = PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD)
+                    content.setFont(font, 16f)
+                    content.newLineAtOffset(textX, textStartY)
+                    content.showText(title.take(120))
+                    content.endText()
+
+                    content.saveGraphicsState()
+                    content.beginText()
+                    content.setNonStrokingColor(211f / 255f, 211f / 255f, 211f / 255f)
+                    content.setFont(PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 10f)
+                    content.newLineAtOffset(textX, y-38f)
+                    content.showText(dateTime.take(120))
+                    content.endText()
+                    content.restoreGraphicsState()
+
+                    val headerHeight = maxOf(logoHeight, 40f) + 20f
+                    y -= headerHeight
+                    drawLine()
+                    y -= 15f
+                }
+
+                fun generateDateTime(language: String): String {
+                    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+                    return when(language) {
+                        "pt" -> "Data de geração: ${LocalDateTime.now().format(formatter)}"
+                        "es" -> "Fecha de generación: ${LocalDateTime.now().format(formatter)}"
+                        else -> "Generation date: ${LocalDateTime.now().format(formatter)}"
+                    }
+                }
+
+
+                writeTitle(reportTitle(language), generateDateTime(language))
 
                 sections?.forEach { section ->
                     val titleNode = section["title"]
@@ -317,6 +381,22 @@ class ReportService(
             }
         }
 
+    private fun loadImage(doc: PDDocument, path: String, name: String?): PDImageXObject? {
+        return try{
+            val stream = javaClass.getResourceAsStream(path)
+            if(stream != null){
+                val bytes = stream.readBytes()
+                PDImageXObject.createFromByteArray(doc, bytes, name)
+            } else {
+                logger.warn("Logo image not found in resources")
+                null
+            }
+        } catch (e: Exception) {
+            logger.error("Failed to load logo image", e)
+            null
+        }
+    }
+
     private fun findSavedSections(occurrenceId: Int):List<JsonNode> =
         trxManager.run {
             val evidenceList = repoEvidence.findByOccurrenceId(occurrenceId)
@@ -338,15 +418,17 @@ class ReportService(
         }
 
     private fun makeTitle(title: String?): String {
+        logger.info("Title: {}", title)
         if (title == null) return ""
         val exceptions = listOf(
             "de", "da", "do", "das", "dos", "e"
         )
 
-        return title.split(" ")
+        return title.lowercase()
+            .split(" ")
             .mapIndexed { index, string ->
-                if (index > 0 && string.lowercase() in exceptions) string
-                else string.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+                if (index > 0 && string in exceptions) string
+                else string.replaceFirstChar { it.titlecase() }
             }.joinToString(" ")
     }
     private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()

@@ -29,7 +29,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(kotlin("test"))
 
-    implementation("org.apache.pdfbox:pdfbox:2.0.1")
+    implementation("org.apache.pdfbox:pdfbox:3.0.0")
 }
 
 kotlin {
