@@ -29,7 +29,8 @@
                 "contact": "contactInfo",
                 "address": "address"
               }
-            }
+            },
+            "dontPrint": true
           }
         ]
       },
@@ -378,7 +379,8 @@
             "type": "number",
             "required": true,
             "min": 0,
-            "max": 10
+            "max": 200,
+            "dontPrint": true
           }
         ]
       },
@@ -409,7 +411,8 @@
                 "thirdPartyContact_{index}": "contactInfo",
                 "thirdPartyAddress_{index}": "address"
               }
-            }
+            },
+            "dontPrint": true
           }
         ]
       },
@@ -571,7 +574,7 @@
               "en": "Policy No.",
               "es": "N.º de Póliza"
             },
-            "type": "number",
+            "type": "string",
             "required": true
           }
         ]
@@ -752,7 +755,8 @@
             "type": "number",
             "required": false,
             "min": 0,
-            "max": 10
+            "max": 200,
+            "dontPrint": true
           }
         ]
       },
@@ -853,7 +857,8 @@
             "type": "number",
             "required": false,
             "min": 0,
-            "max": 20
+            "max": 150,
+            "dontPrint": true
           }
         ]
       },
@@ -1715,7 +1720,8 @@
             "type": "number",
             "required": true,
             "min": 0,
-            "max": 20
+            "max": 100,
+            "dontPrint": true
           }
         ]
       },
@@ -1776,7 +1782,8 @@
             "type": "number",
             "required": true,
             "min": 0,
-            "max": 50
+            "max": 100,
+            "dontPrint": true
           }
         ]
       },
@@ -1915,7 +1922,8 @@
             "type": "number",
             "required": false,
             "min": 0,
-            "max": 20
+            "max": 150,
+            "dontPrint": true
           },
           {
             "name": "thirdPartyPhoto_{index}",
@@ -2392,7 +2400,8 @@
             "type": "number",
             "required": false,
             "min": 0,
-            "max": 20
+            "max": 150,
+            "dontPrint": true
           },
           {
             "name": "witnessStatement_{index}",
@@ -2435,7 +2444,8 @@
             "type": "number",
             "required": false,
             "min": 0,
-            "max": 100
+            "max": 100,
+            "dontPrint": true
           },
           {
             "name": "otherDocumentation_{index}",

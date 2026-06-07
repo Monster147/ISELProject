@@ -1,0 +1,183 @@
+{
+  "name": "Example Type",
+  "form": {
+    "type": "example_type",
+    "sections": [
+      {
+        "title": {
+          "pt": "SELEÇÃO DO SEGURADO",
+          "en": "INSURED SELECTION",
+          "es": "SELECCIÓN DEL ASEGURADO"
+        },
+        "fields": [
+          {
+            "name": "selectedIntervenient",
+            "label": {
+              "pt": "Selecione o Interveniente",
+              "en": "Select the Intervenient",
+              "es": "Seleccione el Interviniente"
+            },
+            "type": "select",
+            "required": true,
+            "dynamicOptions": {
+              "source": "occurrenceIntervenients",
+              "labelField": "name",
+              "valueField": "id",
+              "autofill": {
+                "name": "name",
+                "nif": "idNumber",
+                "contact": "contactInfo",
+                "address": "address"
+              }
+            },
+            "dontPrint": true
+          }
+        ]
+      },
+      {
+        "title": {
+          "pt": "INFORMAÇÕES DO SEGURADO",
+          "en": "INSURED INFORMATION",
+          "es": "INFORMACIÓN DEL ASEGURADO"
+        },
+        "fields": [
+          {
+            "name": "name",
+            "label": {
+              "pt": "Nome",
+              "en": "Name",
+              "es": "Nombre"
+            },
+            "type": "string",
+            "required": true,
+            "readOnly": true
+          },
+          {
+            "name": "nif",
+            "label": {
+              "pt": "NIF",
+              "en": "Tax ID (NIF)",
+              "es": "NIF"
+            },
+            "type": "string",
+            "required": true,
+            "readOnly": true
+          },
+          {
+            "name": "address",
+            "label": {
+              "pt": "Morada",
+              "en": "Address",
+              "es": "Dirección"
+            },
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "contact",
+            "label": {
+              "pt": "Contacto",
+              "en": "Contact",
+              "es": "Contacto"
+            },
+            "type": "string",
+            "required": true,
+            "readOnly": true
+          },
+          {
+            "name": "profession",
+            "label": {
+              "pt": "Profissão / Atividade",
+              "en": "Profession / Activity",
+              "es": "Profesión / Actividad"
+            },
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "workplace",
+            "label": {
+              "pt": "Local de trabalho / Sede",
+              "en": "Workplace / Headquarters",
+              "es": "Lugar de trabajo / Sede"
+            },
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "title": {
+          "pt": "ELEMENTOS DE PROVA",
+          "en": "ELEMENTS OF PROOF",
+          "es": "ELEMENTOS DE PRUEBA"
+        },
+        "fields": [
+          {
+            "name": "numberOfProofElements",
+            "label": {
+              "pt": "Quantos elementos de prova foram obtidos?",
+              "en": "How many elements of proof were obtained?",
+              "es": "¿Cuántos elementos de prueba se obtuvieron?"
+            },
+            "type": "number",
+            "required": true,
+            "min": 0,
+            "max": 100,
+            "dontPrint": true
+          }
+        ]
+      },
+      {
+        "title": {
+          "pt": "ELEMENTO DE PROVA {index}",
+          "en": "ELEMENT OF PROOF {index}",
+          "es": "ELEMENTO DE PRUEBA {index}"
+        },
+        "repeatFor": "numberOfProofElements",
+        "fields": [
+          {
+            "name": "proofElementTitle_{index}",
+            "label": {
+              "pt": "Título da prova",
+              "en": "Proof title",
+              "es": "Título de la prueba"
+            },
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "proofElementDescription_{index}",
+            "label": {
+              "pt": "Descrição",
+              "en": "Description",
+              "es": "Descripción"
+            },
+            "type": "text",
+            "required": true
+          },
+          {
+            "name": "proofElementFile_{index}",
+            "label": {
+              "pt": "Documento",
+              "en": "Document",
+              "es": "Documento"
+            },
+            "type": "file",
+            "required": false
+          },
+          {
+            "name": "proofElementFileImage_{index}",
+            "label": {
+              "pt": "Imagem",
+              "en": "Image",
+              "es": "Imagen"
+            },
+            "type": "image",
+            "required": false
+          }
+        ]
+      }
+    ]
+  }
+}

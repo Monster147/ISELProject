@@ -336,8 +336,8 @@ class ReportService(
 
             sections?.forEach { section ->
                 val titleNode = section["title"]
-                val fieldLabelMap =
-                    section["fields"]
+                val fieldsNode = section["fields"]
+                val fieldLabelMap = fieldsNode
                         .associate { field ->
                             val key = field["name"].asText()
                             val label = field["label"]?.get(language)?.asText() ?: key
@@ -348,6 +348,8 @@ class ReportService(
                 val templateKey = sanitizeSectionName(title)
                 val isIndexed = templateKey.contains("index")
                 if (!isIndexed) {
+                    val shouldSkipSection = fieldsNode.any { it["dontPrint"]?.asBoolean() == true }
+                    if (shouldSkipSection) return@forEach
                     val savedSection =
                         savedSections.firstOrNull {
                             it["section"]?.asText() == templateKey
@@ -372,6 +374,8 @@ class ReportService(
                                     ?.toIntOrNull()
                             }
                     matches.forEach { saved ->
+                        val shouldSkipSection = fieldsNode.any { it["dontPrint"]?.asBoolean() == true }
+                        if (shouldSkipSection) return@forEach
                         val index = saved["section"].asText().substringAfterLast("-")
                         val sectionTitle =
                             title?.replace(

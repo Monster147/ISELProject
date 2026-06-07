@@ -56,3 +56,4 @@ package-lock.json
 uploads
 backend/service/documents
 backend/http/documents
+reports
