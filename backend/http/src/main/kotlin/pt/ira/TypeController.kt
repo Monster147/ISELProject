@@ -2,7 +2,13 @@ package pt.ira
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import pt.ira.model.Problem
 import pt.ira.model.type.TypeCreateInput
@@ -32,7 +38,6 @@ class TypeController(
     private val typeService: TypeService,
     private val publisher: Publishers,
 ) {
-
     /**
      * Cria um tipo de ocorrência no sistema.
      *
@@ -121,8 +126,7 @@ class TypeController(
      * @return `200 OK` com a lista completa de tipos.
      */
     @GetMapping
-    fun findAll(): ResponseEntity<List<Type>> =
-        ResponseEntity.ok(typeService.findAll())
+    fun findAll(): ResponseEntity<List<Type>> = ResponseEntity.ok(typeService.findAll())
 
     /**
      * Atualiza os dados de um tipo de ocorrência existente.

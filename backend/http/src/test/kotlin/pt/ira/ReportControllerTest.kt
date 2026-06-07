@@ -229,5 +229,6 @@ class ReportControllerTest {
         title = "title",
         description = "desc",
         addons = mapper.readTree("""{"a":"b"}"""),
+        language = "en",
     )
 }

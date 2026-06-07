@@ -62,7 +62,7 @@ class RepositoryOccurrenceMem : RepositoryOccurrence {
 
     override fun addEvidence(
         occurrence: Occurrence,
-        evidence: Evidence
+        evidence: Evidence,
     ): Occurrence {
         if (occurrence.evidences.any { it == evidence.id }) return occurrence
         val updated =
@@ -75,7 +75,7 @@ class RepositoryOccurrenceMem : RepositoryOccurrence {
 
     override fun removeEvidence(
         occurrence: Occurrence,
-        evidence: Evidence
+        evidence: Evidence,
     ): Occurrence {
         if (occurrence.evidences.none { it == evidence.id }) return occurrence
         val updated =

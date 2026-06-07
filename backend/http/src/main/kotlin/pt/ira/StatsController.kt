@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/stats")
-class StatsController (
-    private val statsService: StatisticsService
+class StatsController(
+    private val statsService: StatisticsService,
 ) {
     /**
      * Obtém um resumo geral de estatísticas do sistema.
@@ -36,7 +36,7 @@ class StatsController (
      * @return `200 OK` com uma instância de [OverviewStats].
      */
     @GetMapping
-    fun getOverviewStats() : ResponseEntity<*> {
+    fun getOverviewStats(): ResponseEntity<*> {
         val statsOverview = statsService.getOverviewStatistics()
         return ResponseEntity.ok(statsOverview)
     }
@@ -47,7 +47,7 @@ class StatsController (
      * @return `200 OK` com uma lista de [StatsReportType] mostrando contagens e percentagens.
      */
     @GetMapping("/report/type")
-    fun getStatsReportByType() : ResponseEntity<*> {
+    fun getStatsReportByType(): ResponseEntity<*> {
         val statsReportByType = statsService.getStatsReportByType()
         return ResponseEntity.ok(statsReportByType)
     }
@@ -58,7 +58,7 @@ class StatsController (
      * @return `200 OK` com uma lista de [StatsReportStatus] mostrando contagens e percentagens.
      */
     @GetMapping("/report/status")
-    fun getStatsReportByStatus() : ResponseEntity<*> {
+    fun getStatsReportByStatus(): ResponseEntity<*> {
         val statsReportByStatus = statsService.getStatsReportByStatus()
         return ResponseEntity.ok(statsReportByStatus)
     }
@@ -69,7 +69,7 @@ class StatsController (
      * @return `200 OK` com uma lista de [StatsOccurrenceImportance] mostrando contagens e percentagens.
      */
     @GetMapping("/occurrence/importance")
-    fun getStatsOccurrenceByImportance() : ResponseEntity<*> {
+    fun getStatsOccurrenceByImportance(): ResponseEntity<*> {
         val statsOccurrenceByImportance = statsService.getStatsOccurrenceByImportance()
         return ResponseEntity.ok(statsOccurrenceByImportance)
     }
@@ -80,7 +80,7 @@ class StatsController (
      * @return `200 OK` com uma lista de [StatsReportType] filtrada para o mês corrente.
      */
     @GetMapping("/report/type/month")
-    fun getStatsReportByTypeThisMonth() : ResponseEntity<*> {
+    fun getStatsReportByTypeThisMonth(): ResponseEntity<*> {
         val statsReportByType = statsService.getStatsReportByTypeThisMonth()
         return ResponseEntity.ok(statsReportByType)
     }
@@ -91,10 +91,9 @@ class StatsController (
      * @return `200 OK` com uma lista de [StatsReportStatus] filtrada para o mês corrente.
      */
     @GetMapping("/report/status/month")
-    fun getStatsReportByStatusThisMonth() : ResponseEntity<*> {
+    fun getStatsReportByStatusThisMonth(): ResponseEntity<*> {
         val statsReportByStatus = statsService.getStatsReportByStatusThisMonth()
         return ResponseEntity.ok(statsReportByStatus)
-
     }
 
     /**
@@ -103,7 +102,7 @@ class StatsController (
      * @return `200 OK` com uma lista de [StatsOccurrenceImportance] filtrada para o mês corrente.
      */
     @GetMapping("/occurrence/importance/month")
-    fun getStatsOccurrenceByImportanceThisMonth() : ResponseEntity<*> {
+    fun getStatsOccurrenceByImportanceThisMonth(): ResponseEntity<*> {
         val statsReportByStatus = statsService.getStatsOccurrenceByImportanceThisMonth()
         return ResponseEntity.ok(statsReportByStatus)
     }

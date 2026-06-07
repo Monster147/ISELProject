@@ -1,6 +1,5 @@
 package pt.ira
 
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -11,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
-import pt.ira.Failure
-import pt.ira.Success
 import pt.ira.model.Problem
 import pt.ira.model.report.CreateReportInput
 import pt.ira.model.report.EditorInput
@@ -20,7 +17,6 @@ import pt.ira.model.report.StatusInput
 import pt.ira.publishers.Publishers
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
-import java.util.logging.Logger
 
 /**
  * Controlador REST responsável pela gestão de relatórios no sistema.
@@ -122,7 +118,7 @@ class ReportController(
     @PostMapping("/submit/{id}")
     fun submitReport(
         @PathVariable id: Int,
-    ) : ResponseEntity<*> {
+    ): ResponseEntity<*> {
         val result = reportService.submitReport(id)
         return when (result) {
             is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)

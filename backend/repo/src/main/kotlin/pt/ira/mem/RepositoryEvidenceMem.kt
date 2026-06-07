@@ -1,6 +1,5 @@
 package pt.ira.mem
 
-import com.fasterxml.jackson.databind.JsonNode
 import pt.ira.evindence.Evidence
 import pt.ira.interfaces.RepositoryEvidence
 

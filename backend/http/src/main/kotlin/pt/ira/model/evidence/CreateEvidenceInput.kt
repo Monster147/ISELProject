@@ -1,7 +1,5 @@
 package pt.ira.model.evidence
 
-import com.fasterxml.jackson.databind.JsonNode
-
 /**
  * Modelo de transferência de dados para a criação de evidências.
  *

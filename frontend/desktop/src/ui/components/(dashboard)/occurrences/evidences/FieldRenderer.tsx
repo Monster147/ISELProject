@@ -43,7 +43,9 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
             value: opt[field.dynamicOptions.valueField],
             label: opt[field.dynamicOptions.labelField],
         }));
-
+        console.log("FIELD", field.name);
+        console.log("LABEL", field.label);
+        console.log("DISPLAY LABEL", displayLabel);
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedText style={styles.label}>
@@ -72,8 +74,12 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
     }
 
     if (field.type === "select" && field.options) {
+        const translatedOptions = field.options.map(opt => ({
+            ...opt,
+            label: getLabelByLanguage(opt.label, i18n.language),
+        }));
         const selectedOption =
-            field.options.find(opt => opt.value === value) ?? null;
+            translatedOptions.find(opt => opt.value === value) ?? null;
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedText style={styles.label}>
@@ -83,7 +89,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                     )}
                 </ThemedText>
 
-                <Select options={field.options} value={selectedOption} isDisabled={field.readOnly}
+                <Select options={translatedOptions} value={selectedOption} isDisabled={field.readOnly}
                     onChange={(selected) =>
                         onChange(field.name, selected?.value ?? "")
                     }

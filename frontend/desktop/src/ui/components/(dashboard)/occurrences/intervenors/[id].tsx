@@ -115,6 +115,9 @@ const OccurrenceIntervenors = () => {
                             {t("occurrenceIntervenors.addIntervenors")}
                         </ThemedText>
                     </ThemedButton>
+                    <ThemedButton onPress={() => navigate(-1)} style={styles.cancel}>
+                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("evidences.goBack")}</ThemedText>
+                    </ThemedButton>
                 </ThemedView>
             ) : (
                 <FlatList
@@ -128,6 +131,9 @@ const OccurrenceIntervenors = () => {
                                 <ThemedText style={{ color: "#fff", textAlign: "center" }}>
                                     {t("occurrenceIntervenors.addIntervenors")}
                                 </ThemedText>
+                            </ThemedButton>
+                            <ThemedButton onPress={() => navigate(`/occurrence/${occurrenceIdNumber}`)} style={styles.cancel}>
+                                <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("evidences.goBack")}</ThemedText>
                             </ThemedButton>
                         </ThemedView>
                     }
@@ -179,5 +185,11 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 6,
         marginHorizontal: 10,
+    },
+    cancel: {
+        marginTop: 40,
+        backgroundColor: Colors.warning,
+        width: '15%',
+        alignSelf: "center",
     },
 })

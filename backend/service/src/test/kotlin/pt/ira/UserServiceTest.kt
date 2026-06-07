@@ -351,6 +351,7 @@ class UserServiceTest {
                         typeA,
                         json("""{}"""),
                         occ.intervenors,
+                        "en",
                     )
                 repoReport.addEditor(report, user)
             }
@@ -382,13 +383,13 @@ class UserServiceTest {
 
         trxManager.run {
             val occ = createOccurrenceForUser(user1.id)
-            val report = repoReport.createReport(user1.id, occ.id, "t1", "d", typeA, json("""{}"""), occ.intervenors)
+            val report = repoReport.createReport(user1.id, occ.id, "t1", "d", typeA, json("""{}"""), occ.intervenors, "en")
             repoReport.addEditor(report, user1)
         }
 
         trxManager.run {
             val occ = createOccurrenceForUser(user2.id)
-            val report = repoReport.createReport(user2.id, occ.id, "t2", "d", typeA, json("""{}"""), occ.intervenors)
+            val report = repoReport.createReport(user2.id, occ.id, "t2", "d", typeA, json("""{}"""), occ.intervenors, "en")
             repoReport.addEditor(report, user2)
         }
 
@@ -411,7 +412,7 @@ class UserServiceTest {
         repeat(2) {
             trxManager.run {
                 val occ = createOccurrenceForUser(user.id)
-                val report = repoReport.createReport(user.id, occ.id, "a$it", "d", typeA, json("""{}"""), occ.intervenors)
+                val report = repoReport.createReport(user.id, occ.id, "a$it", "d", typeA, json("""{}"""), occ.intervenors, "en")
                 repoReport.addEditor(report, user)
             }
         }
@@ -419,7 +420,7 @@ class UserServiceTest {
         repeat(1) {
             trxManager.run {
                 val occ = createOccurrenceForUser(user.id)
-                val report = repoReport.createReport(user.id, occ.id, "b$it", "d", typeB, json("""{}"""), occ.intervenors)
+                val report = repoReport.createReport(user.id, occ.id, "b$it", "d", typeB, json("""{}"""), occ.intervenors, "en")
                 repoReport.addEditor(report, user)
             }
         }
@@ -451,14 +452,14 @@ class UserServiceTest {
         repeat(3) {
             trxManager.run {
                 val occ = createOccurrenceForUser(user.id)
-                val report = repoReport.createReport(user.id, occ.id, "a$it", "d", typeA, json("""{}"""), occ.intervenors)
+                val report = repoReport.createReport(user.id, occ.id, "a$it", "d", typeA, json("""{}"""), occ.intervenors, "en")
                 repoReport.addEditor(report, user)
             }
         }
 
         trxManager.run {
             val occ = createOccurrenceForUser(user.id)
-            val report = repoReport.createReport(user.id, occ.id, "b", "d", typeB, json("""{}"""), occ.intervenors)
+            val report = repoReport.createReport(user.id, occ.id, "b", "d", typeB, json("""{}"""), occ.intervenors, "en")
             repoReport.addEditor(report, user)
         }
 
@@ -480,13 +481,13 @@ class UserServiceTest {
 
         trxManager.run {
             val occ = createOccurrenceForUser(user.id)
-            val report1 = repoReport.createReport(user.id, occ.id, "a", "d", typeA, json("""{}"""), occ.intervenors)
+            val report1 = repoReport.createReport(user.id, occ.id, "a", "d", typeA, json("""{}"""), occ.intervenors, "en")
             repoReport.addEditor(report1, user)
         }
 
         trxManager.run {
             val occ = createOccurrenceForUser(user.id)
-            val report2 = repoReport.createReport(user.id, occ.id, "b", "d", typeB, json("""{}"""), occ.intervenors)
+            val report2 = repoReport.createReport(user.id, occ.id, "b", "d", typeB, json("""{}"""), occ.intervenors, "en")
             repoReport.addEditor(report2, user)
         }
 

@@ -28,7 +28,7 @@ import kotlin.math.round
 @Component
 class StatisticsService(
     private val trxManager: TransactionManager,
-){
+) {
     /**
      * Obtém um resumo global de estatísticas do sistema.
      *
@@ -36,19 +36,20 @@ class StatisticsService(
      *
      * @return [OverviewStats] contendo as métricas agregadas globais.
      */
-    fun getOverviewStatistics(): OverviewStats = trxManager.run {
-        val totalUsers = repoUsers.findAll().size
-        val totalOccurrences = repoOccurrence.findAll().size
-        val totalReports = repoReport.findAll().size
-        val totalEvidences = repoEvidence.findAll().size
+    fun getOverviewStatistics(): OverviewStats =
+        trxManager.run {
+            val totalUsers = repoUsers.findAll().size
+            val totalOccurrences = repoOccurrence.findAll().size
+            val totalReports = repoReport.findAll().size
+            val totalEvidences = repoEvidence.findAll().size
 
-        OverviewStats(
-            totalUsers = totalUsers,
-            totalOccurrences = totalOccurrences,
-            totalReports = totalReports,
-            totalEvidences = totalEvidences,
-        )
-    }
+            OverviewStats(
+                totalUsers = totalUsers,
+                totalOccurrences = totalOccurrences,
+                totalReports = totalReports,
+                totalEvidences = totalEvidences,
+            )
+        }
 
     /**
      * Obtém a distribuição de relatórios por tipo em todo o sistema.
@@ -58,23 +59,24 @@ class StatisticsService(
      *
      * @return Lista de [StatsReportType] com distribuição agregada.
      */
-    fun getStatsReportByType(): List<StatsReportType> = trxManager.run {
-        val reports = repoReport.findAll()
-        if (reports.isEmpty()) return@run emptyList()
-        val totalReports = reports.size.toDouble()
-        reports
-            .groupBy { it.type }
-            .map { (type, group) ->
-                val count = group.size
-                val rawPercentage = (count / totalReports) * 100.0
-                val rounded = round(rawPercentage * 10) / 10
-                StatsReportType(
-                    type = type,
-                    count = count,
-                    percentage = rounded
-                )
-            }
-    }
+    fun getStatsReportByType(): List<StatsReportType> =
+        trxManager.run {
+            val reports = repoReport.findAll()
+            if (reports.isEmpty()) return@run emptyList()
+            val totalReports = reports.size.toDouble()
+            reports
+                .groupBy { it.type }
+                .map { (type, group) ->
+                    val count = group.size
+                    val rawPercentage = (count / totalReports) * 100.0
+                    val rounded = round(rawPercentage * 10) / 10
+                    StatsReportType(
+                        type = type,
+                        count = count,
+                        percentage = rounded,
+                    )
+                }
+        }
 
     /**
      * Obtém a distribuição de relatórios por estado em todo o sistema.
@@ -84,23 +86,24 @@ class StatisticsService(
      *
      * @return Lista de [StatsReportStatus] com distribuição agregada.
      */
-    fun getStatsReportByStatus(): List<StatsReportStatus> = trxManager.run {
-        val reports = repoReport.findAll()
-        if (reports.isEmpty()) return@run emptyList()
-        val totalReports = reports.size.toDouble()
-        reports
-            .groupBy { it.status }
-            .map { (status, group) ->
-                val count = group.size
-                val rawPercentage = (count / totalReports) * 100.0
-                val rounded = round(rawPercentage * 10) / 10
-                StatsReportStatus(
-                    status = status,
-                    count = count,
-                    percentage = rounded
-                )
-            }
-    }
+    fun getStatsReportByStatus(): List<StatsReportStatus> =
+        trxManager.run {
+            val reports = repoReport.findAll()
+            if (reports.isEmpty()) return@run emptyList()
+            val totalReports = reports.size.toDouble()
+            reports
+                .groupBy { it.status }
+                .map { (status, group) ->
+                    val count = group.size
+                    val rawPercentage = (count / totalReports) * 100.0
+                    val rounded = round(rawPercentage * 10) / 10
+                    StatsReportStatus(
+                        status = status,
+                        count = count,
+                        percentage = rounded,
+                    )
+                }
+        }
 
     /**
      * Obtém a distribuição de ocorrências por nível de importância em todo o sistema.
@@ -110,23 +113,24 @@ class StatisticsService(
      *
      * @return Lista de [StatsOccurrenceImportance] com distribuição agregada.
      */
-    fun getStatsOccurrenceByImportance(): List<StatsOccurrenceImportance> =  trxManager.run {
-        val occurrences = repoOccurrence.findAll()
-        if (occurrences.isEmpty()) return@run emptyList()
-        val totalOccurrences = occurrences.size.toDouble()
-        occurrences
-            .groupBy { it.importance }
-            .map { (importance, group) ->
-                val count = group.size
-                val rawPercentage = (count / totalOccurrences) * 100.0
-                val rounded = round(rawPercentage * 10) / 10
-                StatsOccurrenceImportance(
-                    importance = importance,
-                    count = count,
-                    percentage = rounded
-                )
-            }
-    }
+    fun getStatsOccurrenceByImportance(): List<StatsOccurrenceImportance> =
+        trxManager.run {
+            val occurrences = repoOccurrence.findAll()
+            if (occurrences.isEmpty()) return@run emptyList()
+            val totalOccurrences = occurrences.size.toDouble()
+            occurrences
+                .groupBy { it.importance }
+                .map { (importance, group) ->
+                    val count = group.size
+                    val rawPercentage = (count / totalOccurrences) * 100.0
+                    val rounded = round(rawPercentage * 10) / 10
+                    StatsOccurrenceImportance(
+                        importance = importance,
+                        count = count,
+                        percentage = rounded,
+                    )
+                }
+        }
 
     /**
      * Obtém a distribuição de relatórios por tipo referente ao mês atual.
@@ -136,25 +140,26 @@ class StatisticsService(
      *
      * @return Lista de [StatsReportType] filtrada para o mês corrente.
      */
-    fun getStatsReportByTypeThisMonth(): List<StatsReportType> = trxManager.run {
-        val reports = repoReport.findAll()
-        if (reports.isEmpty()) return@run emptyList()
-        val reportsThisMonth = getCurrentMonthReports(reports)
-        if (reportsThisMonth.isEmpty()) return@run emptyList()
-        val totalReports = reportsThisMonth.size.toDouble()
-        reportsThisMonth
-            .groupBy { it.type }
-            .map { (type, group) ->
-                val count = group.size
-                val rawPercentage = (count / totalReports) * 100.0
-                val rounded = round(rawPercentage * 10) / 10
-                StatsReportType(
-                    type = type,
-                    count = count,
-                    percentage = rounded
-                )
-            }
-    }
+    fun getStatsReportByTypeThisMonth(): List<StatsReportType> =
+        trxManager.run {
+            val reports = repoReport.findAll()
+            if (reports.isEmpty()) return@run emptyList()
+            val reportsThisMonth = getCurrentMonthReports(reports)
+            if (reportsThisMonth.isEmpty()) return@run emptyList()
+            val totalReports = reportsThisMonth.size.toDouble()
+            reportsThisMonth
+                .groupBy { it.type }
+                .map { (type, group) ->
+                    val count = group.size
+                    val rawPercentage = (count / totalReports) * 100.0
+                    val rounded = round(rawPercentage * 10) / 10
+                    StatsReportType(
+                        type = type,
+                        count = count,
+                        percentage = rounded,
+                    )
+                }
+        }
 
     /**
      * Obtém a distribuição de relatórios por estado referente ao mês atual.
@@ -164,25 +169,26 @@ class StatisticsService(
      *
      * @return Lista de [StatsReportStatus] filtrada para o mês corrente.
      */
-    fun getStatsReportByStatusThisMonth(): List<StatsReportStatus> = trxManager.run {
-        val reports = repoReport.findAll()
-        if (reports.isEmpty()) return@run emptyList()
-        val reportsThisMonth = getCurrentMonthReports(reports)
-        if (reportsThisMonth.isEmpty()) return@run emptyList()
-        val totalReports = reportsThisMonth.size.toDouble()
-        reportsThisMonth
-            .groupBy { it.status }
-            .map { (status, group) ->
-                val count = group.size
-                val rawPercentage = (count / totalReports) * 100.0
-                val rounded = round(rawPercentage * 10) / 10
-                StatsReportStatus(
-                    status = status,
-                    count = count,
-                    percentage = rounded
-                )
-            }
-    }
+    fun getStatsReportByStatusThisMonth(): List<StatsReportStatus> =
+        trxManager.run {
+            val reports = repoReport.findAll()
+            if (reports.isEmpty()) return@run emptyList()
+            val reportsThisMonth = getCurrentMonthReports(reports)
+            if (reportsThisMonth.isEmpty()) return@run emptyList()
+            val totalReports = reportsThisMonth.size.toDouble()
+            reportsThisMonth
+                .groupBy { it.status }
+                .map { (status, group) ->
+                    val count = group.size
+                    val rawPercentage = (count / totalReports) * 100.0
+                    val rounded = round(rawPercentage * 10) / 10
+                    StatsReportStatus(
+                        status = status,
+                        count = count,
+                        percentage = rounded,
+                    )
+                }
+        }
 
     /**
      * Obtém a distribuição de ocorrências por importância referente ao mês atual.
@@ -192,25 +198,26 @@ class StatisticsService(
      *
      * @return Lista de [StatsOccurrenceImportance] filtrada para o mês corrente.
      */
-    fun getStatsOccurrenceByImportanceThisMonth(): List<StatsOccurrenceImportance> =  trxManager.run {
-        val occurrences = repoOccurrence.findAll()
-        if (occurrences.isEmpty()) return@run emptyList()
-        val occurrenceThisMonth = getCurrentMonthOccurrence(occurrences)
-        if (occurrenceThisMonth.isEmpty()) return@run emptyList()
-        val totalOccurrences = occurrenceThisMonth.size.toDouble()
-        occurrenceThisMonth
-            .groupBy { it.importance }
-            .map { (importance, group) ->
-                val count = group.size
-                val rawPercentage = (count / totalOccurrences) * 100.0
-                val rounded = round(rawPercentage * 10) / 10
-                StatsOccurrenceImportance(
-                    importance = importance,
-                    count = count,
-                    percentage = rounded
-                )
-            }
-    }
+    fun getStatsOccurrenceByImportanceThisMonth(): List<StatsOccurrenceImportance> =
+        trxManager.run {
+            val occurrences = repoOccurrence.findAll()
+            if (occurrences.isEmpty()) return@run emptyList()
+            val occurrenceThisMonth = getCurrentMonthOccurrence(occurrences)
+            if (occurrenceThisMonth.isEmpty()) return@run emptyList()
+            val totalOccurrences = occurrenceThisMonth.size.toDouble()
+            occurrenceThisMonth
+                .groupBy { it.importance }
+                .map { (importance, group) ->
+                    val count = group.size
+                    val rawPercentage = (count / totalOccurrences) * 100.0
+                    val rounded = round(rawPercentage * 10) / 10
+                    StatsOccurrenceImportance(
+                        importance = importance,
+                        count = count,
+                        percentage = rounded,
+                    )
+                }
+        }
 
     /**
      * Filtra os relatórios criados no mês e ano atual.
@@ -222,9 +229,10 @@ class StatisticsService(
         val zone = ZoneId.systemDefault()
         val month = YearMonth.now(zone)
         return reports.filter {
-            val reportMonth = YearMonth.from(
-                Instant.ofEpochMilli(it.createdAt).atZone(zone)
-            )
+            val reportMonth =
+                YearMonth.from(
+                    Instant.ofEpochMilli(it.createdAt).atZone(zone),
+                )
             reportMonth == month
         }
     }

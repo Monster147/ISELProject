@@ -57,7 +57,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -78,6 +78,7 @@ class RepositoryReportJdbiTest {
                     type = type,
                     addons = json("""{"extra":true}"""),
                     intervenors = emptyList(),
+                    language = "en",
                 )
 
             val found = repoReport.findById(report.id)
@@ -95,7 +96,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence1 =
@@ -115,8 +116,8 @@ class RepositoryReportJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val r1 = repoReport.createReport(creator1.id, occurrence1.id, "R1", "D1", type, json("""{}"""), emptyList())
-            val r2 = repoReport.createReport(creator2.id, occurrence2.id, "R2", "D2", type, json("""{}"""), emptyList())
+            val r1 = repoReport.createReport(creator1.id, occurrence1.id, "R1", "D1", type, json("""{}"""), emptyList(), language = "en")
+            val r2 = repoReport.createReport(creator2.id, occurrence2.id, "R2", "D2", type, json("""{}"""), emptyList(), language = "en")
 
             val all = repoReport.findAll()
 
@@ -134,7 +135,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence1 =
@@ -154,8 +155,8 @@ class RepositoryReportJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val r1 = repoReport.createReport(creator1.id, occurrence1.id, "R1", "D1", type, json("""{}"""), emptyList())
-            repoReport.createReport(creator2.id, occurrence2.id, "R2", "D2", type, json("""{}"""), emptyList())
+            val r1 = repoReport.createReport(creator1.id, occurrence1.id, "R1", "D1", type, json("""{}"""), emptyList(), language = "en")
+            repoReport.createReport(creator2.id, occurrence2.id, "R2", "D2", type, json("""{}"""), emptyList(), language = "en")
 
             val r1Approved = repoReport.updateStatus(r1, ReportStatus.APPROVED)
             val approved = repoReport.findByStatus(ReportStatus.APPROVED)
@@ -173,7 +174,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -185,7 +186,7 @@ class RepositoryReportJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList())
+            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList(), language = "en")
 
             val updatedReport = repoReport.addEditor(report, editor)
             val updatedFromRepo = repoReport.findById(report.id)
@@ -205,7 +206,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -216,7 +217,7 @@ class RepositoryReportJdbiTest {
                     occurrenceType = type,
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
-            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList())
+            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList(), language = "en")
 
             val once = repoReport.addEditor(report, editor)
             val twice = repoReport.addEditor(once, editor)
@@ -234,7 +235,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -245,7 +246,7 @@ class RepositoryReportJdbiTest {
                     occurrenceType = type,
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
-            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList())
+            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList(), language = "en")
 
             val withEditor = repoReport.addEditor(report, editor)
             val removed = repoReport.removeEditor(withEditor, editor)
@@ -267,7 +268,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -278,7 +279,7 @@ class RepositoryReportJdbiTest {
                     occurrenceType = type,
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
-            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList())
+            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList(), language = "en")
 
             val removed = repoReport.removeEditor(report, editor)
             val updated = repoReport.findById(report.id)
@@ -297,7 +298,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -308,7 +309,7 @@ class RepositoryReportJdbiTest {
                     occurrenceType = type,
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
-            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList())
+            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList(), language = "en")
 
             val updatedReport = repoReport.updateStatus(report, ReportStatus.APPROVED)
             val updatedFromRepo = repoReport.findById(report.id)
@@ -328,7 +329,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence1 =
@@ -348,8 +349,8 @@ class RepositoryReportJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val r1 = repoReport.createReport(creator1.id, occurrence1.id, "R1", "D1", type, json("""{}"""), emptyList())
-            repoReport.createReport(creator2.id, occurrence2.id, "R2", "D2", type, json("""{}"""), emptyList())
+            val r1 = repoReport.createReport(creator1.id, occurrence1.id, "R1", "D1", type, json("""{}"""), emptyList(), language = "en")
+            repoReport.createReport(creator2.id, occurrence2.id, "R2", "D2", type, json("""{}"""), emptyList(), language = "en")
 
             val result = repoReport.findByCreatorId(creator1.id)
 
@@ -365,13 +366,13 @@ class RepositoryReportJdbiTest {
             val typeA =
                 repoType.createType(
                     "TypeA",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val typeB =
                 repoType.createType(
                     "TypeA",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence1 =
@@ -391,8 +392,8 @@ class RepositoryReportJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            val r1 = repoReport.createReport(creator1.id, occurrence1.id, "R1", "D1", typeA, json("""{}"""), emptyList())
-            repoReport.createReport(creator2.id, occurrence2.id, "R2", "D2", typeB, json("""{}"""), emptyList())
+            val r1 = repoReport.createReport(creator1.id, occurrence1.id, "R1", "D1", typeA, json("""{}"""), emptyList(), language = "en")
+            repoReport.createReport(creator2.id, occurrence2.id, "R2", "D2", typeB, json("""{}"""), emptyList(), language = "en")
 
             val result = repoReport.findByType(typeA)
 
@@ -408,7 +409,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -419,7 +420,7 @@ class RepositoryReportJdbiTest {
                     occurrenceType = type,
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
-            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList())
+            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList(), language = "en")
 
             repoReport.deleteById(report.id)
             val found = repoReport.findById(report.id)
@@ -436,7 +437,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -447,7 +448,7 @@ class RepositoryReportJdbiTest {
                     occurrenceType = type,
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
-            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList())
+            val report = repoReport.createReport(creator.id, occurrence.id, "R", "D", type, json("""{}"""), emptyList(), language = "en")
 
             val updated = report.copy(title = "Updated")
             repoReport.save(updated)
@@ -468,7 +469,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence1 =
@@ -488,8 +489,8 @@ class RepositoryReportJdbiTest {
                     occurrenceInfo = mapper.readTree("""{"location":"lisbon"}"""),
                 )
 
-            repoReport.createReport(creator1.id, occurrence1.id, "R1", "D1", type, json("""{}"""), emptyList())
-            repoReport.createReport(creator2.id, occurrence2.id, "R2", "D2", type, json("""{}"""), emptyList())
+            repoReport.createReport(creator1.id, occurrence1.id, "R1", "D1", type, json("""{}"""), emptyList(), language = "en")
+            repoReport.createReport(creator2.id, occurrence2.id, "R2", "D2", type, json("""{}"""), emptyList(), language = "en")
 
             repoReport.clear()
 
@@ -505,7 +506,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -526,6 +527,7 @@ class RepositoryReportJdbiTest {
                     type = type,
                     addons = json("""{"extra":true}"""),
                     intervenors = emptyList(),
+                    language = "en",
                 )
 
             val found = repoReport.findByOccurrenceId(occurrence.id)
@@ -543,7 +545,7 @@ class RepositoryReportJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrenceWithoutReport =

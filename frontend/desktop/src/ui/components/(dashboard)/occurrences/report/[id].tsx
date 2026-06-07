@@ -180,10 +180,7 @@ const OccurrenceReport = () =>{
             {!currentReport ? (
                 <ThemedView style={styles.container}>
                     <ThemedCard style={styles.card}>
-                        <ThemedText
-                            title={true}
-                            style={styles.heading}
-                        >
+                        <ThemedText title={true} style={styles.heading}>
                             {t("report.createReport")}
                         </ThemedText>
 
@@ -204,24 +201,16 @@ const OccurrenceReport = () =>{
                         />
 
                         {error && (
-                            <Text style={styles.error}>
-                                {error}
-                            </Text>
+                            <Text style={styles.error}>{error}</Text>
                         )}
 
-                        <ThemedButton
-                            onPress={handleCreateReport}
-                            style={styles.create}
-                            disabled={loading}
-                        >
-                            <ThemedText
-                                style={{
-                                    color: "#fff",
-                                    textAlign: "center",
-                                }}
-                            >
+                        <ThemedButton onPress={handleCreateReport} style={styles.create} disabled={loading}>
+                            <ThemedText style={{color: "#fff", textAlign: "center",}}>
                                 {t("report.create")}
                             </ThemedText>
+                        </ThemedButton>
+                        <ThemedButton onPress={() => navigate(-1)} style={styles.cancel}>
+                            <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("evidences.goBack")}</ThemedText>
                         </ThemedButton>
                     </ThemedCard>
                 </ThemedView>
@@ -241,39 +230,29 @@ const OccurrenceReport = () =>{
 
                     <Spacer />
                     {(currentReport.status == ReportStatus.REJECTED || currentReport.status == ReportStatus.EDITING) && (
-                    <ThemedButton
-                        onPress={handleUpdateReport}
-                        style={styles.update}
-                        disabled={loading}
-                    >
+                    <ThemedButton onPress={handleUpdateReport} style={styles.update} disabled={loading}>
                         <ThemedText style={{ color: "#fff", textAlign: "center" }}>
                             {t("report.update")}
                         </ThemedText>
                     </ThemedButton>
                     )}
 
-                    <ThemedButton
-                        onPress={handleDownloadReport}
-                        style={styles.download}
-                    >
+                    <ThemedButton onPress={handleDownloadReport} style={styles.download}>
                         <ThemedText style={{ color: "#fff", textAlign: "center" }}>
                             {t("report.download")}
                         </ThemedText>
                     </ThemedButton>
 
                     {(currentReport.status == ReportStatus.REJECTED || currentReport.status == ReportStatus.EDITING) && (
-                        <ThemedButton
-                            onPress={handleSubmitReport}
-                            style={styles.submit}
-                            disabled={loading}
-                        >
-                            <ThemedText
-                                style={{ color: "#fff", textAlign: "center" }}
-                            >
+                        <ThemedButton onPress={handleSubmitReport} style={styles.submit} disabled={loading}>
+                            <ThemedText style={{ color: "#fff", textAlign: "center" }}>
                                 {t("report.submit")}
                             </ThemedText>
                         </ThemedButton>
                     )}
+                    <ThemedButton onPress={() => navigate(-1)} style={styles.cancel}>
+                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("evidences.goBack")}</ThemedText>
+                    </ThemedButton>
                     {error && (
                         <Text style={styles.error}>
                             {error}
@@ -342,6 +321,12 @@ const styles = StyleSheet.create({
         marginTop: 20,
         backgroundColor: Colors.primary,
         width: "15%",
+        alignSelf: "center",
+    },
+    cancel: {
+        marginTop: 20,
+        backgroundColor: Colors.warning,
+        width: '15%',
         alignSelf: "center",
     },
 })

@@ -21,10 +21,12 @@ sealed class TypeError {
      * quer por identificador, quer por nome.
      */
     data object TypeNotFound : TypeError()
+
     /**
      * Um tipo com o nome especificado já existe no sistema.
      */
     data object TypeAlreadyExists : TypeError()
+
     /**
      * O nome fornecido para o tipo é inválido
      */
@@ -45,7 +47,7 @@ sealed class TypeError {
 @Component
 class TypeService(
     private val trxManager: TransactionManager,
-    private val publisher: Publishers
+    private val publisher: Publishers,
 ) {
     /**
      * Cria um tipo.
@@ -61,9 +63,9 @@ class TypeService(
      */
     fun createType(
         name: String,
-        form: JsonNode
+        form: JsonNode,
     ): Either<TypeError, Type> {
-        return trxManager.run{
+        return trxManager.run {
             if (name.isBlank()) return@run failure(TypeError.InvalidName)
 
             repoType.findByName(name)?.let {
@@ -73,7 +75,7 @@ class TypeService(
             val type = repoType.createType(name, form)
             publisher.typesPublisher.sendMessageToAll(
                 findAll(),
-                ActionKind.TypesChanged
+                ActionKind.TypesChanged,
             )
             success(type)
         }
@@ -88,8 +90,9 @@ class TypeService(
      */
     fun findById(id: Int): Either<TypeError, Type> {
         return trxManager.run {
-            val type = repoType.findById(id)
-                ?: return@run failure(TypeError.TypeNotFound)
+            val type =
+                repoType.findById(id)
+                    ?: return@run failure(TypeError.TypeNotFound)
 
             success(type)
         }
@@ -104,8 +107,9 @@ class TypeService(
      */
     fun findByName(name: String): Either<TypeError, Type> {
         return trxManager.run {
-            val type = repoType.findByName(name)
-                ?: return@run failure(TypeError.TypeNotFound)
+            val type =
+                repoType.findByName(name)
+                    ?: return@run failure(TypeError.TypeNotFound)
 
             success(type)
         }
@@ -138,8 +142,9 @@ class TypeService(
         form: JsonNode?,
     ): Either<TypeError, Type> {
         return trxManager.run {
-            val existing = repoType.findById(id)
-                ?: return@run failure(TypeError.TypeNotFound)
+            val existing =
+                repoType.findById(id)
+                    ?: return@run failure(TypeError.TypeNotFound)
 
             val updated =
                 existing.copy(
@@ -150,7 +155,7 @@ class TypeService(
             repoType.save(updated)
             publisher.typesPublisher.sendMessageToAll(
                 findAll(),
-                ActionKind.TypesChanged
+                ActionKind.TypesChanged,
             )
             success(updated)
         }
@@ -171,7 +176,7 @@ class TypeService(
             repoType.deleteById(id)
             publisher.typesPublisher.sendMessageToAll(
                 findAll(),
-                ActionKind.TypesChanged
+                ActionKind.TypesChanged,
             )
             success(true)
         }

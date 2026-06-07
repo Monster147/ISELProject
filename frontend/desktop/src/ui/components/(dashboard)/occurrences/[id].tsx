@@ -74,6 +74,10 @@ const OccurrenceDetails = () => {
                     <ThemedButton onPress={handleReport} style={styles.create}>
                         <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("occurrenceDetails.seeReport")}</ThemedText>
                     </ThemedButton>
+
+                    <ThemedButton onPress={() => navigate(`/occurrence`)} style={styles.cancel}>
+                        <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("evidences.goBack")}</ThemedText>
+                    </ThemedButton>
                 </ThemedCard>
             </ScrollView>
         </ThemedView>
@@ -98,6 +102,12 @@ const styles = StyleSheet.create({
     create: {
         marginTop: 40,
         backgroundColor: Colors.success,
+        width: '15%',
+        alignSelf: "center",
+    },
+    cancel: {
+        marginTop: 40,
+        backgroundColor: Colors.warning,
         width: '15%',
         alignSelf: "center",
     },

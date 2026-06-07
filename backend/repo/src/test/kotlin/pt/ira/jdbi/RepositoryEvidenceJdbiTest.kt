@@ -45,7 +45,7 @@ class RepositoryEvidenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
             val occurrence =
                 repoOccurrence.createOccurrence(
@@ -80,7 +80,7 @@ class RepositoryEvidenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
             val occurrence1 =
                 repoOccurrence.createOccurrence(
@@ -115,7 +115,7 @@ class RepositoryEvidenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
             val occurrence1 =
                 repoOccurrence.createOccurrence(
@@ -150,7 +150,7 @@ class RepositoryEvidenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
             val occurrence1 =
                 repoOccurrence.createOccurrence(
@@ -176,7 +176,7 @@ class RepositoryEvidenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
             val occurrence =
                 repoOccurrence.createOccurrence(
@@ -205,7 +205,7 @@ class RepositoryEvidenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
             val occurrence =
                 repoOccurrence.createOccurrence(
@@ -231,7 +231,7 @@ class RepositoryEvidenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
             val occurrence =
                 repoOccurrence.createOccurrence(
@@ -255,7 +255,7 @@ class RepositoryEvidenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
             val occurrence =
                 repoOccurrence.createOccurrence(
@@ -281,7 +281,7 @@ class RepositoryEvidenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
             val occurrence1 =
                 repoOccurrence.createOccurrence(

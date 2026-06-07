@@ -69,8 +69,9 @@ class RoleService(
      */
     fun deleteRoleByName(name: String): Either<RoleError, Unit> {
         return trxManager.run {
-            if (repoRole.findByName(name) == null)
+            if (repoRole.findByName(name) == null) {
                 return@run failure(RoleError.RoleNotFound)
+            }
             repoRole.deleteRoleByName(name)
             success(Unit)
         }
@@ -85,8 +86,9 @@ class RoleService(
      */
     fun findByName(name: String): Either<RoleError, Role> {
         return trxManager.run {
-            val role = repoRole.findByName(name)
-                ?: return@run failure(RoleError.RoleNotFound)
+            val role =
+                repoRole.findByName(name)
+                    ?: return@run failure(RoleError.RoleNotFound)
             success(role)
         }
     }
@@ -100,8 +102,9 @@ class RoleService(
      */
     fun findById(id: Int): Either<RoleError, Role> {
         return trxManager.run {
-            val role = repoRole.findById(id)
-                ?: return@run failure(RoleError.RoleNotFound)
+            val role =
+                repoRole.findById(id)
+                    ?: return@run failure(RoleError.RoleNotFound)
             success(role)
         }
     }

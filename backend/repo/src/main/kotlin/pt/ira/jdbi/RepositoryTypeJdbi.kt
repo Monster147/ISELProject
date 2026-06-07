@@ -8,9 +8,12 @@ import pt.ira.type.Type
 import java.sql.ResultSet
 
 class RepositoryTypeJdbi(
-    private val handle: Handle
-): RepositoryType {
-    override fun createType(name: String, form: JsonNode): Type {
+    private val handle: Handle,
+) : RepositoryType {
+    override fun createType(
+        name: String,
+        form: JsonNode,
+    ): Type {
         val id =
             handle.createUpdate(
                 """
@@ -92,6 +95,7 @@ class RepositoryTypeJdbi(
     }
 
     private val objectMapper = ObjectMapper()
+
     private fun mapRowToType(rs: ResultSet): Type {
         val id = rs.getInt("id")
         val name = rs.getString("name")

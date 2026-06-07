@@ -6,6 +6,7 @@ const es = {
             register: "Registrarse",
             about: "Acerca de",
             contact: "Contacta con nosotros",
+            home: "Ir a la página de inicio",
         },
         login: {
             email: "Correo electrónico",
@@ -206,6 +207,7 @@ const es = {
             remove: "Eliminar",
             download: "Descargar",
             savedSuccess: "Sección guardada con éxito!",
+            goBack: "Volver",
         },
         report: {
             report: "Informe",

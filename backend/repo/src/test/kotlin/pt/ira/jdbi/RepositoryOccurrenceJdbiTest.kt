@@ -53,7 +53,7 @@ class RepositoryOccurrenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val created =
@@ -99,7 +99,7 @@ class RepositoryOccurrenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val o1 =
@@ -155,7 +155,7 @@ class RepositoryOccurrenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val o1 =
@@ -211,7 +211,7 @@ class RepositoryOccurrenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val o1 =
@@ -254,7 +254,7 @@ class RepositoryOccurrenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -292,7 +292,7 @@ class RepositoryOccurrenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -327,7 +327,7 @@ class RepositoryOccurrenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -366,7 +366,7 @@ class RepositoryOccurrenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -403,7 +403,7 @@ class RepositoryOccurrenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val occurrence =
@@ -453,7 +453,7 @@ class RepositoryOccurrenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val created =
@@ -468,7 +468,7 @@ class RepositoryOccurrenceJdbiTest {
             val typeUpdated =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"updated"}""")
+                    mapper.readTree("""{"name":"updated"}"""),
                 ).id
 
             val updated =
@@ -502,7 +502,7 @@ class RepositoryOccurrenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             val created =
@@ -542,7 +542,7 @@ class RepositoryOccurrenceJdbiTest {
             val type =
                 repoType.createType(
                     "Type",
-                    mapper.readTree("""{"name":"fire"}""")
+                    mapper.readTree("""{"name":"fire"}"""),
                 ).id
 
             repoOccurrence.createOccurrence(

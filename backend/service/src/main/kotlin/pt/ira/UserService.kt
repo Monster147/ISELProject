@@ -1,6 +1,5 @@
 package pt.ira
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import pt.ira.interfaces.TransactionManager

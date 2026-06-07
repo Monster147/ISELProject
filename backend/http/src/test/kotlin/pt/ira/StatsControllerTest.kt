@@ -12,7 +12,6 @@ import pt.ira.report.ReportStatus
 import pt.ira.user.PasswordValidationInfo
 import java.time.LocalDate
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @SpringJUnitConfig(TestConfig::class)
 class StatsControllerTest {
@@ -87,6 +86,7 @@ class StatsControllerTest {
                 type = 1,
                 addons = json("""{}"""),
                 intervenors = listOf(),
+                language = "en",
             )
         }
 
@@ -116,6 +116,7 @@ class StatsControllerTest {
                 type = 1,
                 addons = json("""{}"""),
                 intervenors = listOf(),
+                language = "en",
             )
 
             repoReport.createReport(
@@ -126,6 +127,7 @@ class StatsControllerTest {
                 type = 1,
                 addons = json("""{}"""),
                 intervenors = listOf(),
+                language = "en",
             )
 
             repoReport.createReport(
@@ -136,6 +138,7 @@ class StatsControllerTest {
                 type = 2,
                 addons = json("""{}"""),
                 intervenors = listOf(),
+                language = "en",
             )
         }
 
@@ -154,35 +157,41 @@ class StatsControllerTest {
         val occurrence = createOccurrence(user.id)
 
         trxManager.run {
-            val r1 = repoReport.createReport(
-                creatorId = user.id,
-                occurrenceId = occurrence.id,
-                title = "r1",
-                description = "desc",
-                type = 1,
-                addons = json("""{}"""),
-                intervenors = listOf(),
-            )
+            val r1 =
+                repoReport.createReport(
+                    creatorId = user.id,
+                    occurrenceId = occurrence.id,
+                    title = "r1",
+                    description = "desc",
+                    type = 1,
+                    addons = json("""{}"""),
+                    intervenors = listOf(),
+                    language = "en",
+                )
 
-            val r2 = repoReport.createReport(
-                creatorId = user.id,
-                occurrenceId = occurrence.id,
-                title = "r2",
-                description = "desc",
-                type = 1,
-                addons = json("""{}"""),
-                intervenors = listOf(),
-            )
+            val r2 =
+                repoReport.createReport(
+                    creatorId = user.id,
+                    occurrenceId = occurrence.id,
+                    title = "r2",
+                    description = "desc",
+                    type = 1,
+                    addons = json("""{}"""),
+                    intervenors = listOf(),
+                    language = "en",
+                )
 
-            val r3 = repoReport.createReport(
-                creatorId = user.id,
-                occurrenceId = occurrence.id,
-                title = "r3",
-                description = "desc",
-                type = 1,
-                addons = json("""{}"""),
-                intervenors = listOf(),
-            )
+            val r3 =
+                repoReport.createReport(
+                    creatorId = user.id,
+                    occurrenceId = occurrence.id,
+                    title = "r3",
+                    description = "desc",
+                    type = 1,
+                    addons = json("""{}"""),
+                    intervenors = listOf(),
+                    language = "en",
+                )
 
             repoReport.updateStatus(r1, ReportStatus.APPROVED)
             repoReport.updateStatus(r2, ReportStatus.APPROVED)
@@ -228,6 +237,7 @@ class StatsControllerTest {
                 type = 1,
                 addons = json("""{}"""),
                 intervenors = listOf(),
+                language = "en",
             )
         }
 
@@ -246,15 +256,17 @@ class StatsControllerTest {
         val occurrence = createOccurrence(user.id)
 
         trxManager.run {
-            val report = repoReport.createReport(
-                creatorId = user.id,
-                occurrenceId = occurrence.id,
-                title = "r1",
-                description = "desc",
-                type = 1,
-                addons = json("""{}"""),
-                intervenors = listOf(),
-            )
+            val report =
+                repoReport.createReport(
+                    creatorId = user.id,
+                    occurrenceId = occurrence.id,
+                    title = "r1",
+                    description = "desc",
+                    type = 1,
+                    addons = json("""{}"""),
+                    intervenors = listOf(),
+                    language = "en",
+                )
 
             repoReport.updateStatus(report, ReportStatus.APPROVED)
         }

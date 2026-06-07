@@ -9,7 +9,7 @@ import pt.ira.publishers.Publishers
 
 @RestController
 @RequestMapping("/api/listen")
-class SSEController (
+class SSEController(
     private val publisher: Publishers,
 ) {
     /**
@@ -37,7 +37,6 @@ class SSEController (
     fun listenAll(
         @PathVariable userId: Int,
     ): SseEmitter {
-
         val sseEmitter = SseEmitter(Long.MAX_VALUE)
         val adapter = SSEUpdatedDataAdapter(sseEmitter)
 

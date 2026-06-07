@@ -6,7 +6,7 @@ import pt.ira.type.Type
 /**
  * Repositório de operações sobre tipos de ocorrência.
  */
-interface RepositoryType: Repository<Type> {
+interface RepositoryType : Repository<Type> {
     /**
      * Cria um tipo com a configuração associada.
      *
@@ -18,7 +18,10 @@ interface RepositoryType: Repository<Type> {
      *
      * @return [Type] criado com os dados fornecidos.
      */
-    fun createType(name: String, form: JsonNode): Type
+    fun createType(
+        name: String,
+        form: JsonNode,
+    ): Type
 
     /**
      * Obtém um tipo pelo seu nome.

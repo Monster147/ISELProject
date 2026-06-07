@@ -102,5 +102,8 @@ interface StorageService {
      * @param file Novo ficheiro com conteúdo atualizado.
      * @return true se a atualização foi bem-sucedida, false caso contrário.
      */
-    fun updateEvidence(path: String, file: MultipartFile): Boolean
+    fun updateEvidence(
+        path: String,
+        file: MultipartFile,
+    ): Boolean
 }

@@ -117,7 +117,7 @@ class RepositoryOccurrenceJdbi(
 
     override fun addEvidence(
         occurrence: Occurrence,
-        evidence: Evidence
+        evidence: Evidence,
     ): Occurrence {
         if (occurrence.evidences.any { it == evidence.id }) return occurrence
         val updated =
@@ -130,7 +130,7 @@ class RepositoryOccurrenceJdbi(
 
     override fun removeEvidence(
         occurrence: Occurrence,
-        evidence: Evidence
+        evidence: Evidence,
     ): Occurrence {
         if (occurrence.evidences.none { it == evidence.id }) return occurrence
         val updated =

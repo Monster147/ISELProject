@@ -1,6 +1,6 @@
 import {StyleSheet, FlatList, useColorScheme,} from "react-native";
 import {useTranslation} from "react-i18next";
-import {useParams} from "react-router";
+import {useNavigate, useParams} from "react-router";
 import {useCallback, useEffect, useState} from "react";
 
 import ThemedView from "../../../../../../components/ThemedView";
@@ -29,6 +29,7 @@ import {getLabelByLanguage} from "@commons/utils/getLabelByLanguage";
 const DynamicOccurrenceForm = () => {
     const colorScheme = useColorScheme();
     const theme = Colors[colorScheme] ?? Colors.light;
+    const navigate = useNavigate()
     const {t, i18n} = useTranslation();
 
     const {occurrenceId} = useParams();
@@ -587,6 +588,9 @@ const DynamicOccurrenceForm = () => {
                     );
                 }}
             />
+            <ThemedButton onPress={() => navigate(-1)} style={styles.cancel}>
+                <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("evidences.goBack")}</ThemedText>
+            </ThemedButton>
         </ThemedView>
     );
 };
@@ -648,5 +652,11 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         marginTop: 20,
         marginBottom: 40,
+    },
+    cancel: {
+        marginTop: 40,
+        backgroundColor: Colors.warning,
+        width: '15%',
+        alignSelf: "center",
     },
 });

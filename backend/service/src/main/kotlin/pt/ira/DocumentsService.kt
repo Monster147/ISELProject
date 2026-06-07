@@ -110,7 +110,7 @@ class DocumentsService(
 
             publishers.documentsPublisher.sendMessageToAll(
                 findAllDocuments(),
-                ActionKind.DocumentsChanged
+                ActionKind.DocumentsChanged,
             )
             success(document)
         }
@@ -208,7 +208,7 @@ class DocumentsService(
 
             publishers.documentsPublisher.sendMessageToAll(
                 findAllDocuments(),
-                ActionKind.DocumentsChanged
+                ActionKind.DocumentsChanged,
             )
             success(true)
         }

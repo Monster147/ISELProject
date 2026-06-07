@@ -63,6 +63,7 @@ class ReportServiceTest {
                 "title",
                 "desc",
                 json("""{}"""),
+                "en",
             ).let {
                 check(it is Success)
                 it.value
@@ -89,6 +90,7 @@ class ReportServiceTest {
                 "t",
                 "d",
                 json("""{}"""),
+                "en",
             ).let {
                 check(it is Success)
                 it.value
@@ -121,8 +123,8 @@ class ReportServiceTest {
         val occurrence1 = createOccurrenceForUser(user.id)
         val occurrence2 = createOccurrenceForUser(user.id)
 
-        reportService.createReport(user.id, occurrence1.id, "t1", "d", json("""{}"""))
-        reportService.createReport(user.id, occurrence2.id, "t2", "d", json("""{}"""))
+        reportService.createReport(user.id, occurrence1.id, "t1", "d", json("""{}"""), "en")
+        reportService.createReport(user.id, occurrence2.id, "t2", "d", json("""{}"""), "en")
 
         val result = reportService.findByCreatorId(user.id)
 
@@ -144,8 +146,8 @@ class ReportServiceTest {
         val occurrence1 = createOccurrenceForUser(user1.id)
         val occurrence2 = createOccurrenceForUser(user2.id)
 
-        reportService.createReport(user1.id, occurrence1.id, "t1", "d", json("""{}"""))
-        reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""))
+        reportService.createReport(user1.id, occurrence1.id, "t1", "d", json("""{}"""), "en")
+        reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""), "en")
 
         val result = reportService.findAll()
 
@@ -168,14 +170,14 @@ class ReportServiceTest {
         val occurrence2 = createOccurrenceForUser(user2.id)
 
         val r1 =
-            reportService.createReport(user1.id, occurrence1.id, "t1", "d", json("""{}"""))
+            reportService.createReport(user1.id, occurrence1.id, "t1", "d", json("""{}"""), "en")
                 .let {
                     check(it is Success)
                     it.value
                 }
 
         val r2 =
-            reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""))
+            reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""), "en")
                 .let {
                     check(it is Success)
                     it.value
@@ -206,13 +208,13 @@ class ReportServiceTest {
         val occurrence2 = createOccurrenceForUser(user.id)
 
         val r1 =
-            reportService.createReport(user.id, occurrence1.id, "t1", "d", json("""{}"""))
+            reportService.createReport(user.id, occurrence1.id, "t1", "d", json("""{}"""), "en")
                 .let {
                     check(it is Success)
                     it.value
                 }
 
-        reportService.createReport(user.id, occurrence2.id, "t2", "d", json("""{}"""))
+        reportService.createReport(user.id, occurrence2.id, "t2", "d", json("""{}"""), "en")
 
         reportService.addEditor(r1.id, user2.id)
 
@@ -238,13 +240,13 @@ class ReportServiceTest {
         val occurrence2 = createOccurrenceForUser(user2.id)
 
         val r1 =
-            reportService.createReport(user1.id, occurrence1.id, "t1", "d", json("""{}"""))
+            reportService.createReport(user1.id, occurrence1.id, "t1", "d", json("""{}"""), "en")
                 .let {
                     check(it is Success)
                     it.value
                 }
 
-        reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""))
+        reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""), "en")
 
         val result = reportService.findByType(1)
 
@@ -262,7 +264,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), "en")
                 .let {
                     check(it is Success)
                     it.value
@@ -288,7 +290,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), "en")
                 .let {
                     check(it is Success)
                     it.value
@@ -310,7 +312,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), "en")
                 .let {
                     check(it is Success)
                     it.value
@@ -346,7 +348,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), "en")
                 .let {
                     check(it is Success)
                     it.value
@@ -368,7 +370,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val report =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), "en")
                 .let {
                     check(it is Success)
                     it.value
@@ -394,7 +396,7 @@ class ReportServiceTest {
         val occurrence = createOccurrenceForUser(user.id)
 
         val created =
-            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""))
+            reportService.createReport(user.id, occurrence.id, "t", "d", json("""{}"""), "en")
                 .let {
                     check(it is Success)
                     it.value

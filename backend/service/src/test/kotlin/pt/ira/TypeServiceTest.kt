@@ -12,8 +12,8 @@ import kotlin.test.assertTrue
 
 @SpringJUnitConfig(TestConfig::class)
 class TypeServiceTest {
-
     private val mapper = ObjectMapper()
+
     private fun json(v: String) = mapper.readTree(v)
 
     @Autowired
@@ -62,7 +62,10 @@ class TypeServiceTest {
     fun `findById returns type`() {
         val created =
             typeService.createType("Fire", json("""{}"""))
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         val result = typeService.findById(created.id)
 
@@ -82,7 +85,10 @@ class TypeServiceTest {
     fun `findByName returns type`() {
         val created =
             typeService.createType("Fire", json("""{}"""))
-                .let { check(it is Success); it.value }
+                .let {
+                    check(it is Success)
+                    it.value
+                }
 
         val result = typeService.findByName("Fire")
 
@@ -125,7 +131,7 @@ class TypeServiceTest {
             typeService.updateType(
                 id = created.id,
                 name = "New",
-                form = json("""{"b":2}""")
+                form = json("""{"b":2}"""),
             )
 
         assertIs<Success<*>>(result)
@@ -145,7 +151,7 @@ class TypeServiceTest {
             typeService.updateType(
                 id = created.id,
                 name = "New",
-                form = null
+                form = null,
             )
 
         val updated = (result as Success).value
@@ -164,7 +170,7 @@ class TypeServiceTest {
             typeService.updateType(
                 id = created.id,
                 name = null,
-                form = json("""{"b":2}""")
+                form = json("""{"b":2}"""),
             )
 
         val updated = (result as Success).value
@@ -179,7 +185,7 @@ class TypeServiceTest {
             typeService.updateType(
                 id = 999,
                 name = "X",
-                form = json("""{}""")
+                form = json("""{}"""),
             )
 
         assertIs<Either.Left<*>>(result)

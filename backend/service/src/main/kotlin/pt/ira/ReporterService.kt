@@ -72,7 +72,6 @@ sealed class ReportError {
      */
     data object TypeNotFound : ReportError()
 
-
     /**
      * O relatório não preenche todos os campos obrigatórios definidos no formulário do tipo de ocorrência.
      */
@@ -97,7 +96,6 @@ class ReportService(
     private val publisher: Publishers,
     private val storageService: StorageService,
 ) {
-
     /**
      * Cria um relatório associado a uma ocorrência.
      *
@@ -144,7 +142,7 @@ class ReportService(
                     intervenors = occurrence.intervenors,
                     language = language,
                 )
-            generateReport(occurrenceId, occurrence.occurrenceType ,language)
+            generateReport(occurrenceId, occurrence.occurrenceType, language)
             publisher.reportPublisher.sendMessageToAll(
                 report.id,
                 report,
@@ -154,7 +152,7 @@ class ReportService(
         }
     }
 
-    companion object{
+    companion object {
         private val logger = LoggerFactory.getLogger(ReportService::class.java)
     }
 
@@ -177,214 +175,236 @@ class ReportService(
      *
      * @return Não devolve valor. O PDF é gravado no storage com o nome `report_<occurrenceId>.pdf`.
      */
-    private fun generateReport(occurrenceId: Int, occurrenceType: Int, language: String) =
-        trxManager.run {
-            val type = repoType.findById(occurrenceType) ?: return@run
-            val sections = type.form["sections"]
-            val savedSections = findSavedSections(occurrenceId)
-            logger.info("Saved sections found: {}", savedSections)
+    private fun generateReport(
+        occurrenceId: Int,
+        occurrenceType: Int,
+        language: String,
+    ) = trxManager.run {
+        val type = repoType.findById(occurrenceType) ?: return@run
+        val sections = type.form["sections"]
+        val savedSections = findSavedSections(occurrenceId)
+        logger.info("Saved sections found: {}", savedSections)
 
-            PDDocument().use{ doc ->
-                var page = PDPage(PDRectangle.A4)
+        PDDocument().use { doc ->
+            var page = PDPage(PDRectangle.A4)
+            doc.addPage(page)
+            var content = PDPageContentStream(doc, page)
+            val margin = 50f
+            var y = page.mediaBox.height - margin
+            val lineHeight = 14f
+
+            fun newPage() {
+                content.beginText()
+                content.endText()
+                content.close()
+                page = PDPage(PDRectangle.A4)
                 doc.addPage(page)
-                var content = PDPageContentStream(doc, page)
-                val margin = 50f
-                var y = page.mediaBox.height - margin
-                val lineHeight = 14f
+                content = PDPageContentStream(doc, page)
+                y = page.mediaBox.height - margin
+            }
 
+            fun drawLine() {
+                content.saveGraphicsState()
+                content.setStrokingColor(4f / 255f, 58f / 255f, 35f / 255f)
+                content.setLineWidth(1f)
+                content.moveTo(margin, y)
+                content.lineTo(page.mediaBox.width - margin, y)
+                content.stroke()
+                content.restoreGraphicsState()
+            }
 
-                fun newPage() {
-                    content.beginText()
-                    content.endText()
-                    content.close()
-                    page = PDPage(PDRectangle.A4)
-                    doc.addPage(page)
-                    content = PDPageContentStream(doc, page)
-                    y = page.mediaBox.height - margin
-                }
+            fun writeLine(
+                text: String,
+                isTitle: Boolean = false,
+            ) {
+                if (y < margin) newPage()
+                content.beginText()
+                val font =
+                    if (isTitle) {
+                        PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD)
+                    } else {
+                        PDType1Font(Standard14Fonts.FontName.HELVETICA)
+                    }
+                content.setFont(
+                    font,
+                    if (isTitle) 16f else 12f,
+                )
+                content.newLineAtOffset(margin, y)
+                content.showText(text.take(120))
+                content.endText()
+                y -= lineHeight
+            }
 
-                fun drawLine() {
-                    content.saveGraphicsState()
-                    content.setStrokingColor(4f / 255f, 58f / 255f, 35f / 255f)
-                    content.setLineWidth(1f)
-                    content.moveTo(margin, y)
-                    content.lineTo(page.mediaBox.width - margin, y)
-                    content.stroke()
-                    content.restoreGraphicsState()
-                }
-
-                fun writeLine(text: String, isTitle: Boolean = false) {
-                    if (y<margin) newPage()
-                    content.beginText()
-                    val font = if (isTitle) PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD)
-                    else PDType1Font(Standard14Fonts.FontName.HELVETICA)
-                    content.setFont(
-                        font,
-                        if(isTitle) 16f else 12f
-                    )
-                    content.newLineAtOffset(margin, y)
-                    content.showText(text.take(120))
-                    content.endText()
-                    y-=lineHeight
-                }
-
-                fun renderSection(
-                    title: String,
-                    sectionData: JsonNode,
-                    fieldLabelMap: Map<String, String>
-                ){
-                    y-=12
-                    writeLine(makeTitle(title), true)
-                    y-=8
-                    val data = sectionData["data"] ?: return
-                    data.properties()?.forEach {
-                        val normalizedKey =
-                            it.key.replace(Regex("_\\d+$"), "_{index}")
-                        val label =
-                            fieldLabelMap[normalizedKey]
-                                ?: fieldLabelMap[it.key]
-                                ?: it.key
-                        val value = it.value?.takeIf { v -> v.asText() != "null" }?.asText()
-                        if (value == null) {
-                            val notAvailable = when (language) {
+            fun renderSection(
+                title: String,
+                sectionData: JsonNode,
+                fieldLabelMap: Map<String, String>,
+            ) {
+                y -= 12
+                writeLine(makeTitle(title), true)
+                y -= 8
+                val data = sectionData["data"] ?: return
+                data.properties()?.forEach {
+                    val normalizedKey =
+                        it.key.replace(Regex("_\\d+$"), "_{index}")
+                    val label =
+                        fieldLabelMap[normalizedKey]
+                            ?: fieldLabelMap[it.key]
+                            ?: it.key
+                    val value = it.value?.takeIf { v -> v.asText() != "null" }?.asText()
+                    if (value == null) {
+                        val notAvailable =
+                            when (language) {
                                 "pt" -> "Não disponibilizado"
                                 "es" -> "No proporcionado"
                                 else -> "Not provided"
                             }
-                            writeLine("$label: $notAvailable")
-                        } else {
-                            writeLine("$label: $value")
-                        }
+                        writeLine("$label: $notAvailable")
+                    } else {
+                        writeLine("$label: $value")
                     }
-                    y-=10
-                    drawLine()
-                    y-=15
+                }
+                y -= 10
+                drawLine()
+                y -= 15
+            }
+
+            fun reportTitle(language: String): String =
+                when (language) {
+                    "pt" -> "Relatório da Ocorrência $occurrenceId"
+                    "es" -> "Informe de Incidencia $occurrenceId"
+                    else -> "Occurrence $occurrenceId Report"
                 }
 
-                fun reportTitle(language: String): String =
-                    when(language) {
-                        "pt" -> "Relatório da Ocorrência ${occurrenceId}"
-                        "es" -> "Informe de Incidencia ${occurrenceId}"
-                        else -> "Occurrence ${occurrenceId} Report"
+            fun writeTitle(
+                title: String,
+                dateTime: String,
+            ) {
+                val logoImage = loadImage(doc, "/images/logo.png", "logo.png")
+                val logoWidth = 80f
+                val spacing = 8f
+                val logoHeight =
+                    if (logoImage != null) {
+                        logoWidth * logoImage.height.toFloat() / logoImage.width.toFloat()
+                    } else {
+                        0f
                     }
 
-                fun writeTitle (title:String, dateTime: String){
-                    val logoImage = loadImage(doc, "/images/logo.png", "logo.png")
-                    val logoWidth = 80f
-                    val spacing = 8f
-                    val logoHeight =
-                        if (logoImage != null)
-                            logoWidth * logoImage.height.toFloat() / logoImage.width.toFloat()
-                        else
-                            0f
+                val logoX = margin
+                val logoY = y - logoHeight
 
-                    val logoX = margin
-                    val logoY = y - logoHeight
-
-                    if(logoImage != null) {
-                        content.saveGraphicsState()
-                        content.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight)
-                        content.restoreGraphicsState()
-                    }
-
-                    val textX = logoX  + logoWidth + spacing
-                    val textStartY = y - 18f
-                    content.beginText()
-                    val font = PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD)
-                    content.setFont(font, 16f)
-                    content.newLineAtOffset(textX, textStartY)
-                    content.showText(title.take(120))
-                    content.endText()
-
+                if (logoImage != null) {
                     content.saveGraphicsState()
-                    content.beginText()
-                    content.setNonStrokingColor(211f / 255f, 211f / 255f, 211f / 255f)
-                    content.setFont(PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 10f)
-                    content.newLineAtOffset(textX, y-38f)
-                    content.showText(dateTime.take(120))
-                    content.endText()
+                    content.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight)
                     content.restoreGraphicsState()
-
-                    val headerHeight = maxOf(logoHeight, 40f) + 20f
-                    y -= headerHeight
-                    drawLine()
-                    y -= 15f
                 }
 
-                fun generateDateTime(language: String): String {
-                    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
-                    return when(language) {
-                        "pt" -> "Data de geração: ${LocalDateTime.now().format(formatter)}"
-                        "es" -> "Fecha de generación: ${LocalDateTime.now().format(formatter)}"
-                        else -> "Generation date: ${LocalDateTime.now().format(formatter)}"
-                    }
+                val textX = logoX + logoWidth + spacing
+                val textStartY = y - 18f
+                content.beginText()
+                val font = PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD)
+                content.setFont(font, 16f)
+                content.newLineAtOffset(textX, textStartY)
+                content.showText(title.take(120))
+                content.endText()
+
+                content.saveGraphicsState()
+                content.beginText()
+                content.setNonStrokingColor(211f / 255f, 211f / 255f, 211f / 255f)
+                content.setFont(PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 10f)
+                content.newLineAtOffset(textX, y - 38f)
+                content.showText(dateTime.take(120))
+                content.endText()
+                content.restoreGraphicsState()
+
+                val headerHeight = maxOf(logoHeight, 40f) + 20f
+                y -= headerHeight
+                drawLine()
+                y -= 15f
+            }
+
+            fun generateDateTime(language: String): String {
+                val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+                return when (language) {
+                    "pt" -> "Data de geração: ${LocalDateTime.now().format(formatter)}"
+                    "es" -> "Fecha de generación: ${LocalDateTime.now().format(formatter)}"
+                    else -> "Generation date: ${LocalDateTime.now().format(formatter)}"
                 }
+            }
 
+            writeTitle(reportTitle(language), generateDateTime(language))
 
-                writeTitle(reportTitle(language), generateDateTime(language))
-
-                sections?.forEach { section ->
-                    val titleNode = section["title"]
-                    val fieldLabelMap = section["fields"]
+            sections?.forEach { section ->
+                val titleNode = section["title"]
+                val fieldLabelMap =
+                    section["fields"]
                         .associate { field ->
                             val key = field["name"].asText()
                             val label = field["label"]?.get(language)?.asText() ?: key
                             key to label
                         }
 
-                    val title = titleNode?.get(language)?.asText()
-                    val templateKey = sanitizeSectionName(title)
-                    val isIndexed = templateKey.contains("index")
-                    if(!isIndexed){
-                        val savedSection = savedSections.firstOrNull{
+                val title = titleNode?.get(language)?.asText()
+                val templateKey = sanitizeSectionName(title)
+                val isIndexed = templateKey.contains("index")
+                if (!isIndexed) {
+                    val savedSection =
+                        savedSections.firstOrNull {
                             it["section"]?.asText() == templateKey
                         }
-                        if(savedSection != null && title != null) {
-                            renderSection(
-                                title, savedSection, fieldLabelMap
-                            )
-                        }
-                    } else {
-                        val prefix = templateKey.replace("-index-", "")
-                        val matches = savedSections
-                                .filter {
-                                    it["section"]?.asText()?.startsWith(prefix)
-                                        ?: false
-                                }
-                                .sortedBy {
-                                    it["section"].asText()?.substringAfterLast("-")
-                                        ?.toIntOrNull()
-                                }
-                        matches.forEach { saved ->
-                            val index = saved["section"].asText().substringAfterLast("-")
-                            val sectionTitle =
-                                title?.replace(
-                                    "{index}",
-                                    index,
-                                    ignoreCase = true
-                                )
-                            if(sectionTitle != null) {
-                                renderSection(
-                                    sectionTitle,
-                                    saved,
-                                    fieldLabelMap
-                                )
+                    if (savedSection != null && title != null) {
+                        renderSection(
+                            title,
+                            savedSection,
+                            fieldLabelMap,
+                        )
+                    }
+                } else {
+                    val prefix = templateKey.replace("-index-", "")
+                    val matches =
+                        savedSections
+                            .filter {
+                                it["section"]?.asText()?.startsWith(prefix)
+                                    ?: false
                             }
+                            .sortedBy {
+                                it["section"].asText()?.substringAfterLast("-")
+                                    ?.toIntOrNull()
+                            }
+                    matches.forEach { saved ->
+                        val index = saved["section"].asText().substringAfterLast("-")
+                        val sectionTitle =
+                            title?.replace(
+                                "{index}",
+                                index,
+                                ignoreCase = true,
+                            )
+                        if (sectionTitle != null) {
+                            renderSection(
+                                sectionTitle,
+                                saved,
+                                fieldLabelMap,
+                            )
                         }
                     }
                 }
-
-                content.close()
-                val filename = "report_$occurrenceId.pdf"
-                storageService.saveReport(filename, doc)
-                doc.close()
             }
-        }
 
-    private fun loadImage(doc: PDDocument, path: String, name: String?): PDImageXObject? {
-        return try{
+            content.close()
+            val filename = "report_$occurrenceId.pdf"
+            storageService.saveReport(filename, doc)
+            doc.close()
+        }
+    }
+
+    private fun loadImage(
+        doc: PDDocument,
+        path: String,
+        name: String?,
+    ): PDImageXObject? {
+        return try {
             val stream = javaClass.getResourceAsStream(path)
-            if(stream != null){
+            if (stream != null) {
                 val bytes = stream.readBytes()
                 PDImageXObject.createFromByteArray(doc, bytes, name)
             } else {
@@ -397,7 +417,7 @@ class ReportService(
         }
     }
 
-    private fun findSavedSections(occurrenceId: Int):List<JsonNode> =
+    private fun findSavedSections(occurrenceId: Int): List<JsonNode> =
         trxManager.run {
             val evidenceList = repoEvidence.findByOccurrenceId(occurrenceId)
             if (evidenceList.isEmpty()) return@run listOf()
@@ -406,7 +426,7 @@ class ReportService(
                     it.filePath.endsWith(".json") && it.filePath.contains("section-")
                 }
                 .mapNotNull {
-                    try{
+                    try {
                         val file = storageService.loadEvidence(it.filePath)
                         val text = file?.inputStream?.bufferedReader()?.readText()
                         objectMapper.readTree(text)
@@ -420,27 +440,40 @@ class ReportService(
     private fun makeTitle(title: String?): String {
         logger.info("Title: {}", title)
         if (title == null) return ""
-        val exceptions = listOf(
-            "de", "da", "do", "das", "dos", "e"
-        )
+        val exceptions =
+            listOf(
+                "de",
+                "da",
+                "do",
+                "das",
+                "dos",
+                "e",
+            )
 
         return title.lowercase()
             .split(" ")
             .mapIndexed { index, string ->
-                if (index > 0 && string in exceptions) string
-                else string.replaceFirstChar { it.titlecase() }
+                if (index > 0 && string in exceptions) {
+                    string
+                } else {
+                    string.replaceFirstChar { it.titlecase() }
+                }
             }.joinToString(" ")
     }
+
     private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
 
-    private fun loadSavedSection(occurrenceId: Int, sectionKey: String) : JsonNode? {
+    private fun loadSavedSection(
+        occurrenceId: Int,
+        sectionKey: String,
+    ): JsonNode? {
         val path = "occurrences/$occurrenceId/evidences/section-$sectionKey.json"
         val resource = storageService.loadEvidence(path) ?: return null
         return try {
             resource.inputStream.use {
                 objectMapper.readTree(it)
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             null
         }
     }
@@ -490,8 +523,9 @@ class ReportService(
             if (report.status == ReportStatus.SUBMITTED || report.status == ReportStatus.APPROVED) {
                 return@run failure(ReportError.ReportAlreadySubmittedOrApproved)
             }
-            val type = repoType.findById(report.type)
-                ?: return@run failure(ReportError.TypeNotFound)
+            val type =
+                repoType.findById(report.type)
+                    ?: return@run failure(ReportError.TypeNotFound)
 
             if (!areAllRequiredFieldsFilled(type.form, report.occurrenceId, report.language)) {
                 return@run failure(ReportError.MissingRequiredFields)
@@ -500,13 +534,12 @@ class ReportService(
             repoReport.updateStatus(report, ReportStatus.SUBMITTED)
             success(true)
         }
-
     }
 
     private fun areAllRequiredFieldsFilled(
         formJson: JsonNode,
         occurrenceId: Int,
-        language: String
+        language: String,
     ): Boolean {
         val sections = formJson["sections"]
 
@@ -555,7 +588,12 @@ class ReportService(
         return true
     }
 
-    private fun findFieldValue(formJson: JsonNode, occurrenceId: Int, fieldName: String, language: String): JsonNode? {
+    private fun findFieldValue(
+        formJson: JsonNode,
+        occurrenceId: Int,
+        fieldName: String,
+        language: String,
+    ): JsonNode? {
         val sections = formJson["sections"]
         for (section in sections) {
             val sectionTitle = section["title"]
@@ -584,8 +622,7 @@ class ReportService(
      *
      * @return Lista de [Report] com o estado indicado.
      */
-    fun findByStatus(status: ReportStatus): List<Report> =
-        trxManager.run { repoReport.findByStatus(status) }
+    fun findByStatus(status: ReportStatus): List<Report> = trxManager.run { repoReport.findByStatus(status) }
 
     /**
      * Obtém todos os relatórios criados por um determinado utilizador.
@@ -594,8 +631,7 @@ class ReportService(
      *
      * @return Lista de [Report] associadas ao utilizador.
      */
-    fun findByCreatorId(creatorId: Int): List<Report> =
-        trxManager.run { repoReport.findByCreatorId(creatorId) }
+    fun findByCreatorId(creatorId: Int): List<Report> = trxManager.run { repoReport.findByCreatorId(creatorId) }
 
     /**
      * Obtém todos os relatórios em que um utilizador é editor.
@@ -604,8 +640,7 @@ class ReportService(
      *
      * @return Lista de [Report] onde o utilizador é editor.
      */
-    fun findByEditor(userId: Int): List<Report> =
-        trxManager.run { repoReport.findByEditor(userId) }
+    fun findByEditor(userId: Int): List<Report> = trxManager.run { repoReport.findByEditor(userId) }
 
     /**
      * Obtém todos os relatórios de um determinado tipo.
@@ -614,16 +649,14 @@ class ReportService(
      *
      * @return Lista de [Report] correspondentes ao tipo indicado.
      */
-    fun findByType(type: Int): List<Report> =
-        trxManager.run { repoReport.findByType(type) }
+    fun findByType(type: Int): List<Report> = trxManager.run { repoReport.findByType(type) }
 
     /**
      * Obtém todos os relatórios registados no sistema.
      *
      * @return Lista de todas as [Report].
      */
-    fun findAll(): List<Report> =
-        trxManager.run { repoReport.findAll() }
+    fun findAll(): List<Report> = trxManager.run { repoReport.findAll() }
 
     /**
      * Adiciona um editor a um relatório.

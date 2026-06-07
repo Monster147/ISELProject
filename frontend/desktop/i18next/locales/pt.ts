@@ -6,6 +6,7 @@ const pt = {
             register: "Criar Conta",
             about: "Sobre",
             contact: "Contacte-nos",
+            home: "Ir para a página inicial",
         },
         login:{
             email: "Email",
@@ -221,6 +222,7 @@ const pt = {
             remove: "Remover",
             download: "Descarregar",
             savedSuccess: "Secção guardada com sucesso!",
+            goBack: "Voltar",
         },
         report: {
             report: "Relatório",

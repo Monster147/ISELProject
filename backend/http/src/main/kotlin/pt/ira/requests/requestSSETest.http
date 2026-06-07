@@ -33,7 +33,7 @@ Content-Type: application/json
 Authorization: Bearer {{token_user}}
 
 {
-  "usersId": 2,
+  "usersId": 1,
   "endDate": "2030-12-31",
   "importance": "URGENT",
   "occurrenceType": 1 ,

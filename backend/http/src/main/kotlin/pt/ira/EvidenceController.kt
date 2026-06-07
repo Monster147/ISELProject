@@ -45,6 +45,7 @@ class EvidenceController(
     private val publisher: Publishers,
 ) {
     private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
+
     /**
      * Cria uma evidência a partir de um pedido multipart.
      *

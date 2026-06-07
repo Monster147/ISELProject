@@ -6,6 +6,7 @@ const en = {
             register: "Sign In",
             about: "About",
             contact: "Contact Us",
+            home: "Go to Home Page",
         },
         login:{
             email: "Email",
@@ -206,6 +207,7 @@ const en = {
             remove: "Remove",
             download: "Download",
             savedSuccess: "Section saved successfully!",
+            goBack: "goBack",
         },
         report:{
             report: "Report",

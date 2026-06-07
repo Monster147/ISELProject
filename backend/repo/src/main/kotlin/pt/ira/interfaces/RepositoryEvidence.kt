@@ -1,6 +1,5 @@
 package pt.ira.interfaces
 
-import com.fasterxml.jackson.databind.JsonNode
 import pt.ira.evindence.Evidence
 
 /**

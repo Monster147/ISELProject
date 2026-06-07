@@ -136,9 +136,10 @@ class ClassPublisher {
      * Chamado pelo scheduler; captura e regista exceções lançadas pelos emissores.
      */
     private fun keepAlive() {
-        val currentListeners = lock.withLock {
-            listeners.values.flatten().toList()
-        }
+        val currentListeners =
+            lock.withLock {
+                listeners.values.flatten().toList()
+            }
 
         val signal = UpdatedData.KeepAlive(Instant.now())
 

@@ -60,7 +60,7 @@ class RepositoryReportJdbi(
             updatedAt = now,
             editors = listOf(creatorId),
             intervenors = intervenors,
-            language = language
+            language = language,
         )
     }
 
@@ -265,7 +265,7 @@ class RepositoryReportJdbi(
             updatedAt = updatedAt,
             editors = editors,
             intervenors = intervenors,
-            language = language
+            language = language,
         )
     }
 }

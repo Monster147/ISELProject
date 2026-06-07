@@ -147,8 +147,7 @@ class OccurrenceService(
      *
      * @return Lista de [Occurrence] com a importância indicada.
      */
-    fun findByImportance(importance: OccurrenceType): List<Occurrence> =
-        trxManager.run { repoOccurrence.findByImportance(importance) }
+    fun findByImportance(importance: OccurrenceType): List<Occurrence> = trxManager.run { repoOccurrence.findByImportance(importance) }
 
     /**
      * Obtém todas as ocorrências registadas por um determinado utilizador.
@@ -171,8 +170,7 @@ class OccurrenceService(
      *
      * @return Lista de [Occurrence] onde o interveniente participa.
      */
-    fun findByIntervenor(intervenor: Intervenor): List<Occurrence> =
-        trxManager.run { repoOccurrence.findByIntervenor(intervenor) }
+    fun findByIntervenor(intervenor: Intervenor): List<Occurrence> = trxManager.run { repoOccurrence.findByIntervenor(intervenor) }
 
     /**
      * Adiciona um interveniente a uma ocorrência.
@@ -199,8 +197,9 @@ class OccurrenceService(
                 repoIntervenor.findById(intervenorId)
                     ?: return@run failure(OccurrenceError.IntervenorNotFound)
 
-            if (occurrence.intervenors.any { it == intervenorId })
+            if (occurrence.intervenors.any { it == intervenorId }) {
                 return@run failure(OccurrenceError.IntervenorAlreadyInOccurrence)
+            }
 
             val updated = repoOccurrence.addIntervenor(occurrence, intervenor)
             publisher.occurrencePublisher.sendMessageToAll(
@@ -243,8 +242,9 @@ class OccurrenceService(
                 repoIntervenor.findById(intervenorId)
                     ?: return@run failure(OccurrenceError.IntervenorNotFound)
 
-            if (!occurrence.intervenors.any { it == intervenorId })
+            if (!occurrence.intervenors.any { it == intervenorId }) {
                 return@run failure(OccurrenceError.IntervenorNotInOccurrence)
+            }
 
             val updated = repoOccurrence.removeIntervenor(occurrence, intervenor)
             publisher.occurrencePublisher.sendMessageToAll(
@@ -267,8 +267,7 @@ class OccurrenceService(
      *
      * @return Lista de todas as [Occurrence], ou erro do tipo [OccurrenceError].
      */
-    fun findAll(): Either<OccurrenceError, List<Occurrence>> =
-        trxManager.run { success(repoOccurrence.findAll()) }
+    fun findAll(): Either<OccurrenceError, List<Occurrence>> = trxManager.run { success(repoOccurrence.findAll()) }
 
     /**
      * Remove uma ocorrência do sistema.
@@ -281,8 +280,9 @@ class OccurrenceService(
      */
     fun deleteById(id: Int): Either<OccurrenceError, Boolean> {
         return trxManager.run {
-            val occurrence = repoOccurrence.findById(id)
-                ?: return@run failure(OccurrenceError.OccurrenceNotFound)
+            val occurrence =
+                repoOccurrence.findById(id)
+                    ?: return@run failure(OccurrenceError.OccurrenceNotFound)
             repoOccurrence.deleteById(id)
             publisher.occurrencePublisher.sendMessageToAll(
                 id,

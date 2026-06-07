@@ -163,8 +163,12 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
     }
 
     if (field.type === "select" && field.options) {
+        const translatedOptions = field.options.map(opt => ({
+            ...opt,
+            label: getLabelByLanguage(opt.label, i18n.language),
+        }));
         const selectedOption =
-            field.options.find(opt => opt.value === value) ?? null;
+            translatedOptions.find(opt => opt.value === value) ?? null;
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedText style={styles.label}>
@@ -175,7 +179,7 @@ const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, the
                 </ThemedText>
 
                 <Dropdown
-                    options={field.options}
+                    options={translatedOptions}
                     value={selectedOption}
                     disabled={field.readOnly}
                     onSelect={(selected) =>

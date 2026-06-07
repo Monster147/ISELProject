@@ -84,6 +84,7 @@ class StatisticsServiceTest {
                 type = 1,
                 addons = json("""{}"""),
                 intervenors = listOf(),
+                language = "en",
             )
 
             repoReport.createReport(
@@ -94,6 +95,7 @@ class StatisticsServiceTest {
                 type = 2,
                 addons = json("""{}"""),
                 intervenors = listOf(),
+                language = "en",
             )
         }
 
@@ -124,6 +126,7 @@ class StatisticsServiceTest {
                 type = 1,
                 addons = json("""{}"""),
                 intervenors = listOf(),
+                language = "en",
             )
 
             repoReport.createReport(
@@ -134,6 +137,7 @@ class StatisticsServiceTest {
                 type = 1,
                 addons = json("""{}"""),
                 intervenors = listOf(),
+                language = "en",
             )
 
             repoReport.createReport(
@@ -144,6 +148,7 @@ class StatisticsServiceTest {
                 type = 2,
                 addons = json("""{}"""),
                 intervenors = listOf(),
+                language = "en",
             )
         }
 
@@ -167,40 +172,45 @@ class StatisticsServiceTest {
         val occurrence = createOccurrence(user.id)
 
         trxManager.run {
-            val r1 = repoReport.createReport(
-                creatorId = user.id,
-                occurrenceId = occurrence.id,
-                title = "r1",
-                description = "desc",
-                type = 1,
-                addons = json("""{}"""),
-                intervenors = listOf(),
-            )
+            val r1 =
+                repoReport.createReport(
+                    creatorId = user.id,
+                    occurrenceId = occurrence.id,
+                    title = "r1",
+                    description = "desc",
+                    type = 1,
+                    addons = json("""{}"""),
+                    intervenors = listOf(),
+                    language = "en",
+                )
 
-            val r2 = repoReport.createReport(
-                creatorId = user.id,
-                occurrenceId = occurrence.id,
-                title = "r2",
-                description = "desc",
-                type = 1,
-                addons = json("""{}"""),
-                intervenors = listOf(),
-            )
+            val r2 =
+                repoReport.createReport(
+                    creatorId = user.id,
+                    occurrenceId = occurrence.id,
+                    title = "r2",
+                    description = "desc",
+                    type = 1,
+                    addons = json("""{}"""),
+                    intervenors = listOf(),
+                    language = "en",
+                )
 
-            val r3 = repoReport.createReport(
-                creatorId = user.id,
-                occurrenceId = occurrence.id,
-                title = "r3",
-                description = "desc",
-                type = 1,
-                addons = json("""{}"""),
-                intervenors = listOf(),
-            )
+            val r3 =
+                repoReport.createReport(
+                    creatorId = user.id,
+                    occurrenceId = occurrence.id,
+                    title = "r3",
+                    description = "desc",
+                    type = 1,
+                    addons = json("""{}"""),
+                    intervenors = listOf(),
+                    language = "en",
+                )
 
             repoReport.updateStatus(r1, ReportStatus.APPROVED)
             repoReport.updateStatus(r2, ReportStatus.APPROVED)
             repoReport.updateStatus(r3, ReportStatus.REJECTED)
-
         }
 
         val result = statisticsService.getStatsReportByStatus()
@@ -274,6 +284,7 @@ class StatisticsServiceTest {
                 type = 1,
                 addons = json("""{}"""),
                 intervenors = listOf(),
+                language = "en",
             )
 
             repoReport.createReport(
@@ -284,6 +295,7 @@ class StatisticsServiceTest {
                 type = 1,
                 addons = json("""{}"""),
                 intervenors = listOf(),
+                language = "en",
             )
         }
 

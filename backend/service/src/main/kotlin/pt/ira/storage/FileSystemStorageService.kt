@@ -9,7 +9,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
-import java.util.UUID
 
 /**
  * Implementação de [StorageService] que persiste ficheiros no sistema de ficheiros.
@@ -86,7 +85,10 @@ class FileSystemStorageService : StorageService {
         return rootDocuments.relativize(destination).toString()
     }
 
-    override fun saveReport(fileName: String, document: PDDocument): String {
+    override fun saveReport(
+        fileName: String,
+        document: PDDocument,
+    ): String {
         val reportDir = rootReports
         Files.createDirectories(reportDir)
 
@@ -194,7 +196,7 @@ class FileSystemStorageService : StorageService {
 
     override fun updateEvidence(
         path: String,
-        file: MultipartFile
+        file: MultipartFile,
     ): Boolean {
         val filePath = rootEvidence.resolve(path).normalize()
         if (!filePath.startsWith(rootEvidence)) return false

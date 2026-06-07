@@ -424,6 +424,4 @@ class OccurrenceServiceTest {
         assertIs<Either.Left<*>>(result)
         assertIs<OccurrenceError.OccurrenceNotFound>(result.value)
     }
-
-
 }

@@ -1,6 +1,5 @@
 package pt.ira.token
 
-
 /**
  * Informação tipificada de um token codificado (hashed) por um [TokenEncoder].
  *

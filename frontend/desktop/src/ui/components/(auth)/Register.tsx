@@ -104,6 +104,11 @@ const Register = () => {
                         {t("register.login")}
                     </ThemedText>
                 </Link>
+                <Link to='/home'>
+                    <ThemedText style={{textAlign: 'center'}}>
+                        {t("home.home")}
+                    </ThemedText>
+                </Link>
 
             </ThemedView>
         </TouchableWithoutFeedback>

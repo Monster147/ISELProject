@@ -1,6 +1,5 @@
 package pt.ira
 
-import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
@@ -23,7 +22,6 @@ sealed class EvidenceError {
      * Indica que a evidência solicitada não foi encontrada na base de dados.
      */
     data object EvidenceNotFound : EvidenceError()
-
 
     /**
      * Indica que a ocorrência associada à evidência não existe.
@@ -82,7 +80,6 @@ class EvidenceService(
     private val storageService: StorageService,
     private val publisher: Publishers,
 ) {
-
     /**
      * Cria uma evidência associada a uma ocorrência.
      *
@@ -306,7 +303,7 @@ class EvidenceService(
             val evidence = repoEvidence.findById(id) ?: return@run failure(EvidenceError.EvidenceNotFound)
             val occurrence = repoOccurrence.findById(evidence.occurrenceId) ?: return@run failure(EvidenceError.OccurrenceNotFound)
 
-            if(newData.contentType != "application/json") return@run failure(EvidenceError.InvalidFile)
+            if (newData.contentType != "application/json") return@run failure(EvidenceError.InvalidFile)
 
             storageService.updateEvidence(evidence.filePath, newData)
 

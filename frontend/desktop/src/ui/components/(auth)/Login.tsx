@@ -92,6 +92,12 @@ const Login = () => {
                 </ThemedText>
             </Link>
 
+            <Link to='/home'>
+                <ThemedText style={{textAlign: 'center'}}>
+                    {t("home.home")}
+                </ThemedText>
+            </Link>
+
         </ThemedView>
     )
 }

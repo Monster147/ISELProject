@@ -1,7 +1,5 @@
 package pt.ira.evindence
 
-import com.fasterxml.jackson.databind.JsonNode
-
 /**
  * Representa uma evidência associada a uma ocorrência.
  *
