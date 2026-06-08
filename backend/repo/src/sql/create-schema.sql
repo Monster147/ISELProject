@@ -72,7 +72,8 @@ CREATE TABLE dbo.report
     updated_at              bigint             NOT NULL,
     editors                 INT[]              ,
     intervenors             INT[]              ,
-    language                VARCHAR(255)       NOT NULL
+    language                VARCHAR(255)       NOT NULL,
+    file_path               VARCHAR(255)       NOT NULL
 );
 
 CREATE TABLE dbo.report_users(

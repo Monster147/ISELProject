@@ -85,6 +85,7 @@ class StatisticsServiceTest {
                 addons = json("""{}"""),
                 intervenors = listOf(),
                 language = "en",
+                filePath = ""
             )
 
             repoReport.createReport(
@@ -96,6 +97,7 @@ class StatisticsServiceTest {
                 addons = json("""{}"""),
                 intervenors = listOf(),
                 language = "en",
+                filePath = ""
             )
         }
 
@@ -127,6 +129,7 @@ class StatisticsServiceTest {
                 addons = json("""{}"""),
                 intervenors = listOf(),
                 language = "en",
+                filePath = ""
             )
 
             repoReport.createReport(
@@ -138,6 +141,7 @@ class StatisticsServiceTest {
                 addons = json("""{}"""),
                 intervenors = listOf(),
                 language = "en",
+                filePath = ""
             )
 
             repoReport.createReport(
@@ -149,6 +153,7 @@ class StatisticsServiceTest {
                 addons = json("""{}"""),
                 intervenors = listOf(),
                 language = "en",
+                filePath = ""
             )
         }
 
@@ -182,6 +187,7 @@ class StatisticsServiceTest {
                     addons = json("""{}"""),
                     intervenors = listOf(),
                     language = "en",
+                    filePath = ""
                 )
 
             val r2 =
@@ -194,6 +200,7 @@ class StatisticsServiceTest {
                     addons = json("""{}"""),
                     intervenors = listOf(),
                     language = "en",
+                    filePath = ""
                 )
 
             val r3 =
@@ -206,6 +213,7 @@ class StatisticsServiceTest {
                     addons = json("""{}"""),
                     intervenors = listOf(),
                     language = "en",
+                    filePath = ""
                 )
 
             repoReport.updateStatus(r1, ReportStatus.APPROVED)
@@ -285,6 +293,7 @@ class StatisticsServiceTest {
                 addons = json("""{}"""),
                 intervenors = listOf(),
                 language = "en",
+                filePath = ""
             )
 
             repoReport.createReport(
@@ -296,6 +305,7 @@ class StatisticsServiceTest {
                 addons = json("""{}"""),
                 intervenors = listOf(),
                 language = "en",
+                filePath = ""
             )
         }
 

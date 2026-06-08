@@ -14,5 +14,6 @@ export interface Report {
     editors: number[];
     intervenors: number[];
     language: string;
+    filePath: string;
 }
 

@@ -33,6 +33,8 @@ class FileSystemStorageService : StorageService {
 
     init {
         Files.createDirectories(rootEvidence)
+        Files.createDirectories(rootDocuments)
+        Files.createDirectories(rootReports)
     }
 
     override fun save(
@@ -209,6 +211,38 @@ class FileSystemStorageService : StorageService {
             return true
         } catch (e: Exception) {
             return false
+        }
+    }
+
+    override fun deleteReport(path: String): Boolean {
+        val filePath = rootReports.resolve(path).normalize()
+        if (!filePath.startsWith(rootReports)) return false
+        return try {
+            Files.deleteIfExists(filePath)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override fun updateReport(path: String, document: PDDocument): Boolean {
+        val filePath = rootReports.resolve(path).normalize()
+        if (!filePath.startsWith(rootReports) || !Files.exists(filePath)) return false
+        return try {
+            document.save(filePath.toFile())
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override fun loadReport(path: String): Resource? {
+        val filePath = rootReports.resolve(path).normalize()
+        if (!filePath.startsWith(rootReports)) return null
+        val resource = UrlResource(filePath.toUri())
+        return if (resource.exists() || resource.isReadable) {
+            resource
+        } else {
+            null
         }
     }
 

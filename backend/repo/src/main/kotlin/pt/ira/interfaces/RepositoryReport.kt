@@ -31,6 +31,7 @@ interface RepositoryReport : Repository<Report> {
         addons: JsonNode,
         intervenors: List<Int>,
         language: String,
+        filePath: String,
     ): Report
 
     /**

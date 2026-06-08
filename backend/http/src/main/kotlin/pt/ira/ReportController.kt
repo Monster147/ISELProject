@@ -1,5 +1,6 @@
 package pt.ira
 
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
+import pt.ira.Failure
+import pt.ira.Success
 import pt.ira.model.Problem
 import pt.ira.model.report.CreateReportInput
 import pt.ira.model.report.EditorInput
@@ -17,6 +20,7 @@ import pt.ira.model.report.StatusInput
 import pt.ira.publishers.Publishers
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
+import java.nio.file.Paths
 
 /**
  * Controlador REST responsável pela gestão de relatórios no sistema.
@@ -283,6 +287,82 @@ class ReportController(
                 when (result.value) {
                     is ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
                     is ReportError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+                }
+        }
+    }
+
+    /**
+     * Atualiza um relatório existente com novo PDF.
+     *
+     * Endpoint: POST /update/{id}
+     *
+     * @param id Identificador do relatório a atualizar.
+     *
+     * @return `200 OK` com o relatório atualizado, ou erro apropriado.
+     */
+    @PostMapping("/update/{id}")
+    fun updateReport(
+        @PathVariable id: Int,
+    ): ResponseEntity<*> {
+        val result = reportService.updateReport(id)
+        return when (result) {
+            is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)
+            is Failure ->
+                when (result.value) {
+                    is ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
+                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+                }
+        }
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(ReportController::class.java)
+    }
+
+    /**
+     * Permite o *download* do ficheiro PDF associado a um relatório.
+     *
+     * Define o header `Content-Disposition` para forçar *download*
+     * com o nome original do ficheiro.
+     *
+     * @param id identificador da evidência.
+     *
+     * @return recurso binário do ficheiro ou erro apropriado.
+     */
+    @GetMapping("/{id}/download")
+    fun downloadReport(
+        @PathVariable id: Int,
+    ): ResponseEntity<*> {
+        val result = reportService.downloadReport(id)
+        logger.info("Report result: {}", result)
+        return when (result) {
+            is Success -> {
+                val (report, resource) = result.value
+                logger.info("Report {} donwloaded: {}", report, resource)
+
+                val filename = report.filePath.substringAfterLast("/")
+                logger.info("Report filename: {}", filename)
+                val path = Paths.get(report.filePath)
+                logger.info("Report path: {}", path)
+                val contentType = resolveContentType(path)
+                logger.info("Report content type: {}", contentType)
+
+                ResponseEntity.ok()
+                    .header(
+                        "Content-Disposition",
+                        "attachment; filename=\"$filename\"",
+                    )
+                    .contentType(contentType)
+                    .body(resource)
+            }
+
+            is Failure ->
+                when (result.value) {
+                    is ReportError.ReportNotFound ->
+                        Problem.EvidenceNotFound.response(HttpStatus.NOT_FOUND)
+                    is ReportError.FileNotFound ->
+                        Problem.FileNotFound.response(HttpStatus.NOT_FOUND)
                     else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
                 }
         }

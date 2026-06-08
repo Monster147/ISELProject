@@ -24,7 +24,7 @@ const OccurrenceReport = () =>{
     const {occurrenceId} = useParams()
     const navigate = useNavigate()
     const occurrenceIdNumber = Number(occurrenceId)
-    const {createReport, findReportByOccurrenceId, submitReport} = useReport()
+    const {createReport, findReportByOccurrenceId, submitReport, updateReport, downloadReport} = useReport()
     const {occurrence} = useOccurrence()
     const {user} = useAuth()
     const confirmAction = useConfirmAction()
@@ -108,6 +108,7 @@ const OccurrenceReport = () =>{
                     setLoading(true)
                     setError(null)
                     console.log("download")
+                    await downloadReport(currentReport.id)
                 } catch (err: any) {
                     if (err instanceof Error) setError(err.message);
                     else setError(String(err));
@@ -132,6 +133,9 @@ const OccurrenceReport = () =>{
                     setLoading(true)
                     setError(null)
                     console.log("update")
+                    await updateReport(currentReport.id)
+                    const foundReport = await findReportByOccurrenceId(occurrenceIdNumber)
+                    setCurrentReport(foundReport)
                 } catch (err: any) {
                     if (err instanceof Error) setError(err.message);
                     else setError(String(err));

@@ -106,4 +106,32 @@ interface StorageService {
         path: String,
         file: MultipartFile,
     ): Boolean
+
+    /**
+     * Elimina um relatório do sistema de ficheiros.
+     *
+     * @param path Caminho relativo do ficheiro a eliminar.
+     * @return true se a eliminação foi bem-sucedida, false caso contrário.
+     */
+    fun deleteReport(path: String): Boolean
+
+    /**
+     * Atualiza um relatório existente, reescrevendo-o completamente.
+     *
+     * @param path Caminho relativo do relatório a reescrever.
+     * @param document Novo relatório com conteúdo atualizado.
+     * @return true se a atualização foi bem-sucedida, false caso contrário.
+     */
+    fun updateReport(
+        path: String,
+        document: PDDocument,
+    ): Boolean
+
+    /**
+     * Carrega um relatório a partir do sistema de ficheiros.
+     *
+     * @param path Caminho relativo do relatório a carregar.
+     * @return [Resource] representando o relatório, ou null se não existir.
+     */
+    fun loadReport(path: String): Resource?
 }

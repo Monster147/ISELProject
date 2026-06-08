@@ -11,6 +11,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import org.slf4j.LoggerFactory
+import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 import pt.ira.emitters.ActionKind
 import pt.ira.interfaces.TransactionManager
@@ -76,6 +77,11 @@ sealed class ReportError {
      * O relatório não preenche todos os campos obrigatórios definidos no formulário do tipo de ocorrência.
      */
     data object MissingRequiredFields : ReportError()
+
+    /**
+     * Indica que o ficheiro da evidência não foi encontrado no armazenamento.
+     */
+    data object FileNotFound : ReportError()
 }
 
 /**
@@ -124,13 +130,14 @@ class ReportService(
         return trxManager.run {
             repoUsers.findById(creatorId) ?: return@run failure(ReportError.UserNotFound)
             val occurrence = repoOccurrence.findById(occurrenceId) ?: return@run failure(ReportError.OccurrenceNotFound)
-            /*val existingReport = repoReport.findByOccurrenceId(occurrenceId)
+            val existingReport = repoReport.findByOccurrenceId(occurrenceId)
             if (existingReport != null) {
                 return@run failure(ReportError.OccurrenceAlreadyHasReport)
-            }*/
+            }
             if (occurrence.reporterId != creatorId) {
                 return@run failure(ReportError.OccurrenceNotAssignedToUser)
             }
+            val filePath = generateReport(occurrenceId, occurrence.occurrenceType, language)
             val report =
                 repoReport.createReport(
                     creatorId = creatorId,
@@ -141,8 +148,9 @@ class ReportService(
                     addons = addons,
                     intervenors = occurrence.intervenors,
                     language = language,
+                    filePath = filePath
                 )
-            generateReport(occurrenceId, occurrence.occurrenceType, language)
+
             publisher.reportPublisher.sendMessageToAll(
                 report.id,
                 report,
@@ -173,14 +181,15 @@ class ReportService(
      * @param occurrenceType Identificador do tipo de ocorrência.
      * @param language Linguagem do relatório (ex: "pt", "es", "en").
      *
-     * @return Não devolve valor. O PDF é gravado no storage com o nome `report_<occurrenceId>.pdf`.
+     * @return Devolve o caminho do ficheiro persistido no sistema de ficheiros.
      */
     private fun generateReport(
         occurrenceId: Int,
         occurrenceType: Int,
         language: String,
-    ) = trxManager.run {
-        val type = repoType.findById(occurrenceType) ?: return@run
+        filePath: String? = null
+    ): String = trxManager.run {
+        val type = repoType.findById(occurrenceType) ?: return@run ""
         val sections = type.form["sections"]
         val savedSections = findSavedSections(occurrenceId)
         logger.info("Saved sections found: {}", savedSections)
@@ -395,9 +404,19 @@ class ReportService(
             }
 
             content.close()
-            val filename = "report_$occurrenceId.pdf"
-            storageService.saveReport(filename, doc)
-            doc.close()
+            if(filePath == null){
+                val filename = "report_$occurrenceId.pdf"
+                val filepath = storageService.saveReport(filename, doc)
+                doc.close()
+                logger.info("Saving report to: {}", filepath)
+                filepath
+            } else {
+                storageService.updateReport(filePath, doc)
+                doc.close()
+                logger.info("Updating report to: {}", filePath)
+                filePath
+            }
+
         }
     }
 
@@ -769,19 +788,75 @@ class ReportService(
      *
      * @return `true` se a eliminação for bem-sucedida, ou erro do tipo [ReportError].
      */
-    fun deleteById(id: Int): Either<ReportError, Boolean> { // Boolean or Unit
+    fun deleteById(id: Int): Either<ReportError, Boolean> {
         return trxManager.run {
             val report =
                 repoReport.findById(id)
                     ?: return@run failure(ReportError.ReportNotFound)
 
             repoReport.deleteById(report.id)
+            storageService.deleteReport(report.filePath)
             publisher.reportPublisher.sendMessageToAll(
                 report.id,
                 Unit,
                 ActionKind.ReportDeleted,
             )
             success(true)
+        }
+    }
+
+    /**
+     * Atualiza um relatório existente com novos dados, reescrevendo o ficheiro PDF.
+     *
+     * Valida a existência do relatório e sobrescreve o ficheiro PDF com os novos dados.
+     * Publica eventos de atualização após a operação.
+     *
+     * @param reportId Identificador da evidência a atualizar.
+     *
+     * @return [Report], ou um erro do tipo [ReportError].
+     */
+    fun updateReport(
+        reportId: Int,
+    ): Either<ReportError, Report> =
+        trxManager.run {
+            val report = repoReport.findById(reportId) ?: return@run failure(ReportError.ReportNotFound)
+            generateReport(
+                occurrenceId = report.occurrenceId,
+                occurrenceType = report.type,
+                language = report.language,
+                filePath = report.filePath,
+            )
+            publisher.reportPublisher.sendMessageToAll(
+                report.id,
+                report,
+                ActionKind.ReportChanged
+            )
+            success(report)
+        }
+
+    /**
+     * Obtém um relatório e o respetivo ficheiro associado.
+     *
+     * @param id Identificador da evidência.
+     *
+     * @return Par contendo [Report] e o recurso do ficheiro associado,
+     *         ou erro do tipo [ReportError].
+     */
+    fun downloadReport(id: Int): Either<ReportError, Pair<Report, Resource>> {
+        return trxManager.run {
+            val report =
+                repoReport.findById(id)
+                    ?: return@run failure(ReportError.ReportNotFound)
+
+            logger.info("Relatório encontrado: {}", report)
+
+            val resource =
+                storageService.loadReport(report.filePath)
+                    ?: return@run failure(ReportError.FileNotFound)
+
+            logger.info("Resource encontrado: {}", resource)
+
+            success(Pair(report, resource))
         }
     }
 }

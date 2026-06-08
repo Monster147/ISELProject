@@ -39,4 +39,5 @@ data class Report(
     val editors: List<Int> = listOf(),
     val intervenors: List<Int>,
     val language: String,
+    val filePath: String,
 )

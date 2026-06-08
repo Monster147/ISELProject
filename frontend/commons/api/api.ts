@@ -296,6 +296,12 @@ export const api = {
         });
     },
 
+    async updateReport(id:number): Promise<Report> {
+        return fetchApi<Report>(`/report/update/${id}`, {
+            method: "POST",
+        });
+    },
+
     /*
     async addIntervenor(input: number, id:number): Promise<Report> {
         return fetchApi<Report>(`/report/${id}/intervenors`, {

@@ -35,6 +35,7 @@ class RepositoryReportMemTest {
                 json("""{"extra":true}"""),
                 emptyList(),
                 language = "en",
+                filePath = ""
             )
 
         val found = repo.findById(report.id)
@@ -44,8 +45,8 @@ class RepositoryReportMemTest {
 
     @Test
     fun `findAll returns all reports`() {
-        val r1 = repo.createReport(1, 1, "R1", "D1", 1, json("""{}"""), emptyList(), language = "en")
-        val r2 = repo.createReport(2, 2, "R2", "D2", 1, json("""{}"""), emptyList(), language = "en")
+        val r1 = repo.createReport(1, 1, "R1", "D1", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
+        val r2 = repo.createReport(2, 2, "R2", "D2", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
 
         val all = repo.findAll()
 
@@ -55,8 +56,8 @@ class RepositoryReportMemTest {
 
     @Test
     fun `findByStatus returns correct reports`() {
-        val r1 = repo.createReport(1, 1, "R1", "D1", 1, json("""{}"""), emptyList(), language = "en")
-        repo.createReport(1, 2, "R2", "D2", 1, json("""{}"""), emptyList(), language = "en")
+        val r1 = repo.createReport(1, 1, "R1", "D1", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
+        repo.createReport(1, 2, "R2", "D2", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
 
         repo.updateStatus(r1, ReportStatus.APPROVED)
 
@@ -67,7 +68,7 @@ class RepositoryReportMemTest {
 
     @Test
     fun `addEditor adds editor correctly`() {
-        val report = repo.createReport(1, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en")
+        val report = repo.createReport(1, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
         val user = User(1, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
 
         val updatedReport = repo.addEditor(report, user)
@@ -80,7 +81,7 @@ class RepositoryReportMemTest {
 
     @Test
     fun `addEditor does not duplicate editor`() {
-        val report = repo.createReport(1, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en")
+        val report = repo.createReport(1, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
         val user = User(1, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
 
         val once = repo.addEditor(report, user)
@@ -92,7 +93,7 @@ class RepositoryReportMemTest {
     @Test
     fun `removeEditor removes editor`() {
         val creatorId = 1
-        val report = repo.createReport(creatorId, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en")
+        val report = repo.createReport(creatorId, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
 
         // editor diferente do creator, senão nunca iria ser removido do "resto"
         val editor = User(2, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
@@ -110,7 +111,7 @@ class RepositoryReportMemTest {
 
     @Test
     fun `removeEditor does nothing if editor not present`() {
-        val report = repo.createReport(1, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en")
+        val report = repo.createReport(1, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
         val user = User(1, "User", "user@mail.com", PasswordValidationInfo("hash"), listOf(1))
         val user2 = User(2, "User2", "user2@mail.com", PasswordValidationInfo("hash"), listOf(1))
 
@@ -125,7 +126,7 @@ class RepositoryReportMemTest {
 
     @Test
     fun `updateStatus changes report status`() {
-        val report = repo.createReport(1, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en")
+        val report = repo.createReport(1, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
 
         val updatedReport = repo.updateStatus(report, ReportStatus.APPROVED)
         val updatedFromRepo = repo.findById(report.id)
@@ -137,8 +138,8 @@ class RepositoryReportMemTest {
 
     @Test
     fun `findByCreatorId returns correct reports`() {
-        val r1 = repo.createReport(1, 1, "R1", "D1", 1, json("""{}"""), emptyList(), language = "en")
-        repo.createReport(2, 2, "R2", "D2", 1, json("""{}"""), emptyList(), language = "en")
+        val r1 = repo.createReport(1, 1, "R1", "D1", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
+        repo.createReport(2, 2, "R2", "D2", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
 
         val result = repo.findByCreatorId(1)
 
@@ -149,7 +150,7 @@ class RepositoryReportMemTest {
     fun `findByType returns correct reports`() {
         val typeA = 1
 
-        val r1 = repo.createReport(1, 1, "R1", "D1", typeA, json("""{}"""), emptyList(), language = "en")
+        val r1 = repo.createReport(1, 1, "R1", "D1", typeA, json("""{}"""), emptyList(), language = "en", filePath = "")
 
         val result = repo.findByType(typeA)
 
@@ -158,7 +159,7 @@ class RepositoryReportMemTest {
 
     @Test
     fun `deleteById removes report`() {
-        val report = repo.createReport(1, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en")
+        val report = repo.createReport(1, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
 
         repo.deleteById(report.id)
         val found = repo.findById(report.id)
@@ -168,7 +169,7 @@ class RepositoryReportMemTest {
 
     @Test
     fun `save updates existing report`() {
-        val report = repo.createReport(1, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en")
+        val report = repo.createReport(1, 1, "R", "D", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
 
         val updated = report.copy(title = "Updated")
         repo.save(updated)
@@ -181,8 +182,8 @@ class RepositoryReportMemTest {
 
     @Test
     fun `clear removes all reports`() {
-        repo.createReport(1, 1, "R1", "D1", 1, json("""{}"""), emptyList(), language = "en")
-        repo.createReport(2, 2, "R2", "D2", 1, json("""{}"""), emptyList(), language = "en")
+        repo.createReport(1, 1, "R1", "D1", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
+        repo.createReport(2, 2, "R2", "D2", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
 
         repo.clear()
 
@@ -191,9 +192,9 @@ class RepositoryReportMemTest {
 
     @Test
     fun `findByOccurrenceId returns report for occurrence`() {
-        val r1 = repo.createReport(1, 1, "R1", "D1", 1, json("""{}"""), emptyList(), language = "en")
+        val r1 = repo.createReport(1, 1, "R1", "D1", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
 
-        repo.createReport(1, 2, "R1", "D1", 1, json("""{}"""), emptyList(), language = "en")
+        repo.createReport(1, 2, "R1", "D1", 1, json("""{}"""), emptyList(), language = "en", filePath = "")
 
         val found = repo.findByOccurrenceId(1)
 

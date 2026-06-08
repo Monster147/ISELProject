@@ -20,6 +20,8 @@ type ReportContextValue = {
     deleteReportById : (id: number) => Promise<void>
     updateReportStatus : (input: StatusInput, status: string) => Promise<Report>
     submitReport : (id: number) => Promise<Boolean>
+    updateReport : (id: number) => Promise<Report>
+    downloadReport: (id: number) => Promise<any>
 }
 
 export const ReportContext = createContext<ReportContextValue | undefined>(undefined)
@@ -106,8 +108,45 @@ export const ReportProvider = ({children}) => {
         }
     }
 
+    async function updateReport (id:number): Promise<Report> {
+        try {
+            const response = await api.updateReport(id)
+            return response
+        } catch (err: any) {
+            throw Error(err.message)
+        }
+    }
+
+    async function downloadReport(id:number): Promise<any> {
+        try {
+            const response = await fetch(`/api/report/${id}/download`, {
+                method: "GET",
+            })
+
+            if (!response.ok) {
+                throw new Error("Erro ao fazer download");
+            }
+
+            const blob = await response.blob()
+            const contentDisposition = response.headers.get("content-disposition")
+            const filenameMatch = contentDisposition?.match(/filename="?([^"]+)"?/)
+            const filename = filenameMatch?.[1] ?? "download"
+
+            const url = window.URL.createObjectURL(blob)
+            const link = document.createElement("a")
+            link.href = url
+            link.download = filename
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(url)
+        } catch (err: any) {
+            throw Error(err.message)
+        }
+    }
+
     return (
-        <ReportContext.Provider value={{createReport, findReportById, findReportByOccurrenceId, findAllReports, findByCreator, findByStatus, deleteReportById, updateReportStatus, submitReport}}>
+        <ReportContext.Provider value={{createReport, findReportById, findReportByOccurrenceId, findAllReports, findByCreator, findByStatus, deleteReportById, updateReportStatus, submitReport, updateReport, downloadReport}}>
             {children}
         </ReportContext.Provider>
     )
