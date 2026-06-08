@@ -352,7 +352,7 @@ class UserServiceTest {
                         json("""{}"""),
                         occ.intervenors,
                         "en",
-                        filePath = ""
+                        filePath = "",
                     )
                 repoReport.addEditor(report, user)
             }

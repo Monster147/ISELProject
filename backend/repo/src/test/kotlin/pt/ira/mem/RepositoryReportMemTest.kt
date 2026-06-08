@@ -35,7 +35,7 @@ class RepositoryReportMemTest {
                 json("""{"extra":true}"""),
                 emptyList(),
                 language = "en",
-                filePath = ""
+                filePath = "",
             )
 
         val found = repo.findById(report.id)

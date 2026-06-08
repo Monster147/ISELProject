@@ -224,7 +224,10 @@ class FileSystemStorageService : StorageService {
         }
     }
 
-    override fun updateReport(path: String, document: PDDocument): Boolean {
+    override fun updateReport(
+        path: String,
+        document: PDDocument,
+    ): Boolean {
         val filePath = rootReports.resolve(path).normalize()
         if (!filePath.startsWith(rootReports) || !Files.exists(filePath)) return false
         return try {

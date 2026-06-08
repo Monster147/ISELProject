@@ -72,5 +72,5 @@ enum class ActionKind(val message: String) {
     TypesChanged("Types changed"),
     EvidenceChanged("Evidence changed"),
     EvidenceUpdated("Evidence updated"),
-    ReportChanged("Report changed")
+    ReportChanged("Report changed"),
 }

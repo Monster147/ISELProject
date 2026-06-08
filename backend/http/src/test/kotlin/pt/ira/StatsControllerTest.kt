@@ -87,7 +87,7 @@ class StatsControllerTest {
                 addons = json("""{}"""),
                 intervenors = listOf(),
                 language = "en",
-                filePath = ""
+                filePath = "",
             )
         }
 
@@ -118,7 +118,7 @@ class StatsControllerTest {
                 addons = json("""{}"""),
                 intervenors = listOf(),
                 language = "en",
-                filePath = ""
+                filePath = "",
             )
 
             repoReport.createReport(
@@ -130,7 +130,7 @@ class StatsControllerTest {
                 addons = json("""{}"""),
                 intervenors = listOf(),
                 language = "en",
-                filePath = ""
+                filePath = "",
             )
 
             repoReport.createReport(
@@ -142,7 +142,7 @@ class StatsControllerTest {
                 addons = json("""{}"""),
                 intervenors = listOf(),
                 language = "en",
-                filePath = ""
+                filePath = "",
             )
         }
 
@@ -171,7 +171,7 @@ class StatsControllerTest {
                     addons = json("""{}"""),
                     intervenors = listOf(),
                     language = "en",
-                    filePath = ""
+                    filePath = "",
                 )
 
             val r2 =
@@ -184,7 +184,7 @@ class StatsControllerTest {
                     addons = json("""{}"""),
                     intervenors = listOf(),
                     language = "en",
-                    filePath = ""
+                    filePath = "",
                 )
 
             val r3 =
@@ -197,7 +197,7 @@ class StatsControllerTest {
                     addons = json("""{}"""),
                     intervenors = listOf(),
                     language = "en",
-                    filePath = ""
+                    filePath = "",
                 )
 
             repoReport.updateStatus(r1, ReportStatus.APPROVED)
@@ -245,7 +245,7 @@ class StatsControllerTest {
                 addons = json("""{}"""),
                 intervenors = listOf(),
                 language = "en",
-                filePath = ""
+                filePath = "",
             )
         }
 
@@ -274,7 +274,7 @@ class StatsControllerTest {
                     addons = json("""{}"""),
                     intervenors = listOf(),
                     language = "en",
-                    filePath = ""
+                    filePath = "",
                 )
 
             repoReport.updateStatus(report, ReportStatus.APPROVED)

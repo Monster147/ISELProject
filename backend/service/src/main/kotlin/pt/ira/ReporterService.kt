@@ -148,7 +148,7 @@ class ReportService(
                     addons = addons,
                     intervenors = occurrence.intervenors,
                     language = language,
-                    filePath = filePath
+                    filePath = filePath,
                 )
 
             publisher.reportPublisher.sendMessageToAll(
@@ -187,238 +187,239 @@ class ReportService(
         occurrenceId: Int,
         occurrenceType: Int,
         language: String,
-        filePath: String? = null
-    ): String = trxManager.run {
-        val type = repoType.findById(occurrenceType) ?: return@run ""
-        val sections = type.form["sections"]
-        val savedSections = findSavedSections(occurrenceId)
-        logger.info("Saved sections found: {}", savedSections)
+        filePath: String? = null,
+    ): String =
+        trxManager.run {
+            val type = repoType.findById(occurrenceType) ?: return@run ""
+            val sections = type.form["sections"]
+            val savedSections = findSavedSections(occurrenceId)
+            logger.info("Saved sections found: {}", savedSections)
 
-        PDDocument().use { doc ->
-            var page = PDPage(PDRectangle.A4)
-            doc.addPage(page)
-            var content = PDPageContentStream(doc, page)
-            val margin = 50f
-            var y = page.mediaBox.height - margin
-            val lineHeight = 14f
-
-            fun newPage() {
-                content.beginText()
-                content.endText()
-                content.close()
-                page = PDPage(PDRectangle.A4)
+            PDDocument().use { doc ->
+                var page = PDPage(PDRectangle.A4)
                 doc.addPage(page)
-                content = PDPageContentStream(doc, page)
-                y = page.mediaBox.height - margin
-            }
+                var content = PDPageContentStream(doc, page)
+                val margin = 50f
+                var y = page.mediaBox.height - margin
+                val lineHeight = 14f
 
-            fun drawLine() {
-                content.saveGraphicsState()
-                content.setStrokingColor(4f / 255f, 58f / 255f, 35f / 255f)
-                content.setLineWidth(1f)
-                content.moveTo(margin, y)
-                content.lineTo(page.mediaBox.width - margin, y)
-                content.stroke()
-                content.restoreGraphicsState()
-            }
-
-            fun writeLine(
-                text: String,
-                isTitle: Boolean = false,
-            ) {
-                if (y < margin) newPage()
-                content.beginText()
-                val font =
-                    if (isTitle) {
-                        PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD)
-                    } else {
-                        PDType1Font(Standard14Fonts.FontName.HELVETICA)
-                    }
-                content.setFont(
-                    font,
-                    if (isTitle) 16f else 12f,
-                )
-                content.newLineAtOffset(margin, y)
-                content.showText(text.take(120))
-                content.endText()
-                y -= lineHeight
-            }
-
-            fun renderSection(
-                title: String,
-                sectionData: JsonNode,
-                fieldLabelMap: Map<String, String>,
-            ) {
-                y -= 12
-                writeLine(makeTitle(title), true)
-                y -= 8
-                val data = sectionData["data"] ?: return
-                data.properties()?.forEach {
-                    val normalizedKey =
-                        it.key.replace(Regex("_\\d+$"), "_{index}")
-                    val label =
-                        fieldLabelMap[normalizedKey]
-                            ?: fieldLabelMap[it.key]
-                            ?: it.key
-                    val value = it.value?.takeIf { v -> v.asText() != "null" }?.asText()
-                    if (value == null) {
-                        val notAvailable =
-                            when (language) {
-                                "pt" -> "Não disponibilizado"
-                                "es" -> "No proporcionado"
-                                else -> "Not provided"
-                            }
-                        writeLine("$label: $notAvailable")
-                    } else {
-                        writeLine("$label: $value")
-                    }
-                }
-                y -= 10
-                drawLine()
-                y -= 15
-            }
-
-            fun reportTitle(language: String): String =
-                when (language) {
-                    "pt" -> "Relatório da Ocorrência $occurrenceId"
-                    "es" -> "Informe de Incidencia $occurrenceId"
-                    else -> "Occurrence $occurrenceId Report"
+                fun newPage() {
+                    content.beginText()
+                    content.endText()
+                    content.close()
+                    page = PDPage(PDRectangle.A4)
+                    doc.addPage(page)
+                    content = PDPageContentStream(doc, page)
+                    y = page.mediaBox.height - margin
                 }
 
-            fun writeTitle(
-                title: String,
-                dateTime: String,
-            ) {
-                val logoImage = loadImage(doc, "/images/logo.png", "logo.png")
-                val logoWidth = 80f
-                val spacing = 8f
-                val logoHeight =
-                    if (logoImage != null) {
-                        logoWidth * logoImage.height.toFloat() / logoImage.width.toFloat()
-                    } else {
-                        0f
-                    }
-
-                val logoX = margin
-                val logoY = y - logoHeight
-
-                if (logoImage != null) {
+                fun drawLine() {
                     content.saveGraphicsState()
-                    content.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight)
+                    content.setStrokingColor(4f / 255f, 58f / 255f, 35f / 255f)
+                    content.setLineWidth(1f)
+                    content.moveTo(margin, y)
+                    content.lineTo(page.mediaBox.width - margin, y)
+                    content.stroke()
                     content.restoreGraphicsState()
                 }
 
-                val textX = logoX + logoWidth + spacing
-                val textStartY = y - 18f
-                content.beginText()
-                val font = PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD)
-                content.setFont(font, 16f)
-                content.newLineAtOffset(textX, textStartY)
-                content.showText(title.take(120))
-                content.endText()
-
-                content.saveGraphicsState()
-                content.beginText()
-                content.setNonStrokingColor(211f / 255f, 211f / 255f, 211f / 255f)
-                content.setFont(PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 10f)
-                content.newLineAtOffset(textX, y - 38f)
-                content.showText(dateTime.take(120))
-                content.endText()
-                content.restoreGraphicsState()
-
-                val headerHeight = maxOf(logoHeight, 40f) + 20f
-                y -= headerHeight
-                drawLine()
-                y -= 15f
-            }
-
-            fun generateDateTime(language: String): String {
-                val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
-                return when (language) {
-                    "pt" -> "Data de geração: ${LocalDateTime.now().format(formatter)}"
-                    "es" -> "Fecha de generación: ${LocalDateTime.now().format(formatter)}"
-                    else -> "Generation date: ${LocalDateTime.now().format(formatter)}"
+                fun writeLine(
+                    text: String,
+                    isTitle: Boolean = false,
+                ) {
+                    if (y < margin) newPage()
+                    content.beginText()
+                    val font =
+                        if (isTitle) {
+                            PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD)
+                        } else {
+                            PDType1Font(Standard14Fonts.FontName.HELVETICA)
+                        }
+                    content.setFont(
+                        font,
+                        if (isTitle) 16f else 12f,
+                    )
+                    content.newLineAtOffset(margin, y)
+                    content.showText(text.take(120))
+                    content.endText()
+                    y -= lineHeight
                 }
-            }
 
-            writeTitle(reportTitle(language), generateDateTime(language))
-
-            sections?.forEach { section ->
-                val titleNode = section["title"]
-                val fieldsNode = section["fields"]
-                val fieldLabelMap = fieldsNode
-                        .associate { field ->
-                            val key = field["name"].asText()
-                            val label = field["label"]?.get(language)?.asText() ?: key
-                            key to label
+                fun renderSection(
+                    title: String,
+                    sectionData: JsonNode,
+                    fieldLabelMap: Map<String, String>,
+                ) {
+                    y -= 12
+                    writeLine(makeTitle(title), true)
+                    y -= 8
+                    val data = sectionData["data"] ?: return
+                    data.properties()?.forEach {
+                        val normalizedKey =
+                            it.key.replace(Regex("_\\d+$"), "_{index}")
+                        val label =
+                            fieldLabelMap[normalizedKey]
+                                ?: fieldLabelMap[it.key]
+                                ?: it.key
+                        val value = it.value?.takeIf { v -> v.asText() != "null" }?.asText()
+                        if (value == null) {
+                            val notAvailable =
+                                when (language) {
+                                    "pt" -> "Não disponibilizado"
+                                    "es" -> "No proporcionado"
+                                    else -> "Not provided"
+                                }
+                            writeLine("$label: $notAvailable")
+                        } else {
+                            writeLine("$label: $value")
                         }
-
-                val title = titleNode?.get(language)?.asText()
-                val templateKey = sanitizeSectionName(title)
-                val isIndexed = templateKey.contains("index")
-                if (!isIndexed) {
-                    val shouldSkipSection = fieldsNode.any { it["dontPrint"]?.asBoolean() == true }
-                    if (shouldSkipSection) return@forEach
-                    val savedSection =
-                        savedSections.firstOrNull {
-                            it["section"]?.asText() == templateKey
-                        }
-                    if (savedSection != null && title != null) {
-                        renderSection(
-                            title,
-                            savedSection,
-                            fieldLabelMap,
-                        )
                     }
-                } else {
-                    val prefix = templateKey.replace("-index-", "")
-                    val matches =
-                        savedSections
-                            .filter {
-                                it["section"]?.asText()?.startsWith(prefix)
-                                    ?: false
+                    y -= 10
+                    drawLine()
+                    y -= 15
+                }
+
+                fun reportTitle(language: String): String =
+                    when (language) {
+                        "pt" -> "Relatório da Ocorrência $occurrenceId"
+                        "es" -> "Informe de Incidencia $occurrenceId"
+                        else -> "Occurrence $occurrenceId Report"
+                    }
+
+                fun writeTitle(
+                    title: String,
+                    dateTime: String,
+                ) {
+                    val logoImage = loadImage(doc, "/images/logo.png", "logo.png")
+                    val logoWidth = 80f
+                    val spacing = 8f
+                    val logoHeight =
+                        if (logoImage != null) {
+                            logoWidth * logoImage.height.toFloat() / logoImage.width.toFloat()
+                        } else {
+                            0f
+                        }
+
+                    val logoX = margin
+                    val logoY = y - logoHeight
+
+                    if (logoImage != null) {
+                        content.saveGraphicsState()
+                        content.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight)
+                        content.restoreGraphicsState()
+                    }
+
+                    val textX = logoX + logoWidth + spacing
+                    val textStartY = y - 18f
+                    content.beginText()
+                    val font = PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD)
+                    content.setFont(font, 16f)
+                    content.newLineAtOffset(textX, textStartY)
+                    content.showText(title.take(120))
+                    content.endText()
+
+                    content.saveGraphicsState()
+                    content.beginText()
+                    content.setNonStrokingColor(211f / 255f, 211f / 255f, 211f / 255f)
+                    content.setFont(PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 10f)
+                    content.newLineAtOffset(textX, y - 38f)
+                    content.showText(dateTime.take(120))
+                    content.endText()
+                    content.restoreGraphicsState()
+
+                    val headerHeight = maxOf(logoHeight, 40f) + 20f
+                    y -= headerHeight
+                    drawLine()
+                    y -= 15f
+                }
+
+                fun generateDateTime(language: String): String {
+                    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+                    return when (language) {
+                        "pt" -> "Data de geração: ${LocalDateTime.now().format(formatter)}"
+                        "es" -> "Fecha de generación: ${LocalDateTime.now().format(formatter)}"
+                        else -> "Generation date: ${LocalDateTime.now().format(formatter)}"
+                    }
+                }
+
+                writeTitle(reportTitle(language), generateDateTime(language))
+
+                sections?.forEach { section ->
+                    val titleNode = section["title"]
+                    val fieldsNode = section["fields"]
+                    val fieldLabelMap =
+                        fieldsNode
+                            .associate { field ->
+                                val key = field["name"].asText()
+                                val label = field["label"]?.get(language)?.asText() ?: key
+                                key to label
                             }
-                            .sortedBy {
-                                it["section"].asText()?.substringAfterLast("-")
-                                    ?.toIntOrNull()
-                            }
-                    matches.forEach { saved ->
+
+                    val title = titleNode?.get(language)?.asText()
+                    val templateKey = sanitizeSectionName(title)
+                    val isIndexed = templateKey.contains("index")
+                    if (!isIndexed) {
                         val shouldSkipSection = fieldsNode.any { it["dontPrint"]?.asBoolean() == true }
                         if (shouldSkipSection) return@forEach
-                        val index = saved["section"].asText().substringAfterLast("-")
-                        val sectionTitle =
-                            title?.replace(
-                                "{index}",
-                                index,
-                                ignoreCase = true,
-                            )
-                        if (sectionTitle != null) {
+                        val savedSection =
+                            savedSections.firstOrNull {
+                                it["section"]?.asText() == templateKey
+                            }
+                        if (savedSection != null && title != null) {
                             renderSection(
-                                sectionTitle,
-                                saved,
+                                title,
+                                savedSection,
                                 fieldLabelMap,
                             )
                         }
+                    } else {
+                        val prefix = templateKey.replace("-index-", "")
+                        val matches =
+                            savedSections
+                                .filter {
+                                    it["section"]?.asText()?.startsWith(prefix)
+                                        ?: false
+                                }
+                                .sortedBy {
+                                    it["section"].asText()?.substringAfterLast("-")
+                                        ?.toIntOrNull()
+                                }
+                        matches.forEach { saved ->
+                            val shouldSkipSection = fieldsNode.any { it["dontPrint"]?.asBoolean() == true }
+                            if (shouldSkipSection) return@forEach
+                            val index = saved["section"].asText().substringAfterLast("-")
+                            val sectionTitle =
+                                title?.replace(
+                                    "{index}",
+                                    index,
+                                    ignoreCase = true,
+                                )
+                            if (sectionTitle != null) {
+                                renderSection(
+                                    sectionTitle,
+                                    saved,
+                                    fieldLabelMap,
+                                )
+                            }
+                        }
                     }
                 }
-            }
 
-            content.close()
-            if(filePath == null){
-                val filename = "report_$occurrenceId.pdf"
-                val filepath = storageService.saveReport(filename, doc)
-                doc.close()
-                logger.info("Saving report to: {}", filepath)
-                filepath
-            } else {
-                storageService.updateReport(filePath, doc)
-                doc.close()
-                logger.info("Updating report to: {}", filePath)
-                filePath
+                content.close()
+                if (filePath == null) {
+                        val filename = "report_$occurrenceId.pdf"
+                        val filepath = storageService.saveReport(filename, doc)
+                        doc.close()
+                        logger.info("Saving report to: {}", filepath)
+                        filepath
+                    } else {
+                    storageService.updateReport(filePath, doc)
+                    doc.close()
+                    logger.info("Updating report to: {}", filePath)
+                    filePath
+                }
             }
-
         }
-    }
 
     private fun loadImage(
         doc: PDDocument,
@@ -815,9 +816,7 @@ class ReportService(
      *
      * @return [Report], ou um erro do tipo [ReportError].
      */
-    fun updateReport(
-        reportId: Int,
-    ): Either<ReportError, Report> =
+    fun updateReport(reportId: Int): Either<ReportError, Report> =
         trxManager.run {
             val report = repoReport.findById(reportId) ?: return@run failure(ReportError.ReportNotFound)
             generateReport(
@@ -829,7 +828,7 @@ class ReportService(
             publisher.reportPublisher.sendMessageToAll(
                 report.id,
                 report,
-                ActionKind.ReportChanged
+                ActionKind.ReportChanged,
             )
             success(report)
         }
