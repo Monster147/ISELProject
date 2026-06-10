@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, Animated, Easing } from "react-native";
 import { Redirect } from "expo-router";
 import { useAuth } from "../hooks/useAuth";
 import Logo from "@commons/img/isel.png";
+import AppLogo from "@commons/img/logo.png";
 import ThemedView from "../components/ThemedView";
 import ThemedText from "../components/ThemedText";
 import Spacer from "../components/Spacer";
@@ -49,7 +50,8 @@ const Index = ()=> {
 
     return (
         <ThemedView style={styles.container}>
-            <Image source={Logo}/>
+            <Image source={Logo} style={{ width: 400, height: 200, resizeMode: "cover" }} />
+            <Image source={AppLogo} style={{ width: 200, height: 200, resizeMode: "cover" }} />
             <ThemedText style={styles.title}>{t("home.appName")}</ThemedText>
             <Spacer height={20} />
             <ThemedView style={styles.progressTrack}>

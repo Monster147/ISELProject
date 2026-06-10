@@ -150,9 +150,9 @@ const OccurrenceScreen = () => {
                     <Pressable onPress={() => navigate(`/occurrence/${item.id}`)}>
                         <ThemedCard style={styles.card}>
                             <ThemedText
-                                style={styles.title}>{t("occurrence.initDate")}:{dateFormater(item.initDate)}</ThemedText>
+                                style={styles.title}>{t("occurrence.initDate")}: {dateFormater(item.initDate)}</ThemedText>
                             <ThemedText
-                                style={styles.title}>{t("occurrence.endDate")}:{dateFormater(item.endDate)}</ThemedText>
+                                style={styles.title}>{t("occurrence.endDate")}: {dateFormater(item.endDate)}</ThemedText>
                             <ThemedText style={styles.title}>
                                 {t("occurrence.importance")}:
                                 <ThemedText style={{color: importanceColors[item.importance]}}>

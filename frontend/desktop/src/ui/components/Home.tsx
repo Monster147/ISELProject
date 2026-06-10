@@ -5,7 +5,9 @@ import Spacer from "../../../components/Spacer";
 import ThemedText from "../../../components/ThemedText";
 import {useTranslation} from "react-i18next";
 import Logo from "../../../../commons/img/isel.png"
+import AppLogo from "@commons/img/logo.png";
 import {useAuth} from "../../hooks/useAuth";
+import React from "react";
 
 
 const Home = () =>{
@@ -13,7 +15,8 @@ const Home = () =>{
 
     return (
         <ThemedView style={styles.container}>
-            <Image source={Logo} style={{ width: 200, height: 200, resizeMode: "contain" }} />
+            <Image source={Logo} style={{ width: 400, height: 200, resizeMode: "contain" }} />
+            <Image source={AppLogo} style={{ width: 200, height: 200, resizeMode: "cover" }} />
             <Spacer height={20}/>
 
             <Spacer height={10}/>

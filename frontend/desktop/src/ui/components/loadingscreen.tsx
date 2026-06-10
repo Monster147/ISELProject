@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, Image, StyleSheet, Animated, Easing } from "react-native";
 import { useAuth } from "../../hooks/useAuth";
 import Logo from "@commons/img/isel.png";
+import AppLogo from "@commons/img/logo.png";
 import ThemedView from "../../../components/ThemedView";
 import ThemedText from "../../../components/ThemedText";
 import Spacer from "../../../components/Spacer";
@@ -66,7 +67,8 @@ const Loadingscreen = ()=> {
 
     return (
         <ThemedView style={styles.container}>
-            <Image source={Logo} style={{ width: 200, height: 200, resizeMode: "contain" }} />
+            <Image source={Logo} style={{ width: 400, height: 200, resizeMode: "cover" }} />
+            <Image source={AppLogo} style={{ width: 200, height: 200, resizeMode: "cover" }} />
             <ThemedText style={styles.title}>{t("home.appName")}</ThemedText>
             <Spacer height={20} />
             <ThemedView style={styles.progressTrack}>

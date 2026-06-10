@@ -11,7 +11,8 @@ import ThemedTextInput from "../../../../../../components/ThemedTextInput";
 import {Colors} from "@commons/constants/Colors";
 import {getLabelByLanguage} from "@commons/utils/getLabelByLanguage";
 
-export const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, theme, fileValues}) => {
+export const FieldRenderer = ({field, value, onChange, onFileChange, intervenients, colorScheme, fileValues}) => {
+    const theme = Colors[colorScheme] ?? Colors.light;
     const {t, i18n} = useTranslation();
 
     const displayLabel = getLabelByLanguage(field.label, i18n.language);
@@ -43,12 +44,9 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
             value: opt[field.dynamicOptions.valueField],
             label: opt[field.dynamicOptions.labelField],
         }));
-        console.log("FIELD", field.name);
-        console.log("LABEL", field.label);
-        console.log("DISPLAY LABEL", displayLabel);
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
-                <ThemedText style={styles.label}>
+                <ThemedText style={styles.label} label={true}>
                     {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
@@ -82,7 +80,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
             translatedOptions.find(opt => opt.value === value) ?? null;
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
-                <ThemedText style={styles.label}>
+                <ThemedText style={styles.label} label={true}>
                     {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
@@ -106,7 +104,12 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
                 <ThemedView style={[styles.boolRow, {backgroundColor: theme.uiBackground}]}>
-                    <ThemedText style={styles.label}> {displayLabel} </ThemedText>
+                    <ThemedText style={styles.label}  label={true}>
+                        {displayLabel}
+                        {field.required && (
+                            <ThemedText style={styles.required}> *</ThemedText>
+                        )}
+                    </ThemedText>
 
                     <TouchableOpacity style={[styles.toggle, value && styles.toggleActive]}
                         onPress={() =>
@@ -136,7 +139,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                 value.name?.replace(/\.[^/.]+$/, "");
             return (
                 <ThemedView style={[styles.fieldContainer, styles.imagePreviewContainer, {backgroundColor: theme.uiBackground},]}>
-                    <ThemedText style={styles.label}>
+                    <ThemedText style={styles.label}  label={true}>
                         {displayLabel}
                         {field.required && (
                             <ThemedText style={styles.required}> *</ThemedText>
@@ -172,6 +175,12 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
                 value.name?.replace(/\.[^/.]+$/, "");
             return (
                 <ThemedView style={[styles.fieldContainer, styles.imagePreviewContainer, {backgroundColor: theme.uiBackground}]}>
+                    <ThemedText style={styles.label} label={true}>
+                        {displayLabel}
+                        {field.required && (
+                            <ThemedText style={styles.required}> *</ThemedText>
+                        )}
+                    </ThemedText>
                     <ThemedView style={[styles.imageInfoContainer, {backgroundColor: theme.uiBackground}]}>
                         <ThemedText style={styles.imageName}> {fileNameWithoutExtension} </ThemedText>
                         <a href={value.previewUrl} download={value.name} style={styles.downloadLink}>
@@ -190,7 +199,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
 
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
-                <ThemedText style={styles.label}>
+                <ThemedText style={styles.label} label={true}>
                     {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
@@ -205,7 +214,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
     if (field.type === "datetime") {
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
-                <ThemedText style={styles.label}>
+                <ThemedText style={styles.label} label={true}>
                     {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
@@ -225,7 +234,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
     if (field.type === "number") {
         return (
             <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
-                <ThemedText style={styles.label}>
+                <ThemedText style={styles.label} label={true}>
                     {displayLabel}
                     {field.required && (
                         <ThemedText style={styles.required}> *</ThemedText>
@@ -254,7 +263,7 @@ export const FieldRenderer = ({field, value, onChange, onFileChange, intervenien
 
     return (
         <ThemedView style={[styles.fieldContainer, {backgroundColor: theme.uiBackground}]}>
-            <ThemedText style={styles.label}>
+            <ThemedText style={styles.label} label={true}>
                 {displayLabel}
                 {field.required && (
                     <ThemedText style={styles.required}> *</ThemedText>
@@ -305,11 +314,11 @@ const styles = StyleSheet.create({
 
     downloadLink: { textDecoration: "none" },
     downloadButton: { minWidth: 120 },
-    downloadButtonText: { fontWeight: "600", textAlign: "center" },
+    downloadButtonText: { color: '#fff', fontWeight: "600", textAlign: "center" },
 
     downloadImageLink: { textDecoration: "none" },
     downloadHint: { fontSize: 13, opacity: 0.7 },
 
     removeFileButton: { marginTop: 4, minWidth: 120 },
-    removeFileButtonText: { fontWeight: "600", textAlign: "center" },
+    removeFileButtonText: { color: '#fff', fontWeight: "600", textAlign: "center" },
 });

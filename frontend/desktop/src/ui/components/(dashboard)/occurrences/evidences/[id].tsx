@@ -535,7 +535,7 @@ const DynamicOccurrenceForm = () => {
                     return (
                         <ThemedCard style={styles.card}>
                             <ThemedView style={[styles.sectionHeader, { backgroundColor: theme.uiBackground }]}>
-                                <ThemedText style={styles.sectionTitle}>
+                                <ThemedText style={styles.sectionTitle} title={true}>
                                     {displayTitle}
                                 </ThemedText>
 
@@ -544,7 +544,7 @@ const DynamicOccurrenceForm = () => {
                                     style={styles.saveBtn}
                                     disabled={loadingFields[displayTitle]}
                                 >
-                                    <ThemedText>
+                                    <ThemedText style={{color: '#fff', textAlign: 'center'}}>
                                         {t("evidences.save")}
                                     </ThemedText>
                                 </ThemedButton>
@@ -568,7 +568,7 @@ const DynamicOccurrenceForm = () => {
                                             intervenients={intervenients}
                                             onChange={(name, value) => handleFieldChange(field, value)}
                                             onFileChange={handleFileChange}
-                                            theme={theme}
+                                            colorScheme={colorScheme}
                                             fileValues={fileValues}
                                         />
                                     ))

@@ -6,6 +6,7 @@ export const Colors = {
 
     dark:{
         text: "#d4d4d4",
+        label: "#e0e0e0",
         title: "#fff",
         background: "#252231",
         navBackground: "#201e2b",
@@ -16,7 +17,8 @@ export const Colors = {
     },
     light:{
         text: "#625f72",
-        title: "#201e2b",
+        label: "#4a4658",
+        title: "#000",
         background: "#e0dfe8",
         navBackground: "#e8e7ef",
         iconColor: "#686477",

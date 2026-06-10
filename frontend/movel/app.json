@@ -5,12 +5,12 @@
     "slug": "IRA",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "../commons/img/adaptive_icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "../commons/img/adaptive_icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#613089"
     },
     "ios": {
       "supportsTablet": true
@@ -21,13 +21,11 @@
         "WRITE_EXTERNAL_STORAGE"
       ],
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#613089",
+        "foregroundImage": "../commons/img/adaptive_icon.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.IRA"
+      "package": "pt.isel.IRA"
     },
     "web": {
       "favicon": "./assets/favicon.png"

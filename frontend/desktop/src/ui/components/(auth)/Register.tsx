@@ -91,7 +91,7 @@ const Register = () => {
                 />
 
                 <ThemedButton onPress={handleSubmit}>
-                    <Text style={{color: 'f2f2f2'}}>{t("register.register")}</Text>
+                    <ThemedText style={{color: '#fff', textAlign: 'center'}}>{t("register.register")}</ThemedText>
                 </ThemedButton>
 
                 <Spacer/>

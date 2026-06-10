@@ -1,6 +1,7 @@
 import {StyleSheet, Image} from "react-native"
 import {Link, Redirect} from 'expo-router'
 import Logo from '@commons/img/isel.png'
+import AppLogo from "@commons/img/logo.png";
 import ThemedView from "../components/ThemedView";
 import Spacer from "../components/Spacer";
 import ThemedText from "../components/ThemedText";
@@ -16,7 +17,8 @@ const Home = () =>{
 
     return (
         <ThemedView style={styles.container}>
-            <Image source={Logo}/>
+            <Image source={Logo} style={{ width: 400, height: 200, resizeMode: "cover" }} />
+            <Image source={AppLogo} style={{ width: 200, height: 200, resizeMode: "cover" }} />
             <Spacer height={20}/>
 
             <Spacer height={10}/>
