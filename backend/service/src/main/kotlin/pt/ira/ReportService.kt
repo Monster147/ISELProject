@@ -4,12 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.pdmodel.PDPage
-import org.apache.pdfbox.pdmodel.PDPageContentStream
-import org.apache.pdfbox.pdmodel.common.PDRectangle
-import org.apache.pdfbox.pdmodel.font.PDType1Font
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
@@ -20,8 +14,6 @@ import pt.ira.report.Report
 import pt.ira.report.ReportStatus
 import pt.ira.storage.StorageService
 import java.text.Normalizer
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 /**
  * Hierarquia de erros específicos do domínio dos relatórios.
@@ -101,7 +93,13 @@ class ReportService(
     private val trxManager: TransactionManager,
     private val publisher: Publishers,
     private val storageService: StorageService,
+    private val pdfGenerator: PDFGenerator,
 ) {
+    companion object {
+        private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
+        private val logger = LoggerFactory.getLogger(ReportService::class.java)
+    }
+
     /**
      * Cria um relatório associado a uma ocorrência.
      *
@@ -160,10 +158,6 @@ class ReportService(
         }
     }
 
-    companion object {
-        private val logger = LoggerFactory.getLogger(ReportService::class.java)
-    }
-
     /**
      * Gera um relatório em PDF com base na definição de formulário associada ao tipo de ocorrência
      * e nos dados de evidência previamente armazenados.
@@ -196,223 +190,62 @@ class ReportService(
             logger.info("Saved sections found: {}", savedSections)
 
             PDDocument().use { doc ->
-                var page = PDPage(PDRectangle.A4)
-                doc.addPage(page)
-                var content = PDPageContentStream(doc, page)
-                val margin = 50f
-                var y = page.mediaBox.height - margin
-                val lineHeight = 14f
+                val pdfBuilder = pdfGenerator.createPDFBuilder(
+                    doc,
+                    language,
+                )
 
-                fun newPage() {
-                    content.beginText()
-                    content.endText()
-                    content.close()
-                    page = PDPage(PDRectangle.A4)
-                    doc.addPage(page)
-                    content = PDPageContentStream(doc, page)
-                    y = page.mediaBox.height - margin
-                }
-
-                fun drawLine() {
-                    content.saveGraphicsState()
-                    content.setStrokingColor(4f / 255f, 58f / 255f, 35f / 255f)
-                    content.setLineWidth(1f)
-                    content.moveTo(margin, y)
-                    content.lineTo(page.mediaBox.width - margin, y)
-                    content.stroke()
-                    content.restoreGraphicsState()
-                }
-
-                fun writeLine(
-                    text: String,
-                    isTitle: Boolean = false,
-                ) {
-                    if (y < margin) newPage()
-                    content.beginText()
-                    val font =
-                        if (isTitle) {
-                            PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD)
-                        } else {
-                            PDType1Font(Standard14Fonts.FontName.HELVETICA)
-                        }
-                    content.setFont(
-                        font,
-                        if (isTitle) 16f else 12f,
-                    )
-                    content.newLineAtOffset(margin, y)
-                    content.showText(text.take(120))
-                    content.endText()
-                    y -= lineHeight
-                }
-
-                fun renderSection(
-                    title: String,
-                    sectionData: JsonNode,
-                    fieldLabelMap: Map<String, String>,
-                ) {
-                    y -= 12
-                    writeLine(makeTitle(title), true)
-                    y -= 8
-                    val data = sectionData["data"] ?: return
-                    data.properties()?.forEach {
-                        val normalizedKey =
-                            it.key.replace(Regex("_\\d+$"), "_{index}")
-                        val label =
-                            fieldLabelMap[normalizedKey]
-                                ?: fieldLabelMap[it.key]
-                                ?: it.key
-                        val value = it.value?.takeIf { v -> v.asText() != "null" }?.asText()
-                        if (value == null) {
-                            val notAvailable =
-                                when (language) {
-                                    "pt" -> "Não disponibilizado"
-                                    "es" -> "No proporcionado"
-                                    else -> "Not provided"
-                                }
-                            writeLine("$label: $notAvailable")
-                        } else {
-                            writeLine("$label: $value")
-                        }
-                    }
-                    y -= 10
-                    drawLine()
-                    y -= 15
-                }
-
-                fun reportTitle(language: String): String =
-                    when (language) {
-                        "pt" -> "Relatório da Ocorrência $occurrenceId"
-                        "es" -> "Informe de Incidencia $occurrenceId"
-                        else -> "Occurrence $occurrenceId Report"
-                    }
-
-                fun writeTitle(
-                    title: String,
-                    dateTime: String,
-                ) {
-                    val logoImage = loadImage(doc, "/images/logo.png", "logo.png")
-                    val logoWidth = 80f
-                    val spacing = 8f
-                    val logoHeight =
-                        if (logoImage != null) {
-                            logoWidth * logoImage.height.toFloat() / logoImage.width.toFloat()
-                        } else {
-                            0f
-                        }
-
-                    val logoX = margin
-                    val logoY = y - logoHeight
-
-                    if (logoImage != null) {
-                        content.saveGraphicsState()
-                        content.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight)
-                        content.restoreGraphicsState()
-                    }
-
-                    val textX = logoX + logoWidth + spacing
-                    val textStartY = y - 18f
-                    content.beginText()
-                    val font = PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD)
-                    content.setFont(font, 16f)
-                    content.newLineAtOffset(textX, textStartY)
-                    content.showText(title.take(120))
-                    content.endText()
-
-                    content.saveGraphicsState()
-                    content.beginText()
-                    content.setNonStrokingColor(211f / 255f, 211f / 255f, 211f / 255f)
-                    content.setFont(PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 10f)
-                    content.newLineAtOffset(textX, y - 38f)
-                    content.showText(dateTime.take(120))
-                    content.endText()
-                    content.restoreGraphicsState()
-
-                    val headerHeight = maxOf(logoHeight, 40f) + 20f
-                    y -= headerHeight
-                    drawLine()
-                    y -= 15f
-                }
-
-                fun generateDateTime(language: String): String {
-                    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
-                    return when (language) {
-                        "pt" -> "Data de geração: ${LocalDateTime.now().format(formatter)}"
-                        "es" -> "Fecha de generación: ${LocalDateTime.now().format(formatter)}"
-                        else -> "Generation date: ${LocalDateTime.now().format(formatter)}"
-                    }
-                }
-
-                writeTitle(reportTitle(language), generateDateTime(language))
+                pdfBuilder.writeTitle(occurrenceId)
 
                 sections?.forEach { section ->
                     val titleNode = section["title"]
+                    val sectionTitle = titleNode?.get(language)?.asText() ?: return@forEach
                     val fieldsNode = section["fields"]
-                    val fieldLabelMap =
-                        fieldsNode
-                            .associate { field ->
+                    val fieldLabelMap = fieldsNode.associate { field ->
                                 val key = field["name"].asText()
                                 val label = field["label"]?.get(language)?.asText() ?: key
                                 key to label
                             }
 
-                    val title = titleNode?.get(language)?.asText()
-                    val templateKey = sanitizeSectionName(title)
+                    val shouldSkipSection = fieldsNode.any { it["dontPrint"]?.asBoolean() == true }
+                    if (shouldSkipSection) return@forEach
+
+
+                    val templateKey = sanitizeSectionName(sectionTitle)
                     val isIndexed = templateKey.contains("index")
                     if (!isIndexed) {
-                        val shouldSkipSection = fieldsNode.any { it["dontPrint"]?.asBoolean() == true }
-                        if (shouldSkipSection) return@forEach
                         val savedSection =
                             savedSections.firstOrNull {
                                 it["section"]?.asText() == templateKey
                             }
-                        if (savedSection != null && title != null) {
-                            renderSection(
-                                title,
-                                savedSection,
-                                fieldLabelMap,
-                            )
-                        }
+                        savedSection?.let { pdfBuilder.renderSection(sectionTitle, it, fieldLabelMap) }
                     } else {
                         val prefix = templateKey.replace("-index-", "")
-                        val matches =
-                            savedSections
-                                .filter {
-                                    it["section"]?.asText()?.startsWith(prefix)
-                                        ?: false
-                                }
-                                .sortedBy {
-                                    it["section"].asText()?.substringAfterLast("-")
-                                        ?.toIntOrNull()
-                                }
-                        matches.forEach { saved ->
-                            val shouldSkipSection = fieldsNode.any { it["dontPrint"]?.asBoolean() == true }
-                            if (shouldSkipSection) return@forEach
-                            val index = saved["section"].asText().substringAfterLast("-")
-                            val sectionTitle =
-                                title?.replace(
-                                    "{index}",
-                                    index,
-                                    ignoreCase = true,
-                                )
-                            if (sectionTitle != null) {
-                                renderSection(
-                                    sectionTitle,
+                        savedSections.filter { it["section"]?.asText()?.startsWith(prefix) ?: false }
+                            .sortedBy { it["section"].asText()?.substringAfterLast("-")?.toIntOrNull() }
+                            .forEach { saved ->
+                                val index = saved["section"].asText().substringAfterLast("-")
+                                pdfBuilder.renderSection(
+                                    sectionTitle.replace(
+                                        "{index}",
+                                        index,
+                                        ignoreCase = true,
+                                    ),
                                     saved,
                                     fieldLabelMap,
                                 )
-                            }
                         }
                     }
                 }
 
-                content.close()
+                pdfBuilder.close()
                 if (filePath == null) {
-                        val filename = "report_$occurrenceId.pdf"
-                        val filepath = storageService.saveReport(filename, doc)
-                        doc.close()
-                        logger.info("Saving report to: {}", filepath)
-                        filepath
-                    } else {
+                    val filename = "report_$occurrenceId.pdf"
+                    val filepath = storageService.saveReport(filename, doc)
+                    doc.close()
+                    logger.info("Saving report to: {}", filepath)
+                    filepath
+                } else {
                     storageService.updateReport(filePath, doc)
                     doc.close()
                     logger.info("Updating report to: {}", filePath)
@@ -420,26 +253,6 @@ class ReportService(
                 }
             }
         }
-
-    private fun loadImage(
-        doc: PDDocument,
-        path: String,
-        name: String?,
-    ): PDImageXObject? {
-        return try {
-            val stream = javaClass.getResourceAsStream(path)
-            if (stream != null) {
-                val bytes = stream.readBytes()
-                PDImageXObject.createFromByteArray(doc, bytes, name)
-            } else {
-                logger.warn("Logo image not found in resources")
-                null
-            }
-        } catch (e: Exception) {
-            logger.error("Failed to load logo image", e)
-            null
-        }
-    }
 
     private fun findSavedSections(occurrenceId: Int): List<JsonNode> =
         trxManager.run {
@@ -451,56 +264,18 @@ class ReportService(
                 }
                 .mapNotNull {
                     try {
-                        val file = storageService.loadEvidence(it.filePath)
-                        val text = file?.inputStream?.bufferedReader()?.readText()
-                        objectMapper.readTree(text)
+                        storageService.loadEvidence(it.filePath)
+                            ?.inputStream
+                            ?.bufferedReader()
+                            ?.use { reader ->
+                                objectMapper.readTree(reader.readText())
+                            }
                     } catch (e: Exception) {
                         logger.warn("Failed to load evidence ${it.filePath} for occurrence $occurrenceId", e)
                         null
                     }
                 }
         }
-
-    private fun makeTitle(title: String?): String {
-        logger.info("Title: {}", title)
-        if (title == null) return ""
-        val exceptions =
-            listOf(
-                "de",
-                "da",
-                "do",
-                "das",
-                "dos",
-                "e",
-            )
-
-        return title.lowercase()
-            .split(" ")
-            .mapIndexed { index, string ->
-                if (index > 0 && string in exceptions) {
-                    string
-                } else {
-                    string.replaceFirstChar { it.titlecase() }
-                }
-            }.joinToString(" ")
-    }
-
-    private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
-
-    private fun loadSavedSection(
-        occurrenceId: Int,
-        sectionKey: String,
-    ): JsonNode? {
-        val path = "occurrences/$occurrenceId/evidences/section-$sectionKey.json"
-        val resource = storageService.loadEvidence(path) ?: return null
-        return try {
-            resource.inputStream.use {
-                objectMapper.readTree(it)
-            }
-        } catch (e: Exception) {
-            null
-        }
-    }
 
     /**
      * Obtém um relatório pelo seu identificador.
@@ -610,6 +385,21 @@ class ReportService(
             }
         }
         return true
+    }
+
+    private fun loadSavedSection(
+        occurrenceId: Int,
+        sectionKey: String,
+    ): JsonNode? {
+        val path = "occurrences/$occurrenceId/evidences/section-$sectionKey.json"
+        val resource = storageService.loadEvidence(path) ?: return null
+        return try {
+            resource.inputStream.use {
+                objectMapper.readTree(it)
+            }
+        } catch (e: Exception) {
+            null
+        }
     }
 
     private fun findFieldValue(
