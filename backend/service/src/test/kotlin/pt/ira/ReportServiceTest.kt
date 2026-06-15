@@ -38,11 +38,16 @@ class ReportServiceTest {
 
     private fun createOccurrenceForUser(userId: Int) =
         trxManager.run {
+            val type =
+                repoType.createType(
+                    name = "type",
+                    form = json("""{}"""),
+                )
             repoOccurrence.createOccurrence(
                 endDate = LocalDate.of(2030, 3, 30),
                 reporterId = userId,
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = 1,
+                occurrenceType = type.id,
                 occurrenceInfo = json("""{}"""),
             )
         }
@@ -65,6 +70,7 @@ class ReportServiceTest {
                 json("""{}"""),
                 "en",
             ).let {
+                println(it)
                 check(it is Success)
                 it.value
             }
@@ -248,7 +254,7 @@ class ReportServiceTest {
 
         reportService.createReport(user2.id, occurrence2.id, "t2", "d", json("""{}"""), "en")
 
-        val result = reportService.findByType(1)
+        val result = reportService.findByType(occurrence1.occurrenceType)
 
         assertTrue(result.any { it.id == r1.id })
         assertTrue(result.any { it.title == "t1" })

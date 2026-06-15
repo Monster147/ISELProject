@@ -5,7 +5,11 @@ import org.springframework.stereotype.Component
 import pt.ira.emitters.ActionKind
 import pt.ira.interfaces.TransactionManager
 import pt.ira.intervenor.Intervenor
+import pt.ira.intervenor.IntervenorAddResult
+import pt.ira.intervenor.IntervenorRemoveResult
 import pt.ira.occurrence.Occurrence
+import pt.ira.occurrence.OccurrenceCreatedResult
+import pt.ira.occurrence.OccurrenceDeleteResult
 import pt.ira.occurrence.OccurrenceType
 import pt.ira.publishers.Publishers
 import java.time.LocalDate
@@ -98,30 +102,35 @@ class OccurrenceService(
         occurrenceType: Int,
         occurrenceInfo: JsonNode,
     ): Either<OccurrenceError, Occurrence> {
-        return trxManager.run {
-            if (endDate.isBefore(LocalDate.now())) return@run failure(OccurrenceError.EndDateNotValid)
-            repoUsers.findById(usersId) ?: return@run failure(OccurrenceError.UserNotFound)
-            repoType.findById(occurrenceType) ?: return@run failure(OccurrenceError.TypeNotFound)
-            val occurrence =
-                repoOccurrence.createOccurrence(
-                    endDate = endDate,
-                    reporterId = usersId,
-                    importance = importance,
-                    occurrenceType = occurrenceType,
-                    occurrenceInfo = occurrenceInfo,
-                )
-            publisher.occurrencePublisher.sendMessageToAll(
-                occurrence.id,
-                occurrence,
-                ActionKind.OccurrenceCreated,
-            )
-            publisher.occurrencesPublisher.sendMessageToAll(
-                usersId,
-                findOccurrenceByReporterId(usersId),
-                ActionKind.OccurrencesChanged,
-            )
-            success(occurrence)
-        }
+        val result =
+            trxManager.run {
+                if (endDate.isBefore(LocalDate.now())) return@run failure(OccurrenceError.EndDateNotValid)
+                repoUsers.findById(usersId) ?: return@run failure(OccurrenceError.UserNotFound)
+                repoType.findById(occurrenceType) ?: return@run failure(OccurrenceError.TypeNotFound)
+                val occurrence =
+                    repoOccurrence.createOccurrence(
+                        endDate = endDate,
+                        reporterId = usersId,
+                        importance = importance,
+                        occurrenceType = occurrenceType,
+                        occurrenceInfo = occurrenceInfo,
+                    )
+                val userOccurrences = repoOccurrence.findOccurrenceByReporterId(usersId)
+                success(OccurrenceCreatedResult(occurrence, userOccurrences))
+            }
+        if (result is Failure) return result
+        val data = (result as Success).value
+        publisher.occurrencePublisher.sendMessageToAll(
+            data.occurrence.id,
+            data.occurrence,
+            ActionKind.OccurrenceCreated,
+        )
+        publisher.occurrencesPublisher.sendMessageToAll(
+            usersId,
+            data.userOccurrences,
+            ActionKind.OccurrencesChanged,
+        )
+        return success(data.occurrence)
     }
 
     /**
@@ -188,33 +197,37 @@ class OccurrenceService(
         occurrenceId: Int,
         intervenorId: Int,
     ): Either<OccurrenceError, Occurrence> {
-        return trxManager.run {
-            val occurrence =
-                repoOccurrence.findById(occurrenceId)
-                    ?: return@run failure(OccurrenceError.OccurrenceNotFound)
+        val result =
+            trxManager.run {
+                val occurrence =
+                    repoOccurrence.findById(occurrenceId)
+                        ?: return@run failure(OccurrenceError.OccurrenceNotFound)
 
-            val intervenor =
-                repoIntervenor.findById(intervenorId)
-                    ?: return@run failure(OccurrenceError.IntervenorNotFound)
+                val intervenor =
+                    repoIntervenor.findById(intervenorId)
+                        ?: return@run failure(OccurrenceError.IntervenorNotFound)
 
-            if (occurrence.intervenors.any { it == intervenorId }) {
-                return@run failure(OccurrenceError.IntervenorAlreadyInOccurrence)
+                if (intervenorId in occurrence.intervenors) {
+                    return@run failure(OccurrenceError.IntervenorAlreadyInOccurrence)
+                }
+
+                val updated = repoOccurrence.addIntervenor(occurrence, intervenor)
+                val userOccurrences = repoOccurrence.findOccurrenceByReporterId(occurrence.reporterId)
+                success(IntervenorAddResult(updated, userOccurrences))
             }
-
-            val updated = repoOccurrence.addIntervenor(occurrence, intervenor)
-            publisher.occurrencePublisher.sendMessageToAll(
-                updated.id,
-                updated,
-                ActionKind.IntervenorAdded,
-            )
-            val reporterId = occurrence.reporterId
-            publisher.occurrencesPublisher.sendMessageToAll(
-                occurrence.reporterId,
-                findOccurrenceByReporterId(reporterId),
-                ActionKind.OccurrencesChanged,
-            )
-            success(updated)
-        }
+        if (result is Failure) return result
+        val data = (result as Success).value
+        publisher.occurrencePublisher.sendMessageToAll(
+            data.updated.id,
+            data.updated,
+            ActionKind.IntervenorAdded,
+        )
+        publisher.occurrencesPublisher.sendMessageToAll(
+            data.updated.reporterId,
+            data.userOccurrences,
+            ActionKind.OccurrencesChanged,
+        )
+        return success(data.updated)
     }
 
     /**
@@ -233,33 +246,41 @@ class OccurrenceService(
         occurrenceId: Int,
         intervenorId: Int,
     ): Either<OccurrenceError, Occurrence> {
-        return trxManager.run {
-            val occurrence =
-                repoOccurrence.findById(occurrenceId)
-                    ?: return@run failure(OccurrenceError.OccurrenceNotFound)
+        val result =
+            trxManager.run {
+                val occurrence =
+                    repoOccurrence.findById(occurrenceId)
+                        ?: return@run failure(OccurrenceError.OccurrenceNotFound)
 
-            val intervenor =
-                repoIntervenor.findById(intervenorId)
-                    ?: return@run failure(OccurrenceError.IntervenorNotFound)
+                val intervenor =
+                    repoIntervenor.findById(intervenorId)
+                        ?: return@run failure(OccurrenceError.IntervenorNotFound)
 
-            if (!occurrence.intervenors.any { it == intervenorId }) {
-                return@run failure(OccurrenceError.IntervenorNotInOccurrence)
+                if (intervenorId !in occurrence.intervenors) {
+                    return@run failure(OccurrenceError.IntervenorNotInOccurrence)
+                }
+
+                val updated = repoOccurrence.removeIntervenor(occurrence, intervenor)
+                val occurrences = repoOccurrence.findOccurrenceByReporterId(intervenorId)
+
+                success(IntervenorRemoveResult(updated, occurrences))
             }
-
-            val updated = repoOccurrence.removeIntervenor(occurrence, intervenor)
-            publisher.occurrencePublisher.sendMessageToAll(
-                updated.id,
-                updated,
-                ActionKind.IntervenorRemoved,
-            )
-            val reporterId = occurrence.reporterId
-            publisher.occurrencesPublisher.sendMessageToAll(
-                occurrence.reporterId,
-                findOccurrenceByReporterId(reporterId),
-                ActionKind.OccurrencesChanged,
-            )
-            success(updated)
+        if (result is Failure) {
+            return result
         }
+
+        val data = (result as Success).value
+        publisher.occurrencePublisher.sendMessageToAll(
+            data.occurrence.id,
+            data.occurrence,
+            ActionKind.IntervenorRemoved,
+        )
+        publisher.occurrencesPublisher.sendMessageToAll(
+            data.occurrence.reporterId,
+            data.occurrences,
+            ActionKind.OccurrencesChanged,
+        )
+        return success(data.occurrence)
     }
 
     /**
@@ -279,23 +300,31 @@ class OccurrenceService(
      * @return `true` se a eliminação for bem-sucedida, ou erro do tipo [OccurrenceError].
      */
     fun deleteById(id: Int): Either<OccurrenceError, Boolean> {
-        return trxManager.run {
-            val occurrence =
-                repoOccurrence.findById(id)
-                    ?: return@run failure(OccurrenceError.OccurrenceNotFound)
-            repoOccurrence.deleteById(id)
-            publisher.occurrencePublisher.sendMessageToAll(
-                id,
-                Unit,
-                ActionKind.OccurrenceDeleted,
-            )
-            val reporterId = occurrence.reporterId
-            publisher.occurrencesPublisher.sendMessageToAll(
-                occurrence.reporterId,
-                findOccurrenceByReporterId(reporterId),
-                ActionKind.OccurrencesChanged,
-            )
-            success(true)
+        val result =
+            trxManager.run {
+                val occurrence =
+                    repoOccurrence.findById(id)
+                        ?: return@run failure(OccurrenceError.OccurrenceNotFound)
+                repoOccurrence.deleteById(id)
+                val occurrences = repoOccurrence.findOccurrenceByReporterId(occurrence.reporterId)
+                success(OccurrenceDeleteResult(occurrence.reporterId, occurrences))
+            }
+        if (result is Failure) {
+            return result
         }
+
+        val data = (result as Success).value
+        publisher.occurrencePublisher.sendMessageToAll(
+            id,
+            Unit,
+            ActionKind.OccurrenceDeleted,
+        )
+
+        publisher.occurrencesPublisher.sendMessageToAll(
+            data.reporterId,
+            data.occurrences,
+            ActionKind.OccurrencesChanged,
+        )
+        return success(true)
     }
 }

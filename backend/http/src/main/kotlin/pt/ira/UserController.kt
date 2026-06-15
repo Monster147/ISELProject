@@ -76,23 +76,7 @@ class UserController(
                         "/api/user/${result.value.id}",
                     ).build<Unit>()
 
-            is Failure ->
-                when (result.value) {
-                    is UserError.AlreadyUsedEmailAddress ->
-                        Problem.EmailAlreadyInUse.response(
-                            HttpStatus.BAD_REQUEST,
-                        )
-
-                    is UserError.InsecurePassword ->
-                        Problem.InsecurePassword.response(
-                            HttpStatus.BAD_REQUEST,
-                        )
-
-                    is UserError.RoleDoesntExist ->
-                        Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
-
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -120,11 +104,7 @@ class UserController(
                     .status(HttpStatus.CREATED)
                     .body(UserCreateTokenOutputModel(result.value.tokenValue))
 
-            is Failure ->
-                when (result.value) {
-                    TokenCreationError.UserOrPasswordAreInvalid ->
-                        Problem.UserOrPasswordAreInvalid.response(HttpStatus.BAD_REQUEST)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -185,11 +165,7 @@ class UserController(
                         ),
                     )
 
-            is Failure ->
-                when (result.value) {
-                    is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -219,13 +195,7 @@ class UserController(
                     .status(HttpStatus.OK)
                     .body("Role added successfully")
 
-            is Failure ->
-                when (result.value) {
-                    is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
-                    is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-                    is UserError.UserNotAdmin -> Problem.UserNotAdmin.response(HttpStatus.FORBIDDEN)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -255,13 +225,7 @@ class UserController(
                     .status(HttpStatus.OK)
                     .body("Role removed successfully")
 
-            is Failure ->
-                when (result.value) {
-                    is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
-                    is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-                    is UserError.UserNotAdmin -> Problem.UserNotAdmin.response(HttpStatus.FORBIDDEN)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -291,13 +255,7 @@ class UserController(
                     .status(HttpStatus.OK)
                     .body("Roles setted successfully")
 
-            is Failure ->
-                when (result.value) {
-                    is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
-                    is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-                    is UserError.UserNotAdmin -> Problem.UserNotAdmin.response(HttpStatus.FORBIDDEN)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -328,11 +286,7 @@ class UserController(
                         },
                     )
 
-            is Failure ->
-                when (result.value) {
-                    is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -348,10 +302,19 @@ class UserController(
         @PathVariable userId: Int,
     ): ResponseEntity<List<ReportTypePercentage>> = ResponseEntity.ok(userService.getTypePercentagesByReporter(userId))
 
-    /*private fun handleUserErrors(errors: UserError): ResponseEntity<*> =
-        when(error) {
-            UserError.AlreadyUsedEmailAddress ->
-            UserError.InsecurePassword ->
-            UserError.UserNotFound ->
-        }*/
+    private fun UserError.toResponse(): ResponseEntity<*> =
+        when (this) {
+            is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
+            is UserError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+            is UserError.UserNotAdmin -> Problem.UserNotAdmin.response(HttpStatus.FORBIDDEN)
+            is UserError.InsecurePassword -> Problem.InsecurePassword.response(HttpStatus.BAD_REQUEST)
+            is UserError.AlreadyUsedEmailAddress -> Problem.EmailAlreadyInUse.response(HttpStatus.BAD_REQUEST)
+            else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+
+    private fun TokenCreationError.toResponse(): ResponseEntity<*> =
+        when (this) {
+            is TokenCreationError.UserOrPasswordAreInvalid -> Problem.UserOrPasswordAreInvalid.response(HttpStatus.BAD_REQUEST)
+            else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
 }

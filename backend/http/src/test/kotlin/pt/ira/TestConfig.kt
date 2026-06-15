@@ -1,5 +1,7 @@
 package pt.ira
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
@@ -33,4 +35,9 @@ class TestConfig {
             tokenRollingTtl = Duration.ofHours(1),
             maxTokensPerUser = 3,
         )
+
+    @Bean
+    fun objectMapper(): ObjectMapper =
+        ObjectMapper()
+            .registerKotlinModule()
 }

@@ -24,15 +24,17 @@ class RepositoryTypeMem : RepositoryType {
     override fun findAll(): List<Type> = types.toList()
 
     override fun save(entity: Type) {
-        types.removeIf { it.id == entity.id }
-        types.add(entity)
+        val idx = types.indexOfFirst { it.id == entity.id }
+        if (idx >= 0) {
+            types[idx] = entity
+        } else {
+            types.add(entity)
+        }
     }
 
     override fun deleteById(id: Int) {
         types.removeIf { it.id == id }
     }
 
-    override fun clear() {
-        types.clear()
-    }
+    override fun clear() = types.clear()
 }

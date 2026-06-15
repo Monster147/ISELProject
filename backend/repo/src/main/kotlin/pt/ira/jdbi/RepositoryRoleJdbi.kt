@@ -8,6 +8,10 @@ import java.sql.ResultSet
 class RepositoryRoleJdbi(
     private val handle: Handle,
 ) : RepositoryRole {
+    private companion object {
+        const val ROLE_COLUMNS = """id, name"""
+    }
+
     override fun createRole(name: String): Role {
         val id =
             handle.createUpdate(
@@ -33,7 +37,7 @@ class RepositoryRoleJdbi(
     override fun findByName(name: String): Role? =
         handle.createQuery(
             """
-            SELECT id, name 
+            SELECT $ROLE_COLUMNS
             FROM dbo.roles 
             WHERE name = :name
             """.trimIndent(),
@@ -44,7 +48,7 @@ class RepositoryRoleJdbi(
     override fun findById(id: Int): Role? =
         handle.createQuery(
             """
-            SELECT id, name 
+            SELECT $ROLE_COLUMNS
             FROM dbo.roles 
             WHERE id = :id
             """.trimIndent(),
@@ -55,7 +59,7 @@ class RepositoryRoleJdbi(
     override fun findAll(): List<Role> =
         handle.createQuery(
             """
-            SELECT id ,name
+            SELECT $ROLE_COLUMNS
             FROM dbo.roles
             ORDER BY id
             """.trimIndent(),
@@ -84,10 +88,9 @@ class RepositoryRoleJdbi(
             .execute()
     }
 
-    private fun mapRowToRole(rs: ResultSet): Role {
-        val id = rs.getInt("id")
-        val displayName = rs.getString("name")
-
-        return Role(id, displayName)
-    }
+    private fun mapRowToRole(rs: ResultSet): Role =
+        Role(
+            id = rs.getInt("id"),
+            displayName = rs.getString("name"),
+        )
 }

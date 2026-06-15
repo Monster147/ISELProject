@@ -9,7 +9,7 @@ import pt.ira.occurrence.OccurrenceType
 import java.time.LocalDate
 
 class RepositoryOccurrenceMem : RepositoryOccurrence {
-    val occurrences = mutableListOf<Occurrence>()
+    private val occurrences = mutableListOf<Occurrence>()
 
     override fun createOccurrence(
         endDate: LocalDate,
@@ -38,7 +38,7 @@ class RepositoryOccurrenceMem : RepositoryOccurrence {
         occurrence: Occurrence,
         intervenor: Intervenor,
     ): Occurrence {
-        if (occurrence.intervenors.any { it == intervenor.id }) return occurrence
+        if (intervenor.id in occurrence.intervenors) return occurrence
         val updated =
             occurrence.copy(
                 intervenors = occurrence.intervenors + intervenor.id,
@@ -51,7 +51,7 @@ class RepositoryOccurrenceMem : RepositoryOccurrence {
         occurrence: Occurrence,
         intervenor: Intervenor,
     ): Occurrence {
-        if (occurrence.intervenors.none { it == intervenor.id }) return occurrence
+        if (intervenor.id !in occurrence.intervenors) return occurrence
         val updated =
             occurrence.copy(
                 intervenors = occurrence.intervenors - intervenor.id,
@@ -64,7 +64,7 @@ class RepositoryOccurrenceMem : RepositoryOccurrence {
         occurrence: Occurrence,
         evidence: Evidence,
     ): Occurrence {
-        if (occurrence.evidences.any { it == evidence.id }) return occurrence
+        if (evidence.id in occurrence.evidences) return occurrence
         val updated =
             occurrence.copy(
                 evidences = occurrence.evidences + evidence.id,
@@ -77,7 +77,7 @@ class RepositoryOccurrenceMem : RepositoryOccurrence {
         occurrence: Occurrence,
         evidence: Evidence,
     ): Occurrence {
-        if (occurrence.evidences.none { it == evidence.id }) return occurrence
+        if (evidence.id !in occurrence.evidences) return occurrence
         val updated =
             occurrence.copy(
                 evidences = occurrence.evidences - evidence.id,
@@ -91,15 +91,17 @@ class RepositoryOccurrenceMem : RepositoryOccurrence {
     override fun findAll(): List<Occurrence> = occurrences.toList()
 
     override fun save(entity: Occurrence) {
-        occurrences.removeIf { it.id == entity.id }
-        occurrences.add(entity)
+        val idx = occurrences.indexOfFirst { it.id == entity.id }
+        if (idx >= 0) {
+            occurrences[idx] = entity
+        } else {
+            occurrences.add(entity)
+        }
     }
 
     override fun deleteById(id: Int) {
         occurrences.removeIf { it.id == id }
     }
 
-    override fun clear() {
-        occurrences.clear()
-    }
+    override fun clear() = occurrences.clear()
 }

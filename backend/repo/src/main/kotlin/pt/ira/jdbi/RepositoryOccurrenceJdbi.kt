@@ -14,6 +14,21 @@ import java.time.LocalDate
 class RepositoryOccurrenceJdbi(
     private val handle: Handle,
 ) : RepositoryOccurrence {
+    private companion object {
+        const val OCCURRENCE_COLUMNS = """
+            id, 
+            initDate, 
+            endDate, 
+            reporter_id, 
+            importance, 
+            occur_type, 
+            occur_info, 
+            evidences, 
+            intervenors
+            """
+        private val objectMapper = ObjectMapper()
+    }
+
     override fun createOccurrence(
         endDate: LocalDate,
         reporterId: Int,
@@ -56,7 +71,7 @@ class RepositoryOccurrenceJdbi(
     override fun findByImportance(importance: OccurrenceType): List<Occurrence> =
         handle.createQuery(
             """
-            SELECT id, initDate, endDate, reporter_id, importance, occur_type, occur_info, evidences, intervenors
+            SELECT $OCCURRENCE_COLUMNS
             FROM dbo.occurrence
             WHERE importance = :importance::dbo.occurrence_type
             """.trimIndent(),
@@ -68,7 +83,7 @@ class RepositoryOccurrenceJdbi(
     override fun findOccurrenceByReporterId(reporterId: Int): List<Occurrence> =
         handle.createQuery(
             """
-            SELECT id, initDate, endDate, reporter_id, importance, occur_type, occur_info, evidences, intervenors
+            SELECT $OCCURRENCE_COLUMNS
             FROM dbo.occurrence
             WHERE reporter_id = :reporter_id
             """.trimIndent(),
@@ -80,7 +95,7 @@ class RepositoryOccurrenceJdbi(
     override fun findByIntervenor(intervenor: Intervenor): List<Occurrence> =
         handle.createQuery(
             """
-            SELECT id, initDate, endDate, reporter_id, importance, occur_type, occur_info, evidences, intervenors
+            SELECT $OCCURRENCE_COLUMNS
             FROM dbo.occurrence
             WHERE :intervenorId = ANY(intervenors)
             """.trimIndent(),
@@ -93,7 +108,7 @@ class RepositoryOccurrenceJdbi(
         occurrence: Occurrence,
         intervenor: Intervenor,
     ): Occurrence {
-        if (occurrence.intervenors.any { it == intervenor.id }) return occurrence
+        if (intervenor.id in occurrence.intervenors) return occurrence
         val updated =
             occurrence.copy(
                 intervenors = occurrence.intervenors + intervenor.id,
@@ -106,7 +121,7 @@ class RepositoryOccurrenceJdbi(
         occurrence: Occurrence,
         intervenor: Intervenor,
     ): Occurrence {
-        if (occurrence.intervenors.none { it == intervenor.id }) return occurrence
+        if (intervenor.id !in occurrence.intervenors) return occurrence
         val updated =
             occurrence.copy(
                 intervenors = occurrence.intervenors - intervenor.id,
@@ -119,7 +134,7 @@ class RepositoryOccurrenceJdbi(
         occurrence: Occurrence,
         evidence: Evidence,
     ): Occurrence {
-        if (occurrence.evidences.any { it == evidence.id }) return occurrence
+        if (evidence.id in occurrence.evidences) return occurrence
         val updated =
             occurrence.copy(
                 evidences = occurrence.evidences + evidence.id,
@@ -132,7 +147,7 @@ class RepositoryOccurrenceJdbi(
         occurrence: Occurrence,
         evidence: Evidence,
     ): Occurrence {
-        if (occurrence.evidences.none { it == evidence.id }) return occurrence
+        if (evidence.id !in occurrence.evidences) return occurrence
         val updated =
             occurrence.copy(
                 evidences = occurrence.evidences - evidence.id,
@@ -144,7 +159,7 @@ class RepositoryOccurrenceJdbi(
     override fun findById(id: Int): Occurrence? =
         handle.createQuery(
             """
-            SELECT id, initDate, endDate, reporter_id, importance, occur_type, occur_info, evidences, intervenors
+            SELECT $OCCURRENCE_COLUMNS
             FROM dbo.occurrence
             WHERE id = :id
             """.trimIndent(),
@@ -156,7 +171,7 @@ class RepositoryOccurrenceJdbi(
     override fun findAll(): List<Occurrence> =
         handle.createQuery(
             """
-            SELECT id, initDate, endDate, reporter_id, importance, occur_type, occur_info, evidences, intervenors
+            SELECT $OCCURRENCE_COLUMNS
             FROM dbo.occurrence
             ORDER BY id
             """.trimIndent(),
@@ -201,16 +216,7 @@ class RepositoryOccurrenceJdbi(
         handle.createUpdate("DELETE FROM dbo.occurrence").execute()
     }
 
-    private val objectMapper = ObjectMapper()
-
     private fun mapRowToOccurrence(rs: ResultSet): Occurrence {
-        val id = rs.getInt("id")
-        val reporterId = rs.getInt("reporter_id")
-        val importance = rs.getString("importance").let { OccurrenceType.valueOf(it) }
-        val initDate = rs.getDate("initDate").toLocalDate()
-        val endDate = rs.getDate("endDate").toLocalDate()
-        val occurType = rs.getInt("occur_type")
-        val occurInfo = rs.getString("occur_info")
         val evidences =
             rs.getArray("evidences")?.let { arr ->
                 (arr.array as Array<*>).map { (it as Number).toInt() }
@@ -219,16 +225,15 @@ class RepositoryOccurrenceJdbi(
             rs.getArray("intervenors")?.let { arr ->
                 (arr.array as Array<*>).map { (it as Number).toInt() }
             } ?: emptyList()
-        val infoJson = objectMapper.readTree(occurInfo)
 
         return Occurrence(
-            id = id,
-            initDate = initDate,
-            endDate = endDate,
-            reporterId = reporterId,
-            importance = importance,
-            occurrenceType = occurType,
-            occurrenceInfo = infoJson,
+            id = rs.getInt("id"),
+            initDate = rs.getDate("initDate").toLocalDate(),
+            endDate = rs.getDate("endDate").toLocalDate(),
+            reporterId = rs.getInt("reporter_id"),
+            importance = rs.getString("importance").let { OccurrenceType.valueOf(it) },
+            occurrenceType = rs.getInt("occur_type"),
+            occurrenceInfo = objectMapper.readTree(rs.getString("occur_info")),
             evidences = evidences,
             intervenors = intervenors,
         )

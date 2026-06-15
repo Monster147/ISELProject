@@ -111,6 +111,8 @@ sealed class Problem(
     // documents
     data object FileAlreadyExists : Problem(URI("${PROBLEM_URI_PATH}/file-already-exists"))
 
+    data object UploadFailed : Problem(URI("${PROBLEM_URI_PATH}/upload-failed"))
+
     // type
     data object TypeNotFound : Problem(URI("${PROBLEM_URI_PATH}/type-not-found"))
 

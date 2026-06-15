@@ -19,7 +19,7 @@ class PDBuilder(
     private val doc: PDDocument,
     private val language: String,
     private val pdfText: PDFText,
-    private val storageService: StorageService
+    private val storageService: StorageService,
 ) {
     private val margin = 50f
     private val lineHeight = 14f
@@ -41,7 +41,7 @@ class PDBuilder(
     private inline fun drawWithStroke(
         lineWidth: Float = 1f,
         greenAndLine: Boolean = true,
-        block: PDPageContentStream.() -> Unit
+        block: PDPageContentStream.() -> Unit,
     ) {
         content.saveGraphicsState()
         if (greenAndLine) {
@@ -68,7 +68,7 @@ class PDBuilder(
         height: Float,
     ) {
         drawWithStroke {
-            content.addRect(x-10f, y - height-20f, width+20f, height+20f)
+            content.addRect(x - 10f, y - height - 20f, width + 20f, height + 20f)
         }
     }
 
@@ -83,7 +83,7 @@ class PDBuilder(
                 PDType1Font(Standard14Fonts.FontName.HELVETICA)
             }
         val fontSize = if (isTitle) 16f else 12f
-        val maxWidth = page.mediaBox.width - (margin*2)
+        val maxWidth = page.mediaBox.width - (margin * 2)
         val words = text.split(" ")
         val lines = mutableListOf<String>()
         var currLine = ""
@@ -109,14 +109,13 @@ class PDBuilder(
             content.endText()
             y -= lineHeight
         }
-
     }
 
     fun renderImage(
         resource: Resource,
         fileName: String,
     ) {
-        val imageBytes = resource.inputStream.use{ it.readBytes() }
+        val imageBytes = resource.inputStream.use { it.readBytes() }
         val image = PDImageXObject.createFromByteArray(doc, imageBytes, fileName)
         val maxWidth = page.mediaBox.width - (margin * 2) - 20f
         val maxHeight = 250f
@@ -128,15 +127,18 @@ class PDBuilder(
         resource: Resource,
         fileName: String,
     ) {
-        val pdfBytes = resource.inputStream.use{ it.readBytes() }
+        val pdfBytes = resource.inputStream.use { it.readBytes() }
         Loader.loadPDF(pdfBytes).use { pdf ->
             val renderer = PDFRenderer(pdf)
             val pageImage = renderer.renderImageWithDPI(0, 150f)
             val pageImageByteArray = ByteArrayOutputStream()
             ImageIO.write(pageImage, "png", pageImageByteArray)
-            val image = PDImageXObject.createFromByteArray(
-                doc, pageImageByteArray.toByteArray(), fileName
-            )
+            val image =
+                PDImageXObject.createFromByteArray(
+                    doc,
+                    pageImageByteArray.toByteArray(),
+                    fileName,
+                )
             val maxWidth = page.mediaBox.width - (margin * 2) - 20f
             val maxHeight = page.mediaBox.height * 0.7f
             placeImageOnPage(image, maxWidth, maxHeight)
@@ -144,7 +146,11 @@ class PDBuilder(
         }
     }
 
-    private fun placeImageOnPage(image: PDImageXObject, width: Float, height: Float) {
+    private fun placeImageOnPage(
+        image: PDImageXObject,
+        width: Float,
+        height: Float,
+    ) {
         val ratio = minOf(width / image.width, height / image.height)
         val width = image.width * ratio
         val height = image.height * ratio
@@ -208,7 +214,7 @@ class PDBuilder(
     fun renderSectionFiles(
         sectionData: JsonNode,
         fieldLabelMap: Map<String, String>,
-    ){
+    ) {
         val files = sectionData["files"] ?: return
 
         if (!files.isArray || files.isEmpty) {
@@ -223,8 +229,8 @@ class PDBuilder(
             val fileName = filePath.substringAfterLast("/")
             when {
                 filePath.endsWith(".jpg", true) ||
-                        filePath.endsWith(".png", true) ||
-                        filePath.endsWith(".jpeg", true) -> renderImage(resource, fileName)
+                    filePath.endsWith(".png", true) ||
+                    filePath.endsWith(".jpeg", true) -> renderImage(resource, fileName)
                 filePath.endsWith(".pdf", true) -> renderPDFPreview(resource, fileName)
                 else -> pdfText.evidenceReference(fileName, language).let { writeLine(it) }
             }
@@ -234,12 +240,12 @@ class PDBuilder(
 
     private fun getLabel(
         fieldName: String,
-        fieldLabelMap: Map<String, String>
+        fieldLabelMap: Map<String, String>,
     ): String {
         val normalizedField =
             fieldName.replace(
                 Regex("_\\d+$"),
-                "_{index}"
+                "_{index}",
             )
 
         val label =
@@ -250,9 +256,7 @@ class PDBuilder(
         return label
     }
 
-    fun writeTitle(
-        occurrenceId: Int
-    ) {
+    fun writeTitle(occurrenceId: Int) {
         val logoImage = loadLogoImage("/images/logo.png", "logo.png")
         val logoWidth = 80f
         val spacing = 8f

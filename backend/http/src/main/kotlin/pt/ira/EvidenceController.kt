@@ -1,7 +1,6 @@
 package pt.ira
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -9,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
@@ -43,9 +42,8 @@ import java.nio.file.Paths
 class EvidenceController(
     private val evidenceService: EvidenceService,
     private val publisher: Publishers,
+    private val objectMapper: ObjectMapper,
 ) {
-    private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
-
     /**
      * Cria uma evidência a partir de um pedido multipart.
      *
@@ -84,16 +82,7 @@ class EvidenceController(
                         "Location",
                         "/api/evidence/${result.value.id}",
                     ).body(result.value)
-            is Failure ->
-                when (result.value) {
-                    is EvidenceError.OccurrenceNotFound ->
-                        Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
-                    is EvidenceError.ReporterNotFound ->
-                        Problem.ReporterNotFound.response(HttpStatus.NOT_FOUND)
-                    is EvidenceError.InvalidFile ->
-                        Problem.InvalidFile.response(HttpStatus.BAD_REQUEST)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -115,12 +104,7 @@ class EvidenceController(
                     .status(HttpStatus.OK)
                     .body(result.value)
 
-            is Failure ->
-                when (result.value) {
-                    is EvidenceError.EvidenceNotFound ->
-                        Problem.EvidenceNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -156,14 +140,7 @@ class EvidenceController(
                     .body(resource)
             }
 
-            is Failure ->
-                when (result.value) {
-                    is EvidenceError.EvidenceNotFound ->
-                        Problem.EvidenceNotFound.response(HttpStatus.NOT_FOUND)
-                    is EvidenceError.FileNotFound ->
-                        Problem.FileNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -210,9 +187,9 @@ class EvidenceController(
      *
      * @return lista de evidências correspondentes ao tipo indicado.
      */
-    @GetMapping("/byType")
+    @GetMapping("/byType/{type}")
     fun findByType(
-        @RequestBody type: String,
+        @PathVariable type: String,
     ): ResponseEntity<*> {
         val result = evidenceService.findByType(type)
         return ResponseEntity
@@ -270,21 +247,14 @@ class EvidenceController(
                     .status(HttpStatus.NO_CONTENT)
                     .build<Unit>()
 
-            is Failure ->
-                when (result.value) {
-                    is EvidenceError.EvidenceNotFound ->
-                        Problem.EvidenceNotFound.response(HttpStatus.NOT_FOUND)
-                    is EvidenceError.OccurrenceNotFound ->
-                        Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
     /**
      * Atualiza uma evidência existente com novo JSON.
      *
-     * Endpoint: POST /{id}
+     * Endpoint: PUT /{id}
      *
      * @param id Identificador da evidência a atualizar.
      * @param file Novo ficheiro, JSON com dados atualizados.
@@ -292,7 +262,7 @@ class EvidenceController(
      *
      * @return `200 OK` com a evidência atualizada, ou erro apropriado.
      */
-    @PostMapping("/update/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PutMapping("/update/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateEvidence(
         @PathVariable id: Int,
         @RequestPart("file") file: MultipartFile,
@@ -304,14 +274,7 @@ class EvidenceController(
                     .status(HttpStatus.OK)
                     .body(result.value)
 
-            is Failure ->
-                when (result.value) {
-                    is EvidenceError.EvidenceNotFound ->
-                        Problem.EvidenceNotFound.response(HttpStatus.NOT_FOUND)
-                    is EvidenceError.InvalidFile ->
-                        Problem.InvalidFile.response(HttpStatus.BAD_REQUEST)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -340,4 +303,15 @@ class EvidenceController(
         )
         return sseEmitter
     }
+
+    private fun EvidenceError.toResponse(): ResponseEntity<*> =
+        when (this) {
+            is EvidenceError.EvidenceNotFound -> Problem.EvidenceNotFound.response(HttpStatus.NOT_FOUND)
+            is EvidenceError.UploadFailed -> Problem.UploadFailed.response(HttpStatus.BAD_REQUEST)
+            is EvidenceError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
+            is EvidenceError.InvalidFile -> Problem.InvalidFile.response(HttpStatus.BAD_REQUEST)
+            is EvidenceError.FileNotFound -> Problem.FileNotFound.response(HttpStatus.NOT_FOUND)
+            is EvidenceError.ReporterNotFound -> Problem.ReporterNotFound.response(HttpStatus.NOT_FOUND)
+            else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
 }

@@ -58,12 +58,7 @@ class RoleController(
                         "Location",
                         "/api/role/${result.value.id}",
                     ).build<Unit>()
-            is Failure ->
-                when (result.value) {
-                    is RoleError.RoleAlreadyExists ->
-                        Problem.RoleAlreadyExists.response(HttpStatus.BAD_REQUEST)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -86,12 +81,7 @@ class RoleController(
                 ResponseEntity
                     .status(HttpStatus.NO_CONTENT)
                     .build<Unit>()
-            is Failure ->
-                when (result.value) {
-                    is RoleError.RoleNotFound ->
-                        Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -113,13 +103,7 @@ class RoleController(
                     .status(HttpStatus.OK)
                     .body(result.value)
 
-            is Failure ->
-                when (result.value) {
-                    is RoleError.RoleNotFound ->
-                        Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
-
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -141,13 +125,7 @@ class RoleController(
                     .status(HttpStatus.OK)
                     .body(result.value)
 
-            is Failure ->
-                when (result.value) {
-                    is RoleError.RoleNotFound ->
-                        Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
-
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -163,4 +141,11 @@ class RoleController(
             .status(HttpStatus.OK)
             .body(result)
     }
+
+    private fun RoleError.toResponse(): ResponseEntity<*> =
+        when (this) {
+            is RoleError.RoleNotFound -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
+            is RoleError.RoleAlreadyExists -> Problem.RoleAlreadyExists.response(HttpStatus.BAD_REQUEST)
+            else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
 }

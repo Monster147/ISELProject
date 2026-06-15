@@ -1,10 +1,13 @@
 package pt.ira
 
-import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import pt.ira.emitters.ActionKind
+import pt.ira.evindence.CreatedEvidenceResult
+import pt.ira.evindence.DownloadEvidence
 import pt.ira.evindence.Evidence
+import pt.ira.evindence.EvidenceDeletionResult
+import pt.ira.evindence.EvidenceUpdateResult
 import pt.ira.interfaces.TransactionManager
 import pt.ira.publishers.Publishers
 import pt.ira.storage.StorageService
@@ -42,6 +45,11 @@ sealed class EvidenceError {
      * Indica que o ficheiro da evidência não foi encontrado no armazenamento.
      */
     data object FileNotFound : EvidenceError()
+
+    /**
+     * Indica que a evidência não conseguiu ser registado na base de dados
+     */
+    data object UploadFailed : EvidenceError()
 }
 
 /**
@@ -104,42 +112,54 @@ class EvidenceService(
         reporterId: Int,
         occurrenceId: Int,
     ): Either<EvidenceError, Evidence> {
-        return trxManager.run {
-            repoUsers.findById(reporterId) ?: return@run failure(EvidenceError.ReporterNotFound)
-            val occurrence = repoOccurrence.findById(occurrenceId) ?: return@run failure(EvidenceError.OccurrenceNotFound)
-            if (file.isEmpty) return@run failure(EvidenceError.InvalidFile)
-            if (file.contentType !in allowedExtensions) return@run failure(EvidenceError.InvalidFile)
+        val result =
+            trxManager.run {
+                repoUsers.findById(reporterId) ?: return@run failure(EvidenceError.ReporterNotFound)
+                val occurrence = repoOccurrence.findById(occurrenceId) ?: return@run failure(EvidenceError.OccurrenceNotFound)
+                if (file.contentType !in allowedExtensions || file.isEmpty) return@run failure(EvidenceError.InvalidFile)
 
-            val filePath = storageService.save(occurrenceId, file)
+                val filePath = storageService.save(occurrenceId, file)
 
-            val evidence =
-                repoEvidence.createEvidence(
-                    filePath = filePath,
-                    location = location,
-                    description = description,
-                    reporterId = reporterId,
-                    occurrenceId = occurrenceId,
-                    type = type,
-                )
-            val updatedOccurrence = repoOccurrence.addEvidence(occurrence, evidence)
-            publisher.evidencePublisher.sendMessageToAll(
-                reporterId,
-                repoEvidence.findByReporterId(reporterId),
-                ActionKind.EvidenceChanged,
-            )
-            publisher.occurrencePublisher.sendMessageToAll(
-                occurrenceId,
-                updatedOccurrence,
-                ActionKind.EvidenceChanged,
-            )
-            val occurrences = repoOccurrence.findOccurrenceByReporterId(reporterId)
-            publisher.occurrencesPublisher.sendMessageToAll(
-                reporterId,
-                occurrences,
-                ActionKind.OccurrencesChanged,
-            )
-            success(evidence)
+                try {
+                    val evidence =
+                        repoEvidence.createEvidence(
+                            filePath = filePath,
+                            location = location,
+                            description = description,
+                            reporterId = reporterId,
+                            occurrenceId = occurrenceId,
+                            type = type,
+                        )
+                    val updatedOccurrence = repoOccurrence.addEvidence(occurrence, evidence)
+                    val reporterEvidences = repoEvidence.findByReporterId(reporterId)
+                    val occurrences = repoOccurrence.findOccurrenceByReporterId(reporterId)
+                    success(CreatedEvidenceResult(evidence, reporterEvidences, updatedOccurrence, occurrences))
+                } catch (e: Exception) {
+                    storageService.deleteEvidence(filePath)
+                    failure(EvidenceError.UploadFailed)
+                }
+            }
+        if (result is Failure) {
+            return result
         }
+
+        val data = (result as Success).value
+        publisher.evidencePublisher.sendMessageToAll(
+            reporterId,
+            data.reporterEvidences,
+            ActionKind.EvidenceChanged,
+        )
+        publisher.occurrencePublisher.sendMessageToAll(
+            occurrenceId,
+            data.updatedOccurrence,
+            ActionKind.EvidenceChanged,
+        )
+        publisher.occurrencesPublisher.sendMessageToAll(
+            reporterId,
+            data.occurrences,
+            ActionKind.OccurrencesChanged,
+        )
+        return success(data.evidence)
     }
 
     /**
@@ -147,10 +167,10 @@ class EvidenceService(
      *
      * @param id Identificador da evidência.
      *
-     * @return Par contendo [Evidence] e o recurso do ficheiro associado,
+     * @return [DownloadEvidence] com a evidência e o ficheiro associado,
      *         ou erro do tipo [EvidenceError].
      */
-    fun downloadEvidence(id: Int): Either<EvidenceError, Pair<Evidence, Resource>> {
+    fun downloadEvidence(id: Int): Either<EvidenceError, DownloadEvidence> {
         return trxManager.run {
             val evidence =
                 repoEvidence.findById(id)
@@ -160,7 +180,7 @@ class EvidenceService(
                 storageService.loadEvidence(evidence.filePath)
                     ?: return@run failure(EvidenceError.FileNotFound)
 
-            success(Pair(evidence, resource))
+            success(DownloadEvidence(evidence, resource))
         }
     }
 
@@ -187,11 +207,10 @@ class EvidenceService(
      *
      * @return Lista de [Evidence] associadas à ocorrência.
      */
-    fun findByOccurrenceId(occurrenceId: Int): List<Evidence> {
-        return trxManager.run {
+    fun findByOccurrenceId(occurrenceId: Int): List<Evidence> =
+        trxManager.run {
             repoEvidence.findByOccurrenceId(occurrenceId)
         }
-    }
 
     /**
      * Obtém todas as evidências reportadas por um utilizador.
@@ -200,11 +219,10 @@ class EvidenceService(
      *
      * @return Lista de [Evidence] associadas ao utilizador.
      */
-    fun findByReporterId(reporterId: Int): List<Evidence> {
-        return trxManager.run {
+    fun findByReporterId(reporterId: Int): List<Evidence> =
+        trxManager.run {
             repoEvidence.findByReporterId(reporterId)
         }
-    }
 
     /**
      * Obtém todas as evidências de um determinado tipo.
@@ -213,11 +231,10 @@ class EvidenceService(
      *
      * @return Lista de [Evidence] correspondentes ao tipo indicado.
      */
-    fun findByType(type: String): List<Evidence> {
-        return trxManager.run {
+    fun findByType(type: String): List<Evidence> =
+        trxManager.run {
             repoEvidence.findByType(type)
         }
-    }
 
     /**
      * Obtém todas as evidências associadas a uma localização.
@@ -226,22 +243,20 @@ class EvidenceService(
      *
      * @return Lista de [Evidence] associadas à localização indicada.
      */
-    fun findByLocation(location: String): List<Evidence> {
-        return trxManager.run {
+    fun findByLocation(location: String): List<Evidence> =
+        trxManager.run {
             repoEvidence.findByLocation(location)
         }
-    }
 
     /**
      * Obtém todas as evidências registadas no sistema.
      *
      * @return Lista de todas as [Evidence].
      */
-    fun findAll(): List<Evidence> {
-        return trxManager.run {
+    fun findAll(): List<Evidence> =
+        trxManager.run {
             repoEvidence.findAll()
         }
-    }
 
     /**
      * Remove uma evidência do sistema.
@@ -254,33 +269,50 @@ class EvidenceService(
      * @return `true` se a eliminação for bem-sucedida, ou erro do tipo [EvidenceError].
      */
     fun deleteById(id: Int): Either<EvidenceError, Boolean> {
-        return trxManager.run {
-            val evidence =
-                repoEvidence.findById(id)
-                    ?: return@run failure(EvidenceError.EvidenceNotFound)
+        val result =
+            trxManager.run {
+                val evidence =
+                    repoEvidence.findById(id)
+                        ?: return@run failure(EvidenceError.EvidenceNotFound)
 
-            repoEvidence.deleteById(evidence.id)
-            storageService.deleteEvidence(evidence.filePath)
-            val occurrence = repoOccurrence.findById(evidence.occurrenceId) ?: return@run failure(EvidenceError.OccurrenceNotFound)
-            repoOccurrence.removeEvidence(occurrence, evidence)
-            publisher.evidencePublisher.sendMessageToAll(
-                evidence.reporterId,
-                repoEvidence.findByReporterId(evidence.reporterId),
-                ActionKind.EvidenceChanged,
-            )
-            /*publisher.occurrencePublisher.sendMessageToAll(
-                evidence.occurrenceId,
-                Unit,
-                ActionKind.EvidenceDeleted,
-            )*/
-            val occurrences = repoOccurrence.findOccurrenceByReporterId(evidence.reporterId)
-            publisher.occurrencesPublisher.sendMessageToAll(
-                evidence.reporterId,
-                occurrences,
-                ActionKind.OccurrencesChanged,
-            )
-            success(true)
+                repoEvidence.deleteById(evidence.id)
+                storageService.deleteEvidence(evidence.filePath)
+                val occurrence =
+                    repoOccurrence.findById(evidence.occurrenceId)
+                        ?: return@run failure(EvidenceError.OccurrenceNotFound)
+                repoOccurrence.removeEvidence(occurrence, evidence)
+                val reporterId = evidence.reporterId
+                val updatedEvidences = repoEvidence.findByReporterId(evidence.reporterId)
+                val updatedOccurrences = repoOccurrence.findOccurrenceByReporterId(evidence.reporterId)
+
+                success(
+                    EvidenceDeletionResult(
+                        reporterId = reporterId,
+                        evidences = updatedEvidences,
+                        occurrences = updatedOccurrences,
+                    ),
+                )
+            }
+
+        if (result is Failure) {
+            return result
         }
+
+        val data = (result as Success).value
+
+        publisher.evidencePublisher.sendMessageToAll(
+            data.reporterId,
+            data.evidences,
+            ActionKind.EvidenceChanged,
+        )
+
+        publisher.occurrencesPublisher.sendMessageToAll(
+            data.reporterId,
+            data.occurrences,
+            ActionKind.OccurrencesChanged,
+        )
+
+        return success(true)
     }
 
     /**
@@ -299,27 +331,37 @@ class EvidenceService(
         id: Int,
         newData: MultipartFile,
     ): Either<EvidenceError, Evidence> {
-        return trxManager.run {
-            val evidence = repoEvidence.findById(id) ?: return@run failure(EvidenceError.EvidenceNotFound)
-            val occurrence = repoOccurrence.findById(evidence.occurrenceId) ?: return@run failure(EvidenceError.OccurrenceNotFound)
+        val result =
+            trxManager.run {
+                val evidence = repoEvidence.findById(id) ?: return@run failure(EvidenceError.EvidenceNotFound)
+                val occurrence = repoOccurrence.findById(evidence.occurrenceId) ?: return@run failure(EvidenceError.OccurrenceNotFound)
 
-            if (newData.contentType != "application/json") return@run failure(EvidenceError.InvalidFile)
+                if (newData.contentType != "application/json") return@run failure(EvidenceError.InvalidFile)
 
-            storageService.updateEvidence(evidence.filePath, newData)
+                storageService.updateEvidence(evidence.filePath, newData)
+                val reporterEvidences = repoEvidence.findByReporterId(evidence.reporterId)
 
-            publisher.evidencePublisher.sendMessageToAll(
-                evidence.reporterId,
-                repoEvidence.findByReporterId(evidence.reporterId),
-                ActionKind.EvidenceChanged,
-            )
+                success(EvidenceUpdateResult(evidence.reporterId, evidence.occurrenceId, evidence, occurrence, reporterEvidences))
+            }
 
-            publisher.occurrencePublisher.sendMessageToAll(
-                evidence.occurrenceId,
-                occurrence,
-                ActionKind.EvidenceChanged,
-            )
-
-            success(evidence)
+        if (result is Failure) {
+            return result
         }
+
+        val data = (result as Success).value
+
+        publisher.evidencePublisher.sendMessageToAll(
+            data.reporterId,
+            data.reporterEvidences,
+            ActionKind.EvidenceChanged,
+        )
+
+        publisher.occurrencesPublisher.sendMessageToAll(
+            data.occurrenceId,
+            data.occurrence,
+            ActionKind.OccurrencesChanged,
+        )
+
+        return success(data.evidence)
     }
 }

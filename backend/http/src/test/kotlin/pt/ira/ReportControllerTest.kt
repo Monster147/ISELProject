@@ -200,13 +200,19 @@ class ReportControllerTest {
             repoUsers.createUser("user", "u@mail.com", PasswordValidationInfo("123")).id
         }
 
+    private fun createType(): Int =
+        trxManager.run {
+            repoType.createType("name", mapper.readTree("""{}""")).id
+        }
+
     private fun createOccurrenceForUser(userId: Int) =
         trxManager.run {
+            val type = createType()
             repoOccurrence.createOccurrence(
                 endDate = LocalDate.of(2030, 3, 30),
                 reporterId = userId,
                 importance = OccurrenceType.NORMAL,
-                occurrenceType = 1,
+                occurrenceType = type,
                 occurrenceInfo = mapper.readTree("""{}"""),
             ).id
         }

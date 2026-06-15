@@ -159,12 +159,8 @@ class UserService(
      */
     fun findUserByEmail(email: String): Either<UserError, User> =
         trxManager.run {
-            val user = repoUsers.findByEmail(email)
-            if (user == null) {
-                failure(UserError.UserNotFound)
-            } else {
-                success(user)
-            }
+            val user = repoUsers.findByEmail(email) ?: return@run failure(UserError.UserNotFound)
+            success(user)
         }
 
     /**
@@ -190,12 +186,8 @@ class UserService(
      */
     fun findUserById(userId: Int): Either<UserError, User> =
         trxManager.run {
-            val user = repoUsers.findById(userId)
-            if (user == null) {
-                failure(UserError.UserNotFound)
-            } else {
-                success(user)
-            }
+            val user = repoUsers.findById(userId) ?: return@run failure(UserError.UserNotFound)
+            success(user)
         }
 
     /**

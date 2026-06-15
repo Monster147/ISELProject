@@ -42,28 +42,26 @@ class RepositoryIntervenorMem : RepositoryIntervenor {
         return updatedIntervenor
     }
 
-    override fun findByIdNumber(idNumber: String): Intervenor? {
-        return intervenors.find { it.idNumber == idNumber }
-    }
+    override fun findByIdNumber(idNumber: String): Intervenor? = intervenors.find { it.idNumber == idNumber }
 
     override fun findByContactInfo(contactInfo: String): Intervenor? = intervenors.find { it.contactInfo == contactInfo }
 
     override fun findById(id: Int): Intervenor? = intervenors.find { it.id == id }
 
-    override fun findAll(): List<Intervenor> {
-        return intervenors.toList()
-    }
+    override fun findAll(): List<Intervenor> = intervenors.toList()
 
     override fun save(entity: Intervenor) {
-        intervenors.removeIf { it.id == entity.id }
-        intervenors.add(entity)
+        val idx = intervenors.indexOfFirst { it.id == entity.id }
+        if (idx >= 0) {
+            intervenors[idx] = entity
+        } else {
+            intervenors.add(entity)
+        }
     }
 
     override fun deleteById(id: Int) {
         intervenors.removeIf { it.id == id }
     }
 
-    override fun clear() {
-        intervenors.clear()
-    }
+    override fun clear() = intervenors.clear()
 }

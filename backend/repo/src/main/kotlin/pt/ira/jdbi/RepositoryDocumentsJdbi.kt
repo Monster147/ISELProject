@@ -8,6 +8,10 @@ import java.sql.ResultSet
 class RepositoryDocumentsJdbi(
     private val handle: Handle,
 ) : RepositoryDocuments {
+    private companion object {
+        const val DOCUMENTS_COLUMNS = """id, name, type, file_path"""
+    }
+
     override fun uploadDocumentInfo(
         name: String,
         type: String,
@@ -49,7 +53,7 @@ class RepositoryDocumentsJdbi(
     override fun findByName(name: String): Documents? =
         handle.createQuery(
             """
-            SELECT id, name, type, file_path
+            SELECT $DOCUMENTS_COLUMNS
             FROM dbo.documents
             WHERE name = :name
             """.trimIndent(),
@@ -61,7 +65,7 @@ class RepositoryDocumentsJdbi(
     override fun findByType(type: String): List<Documents> =
         handle.createQuery(
             """
-            SELECT id, name, type, file_path
+            SELECT $DOCUMENTS_COLUMNS
             FROM dbo.documents
             WHERE type = :type
             """.trimIndent(),
@@ -73,7 +77,7 @@ class RepositoryDocumentsJdbi(
     override fun findById(id: Int): Documents? =
         handle.createQuery(
             """
-            SELECT id, name, type, file_path
+            SELECT $DOCUMENTS_COLUMNS
             FROM dbo.documents
             WHERE id = :id
             """.trimIndent(),
@@ -85,7 +89,7 @@ class RepositoryDocumentsJdbi(
     override fun findAll(): List<Documents> =
         handle.createQuery(
             """
-            SELECT id, name, type, file_path
+            SELECT $DOCUMENTS_COLUMNS
             FROM dbo.documents
             ORDER BY id
             """.trimIndent(),
@@ -120,17 +124,11 @@ class RepositoryDocumentsJdbi(
         handle.createUpdate("DELETE FROM dbo.documents").execute()
     }
 
-    private fun mapRowToDocument(rs: ResultSet): Documents {
-        val id = rs.getInt("id")
-        val name = rs.getString("name")
-        val type = rs.getString("type")
-        val filePath = rs.getString("file_path")
-
-        return Documents(
-            id = id,
-            name = name,
-            type = type,
-            filepath = filePath,
+    private fun mapRowToDocument(rs: ResultSet): Documents =
+        Documents(
+            id = rs.getInt("id"),
+            name = rs.getString("name"),
+            type = rs.getString("type"),
+            filepath = rs.getString("file_path"),
         )
-    }
 }

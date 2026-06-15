@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -74,12 +75,7 @@ class IntervenorController(
                         "/api/intervenor/${result.value.id}",
                     ).build<Unit>()
 
-            is Failure ->
-                when (result.value) {
-                    is IntervenorError.IntervenorAlreadyExists ->
-                        Problem.IntervenorAlreadyExists.response(HttpStatus.BAD_REQUEST)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -105,7 +101,7 @@ class IntervenorController(
      *
      * @return resposta HTTP com o resultado da operação.
      */
-    @PostMapping("/update/{intervenorId}")
+    @PutMapping("/update/{intervenorId}")
     fun updateIntervenor(
         @RequestBody intervenorUpdateInput: IntervenorUpdateInput,
         @PathVariable intervenorId: Int,
@@ -131,12 +127,7 @@ class IntervenorController(
                         result.value,
                     )
 
-            is Failure ->
-                when (result.value) {
-                    is IntervenorError.IntervenorNotFound ->
-                        Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -164,12 +155,7 @@ class IntervenorController(
                     .status(HttpStatus.NO_CONTENT)
                     .build<Any>()
 
-            is Failure ->
-                when (result.value) {
-                    is IntervenorError.IntervenorNotFound ->
-                        Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -195,12 +181,7 @@ class IntervenorController(
                     .status(HttpStatus.OK)
                     .body(result.value)
 
-            is Failure ->
-                when (result.value) {
-                    is IntervenorError.IntervenorNotFound ->
-                        Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -225,12 +206,7 @@ class IntervenorController(
                     .status(HttpStatus.OK)
                     .body(result.value)
 
-            is Failure ->
-                when (result.value) {
-                    is IntervenorError.IntervenorNotFound ->
-                        Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -252,12 +228,7 @@ class IntervenorController(
                     .status(HttpStatus.OK)
                     .body(result.value)
 
-            is Failure ->
-                when (result.value) {
-                    is IntervenorError.IntervenorNotFound ->
-                        Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -305,4 +276,11 @@ class IntervenorController(
         )
         return sseEmitter
     }
+
+    private fun IntervenorError.toResponse(): ResponseEntity<*> =
+        when (this) {
+            is IntervenorError.IntervenorNotFound -> Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
+            is IntervenorError.IntervenorAlreadyExists -> Problem.IntervenorAlreadyExists.response(HttpStatus.BAD_REQUEST)
+            else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
 }

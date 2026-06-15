@@ -19,24 +19,22 @@ class RepositoryRoleMem : RepositoryRole {
 
     override fun findByName(name: String): Role? = roles.find { it.displayName == name }
 
-    override fun findById(id: Int): Role? {
-        return roles.find { it.id == id }
-    }
+    override fun findById(id: Int): Role? = roles.find { it.id == id }
 
-    override fun findAll(): List<Role> {
-        return roles.toList()
-    }
+    override fun findAll(): List<Role> = roles.toList()
 
     override fun save(entity: Role) {
-        roles.removeIf { it.id == entity.id }
-        roles.add(entity)
+        val idx = roles.indexOfFirst { it.id == entity.id }
+        if (idx >= 0) {
+            roles[idx] = entity
+        } else {
+            roles.add(entity)
+        }
     }
 
     override fun deleteById(id: Int) {
         roles.removeIf { it.id == id }
     }
 
-    override fun clear() {
-        roles.clear()
-    }
+    override fun clear() = roles.clear()
 }

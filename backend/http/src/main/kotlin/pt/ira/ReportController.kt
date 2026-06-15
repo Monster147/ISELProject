@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -77,14 +78,8 @@ class ReportController(
                     .status(HttpStatus.CREATED)
                     .header("Location", "/api/report/${result.value.id}")
                     .build<Unit>()
-            is Failure ->
-                when (result.value) {
-                    ReportError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-                    ReportError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
-                    ReportError.OccurrenceNotAssignedToUser -> Problem.OccurrenceNotAssignedToUser.response(HttpStatus.FORBIDDEN)
-                    ReportError.OccurrenceAlreadyHasReport -> Problem.OccurrenceAlreadyHasReport.response(HttpStatus.CONFLICT)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -102,11 +97,7 @@ class ReportController(
         val result = reportService.findById(id)
         return when (result) {
             is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)
-            is Failure ->
-                when (result.value) {
-                    ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -124,14 +115,7 @@ class ReportController(
         val result = reportService.submitReport(id)
         return when (result) {
             is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)
-            is Failure ->
-                when (result.value) {
-                    ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
-                    ReportError.ReportAlreadySubmittedOrApproved -> Problem.ReportAlreadySubmittedOrApproved.response(HttpStatus.CONFLICT)
-                    ReportError.MissingRequiredFields -> Problem.MissingRequiredFields.response(HttpStatus.BAD_REQUEST)
-                    ReportError.TypeNotFound -> Problem.TypeNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -149,11 +133,7 @@ class ReportController(
         val result = reportService.findByOccurrenceId(occurrenceId)
         return when (result) {
             is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)
-            is Failure ->
-                when (result.value) {
-                    ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -208,11 +188,7 @@ class ReportController(
         val result = reportService.deleteById(id)
         return when (result) {
             is Success -> ResponseEntity.status(HttpStatus.NO_CONTENT).build<Unit>()
-            is Failure ->
-                when (result.value) {
-                    ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -224,7 +200,7 @@ class ReportController(
      *
      * @return relatório atualizado ou erro de domínio mapeado.
      */
-    @PostMapping("/update-status/{id}")
+    @PutMapping("/update-status/{id}")
     fun updateReportStatus(
         @PathVariable id: Int,
         @RequestBody newStatus: StatusInput,
@@ -232,11 +208,7 @@ class ReportController(
         val result = reportService.updateStatus(id, ReportStatus.valueOf(newStatus.newStatus))
         return when (result) {
             is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)
-            is Failure ->
-                when (result.value) {
-                    ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -256,12 +228,7 @@ class ReportController(
         val result = reportService.addEditor(id, editor.editorId)
         return when (result) {
             is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)
-            is Failure ->
-                when (result.value) {
-                    is ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
-                    is ReportError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -281,36 +248,27 @@ class ReportController(
         val result = reportService.removeEditor(id, editor.editorId)
         return when (result) {
             is Success -> ResponseEntity.ok(result.value)
-            is Failure ->
-                when (result.value) {
-                    is ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
-                    is ReportError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
     /**
      * Atualiza um relatório existente com novo PDF.
      *
-     * Endpoint: POST /update/{id}
+     * Endpoint: PUT /update/{id}
      *
      * @param id Identificador do relatório a atualizar.
      *
      * @return `200 OK` com o relatório atualizado, ou erro apropriado.
      */
-    @PostMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     fun updateReport(
         @PathVariable id: Int,
     ): ResponseEntity<*> {
         val result = reportService.updateReport(id)
         return when (result) {
             is Success -> ResponseEntity.status(HttpStatus.OK).body(result.value)
-            is Failure ->
-                when (result.value) {
-                    is ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -355,14 +313,7 @@ class ReportController(
                     .body(resource)
             }
 
-            is Failure ->
-                when (result.value) {
-                    is ReportError.ReportNotFound ->
-                        Problem.EvidenceNotFound.response(HttpStatus.NOT_FOUND)
-                    is ReportError.FileNotFound ->
-                        Problem.FileNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -390,4 +341,20 @@ class ReportController(
         )
         return sseEmitter
     }
+
+    private fun ReportError.toResponse(): ResponseEntity<*> =
+        when (this) {
+            is ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)
+            is ReportError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+            is ReportError.OccurrenceAlreadyHasReport -> Problem.OccurrenceAlreadyHasReport.response(HttpStatus.CONFLICT)
+            is ReportError.ReportAlreadySubmittedOrApproved -> Problem.ReportAlreadySubmittedOrApproved.response(HttpStatus.CONFLICT)
+            is ReportError.UploadFailed -> Problem.UploadFailed.response(HttpStatus.INTERNAL_SERVER_ERROR)
+            is ReportError.FileNotFound -> Problem.FileNotFound.response(HttpStatus.NOT_FOUND)
+            is ReportError.TypeNotFound -> Problem.TypeNotFound.response(HttpStatus.NOT_FOUND)
+            is ReportError.MissingRequiredFields -> Problem.MissingRequiredFields.response(HttpStatus.BAD_REQUEST)
+            is ReportError.IntervenorNotFound -> Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
+            is ReportError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
+            is ReportError.OccurrenceNotAssignedToUser -> Problem.OccurrenceNotAssignedToUser.response(HttpStatus.FORBIDDEN)
+            else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
 }

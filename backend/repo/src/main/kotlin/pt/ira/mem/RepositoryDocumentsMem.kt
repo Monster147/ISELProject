@@ -18,7 +18,6 @@ class RepositoryDocumentsMem : RepositoryDocuments {
             filepath = filepath,
         ).also {
             docsList.add(it)
-            println(docsList)
         }
 
     override fun findAllTypes(): List<String> = docsList.map { it.type }.distinct()
@@ -32,15 +31,17 @@ class RepositoryDocumentsMem : RepositoryDocuments {
     override fun findAll(): List<Documents> = docsList.toList()
 
     override fun save(entity: Documents) {
-        docsList.removeIf { it.id == entity.id }
-        docsList.add(entity)
+        val idx = docsList.indexOfFirst { it.id == entity.id }
+        if (idx >= 0) {
+            docsList[idx] = entity
+        } else {
+            docsList.add(entity)
+        }
     }
 
     override fun deleteById(id: Int) {
         docsList.removeIf { it.id == id }
     }
 
-    override fun clear() {
-        docsList.clear()
-    }
+    override fun clear() = docsList.clear()
 }

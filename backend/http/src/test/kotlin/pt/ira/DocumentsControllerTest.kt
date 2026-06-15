@@ -152,7 +152,7 @@ class DocumentsControllerTest {
 
         val resp = controller.deleteDocument(id)
 
-        assertEquals(HttpStatus.OK, resp.statusCode)
+        assertEquals(HttpStatus.NO_CONTENT, resp.statusCode)
     }
 
     @Test

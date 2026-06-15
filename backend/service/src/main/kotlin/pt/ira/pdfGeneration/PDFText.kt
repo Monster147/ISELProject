@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter
 object PDFText {
     fun reportTitle(
         occurrenceId: Int,
-        language: String
+        language: String,
     ): String =
         when (language) {
             "pt" -> "Relatório da Ocorrência $occurrenceId"
@@ -37,12 +37,11 @@ object PDFText {
 
     fun evidenceReference(
         fileName: String,
-        language: String
+        language: String,
     ): String =
         when (language) {
             "pt" -> "Consulte o ficheiro de evidência associado para mais detalhes. Nome do ficheiro: $fileName"
             "es" -> "Consulte el archivo de evidencia asociado para más detalles. Nombre del archivo: $fileName"
             else -> "Please refer to the attached evidence file for more details. File name: $fileName"
         }
-
 }

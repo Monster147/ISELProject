@@ -69,12 +69,13 @@ class RepositoryUserMem : RepositoryUser {
         return count
     }
 
-    override fun findUsersByRole(role: Int): List<User> = users.filter { it.roles.contains(role) }
+    override fun findUsersByRole(role: Int): List<User> = users.filter { role in it.roles }
 
     override fun addRole(
         user: User,
         roleId: Int,
     ): User {
+        if (roleId in user.roles) return user
         val updatedUser = user.copy(roles = user.roles + roleId)
         save(updatedUser)
         return updatedUser
@@ -84,6 +85,7 @@ class RepositoryUserMem : RepositoryUser {
         user: User,
         roleId: Int,
     ): User {
+        if (roleId !in user.roles) return user
         val updateUser = user.copy(roles = user.roles - roleId)
         save(updateUser)
         return updateUser
@@ -103,8 +105,12 @@ class RepositoryUserMem : RepositoryUser {
     override fun findAll(): List<User> = users.toList()
 
     override fun save(entity: User) {
-        users.removeIf { it.id == entity.id }
-        users.add(entity)
+        val idx = users.indexOfFirst { it.id == entity.id }
+        if (idx >= 0) {
+            users[idx] = entity
+        } else {
+            users.add(entity)
+        }
     }
 
     override fun deleteById(id: Int) {

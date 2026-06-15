@@ -13,6 +13,10 @@ import java.time.Instant
 class RepositoryUserJdbi(
     private val handle: Handle,
 ) : RepositoryUser {
+    private companion object {
+        const val USER_COLUMNS = """id, name, email, password_validation, roles"""
+    }
+
     override fun createUser(
         name: String,
         email: String,
@@ -40,21 +44,22 @@ class RepositoryUserJdbi(
 
     override fun findByEmail(email: String): User? =
         handle
-            .createQuery("SELECT * FROM dbo.users WHERE email = :email")
+            .createQuery(
+                """
+                SELECT $USER_COLUMNS 
+                FROM dbo.users
+                WHERE email = :email
+                """.trimIndent(),
+            )
             .bind("email", email)
-            .map {
-                    rs, _,
-                ->
-                mapRow(rs)
-            }
-            .findOne()
-            .orElse(null)
+            .map { rs, _ -> mapRow(rs) }
+            .singleOrNull()
 
     override fun findUsersByRole(role: Int): List<User> =
         handle
             .createQuery(
                 """
-                SELECT *
+                SELECT $USER_COLUMNS
                 FROM dbo.users
                 WHERE :roleId = ANY(roles)
                 """.trimIndent(),
@@ -67,6 +72,7 @@ class RepositoryUserJdbi(
         user: User,
         roleId: Int,
     ): User {
+        if (roleId in user.roles) return user
         val updatedUser = user.copy(roles = user.roles + roleId)
         save(updatedUser)
         return updatedUser
@@ -76,6 +82,7 @@ class RepositoryUserJdbi(
         user: User,
         roleId: Int,
     ): User {
+        if (roleId !in user.roles) return user
         val updateUser = user.copy(roles = user.roles - roleId)
         save(updateUser)
         return updateUser
@@ -166,42 +173,43 @@ class RepositoryUserJdbi(
                 """
                 DELETE FROM dbo.Tokens
                 WHERE token_validation = :validation_information
-            """,
+                """.trimIndent(),
             ).bind("validation_information", tokenValidationInfo.validationInfo)
             .execute()
 
     override fun findById(id: Int): User? =
         handle
-            .createQuery("SELECT * FROM dbo.users WHERE id = :id")
-            .bind("id", id)
-            .map {
-                    rs, _,
-                ->
-                mapRow(rs)
-            }
-            .findOne()
-            .orElse(null)
+            .createQuery(
+                """
+                SELECT $USER_COLUMNS
+                FROM dbo.users
+                WHERE id = :id
+                """.trimIndent(),
+            ).bind("id", id)
+            .map { rs, _ -> mapRow(rs) }
+            .singleOrNull()
 
     override fun findAll(): List<User> =
         handle
-            .createQuery("SELECT * FROM dbo.users")
-            .map {
-                    rs, _,
-                ->
-                mapRow(rs)
-            }
+            .createQuery(
+                """
+                SELECT $USER_COLUMNS 
+                FROM dbo.users
+                ORDER BY id
+                """.trimIndent(),
+            ).map { rs, _ -> mapRow(rs) }
             .list()
 
     override fun save(entity: User) {
         handle
             .createUpdate(
                 """
-            UPDATE dbo.users 
-            SET name = :name,
-                email = :email,
-                roles =:roles
-            WHERE id = :id
-            """,
+                UPDATE dbo.users 
+                SET name = :name,
+                    email = :email,
+                    roles =:roles
+                WHERE id = :id
+                """.trimIndent(),
             ).bindBean(entity)
             .execute()
     }
@@ -248,10 +256,6 @@ class RepositoryUserJdbi(
     }
 
     private fun mapRow(rs: ResultSet): User {
-        val id = rs.getInt("id")
-        val name = rs.getString("name")
-        val email = rs.getString("email")
-
         val passwordValidation =
             PasswordValidationInfo(
                 rs.getString("password_validation"),
@@ -263,9 +267,9 @@ class RepositoryUserJdbi(
             } ?: emptyList()
 
         return User(
-            id = id,
-            name = name,
-            email = email,
+            id = rs.getInt("id"),
+            name = rs.getString("name"),
+            email = rs.getString("email"),
             passwordValidation = passwordValidation,
             roles = roles,
         )

@@ -10,6 +10,11 @@ import java.sql.ResultSet
 class RepositoryTypeJdbi(
     private val handle: Handle,
 ) : RepositoryType {
+    private companion object {
+        const val TYPE_COLUMNS = """id, name, form"""
+        private val objectMapper = ObjectMapper()
+    }
+
     override fun createType(
         name: String,
         form: JsonNode,
@@ -37,7 +42,7 @@ class RepositoryTypeJdbi(
     override fun findByName(name: String): Type? =
         handle.createQuery(
             """
-            SELECT id, name, form
+            SELECT $TYPE_COLUMNS
             from dbo.type
             WHERE name = :name
             """.trimIndent(),
@@ -49,7 +54,7 @@ class RepositoryTypeJdbi(
     override fun findById(id: Int): Type? =
         handle.createQuery(
             """
-            SELECT id, name, form
+            SELECT $TYPE_COLUMNS
             from dbo.type
             WHERE id = :id
             """.trimIndent(),
@@ -61,7 +66,7 @@ class RepositoryTypeJdbi(
     override fun findAll(): List<Type> =
         handle.createQuery(
             """
-            SELECT id, name, form
+            SELECT $TYPE_COLUMNS
             from dbo.type
             ORDER BY id
             """.trimIndent(),
@@ -94,17 +99,10 @@ class RepositoryTypeJdbi(
         handle.createUpdate("DELETE FROM dbo.type").execute()
     }
 
-    private val objectMapper = ObjectMapper()
-
-    private fun mapRowToType(rs: ResultSet): Type {
-        val id = rs.getInt("id")
-        val name = rs.getString("name")
-        val form = rs.getString("form")
-        val formJson = objectMapper.readTree(form)
-        return Type(
-            id = id,
-            name = name,
-            form = formJson,
+    private fun mapRowToType(rs: ResultSet): Type =
+        Type(
+            id = rs.getInt("id"),
+            name = rs.getString("name"),
+            form = objectMapper.readTree(rs.getString("form")),
         )
-    }
 }

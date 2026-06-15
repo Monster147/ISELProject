@@ -8,6 +8,20 @@ import java.sql.ResultSet
 class RepositoryEvidenceJdbi(
     private val handle: Handle,
 ) : RepositoryEvidence {
+    private companion object {
+        const val EVIDENCE_COLUMNS = """
+            id, 
+            type, 
+            file_path, 
+            location, 
+            description, 
+            reporter_id, 
+            occurrence_id, 
+            created_at, 
+            updated_at
+            """
+    }
+
     override fun createEvidence(
         type: String,
         filePath: String,
@@ -53,7 +67,7 @@ class RepositoryEvidenceJdbi(
     override fun findByOccurrenceId(occurrenceId: Int): List<Evidence> =
         handle.createQuery(
             """
-            SELECT id, type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at
+            SELECT $EVIDENCE_COLUMNS
             FROM dbo.evidence
             WHERE occurrence_id = :occurrence_id
             """.trimIndent(),
@@ -65,7 +79,7 @@ class RepositoryEvidenceJdbi(
     override fun findByReporterId(reporterId: Int): List<Evidence> =
         handle.createQuery(
             """
-            SELECT id, type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at
+            SELECT $EVIDENCE_COLUMNS
             FROM dbo.evidence
             WHERE reporter_id = :reporter_id
             """.trimIndent(),
@@ -77,7 +91,7 @@ class RepositoryEvidenceJdbi(
     override fun findByType(type: String): List<Evidence> =
         handle.createQuery(
             """
-            SELECT id, type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at
+            SELECT $EVIDENCE_COLUMNS
             FROM dbo.evidence
             WHERE type = :type
             """.trimIndent(),
@@ -89,7 +103,7 @@ class RepositoryEvidenceJdbi(
     override fun findByLocation(location: String): List<Evidence> =
         handle.createQuery(
             """
-            SELECT id, type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at
+            SELECT $EVIDENCE_COLUMNS
             FROM dbo.evidence
             WHERE location = :location
             """.trimIndent(),
@@ -101,7 +115,7 @@ class RepositoryEvidenceJdbi(
     override fun findById(id: Int): Evidence? =
         handle.createQuery(
             """
-            SELECT id, type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at
+            SELECT $EVIDENCE_COLUMNS
             FROM dbo.evidence
             WHERE id = :id
             """.trimIndent(),
@@ -113,7 +127,7 @@ class RepositoryEvidenceJdbi(
     override fun findAll(): List<Evidence> =
         handle.createQuery(
             """
-            SELECT id, type, file_path, location, description, reporter_id, occurrence_id, created_at, updated_at
+            SELECT $EVIDENCE_COLUMNS
             FROM dbo.evidence
             ORDER BY id
             """.trimIndent(),
@@ -156,27 +170,16 @@ class RepositoryEvidenceJdbi(
         handle.createUpdate("DELETE FROM dbo.evidence").execute()
     }
 
-    private fun mapRowToEvidence(rs: ResultSet): Evidence {
-        val id = rs.getInt("id")
-        val type = rs.getString("type")
-        val filepath = rs.getString("file_path")
-        val location = rs.getString("location")
-        val description = rs.getString("description")
-        val reporterId = rs.getInt("reporter_id")
-        val occurrenceId = rs.getInt("occurrence_id")
-        val createdAt = rs.getLong("created_at")
-        val updatedAt = rs.getLong("updated_at")
-
-        return Evidence(
-            id = id,
-            type = type,
-            filePath = filepath,
-            location = location,
-            description = description,
-            reporterId = reporterId,
-            occurrenceId = occurrenceId,
-            createdAt = createdAt,
-            updatedAt = updatedAt,
+    private fun mapRowToEvidence(rs: ResultSet): Evidence =
+        Evidence(
+            id = rs.getInt("id"),
+            type = rs.getString("type"),
+            filePath = rs.getString("file_path"),
+            location = rs.getString("location"),
+            description = rs.getString("description"),
+            reporterId = rs.getInt("reporter_id"),
+            occurrenceId = rs.getInt("occurrence_id"),
+            createdAt = rs.getLong("created_at"),
+            updatedAt = rs.getLong("updated_at"),
         )
-    }
 }

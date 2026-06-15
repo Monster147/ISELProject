@@ -12,6 +12,26 @@ import java.sql.ResultSet
 class RepositoryReportJdbi(
     private val handle: Handle,
 ) : RepositoryReport {
+    private companion object {
+        const val REPORT_COLUMNS = """
+            id,
+            creator_id, 
+            occurrence_id, 
+            title, 
+            description, 
+            status, 
+            type, 
+            addons, 
+            created_at, 
+            updated_at, 
+            editors, 
+            intervenors, 
+            language, 
+            file_path
+            """
+        private val objectMapper = ObjectMapper()
+    }
+
     override fun createReport(
         creatorId: Int,
         occurrenceId: Int,
@@ -70,7 +90,7 @@ class RepositoryReportJdbi(
     override fun findByOccurrenceId(occurrenceId: Int): Report? =
         handle.createQuery(
             """
-            SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors, language, file_path
+            SELECT $REPORT_COLUMNS
             FROM dbo.report
             WHERE occurrence_id = :occurrenceId
             """.trimIndent(),
@@ -82,44 +102,44 @@ class RepositoryReportJdbi(
     override fun findByStatus(status: ReportStatus): List<Report> =
         handle.createQuery(
             """
-            SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors, language, file_path
+            SELECT $REPORT_COLUMNS
             FROM dbo.report
             WHERE status = :status::dbo.report_status
             """.trimIndent(),
         )
             .bind("status", status.name)
             .map { rs, _ -> mapRowToReport(rs) }
-            .toList()
+            .list()
 
     override fun findByCreatorId(creatorId: Int): List<Report> =
         handle.createQuery(
             """
-            SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors, language, file_path
+            SELECT $REPORT_COLUMNS
             FROM dbo.report
             WHERE creator_id = :creatorId
             """.trimIndent(),
         )
             .bind("creatorId", creatorId)
             .map { rs, _ -> mapRowToReport(rs) }
-            .toList()
+            .list()
 
     override fun findByEditor(userId: Int): List<Report> =
         handle.createQuery(
             """
-            SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors, language, file_path
+            SELECT $REPORT_COLUMNS
             FROM dbo.report
              WHERE :editors = ANY(editors)
             """.trimIndent(),
         )
             .bind("editors", userId)
             .map { rs, _ -> mapRowToReport(rs) }
-            .toList()
+            .list()
 
     override fun addEditor(
         report: Report,
         user: User,
     ): Report {
-        if (report.editors.any { it == user.id }) return report
+        if (user.id in report.editors) return report
         val updated =
             report.copy(
                 editors = report.editors + user.id,
@@ -133,7 +153,7 @@ class RepositoryReportJdbi(
         report: Report,
         user: User,
     ): Report {
-        if (report.editors.none { it == user.id }) return report
+        if (user.id !in report.editors) return report
         val updatedReport =
             report.copy(
                 editors = report.editors - user.id,
@@ -147,6 +167,7 @@ class RepositoryReportJdbi(
         report: Report,
         status: ReportStatus,
     ): Report {
+        if (status == report.status) return report
         val updatedReport = report.copy(status = status, updatedAt = System.currentTimeMillis())
         save(updatedReport)
         return updatedReport
@@ -155,7 +176,7 @@ class RepositoryReportJdbi(
     override fun findByType(type: Int): List<Report> =
         handle.createQuery(
             """
-            SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors, language, file_path
+            SELECT $REPORT_COLUMNS
             FROM dbo.report
             WHERE type = :type
             """.trimIndent(),
@@ -167,7 +188,7 @@ class RepositoryReportJdbi(
     override fun findById(id: Int): Report? =
         handle.createQuery(
             """
-            SELECT id, creator_id, occurrence_id,title, description, status, type, addons, created_at, updated_at, editors, intervenors, language, file_path
+            SELECT $REPORT_COLUMNS
             FROM dbo.report
             WHERE id = :id
             """.trimIndent(),
@@ -179,7 +200,7 @@ class RepositoryReportJdbi(
     override fun findAll(): List<Report> =
         handle.createQuery(
             """
-            SELECT id, creator_id, occurrence_id, title, description, status, type, addons, created_at, updated_at, editors, intervenors, language, file_path
+            SELECT $REPORT_COLUMNS
             FROM dbo.report
             ORDER BY id
             """.trimIndent(),
@@ -232,26 +253,11 @@ class RepositoryReportJdbi(
         handle.createUpdate("DELETE FROM dbo.report").execute()
     }
 
-    private val objectMapper = ObjectMapper()
-
     private fun mapRowToReport(rs: ResultSet): Report {
-        val id = rs.getInt("id")
-        val creatorId = rs.getInt("creator_id")
-        val occurrenceId = rs.getInt("occurrence_id")
-        val title = rs.getString("title")
-        val description = rs.getString("description")
-        val status = rs.getString("status").let { ReportStatus.valueOf(it) }
-        val type = rs.getInt("type")
-        val addons = rs.getString("addons")
-        val createdAt = rs.getLong("created_at")
-        val updatedAt = rs.getLong("updated_at")
-        val language = rs.getString("language")
-        val filePath = rs.getString("file_path")
         val editors =
             rs.getArray("editors")?.let { arr ->
                 (arr.array as Array<*>).map { (it as Number).toInt() }
             } ?: emptyList()
-        val addonsJson = objectMapper.readTree(addons)
 
         val intervenors =
             rs.getArray("intervenors")?.let { arr ->
@@ -259,20 +265,20 @@ class RepositoryReportJdbi(
             } ?: emptyList()
 
         return Report(
-            id = id,
-            creatorId = creatorId,
-            occurrenceId = occurrenceId,
-            title = title,
-            description = description,
-            status = status,
-            type = type,
-            addons = addonsJson,
-            createdAt = createdAt,
-            updatedAt = updatedAt,
+            id = rs.getInt("id"),
+            creatorId = rs.getInt("creator_id"),
+            occurrenceId = rs.getInt("occurrence_id"),
+            title = rs.getString("title"),
+            description = rs.getString("description"),
+            status = rs.getString("status").let { ReportStatus.valueOf(it) },
+            type = rs.getInt("type"),
+            addons = objectMapper.readTree(rs.getString("addons")),
+            createdAt = rs.getLong("created_at"),
+            updatedAt = rs.getLong("updated_at"),
             editors = editors,
             intervenors = intervenors,
-            language = language,
-            filePath = filePath,
+            language = rs.getString("language"),
+            filePath = rs.getString("file_path"),
         )
     }
 }

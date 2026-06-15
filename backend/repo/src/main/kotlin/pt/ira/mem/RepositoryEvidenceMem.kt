@@ -37,15 +37,17 @@ class RepositoryEvidenceMem : RepositoryEvidence {
     override fun findAll(): List<Evidence> = evidences.toList()
 
     override fun save(entity: Evidence) {
-        evidences.removeIf { it.id == entity.id }
-        evidences.add(entity)
+        val idx = evidences.indexOfFirst { it.id == entity.id }
+        if (idx >= 0) {
+            evidences[idx] = entity
+        } else {
+            evidences.add(entity)
+        }
     }
 
     override fun deleteById(id: Int) {
         evidences.removeIf { it.id == id }
     }
 
-    override fun clear() {
-        evidences.clear()
-    }
+    override fun clear() = evidences.clear()
 }

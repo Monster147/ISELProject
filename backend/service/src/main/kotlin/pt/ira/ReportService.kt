@@ -5,15 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.slf4j.LoggerFactory
-import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 import pt.ira.emitters.ActionKind
 import pt.ira.interfaces.TransactionManager
 import pt.ira.publishers.Publishers
+import pt.ira.report.DownloadReport
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
 import pt.ira.storage.StorageService
+import pt.ira.type.Type
 import java.text.Normalizer
+import kotlin.collections.any
+import kotlin.collections.associate
+import kotlin.collections.forEach
 
 /**
  * Hierarquia de erros específicos do domínio dos relatórios.
@@ -74,6 +78,11 @@ sealed class ReportError {
      * Indica que o ficheiro da evidência não foi encontrado no armazenamento.
      */
     data object FileNotFound : ReportError()
+
+    /**
+     * Indica que o relatório não conseguiu ser registado na base de dados
+     */
+    data object UploadFailed : ReportError()
 }
 
 /**
@@ -125,37 +134,46 @@ class ReportService(
         addons: JsonNode,
         language: String,
     ): Either<ReportError, Report> {
-        return trxManager.run {
-            repoUsers.findById(creatorId) ?: return@run failure(ReportError.UserNotFound)
-            val occurrence = repoOccurrence.findById(occurrenceId) ?: return@run failure(ReportError.OccurrenceNotFound)
-            val existingReport = repoReport.findByOccurrenceId(occurrenceId)
-            if (existingReport != null) {
-                return@run failure(ReportError.OccurrenceAlreadyHasReport)
+        val result =
+            trxManager.run {
+                repoUsers.findById(creatorId) ?: return@run failure(ReportError.UserNotFound)
+                val occurrence = repoOccurrence.findById(occurrenceId) ?: return@run failure(ReportError.OccurrenceNotFound)
+                val existingReport = repoReport.findByOccurrenceId(occurrenceId)
+                if (existingReport != null) {
+                    return@run failure(ReportError.OccurrenceAlreadyHasReport)
+                }
+                if (occurrence.reporterId != creatorId) {
+                    return@run failure(ReportError.OccurrenceNotAssignedToUser)
+                }
+                val type = repoType.findById(occurrence.occurrenceType) ?: return@run failure(ReportError.TypeNotFound)
+                val filePath = generateReport(occurrenceId, type, language)
+                try {
+                    val report =
+                        repoReport.createReport(
+                            creatorId = creatorId,
+                            occurrenceId = occurrenceId,
+                            title = title,
+                            description = description,
+                            type = occurrence.occurrenceType,
+                            addons = addons,
+                            intervenors = occurrence.intervenors,
+                            language = language,
+                            filePath = filePath,
+                        )
+                    success(report)
+                } catch (e: Exception) {
+                    storageService.deleteReport(filePath)
+                    failure(ReportError.UploadFailed)
+                }
             }
-            if (occurrence.reporterId != creatorId) {
-                return@run failure(ReportError.OccurrenceNotAssignedToUser)
-            }
-            val filePath = generateReport(occurrenceId, occurrence.occurrenceType, language)
-            val report =
-                repoReport.createReport(
-                    creatorId = creatorId,
-                    occurrenceId = occurrenceId,
-                    title = title,
-                    description = description,
-                    type = occurrence.occurrenceType,
-                    addons = addons,
-                    intervenors = occurrence.intervenors,
-                    language = language,
-                    filePath = filePath,
-                )
-
-            publisher.reportPublisher.sendMessageToAll(
-                report.id,
-                report,
-                ActionKind.ReportCreated,
-            )
-            success(report)
-        }
+        if (result is Failure) return result
+        val data = (result as Success).value
+        publisher.reportPublisher.sendMessageToAll(
+            data.id,
+            data,
+            ActionKind.ReportCreated,
+        )
+        return success(data)
     }
 
     /**
@@ -172,87 +190,86 @@ class ReportService(
      * 6. O ficheiro final é persistido através do serviço de storage.
      *
      * @param occurrenceId Identificador da ocorrência.
-     * @param occurrenceType Identificador do tipo de ocorrência.
+     * @param occurrenceType Tipo de ocorrência.
      * @param language Linguagem do relatório (ex: "pt", "es", "en").
      *
      * @return Devolve o caminho do ficheiro persistido no sistema de ficheiros.
      */
     private fun generateReport(
         occurrenceId: Int,
-        occurrenceType: Int,
+        occurrenceType: Type,
         language: String,
         filePath: String? = null,
-    ): String =
-        trxManager.run {
-            val type = repoType.findById(occurrenceType) ?: return@run ""
-            val sections = type.form["sections"]
-            val savedSections = findSavedSections(occurrenceId)
-            logger.info("Saved sections found: {}", savedSections)
+    ): String {
+        val sections = occurrenceType.form["sections"]
+        val savedSections = findSavedSections(occurrenceId)
+        logger.info("Saved sections found: {}", savedSections)
 
-            PDDocument().use { doc ->
-                val pdfBuilder = pdfGenerator.createPDFBuilder(
+        PDDocument().use { doc ->
+            val pdfBuilder =
+                pdfGenerator.createPDFBuilder(
                     doc,
                     language,
                 )
 
-                pdfBuilder.writeTitle(occurrenceId)
+            pdfBuilder.writeTitle(occurrenceId)
 
-                sections?.forEach { section ->
-                    val titleNode = section["title"]
-                    val sectionTitle = titleNode?.get(language)?.asText() ?: return@forEach
-                    val fieldsNode = section["fields"]
-                    val fieldLabelMap = fieldsNode.associate { field ->
-                                val key = field["name"].asText()
-                                val label = field["label"]?.get(language)?.asText() ?: key
-                                key to label
-                            }
-
-                    val shouldSkipSection = fieldsNode.any { it["dontPrint"]?.asBoolean() == true }
-                    if (shouldSkipSection) return@forEach
-
-
-                    val templateKey = sanitizeSectionName(sectionTitle)
-                    val isIndexed = templateKey.contains("index")
-                    if (!isIndexed) {
-                        val savedSection =
-                            savedSections.firstOrNull {
-                                it["section"]?.asText() == templateKey
-                            }
-                        savedSection?.let { pdfBuilder.renderSection(sectionTitle, it, fieldLabelMap) }
-                    } else {
-                        val prefix = templateKey.replace("-index-", "")
-                        savedSections.filter { it["section"]?.asText()?.startsWith(prefix) ?: false }
-                            .sortedBy { it["section"].asText()?.substringAfterLast("-")?.toIntOrNull() }
-                            .forEach { saved ->
-                                val index = saved["section"].asText().substringAfterLast("-")
-                                pdfBuilder.renderSection(
-                                    sectionTitle.replace(
-                                        "{index}",
-                                        index,
-                                        ignoreCase = true,
-                                    ),
-                                    saved,
-                                    fieldLabelMap,
-                                )
-                        }
+            sections?.forEach { section ->
+                val titleNode = section["title"]
+                val sectionTitle = titleNode?.get(language)?.asText() ?: return@forEach
+                val fieldsNode = section["fields"]
+                val fieldLabelMap =
+                    fieldsNode.associate { field ->
+                        val key = field["name"].asText()
+                        val label = field["label"]?.get(language)?.asText() ?: key
+                        key to label
                     }
-                }
 
-                pdfBuilder.close()
-                if (filePath == null) {
-                    val filename = "report_$occurrenceId.pdf"
-                    val filepath = storageService.saveReport(filename, doc)
-                    doc.close()
-                    logger.info("Saving report to: {}", filepath)
-                    filepath
+                val shouldSkipSection = fieldsNode.any { it["dontPrint"]?.asBoolean() == true }
+                if (shouldSkipSection) return@forEach
+
+                val templateKey = sanitizeSectionName(sectionTitle)
+                val isIndexed = templateKey.contains("index")
+                if (!isIndexed) {
+                    val savedSection =
+                        savedSections.firstOrNull {
+                            it["section"]?.asText() == templateKey
+                        }
+                    savedSection?.let { pdfBuilder.renderSection(sectionTitle, it, fieldLabelMap) }
                 } else {
-                    storageService.updateReport(filePath, doc)
-                    doc.close()
-                    logger.info("Updating report to: {}", filePath)
-                    filePath
+                    val prefix = templateKey.replace("-index-", "")
+                    savedSections.filter { it["section"]?.asText()?.startsWith(prefix) ?: false }
+                        .sortedBy { it["section"].asText()?.substringAfterLast("-")?.toIntOrNull() }
+                        .forEach { saved ->
+                            val index = saved["section"].asText().substringAfterLast("-")
+                            pdfBuilder.renderSection(
+                                sectionTitle.replace(
+                                    "{index}",
+                                    index,
+                                    ignoreCase = true,
+                                ),
+                                saved,
+                                fieldLabelMap,
+                            )
+                        }
                 }
             }
+
+            pdfBuilder.close()
+            if (filePath == null) {
+                val filename = "report_$occurrenceId.pdf"
+                val filepath = storageService.saveReport(filename, doc)
+                doc.close()
+                logger.info("Saving report to: {}", filepath)
+                return filepath
+            } else {
+                storageService.updateReport(filePath, doc)
+                doc.close()
+                logger.info("Updating report to: {}", filePath)
+                return filePath
+            }
         }
+    }
 
     private fun findSavedSections(occurrenceId: Int): List<JsonNode> =
         trxManager.run {
@@ -487,23 +504,30 @@ class ReportService(
         reportId: Int,
         userId: Int,
     ): Either<ReportError, Report> {
-        return trxManager.run {
-            val report =
-                repoReport.findById(reportId)
-                    ?: return@run failure(ReportError.ReportNotFound)
+        val result =
+            trxManager.run {
+                val report =
+                    repoReport.findById(reportId)
+                        ?: return@run failure(ReportError.ReportNotFound)
 
-            val user =
-                repoUsers.findById(userId)
-                    ?: return@run failure(ReportError.UserNotFound)
+                val user =
+                    repoUsers.findById(userId)
+                        ?: return@run failure(ReportError.UserNotFound)
 
-            val updated = repoReport.addEditor(report, user)
-            publisher.reportPublisher.sendMessageToAll(
-                updated.id,
-                updated,
-                ActionKind.EditorAdded,
-            )
-            success(updated)
+                val updated = repoReport.addEditor(report, user)
+                success(updated)
+            }
+        if (result is Failure) {
+            return result
         }
+
+        val data = (result as Success).value
+        publisher.reportPublisher.sendMessageToAll(
+            data.id,
+            data,
+            ActionKind.EditorAdded,
+        )
+        return success(data)
     }
 
     /**
@@ -521,23 +545,30 @@ class ReportService(
         reportId: Int,
         userId: Int,
     ): Either<ReportError, Report> {
-        return trxManager.run {
-            val report =
-                repoReport.findById(reportId)
-                    ?: return@run failure(ReportError.ReportNotFound)
+        val result =
+            trxManager.run {
+                val report =
+                    repoReport.findById(reportId)
+                        ?: return@run failure(ReportError.ReportNotFound)
 
-            val user =
-                repoUsers.findById(userId)
-                    ?: return@run failure(ReportError.UserNotFound)
+                val user =
+                    repoUsers.findById(userId)
+                        ?: return@run failure(ReportError.UserNotFound)
 
-            val updated = repoReport.removeEditor(report, user)
-            publisher.reportPublisher.sendMessageToAll(
-                updated.id,
-                updated,
-                ActionKind.EditorRemoved,
-            )
-            success(updated)
+                val updated = repoReport.removeEditor(report, user)
+                success(updated)
+            }
+        if (result is Failure) {
+            return result
         }
+
+        val data = (result as Success).value
+        publisher.reportPublisher.sendMessageToAll(
+            data.id,
+            data,
+            ActionKind.EditorRemoved,
+        )
+        return success(data)
     }
 
     /**
@@ -555,19 +586,26 @@ class ReportService(
         reportId: Int,
         status: ReportStatus,
     ): Either<ReportError, Report> {
-        return trxManager.run {
-            val report =
-                repoReport.findById(reportId)
-                    ?: return@run failure(ReportError.ReportNotFound)
+        val result =
+            trxManager.run {
+                val report =
+                    repoReport.findById(reportId)
+                        ?: return@run failure(ReportError.ReportNotFound)
 
-            val updated = repoReport.updateStatus(report, status)
-            publisher.reportPublisher.sendMessageToAll(
-                updated.id,
-                updated,
-                ActionKind.ReportStatusChanged,
-            )
-            success(updated)
+                val updated = repoReport.updateStatus(report, status)
+                success(updated)
+            }
+        if (result is Failure) {
+            return result
         }
+
+        val data = (result as Success).value
+        publisher.reportPublisher.sendMessageToAll(
+            data.id,
+            data,
+            ActionKind.ReportStatusChanged,
+        )
+        return success(data)
     }
 
     /**
@@ -580,20 +618,28 @@ class ReportService(
      * @return `true` se a eliminação for bem-sucedida, ou erro do tipo [ReportError].
      */
     fun deleteById(id: Int): Either<ReportError, Boolean> {
-        return trxManager.run {
-            val report =
-                repoReport.findById(id)
-                    ?: return@run failure(ReportError.ReportNotFound)
+        val result =
+            trxManager.run {
+                val report =
+                    repoReport.findById(id)
+                        ?: return@run failure(ReportError.ReportNotFound)
 
-            repoReport.deleteById(report.id)
-            storageService.deleteReport(report.filePath)
-            publisher.reportPublisher.sendMessageToAll(
-                report.id,
-                Unit,
-                ActionKind.ReportDeleted,
-            )
-            success(true)
+                repoReport.deleteById(report.id)
+                storageService.deleteReport(report.filePath)
+                success(report)
+            }
+        if (result is Failure) {
+            return result
         }
+
+        val data = (result as Success).value
+
+        publisher.reportPublisher.sendMessageToAll(
+            data.id,
+            Unit,
+            ActionKind.ReportDeleted,
+        )
+        return success(true)
     }
 
     /**
@@ -606,22 +652,31 @@ class ReportService(
      *
      * @return [Report], ou um erro do tipo [ReportError].
      */
-    fun updateReport(reportId: Int): Either<ReportError, Report> =
-        trxManager.run {
-            val report = repoReport.findById(reportId) ?: return@run failure(ReportError.ReportNotFound)
-            generateReport(
-                occurrenceId = report.occurrenceId,
-                occurrenceType = report.type,
-                language = report.language,
-                filePath = report.filePath,
-            )
-            publisher.reportPublisher.sendMessageToAll(
-                report.id,
-                report,
-                ActionKind.ReportChanged,
-            )
-            success(report)
+    fun updateReport(reportId: Int): Either<ReportError, Report> {
+        val result =
+            trxManager.run {
+                val report = repoReport.findById(reportId) ?: return@run failure(ReportError.ReportNotFound)
+                val type = repoType.findById(report.type) ?: return@run failure(ReportError.TypeNotFound)
+                generateReport(
+                    occurrenceId = report.occurrenceId,
+                    occurrenceType = type,
+                    language = report.language,
+                    filePath = report.filePath,
+                )
+                success(report)
+            }
+        if (result is Failure) {
+            return result
         }
+
+        val data = (result as Success).value
+        publisher.reportPublisher.sendMessageToAll(
+            data.id,
+            data,
+            ActionKind.ReportChanged,
+        )
+        return success(data)
+    }
 
     /**
      * Obtém um relatório e o respetivo ficheiro associado.
@@ -631,7 +686,7 @@ class ReportService(
      * @return Par contendo [Report] e o recurso do ficheiro associado,
      *         ou erro do tipo [ReportError].
      */
-    fun downloadReport(id: Int): Either<ReportError, Pair<Report, Resource>> {
+    fun downloadReport(id: Int): Either<ReportError, DownloadReport> {
         return trxManager.run {
             val report =
                 repoReport.findById(id)
@@ -645,7 +700,7 @@ class ReportService(
 
             logger.info("Resource encontrado: {}", resource)
 
-            success(Pair(report, resource))
+            success(DownloadReport(report, resource))
         }
     }
 }

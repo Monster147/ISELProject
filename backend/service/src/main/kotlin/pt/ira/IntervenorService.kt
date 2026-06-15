@@ -4,6 +4,9 @@ import org.springframework.stereotype.Component
 import pt.ira.emitters.ActionKind
 import pt.ira.interfaces.TransactionManager
 import pt.ira.intervenor.Intervenor
+import pt.ira.intervenor.IntervenorCreatedResult
+import pt.ira.intervenor.IntervenorDeleteResult
+import pt.ira.intervenor.IntervenorUpdateResult
 import pt.ira.publishers.Publishers
 
 /**
@@ -65,34 +68,39 @@ class IntervenorService(
         contactInfo: String,
         address: String,
     ): Either<IntervenorError, Intervenor> {
-        return trxManager.run {
-            val existing = repoIntervenor.findByIdNumber(idNumber)
-            if (existing != null && existing.idType == idType) {
-                return@run failure(IntervenorError.IntervenorAlreadyExists)
+        val result =
+            trxManager.run {
+                val existing = repoIntervenor.findByIdNumber(idNumber)
+                if (existing != null && existing.idType == idType) {
+                    return@run failure(IntervenorError.IntervenorAlreadyExists)
+                }
+                val existingByContact = repoIntervenor.findByContactInfo(contactInfo)
+                if (existingByContact != null) {
+                    return@run failure(IntervenorError.IntervenorAlreadyExists)
+                }
+                val intervenor =
+                    repoIntervenor.createIntervenor(
+                        idNumber = idNumber,
+                        idType = idType,
+                        name = name,
+                        contactInfo = contactInfo,
+                        address = address,
+                    )
+                val intervenors = repoIntervenor.findAll()
+                success(IntervenorCreatedResult(intervenor, intervenors))
             }
-            val existingByContact = repoIntervenor.findByContactInfo(contactInfo)
-            if (existingByContact != null) {
-                return@run failure(IntervenorError.IntervenorAlreadyExists)
-            }
-            val intervenor =
-                repoIntervenor.createIntervenor(
-                    idNumber = idNumber,
-                    idType = idType,
-                    name = name,
-                    contactInfo = contactInfo,
-                    address = address,
-                )
-            publisher.intervenorPublisher.sendMessageToAll(
-                intervenor.id,
-                intervenor,
-                ActionKind.IntervenorCreated,
-            )
-            publisher.intervenorsPublisher.sendMessageToAll(
-                findAll(),
-                ActionKind.IntervenorsChanged,
-            )
-            success(intervenor)
-        }
+        if (result is Failure) return result
+        val data = (result as Success).value
+        publisher.intervenorPublisher.sendMessageToAll(
+            data.intervenor.id,
+            data.intervenor,
+            ActionKind.IntervenorCreated,
+        )
+        publisher.intervenorsPublisher.sendMessageToAll(
+            data.intervenors,
+            ActionKind.IntervenorsChanged,
+        )
+        return success(data.intervenor)
     }
 
     /**
@@ -118,28 +126,35 @@ class IntervenorService(
         contactInfo: String?,
         address: String?,
     ): Either<IntervenorError, Intervenor> {
-        return trxManager.run {
-            val intervenor = repoIntervenor.findById(intervenorId) ?: return@run failure(IntervenorError.IntervenorNotFound)
-            val updatedIntervenor =
-                repoIntervenor.updateIntervenor(
-                    intervenor = intervenor,
-                    idNumber = idNumber,
-                    idType = idType,
-                    name = name,
-                    contactInfo = contactInfo,
-                    address = address,
-                )
-            publisher.intervenorPublisher.sendMessageToAll(
-                updatedIntervenor.id,
-                updatedIntervenor,
-                ActionKind.IntervenorUpdated,
-            )
-            publisher.intervenorsPublisher.sendMessageToAll(
-                findAll(),
-                ActionKind.IntervenorsChanged,
-            )
-            success(updatedIntervenor)
-        }
+        val result =
+            trxManager.run {
+                val intervenor = repoIntervenor.findById(intervenorId) ?: return@run failure(IntervenorError.IntervenorNotFound)
+                val updatedIntervenor =
+                    repoIntervenor.updateIntervenor(
+                        intervenor = intervenor,
+                        idNumber = idNumber,
+                        idType = idType,
+                        name = name,
+                        contactInfo = contactInfo,
+                        address = address,
+                    )
+                val intervenors = repoIntervenor.findAll()
+                success(IntervenorUpdateResult(updatedIntervenor, intervenors))
+            }
+        if (result is Failure) return result
+
+        val data = (result as Success).value
+
+        publisher.intervenorPublisher.sendMessageToAll(
+            intervenorId,
+            data.updatedIntervenor,
+            ActionKind.IntervenorUpdated,
+        )
+        publisher.intervenorsPublisher.sendMessageToAll(
+            data.intervenors,
+            ActionKind.IntervenorsChanged,
+        )
+        return success(data.updatedIntervenor)
     }
 
     /**
@@ -152,20 +167,33 @@ class IntervenorService(
      * @return `true` se a eliminação for bem-sucedida, ou erro do tipo [IntervenorError].
      */
     fun deleteIntervenorByIdNumber(idNumber: String): Either<IntervenorError, Boolean> {
-        return trxManager.run {
-            val intervenor = repoIntervenor.findByIdNumber(idNumber) ?: return@run failure(IntervenorError.IntervenorNotFound)
-            repoIntervenor.deleteById(intervenor.id)
-            publisher.intervenorPublisher.sendMessageToAll(
-                intervenor.id,
-                Unit,
-                ActionKind.IntervenorDeleted,
-            )
-            publisher.intervenorsPublisher.sendMessageToAll(
-                findAll(),
-                ActionKind.IntervenorsChanged,
-            )
-            success(true)
+        val result =
+            trxManager.run {
+                val intervenor = repoIntervenor.findByIdNumber(idNumber) ?: return@run failure(IntervenorError.IntervenorNotFound)
+                repoIntervenor.deleteById(intervenor.id)
+                val updatedIntervenors = repoIntervenor.findAll()
+
+                success(IntervenorDeleteResult(intervenor.id, updatedIntervenors))
+            }
+
+        if (result is Failure) {
+            return result
         }
+
+        val data = (result as Success).value
+
+        publisher.intervenorPublisher.sendMessageToAll(
+            data.intervenorId,
+            Unit,
+            ActionKind.IntervenorDeleted,
+        )
+
+        publisher.intervenorsPublisher.sendMessageToAll(
+            data.intervenors,
+            ActionKind.IntervenorsChanged,
+        )
+
+        return success(true)
     }
 
     /**

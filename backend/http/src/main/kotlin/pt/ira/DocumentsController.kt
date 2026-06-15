@@ -74,12 +74,7 @@ class DocumentsController(
                         "/api/documents/${result.value.id}",
                     ).build<Unit>()
 
-            is Failure ->
-                when (result.value) {
-                    is DocumentsError.InvalidFile -> Problem.InvalidFile.response(HttpStatus.BAD_REQUEST)
-                    is DocumentsError.FileAlreadyExists -> Problem.FileAlreadyExists.response(HttpStatus.CONFLICT)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -102,11 +97,7 @@ class DocumentsController(
                     .status(HttpStatus.OK)
                     .body(result.value)
 
-            is Failure ->
-                when (result.value) {
-                    is DocumentsError.DocumentNotFound -> Problem.FileNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -129,11 +120,7 @@ class DocumentsController(
                     .status(HttpStatus.OK)
                     .body(result.value)
 
-            is Failure ->
-                when (result.value) {
-                    is DocumentsError.DocumentNotFound -> Problem.FileNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -156,11 +143,7 @@ class DocumentsController(
                     .status(HttpStatus.OK)
                     .body(result.value)
 
-            is Failure ->
-                when (result.value) {
-                    is DocumentsError.DocumentNotFound -> Problem.FileNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -218,11 +201,7 @@ class DocumentsController(
                     .body(resource)
             }
 
-            is Failure ->
-                when (result.value) {
-                    is DocumentsError.DocumentNotFound -> Problem.FileNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -242,14 +221,9 @@ class DocumentsController(
         return when (result) {
             is Success ->
                 ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body("Document deleted successfully")
+                    .status(HttpStatus.NO_CONTENT).build<Unit>()
 
-            is Failure ->
-                when (result.value) {
-                    is DocumentsError.DocumentNotFound -> Problem.FileNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -263,7 +237,7 @@ class DocumentsController(
      * @return [SseEmitter] com ligação persistente para eventos globais.
      */
     @GetMapping("/listen")
-    fun listenIntervenors(): SseEmitter {
+    fun listenDocuments(): SseEmitter {
         val sseEmitter = SseEmitter(Long.MAX_VALUE)
         publisher.documentsPublisher.addEmitter(
             SSEUpdatedDataAdapter(
@@ -272,4 +246,13 @@ class DocumentsController(
         )
         return sseEmitter
     }
+
+    private fun DocumentsError.toResponse(): ResponseEntity<*> =
+        when (this) {
+            is DocumentsError.DocumentNotFound -> Problem.FileNotFound.response(HttpStatus.NOT_FOUND)
+            is DocumentsError.InvalidFile -> Problem.InvalidFile.response(HttpStatus.BAD_REQUEST)
+            is DocumentsError.FileAlreadyExists -> Problem.FileAlreadyExists.response(HttpStatus.CONFLICT)
+            is DocumentsError.UploadFailed -> Problem.UploadFailed.response(HttpStatus.INTERNAL_SERVER_ERROR)
+            else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
 }

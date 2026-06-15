@@ -8,11 +8,11 @@ import pt.ira.storage.StorageService
 
 @Component
 class PDFGenerator(
-    private val storageService: StorageService
+    private val storageService: StorageService,
 ) {
     fun createPDFBuilder(
         doc: PDDocument,
-        language: String
+        language: String,
     ): PDBuilder {
         return PDBuilder(doc, language, PDFText, storageService)
     }

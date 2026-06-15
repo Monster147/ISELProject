@@ -1,9 +1,9 @@
 package pt.ira
 
-import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import pt.ira.documents.Documents
+import pt.ira.documents.DownloadDocument
 import pt.ira.emitters.ActionKind
 import pt.ira.interfaces.TransactionManager
 import pt.ira.publishers.Publishers
@@ -33,6 +33,11 @@ sealed class DocumentsError {
      * Indica que um documento com o mesmo nome já existe no armazenamento.
      */
     data object FileAlreadyExists : DocumentsError()
+
+    /**
+     * Indica que o documento não conseguiu ser registado na base de dados
+     */
+    data object UploadFailed : DocumentsError()
 }
 
 /**
@@ -53,17 +58,31 @@ class DocumentsService(
     private val storageService: StorageService,
     private val publishers: Publishers,
 ) {
-    private val allowedExtensions =
-        listOf(
-            "application/pdf",
-            "image/jpg",
-            "image/jpeg",
-            "image/png",
-            "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "application/vnd.ms-excel",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        )
+    companion object {
+        private val allowedExtensions =
+            listOf(
+                "application/pdf",
+                "image/jpg",
+                "image/jpeg",
+                "image/png",
+                "application/msword",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "application/vnd.ms-excel",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+
+        private val DIACRITICS_REGEX =
+            "\\p{InCombiningDiacriticalMarks}+".toRegex()
+
+        private val INVALID_FILENAME_REGEX =
+            "[^a-zA-Z0-9._-]".toRegex()
+    }
+
+    private fun isInvalidDocument(
+        file: MultipartFile,
+        name: String,
+        type: String,
+    ): Boolean = file.isEmpty || file.contentType == null || file.contentType !in allowedExtensions || name.isBlank() || type.isBlank()
 
     /**
      * Faz *upload* de um documento.
@@ -82,16 +101,11 @@ class DocumentsService(
         type: String,
         file: MultipartFile,
     ): Either<DocumentsError, Documents> {
-        if (file.contentType == null || file.contentType !in allowedExtensions) {
-            return failure(DocumentsError.InvalidFile)
-        }
-
-        if (file.isEmpty) {
+        if (isInvalidDocument(file, name, type)) {
             return failure(DocumentsError.InvalidFile)
         }
 
         val safeName = normalizeFileName(name)
-        println("Name: $safeName")
 
         val filepath =
             storageService.saveDocument(file, safeName, type)
@@ -100,19 +114,23 @@ class DocumentsService(
             return failure(DocumentsError.FileAlreadyExists)
         }
 
-        return trxManager.run {
+        try {
             val document =
-                repoDocuments.uploadDocumentInfo(
-                    name = safeName,
-                    type = type,
-                    filepath = filepath,
-                )
-
+                trxManager.run {
+                    repoDocuments.uploadDocumentInfo(
+                        name = safeName,
+                        type = type,
+                        filepath = filepath,
+                    )
+                }
             publishers.documentsPublisher.sendMessageToAll(
                 findAllDocuments(),
                 ActionKind.DocumentsChanged,
             )
-            success(document)
+            return success(document)
+        } catch (e: Exception) {
+            storageService.deleteDocument(filepath)
+            return failure(DocumentsError.UploadFailed)
         }
     }
 
@@ -125,12 +143,8 @@ class DocumentsService(
      */
     fun findDocumentById(id: Int): Either<DocumentsError, Documents> =
         trxManager.run {
-            val document = repoDocuments.findById(id)
-            if (document == null) {
-                failure(DocumentsError.DocumentNotFound)
-            } else {
-                success(document)
-            }
+            val document = repoDocuments.findById(id) ?: return@run failure(DocumentsError.DocumentNotFound)
+            success(document)
         }
 
     /**
@@ -142,12 +156,8 @@ class DocumentsService(
      */
     fun findDocumentByName(name: String): Either<DocumentsError, Documents> =
         trxManager.run {
-            val document = repoDocuments.findByName(name)
-            if (document == null) {
-                failure(DocumentsError.DocumentNotFound)
-            } else {
-                success(document)
-            }
+            val document = repoDocuments.findByName(name) ?: return@run failure(DocumentsError.DocumentNotFound)
+            success(document)
         }
 
     /**
@@ -196,22 +206,26 @@ class DocumentsService(
      *
      * @return `true` se eliminado com sucesso, ou erro do tipo [DocumentsError].
      */
-    fun deleteDocument(id: Int): Either<DocumentsError, Boolean> =
-        trxManager.run {
-            val document =
-                repoDocuments.findById(id)
-                    ?: return@run failure(DocumentsError.DocumentNotFound)
+    fun deleteDocument(id: Int): Either<DocumentsError, Boolean> {
+        val result =
+            trxManager.run {
+                val document = repoDocuments.findById(id) ?: return@run failure(DocumentsError.DocumentNotFound)
+                storageService.deleteDocument(document.filepath)
+                repoDocuments.deleteById(id)
+                success(repoDocuments.findAll())
+            }
 
-            storageService.deleteDocument(document.filepath)
-
-            repoDocuments.deleteById(id)
-
-            publishers.documentsPublisher.sendMessageToAll(
-                findAllDocuments(),
-                ActionKind.DocumentsChanged,
-            )
-            success(true)
+        if (result is Failure) {
+            return result
         }
+
+        publishers.documentsPublisher.sendMessageToAll(
+            findAllDocuments(),
+            ActionKind.DocumentsChanged,
+        )
+
+        return success(true)
+    }
 
     /**
      * Faz *download* de um documento.
@@ -220,9 +234,9 @@ class DocumentsService(
      *
      * @param id Identificador do documento a fazer download.
      *
-     * @return [Resource] correspondente ao ficheiro, ou erro do tipo [DocumentsError].
+     * @return [DownloadDocument] correspondente ao ficheiro, ou erro do tipo [DocumentsError].
      */
-    fun downloadDocument(id: Int): Either<DocumentsError, Pair<Documents, Resource>> =
+    fun downloadDocument(id: Int): Either<DocumentsError, DownloadDocument> =
         trxManager.run {
             val document =
                 repoDocuments.findById(id)
@@ -232,13 +246,13 @@ class DocumentsService(
                 storageService.loadDocument(document.filepath)
                     ?: return@run failure(DocumentsError.DocumentNotFound)
 
-            success(Pair(document, resource))
+            success(DownloadDocument(document, resource))
         }
 
     private fun normalizeFileName(filename: String): String {
         val normalizer = Normalizer.normalize(filename, Normalizer.Form.NFD)
         return normalizer
-            .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
-            .replace("[^a-zA-Z0-9._-]".toRegex(), "_")
+            .replace(DIACRITICS_REGEX, "")
+            .replace(INVALID_FILENAME_REGEX, "_")
     }
 }

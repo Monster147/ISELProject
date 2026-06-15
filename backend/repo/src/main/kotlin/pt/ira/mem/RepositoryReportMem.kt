@@ -40,16 +40,13 @@ class RepositoryReportMem : RepositoryReport {
 
     override fun findByCreatorId(creatorId: Int): List<Report> = reports.filter { it.creatorId == creatorId }
 
-    override fun findByEditor(userId: Int): List<Report> =
-        reports.filter {
-            it.editors.any { editor -> editor == userId }
-        }
+    override fun findByEditor(userId: Int): List<Report> = reports.filter { userId in it.editors }
 
     override fun addEditor(
         report: Report,
         user: User,
     ): Report {
-        if (report.editors.any { it == user.id }) return report
+        if (user.id in report.editors) return report
         val updatedReport = report.copy(editors = report.editors + user.id, updatedAt = System.currentTimeMillis())
         save(updatedReport)
         return updatedReport
@@ -59,7 +56,7 @@ class RepositoryReportMem : RepositoryReport {
         report: Report,
         user: User,
     ): Report {
-        if (report.editors.none { it == user.id }) return report
+        if (user.id !in report.editors) return report
         val updatedReport =
             report.copy(
                 editors = report.editors - user.id,
@@ -73,6 +70,7 @@ class RepositoryReportMem : RepositoryReport {
         report: Report,
         status: ReportStatus,
     ): Report {
+        if (status == report.status) return report
         val updatedReport = report.copy(status = status, updatedAt = System.currentTimeMillis())
         save(updatedReport)
         return updatedReport
@@ -85,15 +83,17 @@ class RepositoryReportMem : RepositoryReport {
     override fun findAll(): List<Report> = reports.toList()
 
     override fun save(entity: Report) {
-        reports.removeIf { it.id == entity.id }
-        reports.add(entity)
+        val idx = reports.indexOfFirst { it.id == entity.id }
+        if (idx >= 0) {
+            reports[idx] = entity
+        } else {
+            reports.add(entity)
+        }
     }
 
     override fun deleteById(id: Int) {
         reports.removeIf { it.id == id }
     }
 
-    override fun clear() {
-        reports.clear()
-    }
+    override fun clear() = reports.clear()
 }

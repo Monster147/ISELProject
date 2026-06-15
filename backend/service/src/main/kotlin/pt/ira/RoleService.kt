@@ -114,9 +114,8 @@ class RoleService(
      *
      * @return Lista de todas as [Role].
      */
-    fun findAllRoles(): List<Role> {
-        return trxManager.run {
+    fun findAllRoles(): List<Role> =
+        trxManager.run {
             repoRole.findAll()
         }
-    }
 }

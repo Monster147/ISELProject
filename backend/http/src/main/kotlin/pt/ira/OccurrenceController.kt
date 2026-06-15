@@ -75,14 +75,7 @@ class OccurrenceController(
                         "Location",
                         "/api/occurrence/${result.value.id}",
                     ).build<Unit>()
-            is Failure ->
-                when (result.value) {
-                    OccurrenceError.EndDateNotValid -> Problem.EndDateNotValid.response(HttpStatus.BAD_REQUEST)
-                    OccurrenceError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
-                    OccurrenceError.DuplicateUsersIds -> Problem.DuplicateUsersIds.response(HttpStatus.BAD_REQUEST)
-                    OccurrenceError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -103,11 +96,7 @@ class OccurrenceController(
                 ResponseEntity
                     .status(HttpStatus.OK)
                     .body(result.value)
-            is Failure ->
-                when (result.value) {
-                    OccurrenceError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -127,10 +116,7 @@ class OccurrenceController(
                 ResponseEntity
                     .status(HttpStatus.OK)
                     .body(occurrences)
-            is Failure ->
-                when (occurrences.value) {
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> occurrences.value.toResponse()
         }
     }
 
@@ -177,11 +163,7 @@ class OccurrenceController(
                 ResponseEntity
                     .status(HttpStatus.NO_CONTENT)
                     .build<Unit>()
-            is Failure ->
-                when (result.value) {
-                    OccurrenceError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -201,16 +183,7 @@ class OccurrenceController(
         val result = occurrenceService.addIntervenor(id, intervenor.intervenorId)
         return when (result) {
             is Success -> ResponseEntity.ok(result.value)
-            is Failure ->
-                when (result.value) {
-                    is OccurrenceError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
-                    is OccurrenceError.IntervenorNotFound -> Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
-                    is OccurrenceError.IntervenorAlreadyInOccurrence ->
-                        Problem.IntervenorAlreadyInOccurrence.response(
-                            HttpStatus.BAD_REQUEST,
-                        )
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -230,13 +203,7 @@ class OccurrenceController(
         val result = occurrenceService.removeIntervenor(id, intervenor.intervenorId)
         return when (result) {
             is Success -> ResponseEntity.ok(result.value)
-            is Failure ->
-                when (result.value) {
-                    is OccurrenceError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
-                    is OccurrenceError.IntervenorNotFound -> Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
-                    is OccurrenceError.IntervenorNotInOccurrence -> Problem.IntervenorNotInOccurrence.response(HttpStatus.NOT_FOUND)
-                    else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+            is Failure -> result.value.toResponse()
         }
     }
 
@@ -290,4 +257,17 @@ class OccurrenceController(
         )
         return sseEmitter
     }
+
+    private fun OccurrenceError.toResponse(): ResponseEntity<*> =
+        when (this) {
+            is OccurrenceError.EndDateNotValid -> Problem.EndDateNotValid.response(HttpStatus.BAD_REQUEST)
+            is OccurrenceError.UserNotFound -> Problem.UserNotFound.response(HttpStatus.NOT_FOUND)
+            is OccurrenceError.DuplicateUsersIds -> Problem.DuplicateUsersIds.response(HttpStatus.BAD_REQUEST)
+            is OccurrenceError.OccurrenceNotFound -> Problem.OccurrenceNotFound.response(HttpStatus.NOT_FOUND)
+            is OccurrenceError.IntervenorNotFound -> Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)
+            is OccurrenceError.IntervenorAlreadyInOccurrence -> Problem.IntervenorAlreadyInOccurrence.response(HttpStatus.BAD_REQUEST)
+            is OccurrenceError.IntervenorNotInOccurrence -> Problem.IntervenorNotInOccurrence.response(HttpStatus.NOT_FOUND)
+            is OccurrenceError.TypeNotFound -> Problem.TypeNotFound.response(HttpStatus.NOT_FOUND)
+            else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
 }
