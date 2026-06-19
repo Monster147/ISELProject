@@ -1,5 +1,5 @@
 import { useColorScheme } from "react-native";
-import { Colors } from "../../commons/constants/Colors";
+import { Colors } from "@commons/constants/Colors";
 
 const ThemedFileInput = ({ onChange, accept, multiple = false, style }) => {
   const colorScheme = useColorScheme();

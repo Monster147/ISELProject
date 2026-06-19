@@ -1,30 +1,17 @@
 import {
   createContext,
-  useCallback,
   useEffect,
-  useMemo,
   useState,
 } from "react";
-import { api, ApiError, fetchApi, getAuthHeaders } from "@commons/api/api";
-import { authInfoRepo } from "../infrastructure/AuthInfoPreferencesRepo";
-import { userInfoRepo } from "../infrastructure/UserInfoPreferencesRepo";
+import { api } from "@commons/api/api";
 import { Occurrence } from "@commons/models/occurrence/Occurrence";
-import { useAuth } from "../hooks/useAuth";
-import {
-  useOccurrencesListener,
-  SSEMessage,
-} from "../hooks/useOccurrencesListener";
-import { occurrenceInfoRepo } from "../infrastructure/OccurrenceInfoPreferencesRepo";
-import { useNetworkStatus } from "../hooks/useNetworkStatus";
-import occurrence from "../app/(dashboard)/occurrence";
+import { useAuth } from "@hooks/data/useAuth";
+import { occurrenceInfoRepo } from "@infrastructure/OccurrenceInfoPreferencesRepo";
+import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
 import { useTranslation } from "react-i18next";
-import { offlineOccurrenceQueueRepo } from "../infrastructure/offline/OfflineOccurrenceQueueRepo";
-import { offlineIntervenorQueueRepo } from "../infrastructure/offline/OfflineIntervenorQueueRepo";
-import { intervenorInfoRepo } from "../infrastructure/IntervenorInfoPreferencesRepo";
-import { useSyncSSE } from "../hooks/useSyncSSE";
-import { documentsInfoRepo } from "../infrastructure/DocumentsInfoPreferencesRepo";
-import { log } from "../hooks/useDocumentsListener";
-import { typeInfoRepo } from "../infrastructure/TypeInfopreferencesRepo";
+import { offlineOccurrenceQueueRepo } from "@infrastructure/offline/OfflineOccurrenceQueueRepo";
+import { intervenorInfoRepo } from "@infrastructure/IntervenorInfoPreferencesRepo";
+import { useSyncSSE } from "@hooks/sync/useSyncSSE";
 
 type OccurrenceContextValue = {
   listOccurrences: () => Promise<void>;

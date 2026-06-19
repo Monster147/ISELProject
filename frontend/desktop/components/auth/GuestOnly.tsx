@@ -1,4 +1,4 @@
-import { useAuth } from "../../src/hooks/useAuth";
+import { useAuth } from "@hooks/data/useAuth";
 import { useNavigate } from "react-router";
 import { useEffect } from "react";
 import ThemedLoader from "../ThemedLoader";

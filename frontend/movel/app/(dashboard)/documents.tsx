@@ -1,9 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
-import { useDocument } from "../../hooks/useDocument";
+import { useState } from "react";
+import { useDocument } from "@hooks/data/useDocument";
 import {
-  View,
-  Text,
   StyleSheet,
   FlatList,
   Pressable,
@@ -11,17 +9,17 @@ import {
 } from "react-native";
 import { useColorScheme } from "react-native";
 import { Colors } from "@commons/constants/Colors";
-import { Documents } from "@commons/models/Documents/Documents";
+import { Documents } from "@commons/models/documents/Documents";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import ThemedView from "../../components/ThemedView";
-import ThemedLoader from "../../components/ThemedLoader";
-import ThemedText from "../../../commons/components/ThemedText";
-import Spacer from "../../../commons/components/Spacer";
-import ThemedCard from "../../../commons/components/ThemedCard";
-import OfflineBanner from "../../components/ThemedOfflineBanner";
-import { useNetworkStatus } from "../../hooks/useNetworkStatus";
-import { confirmAction } from "../../utils/confirmAction";
-import { useAlertExitApp } from "../../hooks/useAlertExitApp";
+import ThemedView from "@components/ThemedView";
+import ThemedLoader from "@components/ThemedLoader";
+import ThemedText from "@commons/components/ThemedText";
+import Spacer from "@commons/components/Spacer";
+import ThemedCard from "@commons/components/ThemedCard";
+import OfflineBanner from "@components/ThemedOfflineBanner";
+import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
+import { confirmAction } from "@hooks/system/confirmAction";
+import { useAlertExitApp } from "@hooks/system/useAlertExitApp";
 
 const Document = () => {
   const { t } = useTranslation();

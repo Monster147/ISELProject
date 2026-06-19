@@ -1,27 +1,22 @@
 import {
-  Animated,
   StyleSheet,
   Text,
-  TextInput,
   ScrollView,
   useColorScheme,
 } from "react-native";
-import ThemedView from "../../../components/ThemedView";
-import ThemedText from "../../../../commons/components/ThemedText";
-import ThemedButton from "../../../../commons/components/ThemedButton";
-import ThemedCard from "../../../../commons/components/ThemedCard";
-import ThemedLoader from "../../../components/ThemedLoader";
+import ThemedView from "@components/ThemedView";
+import ThemedText from "@commons/components/ThemedText";
+import ThemedButton from "@commons/components/ThemedButton";
+import ThemedCard from "@commons/components/ThemedCard";
+import ThemedLoader from "@components/ThemedLoader";
 import { Colors } from "@commons/constants/Colors";
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import { useIntervenor } from "../../../hooks/useIntervenor";
-import Spacer from "../../../../commons/components/Spacer";
-import { Dropdown } from "react-native-paper-dropdown";
-import { PaperProvider } from "react-native-paper";
-import ThemedTextInput from "../../../../commons/components/ThemedTextInput";
-import { useBackRedirect } from "../../../hooks/useBackRedirect";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { useIntervenor } from "@hooks/data/useIntervenor";
+import ThemedTextInput from "@commons/components/ThemedTextInput";
+import { useBackRedirect } from "@hooks/system/useBackRedirect";
 import { useTranslation } from "react-i18next";
-import OfflineBanner from "../../../components/ThemedOfflineBanner";
+import OfflineBanner from "@components/ThemedOfflineBanner";
 
 const IntervenorCreate = () => {
   const { t } = useTranslation();

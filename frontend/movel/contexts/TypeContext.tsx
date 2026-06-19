@@ -1,14 +1,10 @@
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { Type } from "@commons/models/type/Type";
 import { api } from "@commons/api/api";
-import { useAuth } from "../hooks/useAuth";
-import { useTypesListener, SSEMessage } from "../hooks/useTypesListener";
-import { intervenorInfoRepo } from "../infrastructure/IntervenorInfoPreferencesRepo";
-import { typeInfoRepo } from "../infrastructure/TypeInfopreferencesRepo";
-import { useNetworkStatus } from "../hooks/useNetworkStatus";
-import { documentsInfoRepo } from "../infrastructure/DocumentsInfoPreferencesRepo";
-import { useSyncSSE } from "../hooks/useSyncSSE";
-import { Occurrence } from "@commons/models/occurrence/Occurrence";
+import { useAuth } from "@hooks/data/useAuth";
+import { typeInfoRepo } from "@infrastructure/TypeInfopreferencesRepo";
+import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
+import { useSyncSSE } from "@hooks/sync/useSyncSSE";
 
 type TypeContextValue = {
   type: Type[];

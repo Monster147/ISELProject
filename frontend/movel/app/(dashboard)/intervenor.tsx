@@ -1,29 +1,27 @@
 import {
-  Animated,
   StyleSheet,
   Text,
-  TextInput,
   ScrollView,
   useColorScheme,
 } from "react-native";
-import ThemedView from "../../components/ThemedView";
-import ThemedText from "../../../commons/components/ThemedText";
-import ThemedButton from "../../../commons/components/ThemedButton";
-import ThemedCard from "../../../commons/components/ThemedCard";
-import ThemedLoader from "../../components/ThemedLoader";
+import ThemedView from "@components/ThemedView";
+import ThemedText from "@commons/components/ThemedText";
+import ThemedButton from "@commons/components/ThemedButton";
+import ThemedCard from "@commons/components/ThemedCard";
+import ThemedLoader from "@components/ThemedLoader";
 import { Colors } from "@commons/constants/Colors";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
-import { useIntervenor } from "../../hooks/useIntervenor";
+import React, { useCallback, useState } from "react";
+import { useIntervenor } from "@hooks/data/useIntervenor";
 import { Intervenor } from "@commons/models/intervenor/Intervenor";
-import Spacer from "../../../commons/components/Spacer";
+import Spacer from "@commons/components/Spacer";
 import { Dropdown } from "react-native-paper-dropdown";
 import { PaperProvider } from "react-native-paper";
-import ThemedTextInput from "../../../commons/components/ThemedTextInput";
-import { useAlertExitApp } from "../../hooks/useAlertExitApp";
-import { useOccurrence } from "../../hooks/useOccurrence";
+import ThemedTextInput from "@commons/components/ThemedTextInput";
+import { useAlertExitApp } from "@hooks/system/useAlertExitApp";
+import { useOccurrence } from "@hooks/data/useOccurrence";
 import { useTranslation } from "react-i18next";
-import OfflineBanner from "../../components/ThemedOfflineBanner";
+import OfflineBanner from "@components/ThemedOfflineBanner";
 
 const IntervenorSearch = () => {
   const { t } = useTranslation();

@@ -1,19 +1,15 @@
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { api } from "@commons/api/api";
 import { UploadFile } from "@commons/models/utils/UploadFile";
-import { useNetworkStatus } from "../hooks/useNetworkStatus";
-import { offlineEvidenceQueueRepo } from "../infrastructure/offline/OfflineEvidenceQueueRepo";
+import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
+import { offlineEvidenceQueueRepo } from "@infrastructure/offline/OfflineEvidenceQueueRepo";
 import { Evidence } from "@commons/models/evidence/Evidence";
-import { useAuth } from "../hooks/useAuth";
-import { useEvidenceListener, SSEMessage } from "../hooks/useEvidenceListener";
-import { evidenceInfoRepo } from "../infrastructure/EvidenceInfoPreferencesRepo";
+import { useAuth } from "@hooks/data/useAuth";
+import { evidenceInfoRepo } from "@infrastructure/EvidenceInfoPreferencesRepo";
 import ReactNativeBlobUtil from "react-native-blob-util";
-import { useSyncSSE } from "../hooks/useSyncSSE";
-import { documentsInfoRepo } from "../infrastructure/DocumentsInfoPreferencesRepo";
-import { Documents } from "@commons/models/documents/Documents";
-import { intervenorInfoRepo } from "../infrastructure/IntervenorInfoPreferencesRepo";
-import { log } from "../utils/ConfigureApiMobile";
-import { evidenceCacheService } from "../infrastructure/service/EvidenceCacheService";
+import { useSyncSSE } from "@hooks/sync/useSyncSSE";
+import { log } from "@utils/ConfigureApiMobile";
+import { evidenceCacheService } from "@infrastructure/service/EvidenceCacheService";
 
 type EvidenceContextValue = {
   createEvidence: (

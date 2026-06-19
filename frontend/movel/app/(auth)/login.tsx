@@ -1,23 +1,19 @@
 import {
   StyleSheet,
-  Pressable,
   Text,
-  TextInput,
   TouchableWithoutFeedback,
   Keyboard,
-  ActivityIndicator,
 } from "react-native";
-import ThemedView from "../../components/ThemedView";
-import ThemedText from "../../../commons/components/ThemedText";
-import Spacer from "../../../commons/components/Spacer";
+import ThemedView from "@components/ThemedView";
+import ThemedText from "@commons/components/ThemedText";
+import Spacer from "@commons/components/Spacer";
 import { Link, router } from "expo-router";
 import { Colors } from "@commons/constants/Colors";
-import ThemedButton from "../../../commons/components/ThemedButton";
-import ThemedTextInput from "../../../commons/components/ThemedTextInput";
+import ThemedButton from "@commons/components/ThemedButton";
+import ThemedTextInput from "@commons/components/ThemedTextInput";
 import { useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
-import ThemedLoader from "../../components/ThemedLoader";
-import { useBackRedirect } from "../../hooks/useBackRedirect";
+import { useAuth } from "@hooks/data/useAuth";
+import { useBackRedirect } from "@hooks/system/useBackRedirect";
 import { useTranslation } from "react-i18next";
 
 const Login = () => {

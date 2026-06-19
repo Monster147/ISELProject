@@ -1,9 +1,9 @@
-import { createContext, useCallback, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useEffect, useRef } from "react";
 import { api } from "@commons/api/api";
-import { useNetworkStatus } from "../hooks/useNetworkStatus";
-import { offlineIntervenorQueueRepo } from "../infrastructure/offline/OfflineIntervenorQueueRepo";
-import { offlineOccurrenceQueueRepo } from "../infrastructure/offline/OfflineOccurrenceQueueRepo";
-import { offlineEvidenceQueueRepo } from "../infrastructure/offline/OfflineEvidenceQueueRepo";
+import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
+import { offlineIntervenorQueueRepo } from "@infrastructure/offline/OfflineIntervenorQueueRepo";
+import { offlineOccurrenceQueueRepo } from "@infrastructure/offline/OfflineOccurrenceQueueRepo";
+import { offlineEvidenceQueueRepo } from "@infrastructure/offline/OfflineEvidenceQueueRepo";
 
 type OfflineSyncContextValue = {
   syncAllOfflineQueues: () => Promise<void>;

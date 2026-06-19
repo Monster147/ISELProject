@@ -1,30 +1,23 @@
 import {
   StyleSheet,
-  ScrollView,
-  Text,
   useColorScheme,
   FlatList,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import * as FileSystem from "expo-file-system";
-
-import ThemedView from "../../../../components/ThemedView";
-import ThemedText from "../../../../../commons/components/ThemedText";
-import ThemedCard from "../../../../../commons/components/ThemedCard";
-import ThemedLoader from "../../../../components/ThemedLoader";
-import ThemedButton from "../../../../../commons/components/ThemedButton";
-import OfflineBanner from "../../../../components/ThemedOfflineBanner";
-
-import { useOccurrence } from "../../../../hooks/useOccurrence";
-import { useType } from "../../../../hooks/useType";
-import { useEvidence } from "../../../../hooks/useEvidence";
-import { useAuth } from "../../../../hooks/useAuth";
-import { useNetworkStatus } from "../../../../hooks/useNetworkStatus";
-import { useIntervenor } from "../../../../hooks/useIntervenor";
-import { useBackRedirect } from "../../../../hooks/useBackRedirect";
-
+import ThemedView from "@components/ThemedView";
+import ThemedText from "@commons/components/ThemedText";
+import ThemedCard from "@commons/components/ThemedCard";
+import ThemedLoader from "@components/ThemedLoader";
+import ThemedButton from "@commons/components/ThemedButton";
+import { useOccurrence } from "@hooks/data/useOccurrence";
+import { useType } from "@hooks/data/useType";
+import { useEvidence } from "@hooks/data/useEvidence";
+import { useAuth } from "@hooks/data/useAuth";
+import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
+import { useIntervenor } from "@hooks/data/useIntervenor";
+import { useBackRedirect } from "@hooks/system/useBackRedirect";
 import { Colors } from "@commons/constants/Colors";
 import type { UploadFile } from "@commons/models/utils/UploadFile";
 import { OccurrenceTypeForm } from "@commons/models/type/OccorrenceTypeForm";
@@ -36,9 +29,8 @@ import { Paths, File } from "expo-file-system";
 import {
   SSEMessage,
   useOccurrenceListener,
-} from "../../../../hooks/useOccurrenceListener";
+} from "@hooks/listeners/useOccurrenceListener";
 import { getLabelByLanguage } from "@commons/utils/getLabelByLanguage";
-import { log } from "../../../../utils/ConfigureApiMobile";
 
 const DynamicOccurrenceForm = () => {
   const colorScheme = useColorScheme();

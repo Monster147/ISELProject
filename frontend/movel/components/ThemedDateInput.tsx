@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Pressable, StyleSheet, useColorScheme } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Colors } from "@commons/constants/Colors";
-import ThemedText from "../../commons/components/ThemedText";
+import ThemedText from "@commons/components/ThemedText";
 import ThemedView from "./ThemedView";
 
 const formatDate = (date: Date) => {

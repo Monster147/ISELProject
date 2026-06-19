@@ -1,8 +1,8 @@
-import { StyleSheet, Text, useColorScheme, View } from "react-native";
+import { StyleSheet, useColorScheme } from "react-native";
 import { Stack } from "expo-router";
 import { Colors } from "@commons/constants/Colors";
-import GuestOnly from "../../components/auth/GuestOnly";
-import ThemedView from "../../components/ThemedView";
+import GuestOnly from "@components/auth/GuestOnly";
+import ThemedView from "@components/ThemedView";
 import "../../i18next/i18next";
 
 const AuthLayout = () => {

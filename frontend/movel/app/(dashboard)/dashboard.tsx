@@ -1,24 +1,21 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ScrollView, StyleSheet } from "react-native";
 import { useColorScheme } from "react-native";
 import { useTranslation } from "react-i18next";
-import ThemedView from "../../components/ThemedView";
-import ThemedText from "../../../commons/components/ThemedText";
-import ThemedCard from "../../../commons/components/ThemedCard";
-import Spacer from "../../../commons/components/Spacer";
-import ThemedLoader from "../../components/ThemedLoader";
+import ThemedView from "@components/ThemedView";
+import ThemedText from "@commons/components/ThemedText";
+import ThemedCard from "@commons/components/ThemedCard";
+import Spacer from "@commons/components/Spacer";
+import ThemedLoader from "@components/ThemedLoader";
 import { Colors } from "@commons/constants/Colors";
-import { StatsContext } from "../../contexts/StatsContext";
 import { OverviewStats } from "@commons/models/stats/OverviewStats";
 import { StatsReportType } from "@commons/models/stats/StatsReportType";
 import { StatsReportStatus } from "@commons/models/stats/StatsReportStatus";
 import { StatsOccurrenceImportance } from "@commons/models/stats/StatsOccurrenceImportance";
-import { api } from "@commons/api/api";
-import { Type } from "@commons/models/type/Type";
-import { useStats } from "../../hooks/useStats";
-import { useType } from "../../hooks/useType";
-import OfflineBanner from "../../components/ThemedOfflineBanner";
-import { useAlertExitApp } from "../../hooks/useAlertExitApp";
+import { useStats } from "@hooks/data/useStats";
+import { useType } from "@hooks/data/useType";
+import OfflineBanner from "@components/ThemedOfflineBanner";
+import { useAlertExitApp } from "@hooks/system/useAlertExitApp";
 
 const Dashboard = () => {
   const { t } = useTranslation();

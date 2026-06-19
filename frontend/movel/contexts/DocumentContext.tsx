@@ -1,19 +1,10 @@
-import { createContext, useCallback, useEffect, useState } from "react";
-import { Intervenor } from "@commons/models/intervenor/Intervenor";
-import { Documents } from "@commons/models/Documents/Documents";
+import { createContext, useEffect, useState } from "react";
+import { Documents } from "@commons/models/documents/Documents";
 import { api } from "@commons/api/api";
-import { IntervenorContext } from "./IntervenorContext";
-import { useAuth } from "../hooks/useAuth";
-import {
-  useDocumentsListener,
-  SSEMessage,
-} from "../hooks/useDocumentsListener";
-import { useNetworkStatus } from "../hooks/useNetworkStatus";
-import { intervenorInfoRepo } from "../infrastructure/IntervenorInfoPreferencesRepo";
-import { documentsInfoRepo } from "../infrastructure/DocumentsInfoPreferencesRepo";
-import { useSyncSSE } from "../hooks/useSyncSSE";
-import { Occurrence } from "@commons/models/occurrence/Occurrence";
-import { evidenceInfoRepo } from "../infrastructure/EvidenceInfoPreferencesRepo";
+import { useAuth } from "@hooks/data/useAuth";
+import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
+import { documentsInfoRepo } from "@infrastructure/DocumentsInfoPreferencesRepo";
+import { useSyncSSE } from "@hooks/sync/useSyncSSE";
 
 type DocumentContextValue = {
   documents: Documents[];

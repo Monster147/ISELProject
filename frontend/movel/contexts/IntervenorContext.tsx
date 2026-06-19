@@ -1,28 +1,16 @@
 import {
   createContext,
-  useCallback,
   useEffect,
-  useMemo,
   useState,
 } from "react";
-import { api, ApiError, fetchApi, getAuthHeaders } from "@commons/api/api";
-import { authInfoRepo } from "../infrastructure/AuthInfoPreferencesRepo";
-import { userInfoRepo } from "../infrastructure/UserInfoPreferencesRepo";
+import { api } from "@commons/api/api";
 import { Intervenor } from "@commons/models/intervenor/Intervenor";
-import {
-  useIntervenorsListener,
-  SSEMessage,
-} from "../hooks/useIntervenorsListener";
-import { occurrenceInfoRepo } from "../infrastructure/OccurrenceInfoPreferencesRepo";
-import { intervenorInfoRepo } from "../infrastructure/IntervenorInfoPreferencesRepo";
-import { useNetworkStatus } from "../hooks/useNetworkStatus";
-import { offlineIntervenorQueueRepo } from "../infrastructure/offline/OfflineIntervenorQueueRepo";
-import id from "../app/(dashboard)/intervenors/[id]";
+import { intervenorInfoRepo } from "@infrastructure/IntervenorInfoPreferencesRepo";
+import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
+import { offlineIntervenorQueueRepo } from "@infrastructure/offline/OfflineIntervenorQueueRepo";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "../hooks/useAuth";
-import { useSyncSSE } from "../hooks/useSyncSSE";
-import { documentsInfoRepo } from "../infrastructure/DocumentsInfoPreferencesRepo";
-import { Evidence } from "@commons/models/evidence/Evidence";
+import { useAuth } from "@hooks/data/useAuth";
+import { useSyncSSE } from "@hooks/sync/useSyncSSE";
 
 type IntervenorContextValue = {
   createIntervenor: (

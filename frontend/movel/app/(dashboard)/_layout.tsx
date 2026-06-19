@@ -1,14 +1,11 @@
 import {
-  StatusBar,
   StyleSheet,
-  Text,
   useColorScheme,
-  View,
 } from "react-native";
-import { Stack, Tabs, useRouter } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { Colors } from "@commons/constants/Colors";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import UserOnly from "../../components/auth/UserOnly";
+import UserOnly from "@components/auth/UserOnly";
 import "../../i18next/i18next";
 import { useTranslation } from "react-i18next";
 

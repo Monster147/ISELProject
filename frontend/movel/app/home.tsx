@@ -1,13 +1,13 @@
 import { StyleSheet, Image } from "react-native";
-import { Link, Redirect } from "expo-router";
+import { Link } from "expo-router";
 import Logo from "@commons/img/isel.png";
 import AppLogo from "@commons/img/logo.png";
-import ThemedView from "../components/ThemedView";
-import Spacer from "../../commons/components/Spacer";
-import ThemedText from "../../commons/components/ThemedText";
-import { useAlertExitApp } from "../hooks/useAlertExitApp";
+import ThemedView from "@components/ThemedView";
+import Spacer from "@commons/components/Spacer";
+import ThemedText from "@commons/components/ThemedText";
+import { useAlertExitApp } from "@hooks/system/useAlertExitApp";
 import { useTranslation } from "react-i18next";
-import OfflineBanner from "../components/ThemedOfflineBanner";
+import OfflineBanner from "@components/ThemedOfflineBanner";
 
 const Home = () => {
   const { t } = useTranslation();

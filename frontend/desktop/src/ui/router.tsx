@@ -1,26 +1,24 @@
 import { createBrowserRouter } from "react-router";
-import Home from "./components/Home";
-import Login from "./components/(auth)/Login";
-import Register from "./components/(auth)/Register";
-import AuthLayout from "./components/(auth)/authLayout";
-import RootLayout from "./components/rootLayout";
-import DashboardLayout from "./components/(dashboard)/dashboardLayout";
-import Intervenor from "./components/(dashboard)/intervenor";
-import IntervenorSearch from "./components/(dashboard)/intervenor";
-import Profile from "./components/(dashboard)/profile";
-import Occurrence from "./components/(dashboard)/occurrence";
-import OccurrenceDetails from "./components/(dashboard)/occurrences/[id]";
-import OccurrenceIntervenors from "./components/(dashboard)/occurrences/intervenors/[id]";
-import IntervenorCreate from "./components/(dashboard)/intervenors/create";
-import IntervenorUpdate from "./components/(dashboard)/intervenors/update";
+import Home from "./app/Home";
+import Login from "./app/(auth)/Login";
+import Register from "./app/(auth)/Register";
+import AuthLayout from "./app/(auth)/authLayout";
+import RootLayout from "./app/rootLayout";
+import DashboardLayout from "./app/(dashboard)/dashboardLayout";
+import IntervenorSearch from "./app/(dashboard)/intervenor";
+import Profile from "./app/(dashboard)/profile";
+import OccurrenceDetails from "./app/(dashboard)/occurrences/[id]";
+import OccurrenceIntervenors from "./app/(dashboard)/occurrences/intervenors/[id]";
+import IntervenorCreate from "./app/(dashboard)/intervenors/create";
+import IntervenorUpdate from "./app/(dashboard)/intervenors/update";
 import "../../i18next/i18next";
-import "./utils/ConfigureApiDesktop";
-import Loadingscreen from "./components/loadingscreen";
-import Documents from "./components/(dashboard)/documents";
-import DynamicOccurrenceForm from "./components/(dashboard)/occurrences/evidences/[id]";
-import Dashboard from "./components/(dashboard)/dashboard";
-import OccurrenceScreen from "./components/(dashboard)/occurrence";
-import OccurrenceReport from "./components/(dashboard)/occurrences/report/[id]";
+import "@utils/ConfigureApiDesktop";
+import Loadingscreen from "./app/loadingscreen";
+import Documents from "./app/(dashboard)/documents";
+import DynamicOccurrenceForm from "./app/(dashboard)/occurrences/evidences/[id]";
+import Dashboard from "./app/(dashboard)/dashboard";
+import OccurrenceScreen from "./app/(dashboard)/occurrence";
+import OccurrenceReport from "./app/(dashboard)/occurrences/report/[id]";
 
 export const router = createBrowserRouter([
   {

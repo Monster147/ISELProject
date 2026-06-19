@@ -17,7 +17,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@commons/*": ["../commons/*"]
+      "@commons/*": ["../commons/*"],
+      "@components/*": ["./components/*"],
+      "@contexts/*": ["./contexts/*"],
+      "@hooks/*": ["./hooks/*"],
+      "@infrastructure/*": ["./infrastructure/*"],
+      "@utils/*": ["./utils/*"]
     }
   },
   "include": ["src"],

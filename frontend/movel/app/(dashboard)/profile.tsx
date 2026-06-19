@@ -1,16 +1,15 @@
-import { StyleSheet, Text } from "react-native";
-import ThemedText from "../../../commons/components/ThemedText";
-import ThemedView from "../../components/ThemedView";
-import Spacer from "../../../commons/components/Spacer";
-import { useAuth } from "../../hooks/useAuth";
-import ThemedButton from "../../../commons/components/ThemedButton";
-import { router } from "expo-router";
+import { StyleSheet } from "react-native";
+import ThemedText from "@commons/components/ThemedText";
+import ThemedView from "@components/ThemedView";
+import Spacer from "@commons/components/Spacer";
+import { useAuth } from "@hooks/data/useAuth";
+import ThemedButton from "@commons/components/ThemedButton";
 import React from "react";
-import { useAlertExitApp } from "../../hooks/useAlertExitApp";
+import { useAlertExitApp } from "@hooks/system/useAlertExitApp";
 import { useTranslation } from "react-i18next";
-import { confirmAction } from "../../utils/confirmAction";
+import { confirmAction } from "@hooks/system/confirmAction";
 import { Colors } from "@commons/constants/Colors";
-import OfflineBanner from "../../components/ThemedOfflineBanner";
+import OfflineBanner from "@components/ThemedOfflineBanner";
 
 const Profile = () => {
   const { t } = useTranslation();

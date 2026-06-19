@@ -1,22 +1,19 @@
 import { useTranslation } from "react-i18next";
-import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Dropdown } from "react-native-paper-dropdown";
 import * as ImagePicker from "expo-image-picker";
 import { pick } from "@react-native-documents/picker";
-import * as Sharing from "expo-sharing";
-
-import ThemedView from "../../../../components/ThemedView";
-import ThemedText from "../../../../../commons/components/ThemedText";
-import ThemedButton from "../../../../../commons/components/ThemedButton";
-import ThemedDateInput from "../../../../components/ThemedDateInput";
-import ThemedTextInput from "../../../../../commons/components/ThemedTextInput";
+import ThemedView from "@components/ThemedView";
+import ThemedText from "@commons/components/ThemedText";
+import ThemedButton from "@commons/components/ThemedButton";
+import ThemedDateInput from "@components/ThemedDateInput";
+import ThemedTextInput from "@commons/components/ThemedTextInput";
 
 import { Colors } from "@commons/constants/Colors";
-import ThemedFileInput from "../../../../components/ThemedFileInput";
-import { useState } from "react";
-import { confirmAction } from "../../../../utils/confirmAction";
+import ThemedFileInput from "@components/ThemedFileInput";
+import { confirmAction } from "@hooks/system/confirmAction";
 import { getLabelByLanguage } from "@commons/utils/getLabelByLanguage";
-import { useNetworkStatus } from "../../../../hooks/useNetworkStatus";
+import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
 
 const FieldRenderer = ({
   field,

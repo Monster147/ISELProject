@@ -1,4 +1,3 @@
-import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { OccurrenceType } from "@commons/models/occurrence/OccurrenceType";
 import { Json } from "@commons/models/utils/Json";

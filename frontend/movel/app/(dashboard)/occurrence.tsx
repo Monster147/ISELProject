@@ -1,23 +1,21 @@
 import { FlatList, Pressable, StyleSheet, useColorScheme } from "react-native";
-import ThemedText from "../../../commons/components/ThemedText";
-import ThemedView from "../../components/ThemedView";
-import Spacer from "../../../commons/components/Spacer";
-import { useOccurrence } from "../../hooks/useOccurrence";
-import { useAuth } from "../../hooks/useAuth";
-import React, { useEffect, useState } from "react";
+import ThemedText from "@commons/components/ThemedText";
+import ThemedView from "@components/ThemedView";
+import Spacer from "@commons/components/Spacer";
+import { useOccurrence } from "@hooks/data/useOccurrence";
+import React, { useState } from "react";
 import { Colors } from "@commons/constants/Colors";
-import ThemedCard from "../../../commons/components/ThemedCard";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useAlertExitApp } from "../../hooks/useAlertExitApp";
+import ThemedCard from "@commons/components/ThemedCard";
+import { useRouter } from "expo-router";
+import { useAlertExitApp } from "@hooks/system/useAlertExitApp";
 import { useTranslation } from "react-i18next";
-import ThemedLoader from "../../components/ThemedLoader";
+import ThemedLoader from "@components/ThemedLoader";
 import dateFormater from "@commons/utils/dateFormater";
 import { Occurrence } from "@commons/models/occurrence/Occurrence";
 import { OccurrenceType } from "@commons/models/occurrence/OccurrenceType";
-import ThemedFilterButton from "../../components/ThemedFilterButton";
-import ThemedTextInput from "../../../commons/components/ThemedTextInput";
-import ThemedDateInput from "../../components/ThemedDateInput";
-import OfflineBanner from "../../components/ThemedOfflineBanner";
+import ThemedFilterButton from "@components/ThemedFilterButton";
+import ThemedDateInput from "@components/ThemedDateInput";
+import OfflineBanner from "@components/ThemedOfflineBanner";
 
 const OccurrenceScreen = () => {
   const { t } = useTranslation();

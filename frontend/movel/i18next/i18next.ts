@@ -1,7 +1,6 @@
 import i18n from "i18next";
-import { useTranslation, initReactI18next } from "react-i18next";
+import { initReactI18next } from "react-i18next";
 import { getLocales } from "expo-localization";
-import { I18nManager } from "react-native";
 import en from "@commons/i18next/locales/en";
 import pt from "@commons/i18next/locales/pt";
 import es from "@commons/i18next/locales/es";

@@ -1,13 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { View, Text, Image, StyleSheet, Animated, Easing } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Image, StyleSheet, Animated, Easing } from "react-native";
 import { Redirect } from "expo-router";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "@hooks/data/useAuth";
 import Logo from "@commons/img/isel.png";
 import AppLogo from "@commons/img/logo.png";
-import ThemedView from "../components/ThemedView";
-import ThemedText from "../../commons/components/ThemedText";
-import Spacer from "../../commons/components/Spacer";
-import Home from "./home";
+import ThemedView from "@components/ThemedView";
+import ThemedText from "@commons/components/ThemedText";
+import Spacer from "@commons/components/Spacer";
 import { useTranslation } from "react-i18next";
 
 const DURATION_MS = 4000;

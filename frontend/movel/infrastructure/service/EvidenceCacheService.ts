@@ -1,5 +1,4 @@
 import ReactNativeBlobUtil from "react-native-blob-util";
-import { log } from "../../utils/ConfigureApiMobile";
 
 export class EvidenceCacheService {
   private CACHE_DIR = `${ReactNativeBlobUtil.fs.dirs.CacheDir}/evidence-cache`;

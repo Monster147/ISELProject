@@ -1,10 +1,10 @@
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useState } from "react";
 import {
   useListenAllListener,
   SSEMessage,
-} from "../hooks/useListenAllListener";
-import { useNetworkStatus } from "../hooks/useNetworkStatus";
-import { useAuth } from "../hooks/useAuth";
+} from "@hooks/listeners/useListenAllListener";
+import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
+import { useAuth } from "@hooks/data/useAuth";
 
 type SyncSSEContextValue = {
   lastEvent?: SSEMessage;

@@ -1,26 +1,23 @@
 import {
-  Animated,
   StyleSheet,
-  ScrollView,
   FlatList,
-  View,
   Text,
 } from "react-native";
-import ThemedView from "../../../../components/ThemedView";
+import ThemedView from "@components/ThemedView";
 import { Colors } from "@commons/constants/Colors";
-import ThemedText from "../../../../../commons/components/ThemedText";
+import ThemedText from "@commons/components/ThemedText";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useOccurrence } from "../../../../hooks/useOccurrence";
-import ThemedCard from "../../../../../commons/components/ThemedCard";
-import ThemedLoader from "../../../../components/ThemedLoader";
-import ThemedButton from "../../../../../commons/components/ThemedButton";
-import { useBackRedirect } from "../../../../hooks/useBackRedirect";
-import { useIntervenor } from "../../../../hooks/useIntervenor";
-import Spacer from "../../../../../commons/components/Spacer";
+import { useOccurrence } from "@hooks/data/useOccurrence";
+import ThemedCard from "@commons/components/ThemedCard";
+import ThemedLoader from "@components/ThemedLoader";
+import ThemedButton from "@commons/components/ThemedButton";
+import { useBackRedirect } from "@hooks/system/useBackRedirect";
+import { useIntervenor } from "@hooks/data/useIntervenor";
+import Spacer from "@commons/components/Spacer";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { confirmAction } from "../../../../utils/confirmAction";
-import OfflineBanner from "../../../../components/ThemedOfflineBanner";
+import { confirmAction } from "@hooks/system/confirmAction";
+import OfflineBanner from "@components/ThemedOfflineBanner";
 
 const OccurrenceIntervenors = () => {
   const { t } = useTranslation();

@@ -1,8 +1,8 @@
 import { View, StyleSheet } from "react-native";
 import { useColorScheme } from "react-native";
 import { Colors } from "@commons/constants/Colors";
-import ThemedText from "../../commons/components/ThemedText";
-import { useNetworkStatus } from "../hooks/useNetworkStatus";
+import ThemedText from "@commons/components/ThemedText";
+import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
 import { useTranslation } from "react-i18next";
 
 const OfflineBanner = () => {

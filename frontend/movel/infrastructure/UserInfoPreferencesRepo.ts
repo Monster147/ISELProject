@@ -1,11 +1,4 @@
-/*
-import { MMKV } from 'react-native-mmkv'
-
-const storage = new MMKV()
-*/
-import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { User } from "../../commons/models/user/User";
 
 export interface UserInfo {
   id: number;

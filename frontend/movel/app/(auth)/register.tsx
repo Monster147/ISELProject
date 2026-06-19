@@ -4,16 +4,16 @@ import {
   Text,
   TouchableWithoutFeedback,
 } from "react-native";
-import ThemedView from "../../components/ThemedView";
-import ThemedText from "../../../commons/components/ThemedText";
-import Spacer from "../../../commons/components/Spacer";
+import ThemedView from "@components/ThemedView";
+import ThemedText from "@commons/components/ThemedText";
+import Spacer from "@commons/components/Spacer";
 import { Link, router } from "expo-router";
-import ThemedButton from "../../../commons/components/ThemedButton";
-import ThemedTextInput from "../../../commons/components/ThemedTextInput";
+import ThemedButton from "@commons/components/ThemedButton";
+import ThemedTextInput from "@commons/components/ThemedTextInput";
 import { useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "@hooks/data/useAuth";
 import { Colors } from "@commons/constants/Colors";
-import { useBackRedirect } from "../../hooks/useBackRedirect";
+import { useBackRedirect } from "@hooks/system/useBackRedirect";
 import { useTranslation } from "react-i18next";
 
 const Register = () => {

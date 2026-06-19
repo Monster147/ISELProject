@@ -1,5 +1,5 @@
 import { configureApi } from "@commons/api/api";
-import { authInfoRepo } from "../infrastructure/AuthInfoPreferencesRepo";
+import { authInfoRepo } from "@infrastructure/AuthInfoPreferencesRepo";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import { Platform, Alert } from "react-native";
 import { getExtensionFromMime } from "./ConfigureApiMobileUtils";

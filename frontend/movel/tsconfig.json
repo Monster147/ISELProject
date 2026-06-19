@@ -3,7 +3,12 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@commons/*": ["../commons/*"]
+      "@commons/*": ["../commons/*"],
+      "@components/*": ["./components/*"],
+      "@contexts/*": ["./contexts/*"],
+      "@hooks/*": ["./hooks/*"],
+      "@infrastructure/*": ["./infrastructure/*"],
+      "@utils/*": ["./utils/*"]
     }
   }
 }

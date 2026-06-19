@@ -1,19 +1,19 @@
-import { StyleSheet, Text, useColorScheme, View } from "react-native";
+import { StyleSheet, useColorScheme } from "react-native";
 import { Stack } from "expo-router";
 import { Colors } from "@commons/constants/Colors";
-import { AuthProvider } from "../contexts/AuthContext";
-import ThemedView from "../components/ThemedView";
-import { OccurrenceProvider } from "../contexts/OccurrenceContext";
-import { IntervenorProvider } from "../contexts/IntervenorContext";
+import { AuthProvider } from "@contexts/AuthContext";
+import ThemedView from "@components/ThemedView";
+import { OccurrenceProvider } from "@contexts/OccurrenceContext";
+import { IntervenorProvider } from "@contexts/IntervenorContext";
 import "../i18next/i18next";
-import "../utils/ConfigureApiMobile";
-import "../hooks/useNetworkStatus";
-import { DocumentProvider } from "../contexts/DocumentContext";
-import { TypeProvider } from "../contexts/TypeContext";
-import { EvidenceProvider } from "../contexts/EvidenceContext";
-import { StatsProvider } from "../contexts/StatsContext";
-import { OfflineSyncProvider } from "../contexts/OfflineSyncContext";
-import { SyncSSEProvider } from "../contexts/SyncSSEContext";
+import "@utils/ConfigureApiMobile";
+import "@hooks/system/useNetworkStatus";
+import { DocumentProvider } from "@contexts/DocumentContext";
+import { TypeProvider } from "@contexts/TypeContext";
+import { EvidenceProvider } from "@contexts/EvidenceContext";
+import { StatsProvider } from "@contexts/StatsContext";
+import { OfflineSyncProvider } from "@contexts/OfflineSyncContext";
+import { SyncSSEProvider } from "@contexts/SyncSSEContext";
 
 const RootLayout = () => {
   const colorScheme = useColorScheme();
