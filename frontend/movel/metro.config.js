@@ -3,7 +3,7 @@ const path = require("path");
 module.exports = {
   resolver: {
     extraNodeModules: {
-      "@common": path.resolve(__dirname, "../commons"),
+      "@commons": path.resolve(__dirname, "../commons"),
       "@components" : path.resolve(__dirname, "./components"),
       "@contexts": path.resolve(__dirname, "./contexts"),
       "@hooks": path.resolve(__dirname, "./hooks"),
