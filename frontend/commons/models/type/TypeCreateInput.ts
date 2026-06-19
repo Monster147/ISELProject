@@ -1,6 +1,6 @@
-import {Json} from "../utils/Json";
+import { Json } from "../utils/Json";
 
-export interface TypeCreateInput{
-    name: string;
-    form: Json
+export interface TypeCreateInput {
+  name: string;
+  form: Json;
 }

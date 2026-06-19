@@ -1,40 +1,38 @@
-export interface UserInfo{
-    id: number;
-    name: string;
-    email: string;
-    roles: number[];
+export interface UserInfo {
+  id: number;
+  name: string;
+  email: string;
+  roles: number[];
 }
 
 export interface AuthInfo {
-    token: string
+  token: string;
 }
 
 export interface AuthInfoRepo {
+  saveAuthInfo(authInfo: AuthInfo): Promise<void>;
 
-    saveAuthInfo(authInfo: AuthInfo): Promise<void>
+  getAuthInfo(): Promise<AuthInfo | null>;
 
-    getAuthInfo(): Promise<AuthInfo | null>
-
-    clearAuthInfo(): Promise<void>
+  clearAuthInfo(): Promise<void>;
 }
 
 export class AuthInfoPreferencesRepo implements AuthInfoRepo {
+  private TOKEN_KEY = "token";
 
-    private TOKEN_KEY = "token"
+  async saveAuthInfo(authInfo: AuthInfo) {
+    localStorage.setItem(this.TOKEN_KEY, authInfo.token);
+  }
 
-    async saveAuthInfo(authInfo: AuthInfo) {
-        localStorage.setItem(this.TOKEN_KEY, authInfo.token)
-    }
+  async getAuthInfo() {
+    const token = localStorage.getItem(this.TOKEN_KEY);
+    if (!token) return null;
+    return { token };
+  }
 
-    async getAuthInfo() {
-        const token = localStorage.getItem(this.TOKEN_KEY)
-        if (!token) return null
-        return {token}
-    }
-
-    async clearAuthInfo() {
-        localStorage.removeItem(this.TOKEN_KEY)
-    }
+  async clearAuthInfo() {
+    localStorage.removeItem(this.TOKEN_KEY);
+  }
 }
 
-export const authInfoRepo = new AuthInfoPreferencesRepo()
+export const authInfoRepo = new AuthInfoPreferencesRepo();

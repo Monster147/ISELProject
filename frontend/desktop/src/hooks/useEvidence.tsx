@@ -1,10 +1,10 @@
-import {useContext} from "react";
-import {EvidenceContext} from "../ui/contexts/EvidenceContext";
+import { useContext } from "react";
+import { EvidenceContext } from "../ui/contexts/EvidenceContext";
 
-export function useEvidence(){
-    const context = useContext(EvidenceContext)
-    if (!context) {
-        throw new Error("useEvidence must be used within EvidenceProvider");
-    }
-    return context;
+export function useEvidence() {
+  const context = useContext(EvidenceContext);
+  if (!context) {
+    throw new Error("useEvidence must be used within EvidenceProvider");
+  }
+  return context;
 }

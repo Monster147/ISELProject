@@ -1,21 +1,21 @@
-import {useCallback, useEffect} from 'react'
-import { BackHandler } from 'react-native'
-import {router, useFocusEffect} from 'expo-router'
+import { useCallback, useEffect } from "react";
+import { BackHandler } from "react-native";
+import { router, useFocusEffect } from "expo-router";
 
 export function useBackRedirect(action: () => void) {
-    useFocusEffect(
-        useCallback(() => {
-            const backAction = () => {
-                action()
-                return true
-            }
+  useFocusEffect(
+    useCallback(() => {
+      const backAction = () => {
+        action();
+        return true;
+      };
 
-            const backHandler = BackHandler.addEventListener(
-                'hardwareBackPress',
-                backAction
-            )
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction,
+      );
 
-            return () => backHandler.remove()
-        }, [action])
-    )
+      return () => backHandler.remove();
+    }, [action]),
+  );
 }

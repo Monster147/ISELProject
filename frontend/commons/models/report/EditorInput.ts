@@ -1,3 +1,3 @@
-export interface EditorInput{
-    editorId:number
+export interface EditorInput {
+  editorId: number;
 }

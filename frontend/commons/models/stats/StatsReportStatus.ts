@@ -1,7 +1,7 @@
-import {ReportStatus} from "../report/ReportStatus";
+import { ReportStatus } from "../report/ReportStatus";
 
-export interface StatsReportStatus{
-    status: ReportStatus;
-    count: number;
-    percentage: number;
+export interface StatsReportStatus {
+  status: ReportStatus;
+  count: number;
+  percentage: number;
 }

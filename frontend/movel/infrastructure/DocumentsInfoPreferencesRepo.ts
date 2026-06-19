@@ -1,41 +1,42 @@
-import * as SecureStore from 'expo-secure-store'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import {OccurrenceType} from "@commons/models/occurrence/OccurrenceType";
-import {Json} from "@commons/models/utils/Json";
+import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { OccurrenceType } from "@commons/models/occurrence/OccurrenceType";
+import { Json } from "@commons/models/utils/Json";
 
-export interface DocumentsInfo{
-    id:number;
-    name:string;
-    type:string;
-    filepath:string;
+export interface DocumentsInfo {
+  id: number;
+  name: string;
+  type: string;
+  filepath: string;
 }
 
 export interface DocumentsInfoRepo {
+  saveDocumentsInfo(intervenorInfo: DocumentsInfo[]): Promise<void>;
 
-    saveDocumentsInfo(intervenorInfo: DocumentsInfo[]): Promise<void>
+  getDocumentsInfo(): Promise<DocumentsInfo[] | null>;
 
-    getDocumentsInfo(): Promise<DocumentsInfo[] | null>
-
-    clearDocumentsInfo(): Promise<void>
+  clearDocumentsInfo(): Promise<void>;
 }
 
 export class DocumentsInfoPreferencesRepo implements DocumentsInfoRepo {
+  private DOCUMENTS_KEY = "documents";
 
-    private DOCUMENTS_KEY = "documents"
+  async saveDocumentsInfo(intervenorInfo: DocumentsInfo[]): Promise<void> {
+    await AsyncStorage.setItem(
+      this.DOCUMENTS_KEY,
+      JSON.stringify(intervenorInfo),
+    );
+  }
 
-    async saveDocumentsInfo(intervenorInfo: DocumentsInfo[]): Promise<void> {
-        await AsyncStorage.setItem(this.DOCUMENTS_KEY, JSON.stringify(intervenorInfo))
-    }
+  async getDocumentsInfo(): Promise<DocumentsInfo[] | null> {
+    const documents = await AsyncStorage.getItem(this.DOCUMENTS_KEY);
+    if (!documents) return null;
+    return JSON.parse(documents) as DocumentsInfo[];
+  }
 
-    async getDocumentsInfo(): Promise<DocumentsInfo[] | null> {
-        const documents = await AsyncStorage.getItem(this.DOCUMENTS_KEY)
-        if (!documents) return null
-        return JSON.parse(documents) as DocumentsInfo[]
-    }
-
-    async clearDocumentsInfo(): Promise<void> {
-        await  AsyncStorage.removeItem(this.DOCUMENTS_KEY)
-    }
+  async clearDocumentsInfo(): Promise<void> {
+    await AsyncStorage.removeItem(this.DOCUMENTS_KEY);
+  }
 }
 
-export const documentsInfoRepo = new DocumentsInfoPreferencesRepo()
+export const documentsInfoRepo = new DocumentsInfoPreferencesRepo();

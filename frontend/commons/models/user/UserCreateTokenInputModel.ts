@@ -1,4 +1,4 @@
-export interface UserCreateTokenInputModel{
-    email: string;
-    password: string;
+export interface UserCreateTokenInputModel {
+  email: string;
+  password: string;
 }

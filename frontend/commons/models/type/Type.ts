@@ -1,7 +1,7 @@
-import {Json} from "../utils/Json";
+import { Json } from "../utils/Json";
 
-export interface Type{
-    id: number;
-    name: string;
-    form: Json
+export interface Type {
+  id: number;
+  name: string;
+  form: Json;
 }

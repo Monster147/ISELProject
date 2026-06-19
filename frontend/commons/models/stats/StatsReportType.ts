@@ -1,5 +1,5 @@
-export interface StatsReportType{
-    type: number;
-    count: number;
-    percentage: number;
+export interface StatsReportType {
+  type: number;
+  count: number;
+  percentage: number;
 }

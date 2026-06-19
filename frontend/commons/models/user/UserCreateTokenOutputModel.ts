@@ -1,3 +1,3 @@
-export interface UserCreateTokenOutputModel{
-    token: string;
+export interface UserCreateTokenOutputModel {
+  token: string;
 }

@@ -1,3 +1,3 @@
-export interface StatusInput{
-    newStatus:string
+export interface StatusInput {
+  newStatus: string;
 }

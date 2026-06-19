@@ -1,10 +1,10 @@
-import {useContext} from "react";
-import {OccurrenceContext} from "../contexts/OccurrenceContext";
+import { useContext } from "react";
+import { OccurrenceContext } from "../contexts/OccurrenceContext";
 
-export function useOccurrence(){
-    const context = useContext(OccurrenceContext)
-    if (!context) {
-        throw new Error("useOccurrence must be used within OccurrenceProvider");
-    }
-    return context;
+export function useOccurrence() {
+  const context = useContext(OccurrenceContext);
+  if (!context) {
+    throw new Error("useOccurrence must be used within OccurrenceProvider");
+  }
+  return context;
 }

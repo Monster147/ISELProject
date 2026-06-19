@@ -1,7 +1,7 @@
-import {OccurrenceType} from "../occurrence/OccurrenceType";
+import { OccurrenceType } from "../occurrence/OccurrenceType";
 
-export interface StatsOccurrenceImportance{
-    importance: OccurrenceType;
-    count: number;
-    percentage: number;
+export interface StatsOccurrenceImportance {
+  importance: OccurrenceType;
+  count: number;
+  percentage: number;
 }

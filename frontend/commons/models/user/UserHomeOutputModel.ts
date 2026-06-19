@@ -1,6 +1,6 @@
-export interface UserHomeOutputModel{
-    id: number;
-    name: string;
-    email: string;
-    roles: number[];
+export interface UserHomeOutputModel {
+  id: number;
+  name: string;
+  email: string;
+  roles: number[];
 }

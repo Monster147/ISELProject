@@ -1,4 +1,4 @@
-import {createBrowserRouter} from "react-router";
+import { createBrowserRouter } from "react-router";
 import Home from "./components/Home";
 import Login from "./components/(auth)/Login";
 import Register from "./components/(auth)/Register";
@@ -14,44 +14,59 @@ import OccurrenceIntervenors from "./components/(dashboard)/occurrences/interven
 import IntervenorCreate from "./components/(dashboard)/intervenors/create";
 import IntervenorUpdate from "./components/(dashboard)/intervenors/update";
 import "../../i18next/i18next";
-import "./utils/ConfigureApiDesktop"
+import "./utils/ConfigureApiDesktop";
 import Loadingscreen from "./components/loadingscreen";
 import Documents from "./components/(dashboard)/documents";
-import DynamicOccurrenceForm  from "./components/(dashboard)/occurrences/evidences/[id]";
+import DynamicOccurrenceForm from "./components/(dashboard)/occurrences/evidences/[id]";
 import Dashboard from "./components/(dashboard)/dashboard";
 import OccurrenceScreen from "./components/(dashboard)/occurrence";
 import OccurrenceReport from "./components/(dashboard)/occurrences/report/[id]";
 
 export const router = createBrowserRouter([
-    {
-        element: <RootLayout/>,
+  {
+    element: <RootLayout />,
+    children: [
+      { path: "/", element: <Loadingscreen /> },
+      { path: "/home", element: <Home /> },
+      {
+        element: <AuthLayout />,
         children: [
-            {path:"/", element: <Loadingscreen/>},
-            {path: "/home", element: <Home/>},
-            {
-                element: <AuthLayout/>,
-                children: [
-                    {path: "/login", element: <Login/>},
-                    {path: "/register", element: <Register/>},
-                ],
-            },
-            {
-                element: <DashboardLayout/>,
-                children: [
-                    {path: "/intervenor", element: <IntervenorSearch/>},
-                    {path: "/profile", element: <Profile/>},
-                    {path: "/occurrence", element: <OccurrenceScreen/>},
-                    {path: "/documents", element: <Documents/>},
-                    {path: "/occurrence/:id", element: <OccurrenceDetails/>},
-                    {path: "/occurrence/intervenors/:occurrenceId", element: <OccurrenceIntervenors/>},
-                    {path: "/intervenor/create", element: <IntervenorCreate/>},
-                    {path: "/intervenor/update/:intervenorId", element: <IntervenorUpdate/>},
-                    {path: "/intervenor/:selectMode/:occurrenceId", element: <IntervenorSearch/>},
-                    {path: "/occurrence/evidences/:occurrenceId", element: <DynamicOccurrenceForm/>},
-                    {path: "/dashboard", element: <Dashboard/> },
-                    {path: "occurrence/report/:occurrenceId", element: <OccurrenceReport/>}
-                ]
-            },
+          { path: "/login", element: <Login /> },
+          { path: "/register", element: <Register /> },
         ],
-    },
+      },
+      {
+        element: <DashboardLayout />,
+        children: [
+          { path: "/intervenor", element: <IntervenorSearch /> },
+          { path: "/profile", element: <Profile /> },
+          { path: "/occurrence", element: <OccurrenceScreen /> },
+          { path: "/documents", element: <Documents /> },
+          { path: "/occurrence/:id", element: <OccurrenceDetails /> },
+          {
+            path: "/occurrence/intervenors/:occurrenceId",
+            element: <OccurrenceIntervenors />,
+          },
+          { path: "/intervenor/create", element: <IntervenorCreate /> },
+          {
+            path: "/intervenor/update/:intervenorId",
+            element: <IntervenorUpdate />,
+          },
+          {
+            path: "/intervenor/:selectMode/:occurrenceId",
+            element: <IntervenorSearch />,
+          },
+          {
+            path: "/occurrence/evidences/:occurrenceId",
+            element: <DynamicOccurrenceForm />,
+          },
+          { path: "/dashboard", element: <Dashboard /> },
+          {
+            path: "occurrence/report/:occurrenceId",
+            element: <OccurrenceReport />,
+          },
+        ],
+      },
+    ],
+  },
 ]);

@@ -1,7 +1,7 @@
-import {FormField} from "./FormField";
+import { FormField } from "./FormField";
 
 export interface FormSection {
-    title: string;
-    fields: FormField[];
-    repeatFor?: string;
+  title: string;
+  fields: FormField[];
+  repeatFor?: string;
 }

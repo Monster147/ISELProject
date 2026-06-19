@@ -1,3 +1,3 @@
 export interface IntervenorIdInput {
-    intervenorId: number;
+  intervenorId: number;
 }

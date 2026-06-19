@@ -1,6 +1,6 @@
-import {FormSection} from "./FormSection";
+import { FormSection } from "./FormSection";
 
 export interface OccurrenceTypeForm {
-    type: string;
-    sections: FormSection[];
+  type: string;
+  sections: FormSection[];
 }

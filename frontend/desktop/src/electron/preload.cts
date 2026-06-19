@@ -1,5 +1,5 @@
-const electron = require('electron');
+const electron = require("electron");
 
-electron.contextBridge.exposeInMainWorld('electron', {
-    getStaticData: () => console.log('getStaticData'),
-})
+electron.contextBridge.exposeInMainWorld("electron", {
+  getStaticData: () => console.log("getStaticData"),
+});

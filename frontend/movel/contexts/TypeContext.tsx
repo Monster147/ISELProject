@@ -1,55 +1,57 @@
-import {createContext, useCallback, useEffect, useState} from "react";
-import {Type} from "@commons/models/type/Type";
-import {api} from "@commons/api/api";
-import {useAuth} from "../hooks/useAuth";
-import {useTypesListener, SSEMessage} from "../hooks/useTypesListener";
-import {intervenorInfoRepo} from "../infrastructure/IntervenorInfoPreferencesRepo";
-import {typeInfoRepo} from "../infrastructure/TypeInfopreferencesRepo";
-import {useNetworkStatus} from "../hooks/useNetworkStatus";
-import {documentsInfoRepo} from "../infrastructure/DocumentsInfoPreferencesRepo";
-import {useSyncSSE} from "../hooks/useSyncSSE";
-import {Occurrence} from "@commons/models/occurrence/Occurrence";
+import { createContext, useCallback, useEffect, useState } from "react";
+import { Type } from "@commons/models/type/Type";
+import { api } from "@commons/api/api";
+import { useAuth } from "../hooks/useAuth";
+import { useTypesListener, SSEMessage } from "../hooks/useTypesListener";
+import { intervenorInfoRepo } from "../infrastructure/IntervenorInfoPreferencesRepo";
+import { typeInfoRepo } from "../infrastructure/TypeInfopreferencesRepo";
+import { useNetworkStatus } from "../hooks/useNetworkStatus";
+import { documentsInfoRepo } from "../infrastructure/DocumentsInfoPreferencesRepo";
+import { useSyncSSE } from "../hooks/useSyncSSE";
+import { Occurrence } from "@commons/models/occurrence/Occurrence";
 
-type TypeContextValue={
-    type: Type[]
-    findAllTypes: ()=>Promise<any>
-    loading: boolean
-}
+type TypeContextValue = {
+  type: Type[];
+  findAllTypes: () => Promise<any>;
+  loading: boolean;
+};
 
-export const TypeContext = createContext<TypeContextValue | undefined>(undefined)
+export const TypeContext = createContext<TypeContextValue | undefined>(
+  undefined,
+);
 
-export const TypeProvider = ({children})=> {
-    const [type, setType]= useState<Type[]>([])
-    const {user}= useAuth()
-    const [loading, setLoading] = useState(false)
-    const { isOnline, shouldResetListeners } = useNetworkStatus()
-    const {lastEvent} = useSyncSSE();
+export const TypeProvider = ({ children }) => {
+  const [type, setType] = useState<Type[]>([]);
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const { isOnline, shouldResetListeners } = useNetworkStatus();
+  const { lastEvent } = useSyncSSE();
 
-    useEffect(() => {
-        if (user) {
-            if (isOnline) {
-                findAllTypes()
-            } else {
-                loadCachedTypes()
-            }
-        }
-    }, [user, isOnline]);
+  useEffect(() => {
+    if (user) {
+      if (isOnline) {
+        findAllTypes();
+      } else {
+        loadCachedTypes();
+      }
+    }
+  }, [user, isOnline]);
 
-    useEffect(() => {
-        const handleTypesChanged = async () => {
-            if (!lastEvent) return
-            if (lastEvent?.action === "TypesChanged") {
-                const value = lastEvent.data
-                const types: Type[] = Array.isArray(value) ? value : [];
-                setType(types)
-                await typeInfoRepo.saveTypeInfo(types)
-            }
-        }
+  useEffect(() => {
+    const handleTypesChanged = async () => {
+      if (!lastEvent) return;
+      if (lastEvent?.action === "TypesChanged") {
+        const value = lastEvent.data;
+        const types: Type[] = Array.isArray(value) ? value : [];
+        setType(types);
+        await typeInfoRepo.saveTypeInfo(types);
+      }
+    };
 
-        handleTypesChanged()
-    }, [lastEvent])
+    handleTypesChanged();
+  }, [lastEvent]);
 
-    /*
+  /*
     const handleOnMessage = useCallback(async (message: SSEMessage) => {
         setLoading(true)
         const data = message.data
@@ -68,31 +70,28 @@ export const TypeProvider = ({children})=> {
     useTypesListener(user?.id,handleOnMessage, isOnline)
      */
 
-    async function findAllTypes(){
-        try {
-            const response = await api.findAllTypes()
-            setType(response)
-            await typeInfoRepo.saveTypeInfo(response)
-        }catch (err: any) {
-            loadCachedTypes()
-        }
+  async function findAllTypes() {
+    try {
+      const response = await api.findAllTypes();
+      setType(response);
+      await typeInfoRepo.saveTypeInfo(response);
+    } catch (err: any) {
+      loadCachedTypes();
     }
+  }
 
-    async function loadCachedTypes() {
-        const cached = await typeInfoRepo.getTypeInfo()
-        if (cached) {
-            setType(cached)
-        } else {
-            setType([])
-        }
+  async function loadCachedTypes() {
+    const cached = await typeInfoRepo.getTypeInfo();
+    if (cached) {
+      setType(cached);
+    } else {
+      setType([]);
     }
+  }
 
-
-    return(
-        <TypeContext.Provider value={{type, findAllTypes, loading}}>
-            {children}
-        </TypeContext.Provider>
-    )
-
-
-}
+  return (
+    <TypeContext.Provider value={{ type, findAllTypes, loading }}>
+      {children}
+    </TypeContext.Provider>
+  );
+};
