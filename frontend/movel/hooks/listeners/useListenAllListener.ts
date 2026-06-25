@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import EventSource from "react-native-sse";
 import { API_URL } from "@commons/constants/apiurl";
-import { log } from "./useDocumentsListener";
 
 export type SSEMessage =
   | { action: "IntervenorsChanged"; data: any }
@@ -28,7 +27,6 @@ export function useListenAllListener(
 
   useEffect(() => {
     if (enabled !== true || !userId) {
-      log("[SSE GERAL] disabled, skipping");
       return;
     }
 
@@ -45,16 +43,11 @@ export function useListenAllListener(
 
     const es = new EventSource(`${API_URL}/api/listen/user/${userId}`);
 
-    log("[SSE GERAL] connecting...");
-
     esRef.current = es;
     const onEvent = (event: any) => {
       try {
         const receivedMessage = JSON.parse(event.data);
         const action = receivedMessage.action;
-
-        log("[SSE GERAL] message", receivedMessage);
-        log("[SSE GERAL] action", action);
 
         if (debounceRefs.current[action]) {
           clearTimeout(debounceRefs.current[action]);
@@ -71,7 +64,6 @@ export function useListenAllListener(
     es.addEventListener("message", onEvent);
 
     es.addEventListener("error", (event) => {
-      log("[SSE GERAL] error");
       console.error("SSE Error:", event);
       for (const key in debounceRefs.current) {
         const t = debounceRefs.current[key];
@@ -88,7 +80,6 @@ export function useListenAllListener(
     });
 
     return () => {
-      log("[SSE GERAL] cleanup");
       for (const key in debounceRefs.current) {
         const t = debounceRefs.current[key];
         if (t) clearTimeout(t);

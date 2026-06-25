@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useRef } from "react";
+import { createContext, useCallback, useEffect, useMemo, useRef } from "react";
 import { api } from "@commons/api/api";
 import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
 import { offlineIntervenorQueueRepo } from "@infrastructure/offline/OfflineIntervenorQueueRepo";
@@ -50,27 +50,7 @@ export const OfflineSyncProvider = ({ children }) => {
   const isSyncingRef = useRef(false);
   const { isOnline } = useNetworkStatus();
 
-  useEffect(() => {
-    if (isOnline) {
-      syncAllOfflineQueues();
-    }
-  }, [isOnline]);
-
-  const syncAllOfflineQueues = useCallback(async () => {
-    if (isSyncingRef.current) return;
-    isSyncingRef.current = true;
-    try {
-      await syncIntervenorQueue();
-      await syncOccurrenceQueue();
-      await syncEvidenceQueue();
-    } catch (e) {
-      console.error(e);
-    } finally {
-      isSyncingRef.current = false;
-    }
-  }, []);
-
-  async function syncIntervenorQueue() {
+  const syncIntervenorQueue = useCallback(async () => {
     let queue = await offlineIntervenorQueueRepo.getQueue();
     while (queue.length > 0) {
       for (const action of queue) {
@@ -110,9 +90,9 @@ export const OfflineSyncProvider = ({ children }) => {
       }
       queue = await offlineIntervenorQueueRepo.getQueue();
     }
-  }
+  }, []);
 
-  async function syncOccurrenceQueue() {
+  const syncOccurrenceQueue = useCallback(async () => {
     let queue = await offlineOccurrenceQueueRepo.getQueue();
     while (queue.length > 0) {
       for (const action of queue) {
@@ -149,9 +129,9 @@ export const OfflineSyncProvider = ({ children }) => {
       }
       queue = await offlineOccurrenceQueueRepo.getQueue();
     }
-  }
+  }, []);
 
-  async function syncEvidenceQueue() {
+  const syncEvidenceQueue = useCallback(async () => {
     let queue = await offlineEvidenceQueueRepo.getQueue();
     while (queue.length > 0) {
       for (const action of queue) {
@@ -189,10 +169,37 @@ export const OfflineSyncProvider = ({ children }) => {
       }
       queue = await offlineEvidenceQueueRepo.getQueue();
     }
-  }
+  }, []);
+
+  const syncAllOfflineQueues = useCallback(async () => {
+    if (isSyncingRef.current) return;
+    isSyncingRef.current = true;
+    try {
+      await syncIntervenorQueue();
+      await syncOccurrenceQueue();
+      await syncEvidenceQueue();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      isSyncingRef.current = false;
+    }
+  }, [syncIntervenorQueue, syncOccurrenceQueue, syncEvidenceQueue]);
+
+  useEffect(() => {
+    if (isOnline) {
+      syncAllOfflineQueues();
+    }
+  }, [isOnline, syncAllOfflineQueues]);
+
+  const value = useMemo(
+    () => ({
+      syncAllOfflineQueues,
+    }),
+    [syncAllOfflineQueues],
+  );
 
   return (
-    <OfflineSyncContext.Provider value={{ syncAllOfflineQueues }}>
+    <OfflineSyncContext.Provider value={value}>
       {children}
     </OfflineSyncContext.Provider>
   );

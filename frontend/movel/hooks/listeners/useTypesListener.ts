@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Type } from "@commons/models/type/Type";
 import EventSource from "react-native-sse";
 import { API_URL } from "@commons/constants/apiurl";
-import { log } from "./useDocumentsListener";
 
 export type TypesUpdateAction = "TypesChanged";
 
@@ -32,7 +31,6 @@ export function useTypesListener(
 
   useEffect(() => {
     if (enabled !== true || !userId) {
-      log("[SSE Types] disabled, skipping");
       return;
     }
 
@@ -47,7 +45,6 @@ export function useTypesListener(
       esRef.current = null;
     }
 
-    log("[SSE Types] connecting...");
     const es = new EventSource(`${API_URL}/api/type/listen`);
     esRef.current = es;
     const onEvent = (event: any) => {
@@ -78,7 +75,6 @@ export function useTypesListener(
 
     es.addEventListener("message", onEvent);
     es.addEventListener("error", (event) => {
-      log("[SSE Types] error");
       console.error("SSE Error:", event);
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
@@ -93,7 +89,6 @@ export function useTypesListener(
     });
 
     return () => {
-      log("[SSE Types] cleanup");
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }

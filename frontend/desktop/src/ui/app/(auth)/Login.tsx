@@ -1,7 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-} from "react-native";
+import { StyleSheet, Text } from "react-native";
 import ThemedView from "@components/ThemedView";
 import ThemedText from "@commons/components/ThemedText";
 import Spacer from "@commons/components/Spacer";
@@ -43,7 +40,6 @@ const Login = () => {
       await login(email, password);
       navigate("/occurrence");
     } catch (err: any) {
-      console.log(err.message);
       if (err instanceof Error) setError(err.message);
       else setError(String(err));
     }

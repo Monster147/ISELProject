@@ -1,7 +1,4 @@
-import {
-  StyleSheet,
-  useColorScheme,
-} from "react-native";
+import { StyleSheet, useColorScheme } from "react-native";
 import { Tabs, useRouter } from "expo-router";
 import { Colors } from "@commons/constants/Colors";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";

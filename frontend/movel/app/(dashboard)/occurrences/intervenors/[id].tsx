@@ -1,8 +1,4 @@
-import {
-  StyleSheet,
-  FlatList,
-  Text,
-} from "react-native";
+import { StyleSheet, FlatList, Text } from "react-native";
 import ThemedView from "@components/ThemedView";
 import { Colors } from "@commons/constants/Colors";
 import ThemedText from "@commons/components/ThemedText";

@@ -239,8 +239,8 @@ const DynamicOccurrenceForm = () => {
     uploadFile,
     type,
     label,
-    sectionName?,
     userId,
+    sectionName?,
   ) => {
     let existingId;
     if (type === "json" && sectionName) {
@@ -391,8 +391,8 @@ const DynamicOccurrenceForm = () => {
               upload,
               field.type === "image" ? "IMAGE" : "FILE",
               field.name,
-              sectionTitle,
               user.id,
+              sectionTitle,
             );
 
             uploadedFilesMetadata.push({
@@ -441,8 +441,8 @@ const DynamicOccurrenceForm = () => {
         uploadFile,
         "json",
         sectionTitle,
-        sectionTitle,
         user.id,
+        sectionTitle,
       );
       setSuccessMessage({
         section: sectionTitle,
@@ -463,7 +463,6 @@ const DynamicOccurrenceForm = () => {
       if (message.action === "EvidenceChanged") {
         try {
           const data = await findEvidenceByOccurrenceId(id);
-          console.log(data);
           const sectionJsons = data.filter(
             (ev) =>
               ev.filePath?.endsWith(".json") &&

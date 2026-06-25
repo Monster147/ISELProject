@@ -67,7 +67,6 @@ const OccurrenceReport = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log("linguagem", i18n.language);
       await createReport(
         user.id,
         occurrenceIdNumber,
@@ -121,7 +120,6 @@ const OccurrenceReport = () => {
         try {
           setLoading(true);
           setError(null);
-          console.log("download");
           await downloadReport(currentReport.id);
         } catch (err: any) {
           if (err instanceof Error) setError(err.message);
@@ -146,7 +144,6 @@ const OccurrenceReport = () => {
         try {
           setLoading(true);
           setError(null);
-          console.log("update");
           await updateReport(currentReport.id);
           const foundReport =
             await findReportByOccurrenceId(occurrenceIdNumber);

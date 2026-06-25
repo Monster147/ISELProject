@@ -16,10 +16,6 @@ export interface SSEMessage {
   action: DocumentsUpdateAction;
 }
 
-const LOG_PREFIX = "[SSE]";
-
-export const log = (...args: any[]) => console.log(LOG_PREFIX, ...args);
-
 export function useDocumentsListener(
   userId: number | undefined,
   onMessage: (message: SSEMessage) => void,
@@ -36,7 +32,6 @@ export function useDocumentsListener(
 
   useEffect(() => {
     if (enabled !== true || !userId) {
-      log("[SSE Documents] disabled, skipping");
       return;
     }
 
@@ -51,7 +46,6 @@ export function useDocumentsListener(
       esRef.current = null;
     }
 
-    log("[SSE Documents] connecting...");
     const es = new EventSource(`${API_URL}/api/documents/listen`);
     esRef.current = es;
     const onEvent = (event: any) => {
@@ -82,7 +76,6 @@ export function useDocumentsListener(
 
     es.addEventListener("message", onEvent);
     es.addEventListener("error", (event) => {
-      log("[SSE Documents] error");
       console.error("SSE Error:", event);
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
@@ -97,7 +90,6 @@ export function useDocumentsListener(
     });
 
     return () => {
-      log("[SSE Documents] cleanup");
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }

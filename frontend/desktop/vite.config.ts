@@ -46,11 +46,11 @@ export default defineConfig({
   resolve: {
     alias: {
       "@commons": path.resolve(__dirname, "../commons"),
-      "@components" : path.resolve(__dirname, "./components"),
+      "@components": path.resolve(__dirname, "./components"),
       "@contexts": path.resolve(__dirname, "./contexts"),
       "@hooks": path.resolve(__dirname, "./hooks"),
       "@infrastructure": path.resolve(__dirname, "./infrastructure"),
-      "@utils" : path.resolve(__dirname, "./utils"),
+      "@utils": path.resolve(__dirname, "./utils"),
       "react-native": "react-native-web",
     },
   },

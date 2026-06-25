@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Evidence } from "@commons/models/evidence/Evidence"
+import { Evidence } from "@commons/models/evidence/Evidence";
 
 export type EvidenceUpdateAction = "EvidenceChanged";
 

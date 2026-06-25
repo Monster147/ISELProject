@@ -8,12 +8,26 @@ import ThemedText from "@commons/components/ThemedText";
 import ThemedButton from "@commons/components/ThemedButton";
 import ThemedDateInput from "@components/ThemedDateInput";
 import ThemedTextInput from "@commons/components/ThemedTextInput";
-
 import { Colors } from "@commons/constants/Colors";
 import ThemedFileInput from "@components/ThemedFileInput";
 import { confirmAction } from "@hooks/system/confirmAction";
 import { getLabelByLanguage } from "@commons/utils/getLabelByLanguage";
 import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
+
+const FieldLabel = ({ label, required }) => (
+  <ThemedText style={styles.label} label={true}>
+    {label}
+    {required && <ThemedText style={styles.required}> *</ThemedText>}
+  </ThemedText>
+);
+
+const FieldContainer = ({ background, style, children }) => (
+  <ThemedView
+    style={[styles.fieldContainer, style, { backgroundColor: background }]}
+  >
+    {children}
+  </ThemedView>
+);
 
 const FieldRenderer = ({
   field,
@@ -149,15 +163,8 @@ const FieldRenderer = ({
     }));
 
     return (
-      <ThemedView
-        style={[styles.fieldContainer, { backgroundColor: theme.uiBackground }]}
-      >
-        <ThemedText style={styles.label} label={true}>
-          {displayLabel}
-          {field.required && (
-            <ThemedText style={styles.required}> *</ThemedText>
-          )}
-        </ThemedText>
+      <FieldContainer background={theme.uiBackground}>
+        <FieldLabel label={displayLabel} required={field.required} />
 
         <Dropdown
           options={options}
@@ -169,291 +176,234 @@ const FieldRenderer = ({
             onChange(field.name, selected);
           }}
         />
-      </ThemedView>
+      </FieldContainer>
     );
   }
 
-  if (field.type === "select" && field.options) {
-    const translatedOptions = field.options.map((opt) => ({
-      ...opt,
-      label: getLabelByLanguage(opt.label, i18n.language),
-    }));
-    const selectedOption =
-      translatedOptions.find((opt) => opt.value === value) ?? null;
-    return (
-      <ThemedView
-        style={[styles.fieldContainer, { backgroundColor: theme.uiBackground }]}
-      >
-        <ThemedText style={styles.label} label={true}>
-          {displayLabel}
-          {field.required && (
-            <ThemedText style={styles.required}> *</ThemedText>
-          )}
-        </ThemedText>
-
-        <Dropdown
-          options={translatedOptions}
-          value={selectedOption}
-          disabled={field.readOnly}
-          onSelect={(selected) => onChange(field.name, selected ?? "")}
-          placeholder={t("form.selectOption", {
-            defaultValue: t("evidences.select"),
-          })}
-        />
-      </ThemedView>
-    );
-  }
-
-  if (field.type === "boolean") {
-    return (
-      <ThemedView
-        style={[styles.fieldContainer, { backgroundColor: theme.uiBackground }]}
-      >
-        <ThemedView
-          style={[styles.boolRow, { backgroundColor: theme.uiBackground }]}
-        >
-          <ThemedText style={styles.label} label={true}>
-            {displayLabel}
-          </ThemedText>
-
-          <TouchableOpacity
-            style={[styles.toggle, value && styles.toggleActive]}
-            onPress={() => !field.readOnly && onChange(field.name, !value)}
-            activeOpacity={0.8}
-          >
-            <ThemedView
-              style={[styles.toggleThumb, value && styles.toggleThumbActive]}
-            />
-          </TouchableOpacity>
-        </ThemedView>
-      </ThemedView>
-    );
-  }
-
-  if (field.type === "image" || field.type === "file") {
-    const isImage = value?.type?.startsWith("image/");
-
-    if (isImage) {
-      const fileNameWithoutExtension = value.name?.replace(/\.[^/.]+$/, "");
-
+  switch (field.type) {
+    case "select": {
+      if (!field.options) break;
+      const translatedOptions = field.options.map((opt) => ({
+        ...opt,
+        label: getLabelByLanguage(opt.label, i18n.language),
+      }));
+      const selectedOption =
+        translatedOptions.find((opt) => opt.value === value) ?? null;
       return (
-        <ThemedView
-          style={[
-            styles.fieldContainer,
-            styles.imagePreviewContainer,
-            { backgroundColor: theme.uiBackground },
-          ]}
-        >
-          <ThemedText style={styles.label} label={true}>
-            {displayLabel}
-            {field.required && (
-              <ThemedText style={styles.required}> *</ThemedText>
-            )}
-          </ThemedText>
+        <FieldContainer background={theme.uiBackground}>
+          <FieldLabel label={displayLabel} required={field.required} />
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => handleDownloadFile(value)}
-          >
-            <Image
-              source={{ uri: value.uri }}
-              style={styles.imagePreview}
-              resizeMode="cover"
-            />
-          </TouchableOpacity>
-
-          <ThemedText style={styles.downloadHint}>
-            {t("evidences.clickToDownload")}
-          </ThemedText>
-
-          <ThemedView
-            style={[
-              styles.imageInfoContainer,
-              { backgroundColor: theme.uiBackground },
-            ]}
-          >
-            <ThemedText style={styles.imageName}>
-              {" "}
-              {fileNameWithoutExtension}{" "}
-            </ThemedText>
-
-            <ThemedButton
-              style={styles.removeFileButton}
-              onPress={() => handleRemoveFile(field.name)}
-            >
-              <ThemedText style={styles.removeFileButtonText}>
-                {" "}
-                {t("evidences.remove")}{" "}
-              </ThemedText>
-            </ThemedButton>
-          </ThemedView>
-        </ThemedView>
+          <Dropdown
+            options={translatedOptions}
+            value={selectedOption}
+            disabled={field.readOnly}
+            onSelect={(selected) => onChange(field.name, selected ?? "")}
+            placeholder={t("form.selectOption", {
+              defaultValue: t("evidences.select"),
+            })}
+          />
+        </FieldContainer>
       );
     }
 
-    const isFile = value?.type?.startsWith("application/");
-
-    if (isFile) {
-      const fileNameWithoutExtension = value.name?.replace(/\.[^/.]+$/, "");
-
+    case "boolean":
       return (
-        <ThemedView
-          style={[
-            styles.fieldContainer,
-            styles.imagePreviewContainer,
-            { backgroundColor: theme.uiBackground },
-          ]}
-        >
-          <ThemedText style={styles.label} label={true}>
-            {displayLabel}
-            {field.required && (
-              <ThemedText style={styles.required}> *</ThemedText>
-            )}
-          </ThemedText>
+        <FieldContainer background={theme.uiBackground}>
           <ThemedView
-            style={[
-              styles.imageInfoContainer,
-              { backgroundColor: theme.uiBackground },
-            ]}
+            style={[styles.boolRow, { backgroundColor: theme.uiBackground }]}
           >
-            <ThemedText style={styles.imageName}>
-              {" "}
-              {fileNameWithoutExtension}{" "}
-            </ThemedText>
+            <FieldLabel label={displayLabel} required={field.required} />
 
-            <ThemedButton
-              style={styles.downloadButton}
+            <TouchableOpacity
+              style={[styles.toggle, value && styles.toggleActive]}
+              onPress={() => !field.readOnly && onChange(field.name, !value)}
+              activeOpacity={0.8}
+            >
+              <ThemedView
+                style={[styles.toggleThumb, value && styles.toggleThumbActive]}
+              />
+            </TouchableOpacity>
+          </ThemedView>
+        </FieldContainer>
+      );
+
+    case "image":
+    case "file": {
+      const isImage = value?.type?.startsWith("image/");
+      const isFile = value?.type?.startsWith("application/");
+      const fileNameWithoutExtension = value?.name?.replace(/\.[^/.]+$/, "");
+      if (isImage) {
+        return (
+          <FieldContainer
+            background={theme.uiBackground}
+            style={styles.imagePreviewContainer}
+          >
+            <FieldLabel label={displayLabel} required={field.required} />
+
+            <TouchableOpacity
+              activeOpacity={0.8}
               onPress={() => handleDownloadFile(value)}
             >
-              <ThemedText style={styles.downloadButtonText}>
-                {t("evidences.download")}
-              </ThemedText>
-            </ThemedButton>
+              <Image
+                source={{ uri: value.uri }}
+                style={styles.imagePreview}
+                resizeMode="cover"
+              />
+            </TouchableOpacity>
 
-            <ThemedButton
-              style={styles.removeFileButton}
-              onPress={() => handleRemoveFile(field.name)}
+            <ThemedText style={styles.downloadHint}>
+              {t("evidences.clickToDownload")}
+            </ThemedText>
+
+            <ThemedView
+              style={[
+                styles.imageInfoContainer,
+                { backgroundColor: theme.uiBackground },
+              ]}
             >
-              <ThemedText style={styles.removeFileButtonText}>
+              <ThemedText style={styles.imageName}>
                 {" "}
-                {t("evidences.remove")}{" "}
+                {fileNameWithoutExtension}{" "}
               </ThemedText>
-            </ThemedButton>
-          </ThemedView>
-        </ThemedView>
+
+              <ThemedButton
+                style={styles.removeFileButton}
+                onPress={() => handleRemoveFile(field.name)}
+              >
+                <ThemedText style={styles.removeFileButtonText}>
+                  {" "}
+                  {t("evidences.remove")}{" "}
+                </ThemedText>
+              </ThemedButton>
+            </ThemedView>
+          </FieldContainer>
+        );
+      }
+
+      if (isFile) {
+        return (
+          <FieldContainer
+            background={theme.uiBackground}
+            style={styles.imagePreviewContainer}
+          >
+            <FieldLabel label={displayLabel} required={field.required} />
+            <ThemedView
+              style={[
+                styles.imageInfoContainer,
+                { backgroundColor: theme.uiBackground },
+              ]}
+            >
+              <ThemedText style={styles.imageName}>
+                {" "}
+                {fileNameWithoutExtension}{" "}
+              </ThemedText>
+
+              <ThemedButton
+                style={styles.downloadButton}
+                onPress={() => handleDownloadFile(value)}
+              >
+                <ThemedText style={styles.downloadButtonText}>
+                  {t("evidences.download")}
+                </ThemedText>
+              </ThemedButton>
+
+              <ThemedButton
+                style={styles.removeFileButton}
+                onPress={() => handleRemoveFile(field.name)}
+              >
+                <ThemedText style={styles.removeFileButtonText}>
+                  {" "}
+                  {t("evidences.remove")}{" "}
+                </ThemedText>
+              </ThemedButton>
+            </ThemedView>
+          </FieldContainer>
+        );
+      }
+
+      return (
+        <FieldContainer background={theme.uiBackground}>
+          <FieldLabel label={displayLabel} required={field.required} />
+
+          {field.type === "image" ? (
+            <ThemedView
+              style={[
+                styles.imageButtonsContainer,
+                { backgroundColor: theme.uiBackground },
+              ]}
+            >
+              <ThemedButton
+                style={styles.imageActionButton}
+                onPress={() => handleMediaPick("gallery")}
+              >
+                <ThemedText style={styles.downloadButtonText}>
+                  {" "}
+                  {t("evidences.gallery")}{" "}
+                </ThemedText>
+              </ThemedButton>
+
+              <ThemedButton
+                onPress={() => handleMediaPick("camera")}
+                style={styles.imageActionButton}
+              >
+                <ThemedText style={styles.downloadButtonText}>
+                  {" "}
+                  {t("evidences.camera")}{" "}
+                </ThemedText>
+              </ThemedButton>
+            </ThemedView>
+          ) : (
+            <ThemedFileInput
+              label={t("occurrenceEvidences.uploadEvidenceFile")}
+              onPress={handleFileInput}
+            />
+          )}
+        </FieldContainer>
       );
     }
 
-    return (
-      <ThemedView
-        style={[styles.fieldContainer, { backgroundColor: theme.uiBackground }]}
-      >
-        <ThemedText style={styles.label} label={true}>
-          {displayLabel}
-          {field.required && (
-            <ThemedText style={styles.required}> *</ThemedText>
-          )}
-        </ThemedText>
+    case "datetime":
+      return (
+        <FieldContainer background={theme.uiBackground}>
+          <FieldLabel label={displayLabel} required={field.required} />
 
-        {field.type === "image" ? (
-          <ThemedView
-            style={[
-              styles.imageButtonsContainer,
-              { backgroundColor: theme.uiBackground },
-            ]}
-          >
-            <ThemedButton
-              style={styles.imageActionButton}
-              onPress={() => handleMediaPick("gallery")}
-            >
-              <ThemedText style={styles.downloadButtonText}>
-                {" "}
-                {t("evidences.gallery")}{" "}
-              </ThemedText>
-            </ThemedButton>
-
-            <ThemedButton
-              onPress={() => handleMediaPick("camera")}
-              style={styles.imageActionButton}
-            >
-              <ThemedText style={styles.downloadButtonText}>
-                {" "}
-                {t("evidences.camera")}{" "}
-              </ThemedText>
-            </ThemedButton>
-          </ThemedView>
-        ) : (
-          <ThemedFileInput
-            label={t("occurrenceEvidences.uploadEvidenceFile")}
-            onPress={handleFileInput}
+          <ThemedDateInput
+            placeholder={t("form.selectDateTime", {
+              defaultValue: "Selecione data e hora...",
+            })}
+            value={value}
+            onChangeText={(val) => {
+              onChange(field.name, val);
+            }}
+            style={styles.dateInput}
           />
-        )}
-      </ThemedView>
-    );
-  }
+        </FieldContainer>
+      );
 
-  if (field.type === "datetime") {
-    return (
-      <ThemedView
-        style={[styles.fieldContainer, { backgroundColor: theme.uiBackground }]}
-      >
-        <ThemedText style={styles.label} label={true}>
-          {displayLabel}
-          {field.required && (
-            <ThemedText style={styles.required}> *</ThemedText>
-          )}
-        </ThemedText>
+    case "number":
+      return (
+        <FieldContainer background={theme.uiBackground}>
+          <FieldLabel label={displayLabel} required={field.required} />
 
-        <ThemedDateInput
-          placeholder={t("form.selectDateTime", {
-            defaultValue: "Selecione data e hora...",
-          })}
-          value={value}
-          onChangeText={(val) => {
-            onChange(field.name, val);
-          }}
-          style={styles.dateInput}
-        />
-      </ThemedView>
-    );
-  }
+          <ThemedTextInput
+            placeholder={displayLabel}
+            value={value !== undefined && value !== null ? String(value) : ""}
+            onChangeText={(text) => {
+              const num = Number(text);
 
-  if (field.type === "number") {
-    return (
-      <ThemedView
-        style={[styles.fieldContainer, { backgroundColor: theme.uiBackground }]}
-      >
-        <ThemedText style={styles.label} label={true}>
-          {displayLabel}
-          {field.required && (
-            <ThemedText style={styles.required}> *</ThemedText>
-          )}
-        </ThemedText>
-
-        <ThemedTextInput
-          placeholder={displayLabel}
-          value={value !== undefined && value !== null ? String(value) : ""}
-          onChangeText={(text) => {
-            const num = Number(text);
-
-            onChange(field.name, Number.isFinite(num) ? num : 0);
-          }}
-          keyboardType="numeric"
-          editable={!field.readOnly}
-          style={styles.input}
-        />
-      </ThemedView>
-    );
+              onChange(field.name, Number.isFinite(num) ? num : 0);
+            }}
+            keyboardType="numeric"
+            editable={!field.readOnly}
+            style={styles.input}
+          />
+        </FieldContainer>
+      );
   }
 
   return (
-    <ThemedView
-      style={[styles.fieldContainer, { backgroundColor: theme.uiBackground }]}
-    >
-      <ThemedText style={styles.label} label={true}>
-        {displayLabel}
-        {field.required && <ThemedText style={styles.required}> *</ThemedText>}
-      </ThemedText>
+    <FieldContainer background={theme.uiBackground}>
+      <FieldLabel label={displayLabel} required={field.required} />
 
       <ThemedTextInput
         placeholder={displayLabel}
@@ -464,7 +414,7 @@ const FieldRenderer = ({
         editable={!field.readOnly}
         style={[styles.input, field.type === "text" && styles.textarea]}
       />
-    </ThemedView>
+    </FieldContainer>
   );
 };
 

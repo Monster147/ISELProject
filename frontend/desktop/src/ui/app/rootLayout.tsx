@@ -27,7 +27,6 @@ const RootLayoutContent = () => {
   const { isOnline } = useNetworkStatus();
 
   useEffect(() => {
-    console.log("isOnline:", isOnline);
     if (!isOnline && !loadingScreen) {
       confirm({
         title: t("offline.title"),

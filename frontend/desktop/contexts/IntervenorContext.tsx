@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { api } from "@commons/api/api";
@@ -45,11 +46,105 @@ export function IntervenorProvider({ children }) {
   const { isOnline } = useNetworkStatus();
   const { user } = useAuth();
 
+  const loadIntervenors = useCallback(async () => {
+    try {
+      const response = await api.findAllIntervenors();
+      setIntervenor(response);
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
+  const createIntervenor = useCallback(
+    async (
+      idNumber: string,
+      idType: string,
+      name: string,
+      contactInfo: string,
+      address: string,
+    ) => {
+      try {
+        await api.createIntervenor({
+          idNumber,
+          idType,
+          name,
+          contactInfo,
+          address,
+        });
+      } catch (err: any) {
+        throw Error(err.message);
+      }
+    },
+    [],
+  );
+
+  const updateIntervenor = useCallback(
+    async (
+      intervenorId: number,
+      idNumber: string | null,
+      idType: string | null,
+      name: string | null,
+      contactInfo: string | null,
+      address: string | null,
+    ) => {
+      try {
+        await api.updateIntervenor(
+          { idNumber, idType, name, contactInfo, address },
+          intervenorId,
+        );
+      } catch (err: any) {
+        throw Error(err.message);
+      }
+    },
+    [],
+  );
+
+  const deleteIntervenorByIdNumber = useCallback(
+    async (intervenorId: string) => {
+      try {
+        await api.deleteIntervenorByIdNumber(intervenorId);
+      } catch (err: any) {
+        throw Error(err.message);
+      }
+    },
+    [],
+  );
+
+  const getIntervenorByIdNumber = useCallback(async (idNumber: string) => {
+    try {
+      const response = await api.findIntervenorByIdNumber(idNumber);
+      return response;
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
+  const findIntervenorByContactInfo = useCallback(
+    async (contactInfo: string) => {
+      try {
+        const response = await api.findIntervenorByContactInfo(contactInfo);
+        return response;
+      } catch (err: any) {
+        throw Error(err.message);
+      }
+    },
+    [],
+  );
+
+  const findIntervenorById = useCallback(async (id: number) => {
+    try {
+      const response = await api.findIntervenorById(id);
+      return response;
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
   useEffect(() => {
     if (user && isOnline) {
       loadIntervenors();
     }
-  }, [isOnline, user]);
+  }, [isOnline, user, loadIntervenors]);
 
   const handleOnMessage = useCallback((message: SSEMessage) => {
     const data = message.data;
@@ -65,103 +160,29 @@ export function IntervenorProvider({ children }) {
 
   useIntervenorsListener(user?.id, handleOnMessage, isOnline);
 
-  async function loadIntervenors() {
-    try {
-      const response = await api.findAllIntervenors();
-      setIntervenor(response);
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function createIntervenor(
-    idNumber: string,
-    idType: string,
-    name: string,
-    contactInfo: string,
-    address: string,
-  ) {
-    try {
-      await api.createIntervenor({
-        idNumber,
-        idType,
-        name,
-        contactInfo,
-        address,
-      });
-      await loadIntervenors();
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function updateIntervenor(
-    intervenorId: number,
-    idNumber: string | null,
-    idType: string | null,
-    name: string | null,
-    contactInfo: string | null,
-    address: string | null,
-  ) {
-    try {
-      await api.updateIntervenor(
-        { idNumber, idType, name, contactInfo, address },
-        intervenorId,
-      );
-      await loadIntervenors();
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function deleteIntervenorByIdNumber(intervenorId: string) {
-    try {
-      await api.deleteIntervenorByIdNumber(intervenorId);
-      await loadIntervenors();
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function getIntervenorByIdNumber(idNumber: string) {
-    try {
-      const response = await api.findIntervenorByIdNumber(idNumber);
-      return response;
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function findIntervenorByContactInfo(contactInfo: string) {
-    try {
-      const response = await api.findIntervenorByContactInfo(contactInfo);
-      return response;
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function findIntervenorById(id: number) {
-    try {
-      const response = await api.findIntervenorById(id);
-      return response;
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
+  const value = useMemo(
+    () => ({
+      createIntervenor,
+      updateIntervenor,
+      deleteIntervenorByIdNumber,
+      getIntervenorByIdNumber,
+      findIntervenorByContactInfo,
+      findIntervenorById,
+      intervenor,
+    }),
+    [
+      intervenor,
+      createIntervenor,
+      updateIntervenor,
+      deleteIntervenorByIdNumber,
+      getIntervenorByIdNumber,
+      findIntervenorByContactInfo,
+      findIntervenorById,
+    ],
+  );
 
   return (
-    <IntervenorContext.Provider
-      value={{
-        createIntervenor,
-        updateIntervenor,
-        deleteIntervenorByIdNumber,
-        getIntervenorByIdNumber,
-        findIntervenorByContactInfo,
-        findIntervenorById,
-        intervenor,
-      }}
-    >
+    <IntervenorContext.Provider value={value}>
       {children}
     </IntervenorContext.Provider>
   );

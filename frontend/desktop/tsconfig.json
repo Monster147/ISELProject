@@ -25,7 +25,15 @@
       "@utils/*": ["./utils/*"]
     }
   },
-  "include": ["src", "components", "contexts", "hooks", "infrastructure", "utils", "i18next"],
+  "include": [
+    "src",
+    "components",
+    "contexts",
+    "hooks",
+    "infrastructure",
+    "utils",
+    "i18next"
+  ],
   "exclude": ["src/electron"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

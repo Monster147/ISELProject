@@ -1,4 +1,10 @@
-import { createContext, useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Documents } from "@commons/models/documents/Documents";
 import { api } from "@commons/api/api";
 import { useAuth } from "@hooks/data/useAuth";
@@ -29,11 +35,64 @@ export function DocumentProvider({ children }) {
   const { isOnline } = useNetworkStatus();
   const [loading, setLoading] = useState(false);
 
+  const getAllDocuments = useCallback(async () => {
+    try {
+      const response = await api.getAllDocument();
+      setDocuments(response);
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
+  const getDocumentById = useCallback(async (id: number) => {
+    try {
+      const response = await api.getDocumentById(id);
+      return response;
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
+  const getDocumentByName = useCallback(async (name: string) => {
+    try {
+      const response = await api.getDocumentByName(name);
+      return response;
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
+  const getDocumentByType = useCallback(async (type: string) => {
+    try {
+      const response = await api.getDocumentByType(type);
+      return response;
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
+  const getAllDocumentTypes = useCallback(async () => {
+    try {
+      const response = await api.getAllDocumentTypes();
+      return response;
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
+  const downloadDocument = useCallback(async (id: number) => {
+    try {
+      await api.downloadDocument(id);
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
   useEffect(() => {
     if (user && isOnline) {
       getAllDocuments();
     }
-  }, [user, isOnline]);
+  }, [user, isOnline, getAllDocuments]);
 
   const handleOnMessage = useCallback((message: SSEMessage) => {
     setLoading(true);
@@ -51,72 +110,31 @@ export function DocumentProvider({ children }) {
 
   useDocumentsListener(user?.id, handleOnMessage, isOnline);
 
-  async function getAllDocuments() {
-    try {
-      const response = await api.getAllDocument();
-      setDocuments(response);
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function getDocumentById(id: number) {
-    try {
-      const response = await api.getDocumentById(id);
-      return response;
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function getDocumentByName(name: string) {
-    try {
-      const response = await api.getDocumentByName(name);
-      return response;
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function getDocumentByType(type: string) {
-    try {
-      const response = await api.getDocumentByType(type);
-      return response;
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function getAllDocumentTypes() {
-    try {
-      const response = await api.getAllDocumentTypes();
-      return response;
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function downloadDocument(id: number) {
-    try {
-      await api.downloadDocument(id);
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
+  const value = useMemo(
+    () => ({
+      getAllDocumentTypes,
+      getDocumentByType,
+      getDocumentByName,
+      getDocumentById,
+      getAllDocuments,
+      documents,
+      downloadDocument,
+      loading,
+    }),
+    [
+      documents,
+      loading,
+      getAllDocuments,
+      getDocumentById,
+      getDocumentByName,
+      getDocumentByType,
+      getAllDocumentTypes,
+      downloadDocument,
+    ],
+  );
 
   return (
-    <DocumentContext.Provider
-      value={{
-        getAllDocumentTypes,
-        getDocumentByType,
-        getDocumentByName,
-        getDocumentById,
-        getAllDocuments,
-        documents,
-        downloadDocument,
-        loading,
-      }}
-    >
+    <DocumentContext.Provider value={value}>
       {children}
     </DocumentContext.Provider>
   );

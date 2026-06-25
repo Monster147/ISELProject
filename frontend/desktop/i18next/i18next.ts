@@ -5,8 +5,6 @@ import pt from "@commons/i18next/locales/pt";
 import es from "@commons/i18next/locales/es";
 
 const lng = navigator.language?.split("-")[0] ?? "en"; // "pt" de "pt-PT"
-console.log("detected language:", lng);
-console.log(navigator.language?.split("-")[0]);
 
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next

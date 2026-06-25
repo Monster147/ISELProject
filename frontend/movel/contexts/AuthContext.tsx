@@ -1,4 +1,10 @@
-import { createContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { api } from "@commons/api/api";
 import { authInfoRepo } from "@infrastructure/AuthInfoPreferencesRepo";
 import { User } from "@commons/models/user/User";
@@ -41,7 +47,7 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  async function login(email: string, password: string) {
+  const login = useCallback(async (email: string, password: string) => {
     try {
       const response = await api.createToken({ email, password });
       await authInfoRepo.saveAuthInfo({ token: response.token });
@@ -52,23 +58,26 @@ export function AuthProvider({ children }) {
     } catch (err: any) {
       throw Error(err.message);
     }
-  }
+  }, []);
 
-  async function register(name: string, email: string, password: string) {
-    try {
-      await api.createUser({ name, email, password });
-      const response = await api.createToken({ email, password });
-      await authInfoRepo.saveAuthInfo({ token: response.token });
-      setToken(response.token);
-      const user = await api.userHome();
-      await userInfoRepo.saveUserInfo(user);
-      setUser(user);
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
+  const register = useCallback(
+    async (name: string, email: string, password: string) => {
+      try {
+        await api.createUser({ name, email, password });
+        const response = await api.createToken({ email, password });
+        await authInfoRepo.saveAuthInfo({ token: response.token });
+        setToken(response.token);
+        const user = await api.userHome();
+        await userInfoRepo.saveUserInfo(user);
+        setUser(user);
+      } catch (err: any) {
+        throw Error(err.message);
+      }
+    },
+    [],
+  );
 
-  async function logout() {
+  const logout = useCallback(async () => {
     try {
       await api.logout();
     } catch (err: any) {
@@ -79,12 +88,19 @@ export function AuthProvider({ children }) {
       await userInfoRepo.clearUserInfo();
       setUser(null);
     }
-  }
-  return (
-    <AuthContext.Provider
-      value={{ login, register, logout, token, isAuthLoading, user }}
-    >
-      {children}
-    </AuthContext.Provider>
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      login,
+      register,
+      logout,
+      token,
+      isAuthLoading,
+      user,
+    }),
+    [token, user, isAuthLoading, login, register, logout],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

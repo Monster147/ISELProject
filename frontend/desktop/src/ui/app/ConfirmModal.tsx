@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  StyleSheet,
-  Modal,
-  useColorScheme,
-} from "react-native";
+import { StyleSheet, Modal, useColorScheme } from "react-native";
 import ThemedText from "@commons/components/ThemedText";
 import { Colors } from "@commons/constants/Colors";
 import ThemedView from "@components/ThemedView";

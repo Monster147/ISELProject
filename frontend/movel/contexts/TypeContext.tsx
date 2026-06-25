@@ -1,4 +1,10 @@
-import { createContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Type } from "@commons/models/type/Type";
 import { api } from "@commons/api/api";
 import { useAuth } from "@hooks/data/useAuth";
@@ -9,7 +15,6 @@ import { useSyncSSE } from "@hooks/sync/useSyncSSE";
 type TypeContextValue = {
   type: Type[];
   findAllTypes: () => Promise<any>;
-  loading: boolean;
 };
 
 export const TypeContext = createContext<TypeContextValue | undefined>(
@@ -19,9 +24,27 @@ export const TypeContext = createContext<TypeContextValue | undefined>(
 export const TypeProvider = ({ children }) => {
   const [type, setType] = useState<Type[]>([]);
   const { user } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const { isOnline, shouldResetListeners } = useNetworkStatus();
+  const { isOnline } = useNetworkStatus();
   const { lastEvent } = useSyncSSE();
+
+  const loadCachedTypes = useCallback(async () => {
+    const cached = await typeInfoRepo.getTypeInfo();
+    if (cached) {
+      setType(cached);
+    } else {
+      setType([]);
+    }
+  }, []);
+
+  const findAllTypes = useCallback(async () => {
+    try {
+      const response = await api.findAllTypes();
+      setType(response);
+      await typeInfoRepo.saveTypeInfo(response);
+    } catch (err: any) {
+      loadCachedTypes();
+    }
+  }, [loadCachedTypes]);
 
   useEffect(() => {
     if (user) {
@@ -31,7 +54,7 @@ export const TypeProvider = ({ children }) => {
         loadCachedTypes();
       }
     }
-  }, [user, isOnline]);
+  }, [user, isOnline, findAllTypes, loadCachedTypes]);
 
   useEffect(() => {
     const handleTypesChanged = async () => {
@@ -47,47 +70,13 @@ export const TypeProvider = ({ children }) => {
     handleTypesChanged();
   }, [lastEvent]);
 
-  /*
-    const handleOnMessage = useCallback(async (message: SSEMessage) => {
-        setLoading(true)
-        const data = message.data
-        const action = message.action
-        switch (action) {
-            case "TypesChanged":
-                setType(data.types)
-                await typeInfoRepo.saveTypeInfo(data.types)
-                break
-            default:
-                break
-        }
-        setTimeout(() => setLoading(false), 300);
-    }, [])
-
-    useTypesListener(user?.id,handleOnMessage, isOnline)
-     */
-
-  async function findAllTypes() {
-    try {
-      const response = await api.findAllTypes();
-      setType(response);
-      await typeInfoRepo.saveTypeInfo(response);
-    } catch (err: any) {
-      loadCachedTypes();
-    }
-  }
-
-  async function loadCachedTypes() {
-    const cached = await typeInfoRepo.getTypeInfo();
-    if (cached) {
-      setType(cached);
-    } else {
-      setType([]);
-    }
-  }
-
-  return (
-    <TypeContext.Provider value={{ type, findAllTypes, loading }}>
-      {children}
-    </TypeContext.Provider>
+  const value = useMemo(
+    () => ({
+      type,
+      findAllTypes,
+    }),
+    [type, findAllTypes],
   );
+
+  return <TypeContext.Provider value={value}>{children}</TypeContext.Provider>;
 };

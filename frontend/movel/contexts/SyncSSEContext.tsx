@@ -1,4 +1,4 @@
-import { createContext, useCallback, useState } from "react";
+import { createContext, useCallback, useMemo, useState } from "react";
 import {
   useListenAllListener,
   SSEMessage,
@@ -25,9 +25,14 @@ export const SyncSSEProvider = ({ children }) => {
 
   useListenAllListener(user?.id, handleOnMessage, isOnline);
 
+  const value = useMemo(
+    () => ({
+      lastEvent,
+    }),
+    [lastEvent],
+  );
+
   return (
-    <SyncSSEContext.Provider value={{ lastEvent }}>
-      {children}
-    </SyncSSEContext.Provider>
+    <SyncSSEContext.Provider value={value}>{children}</SyncSSEContext.Provider>
   );
 };

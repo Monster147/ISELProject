@@ -1,8 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { StyleSheet, Text, TouchableWithoutFeedback } from "react-native";
 import ThemedView from "@components/ThemedView";
 import ThemedText from "@commons/components/ThemedText";
 import Spacer from "@commons/components/Spacer";

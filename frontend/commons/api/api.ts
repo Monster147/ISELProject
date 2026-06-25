@@ -154,10 +154,6 @@ export const api = {
   },
 
   async userHome(): Promise<UserHomeOutputModel> {
-    console.log(
-      "Fetching user home with auth headers:",
-      await getAuthHeaders(),
-    );
     return fetchApi<UserHomeOutputModel>("/user/me", {
       headers: await getAuthHeaders(),
     });
@@ -184,7 +180,7 @@ export const api = {
   },
 
   async setRoles(input: RolesInput): Promise<void> {
-    return fetchApi<void>("/user/roles/remove", {
+    return fetchApi<void>("/user/roles/set", {
       method: "POST",
       body: JSON.stringify(input),
     });
@@ -395,7 +391,6 @@ export const api = {
       } as any);
     }
     formData.append("data", JSON.stringify(input));
-    console.log(formData);
     return fetchApi<Evidence>("/evidence", {
       method: "POST",
       body: formData,
@@ -428,7 +423,6 @@ export const api = {
   async findEvidenceByType(input: Json): Promise<Evidence> {
     return fetchApi<Evidence>("/evidence/byType", {
       method: "GET",
-      body: JSON.stringify(input),
     });
   },
 

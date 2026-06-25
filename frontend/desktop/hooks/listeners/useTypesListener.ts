@@ -52,7 +52,6 @@ export function useTypesListener(
           onMessageRef.current(message);
         }, debounceMs);
       } catch (error) {
-        console.log(error);
         console.error("Error parsing SSE message:", error);
       }
     };

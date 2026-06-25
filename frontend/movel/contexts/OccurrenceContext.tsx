@@ -1,6 +1,8 @@
 import {
   createContext,
+  useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { api } from "@commons/api/api";
@@ -16,7 +18,7 @@ import { useSyncSSE } from "@hooks/sync/useSyncSSE";
 type OccurrenceContextValue = {
   listOccurrences: () => Promise<void>;
   occurrence: Occurrence[];
-  getOccurrence: (id: number) => Promise<Occurrence>;
+  getOccurrence: (id: number) => Promise<Occurrence | undefined>;
   addIntervenorToOccurrence: (
     intervenorId: number,
     occurrenceId: number,
@@ -35,10 +37,127 @@ export const OccurrenceContext = createContext<
 export function OccurrenceProvider({ children }) {
   const [occurrence, setOccurrence] = useState<Occurrence[]>([]);
   const [loading, setLoading] = useState(false);
-  const { isOnline, shouldResetListeners } = useNetworkStatus();
+  const { isOnline } = useNetworkStatus();
   const { user } = useAuth();
   const { t } = useTranslation();
   const { lastEvent } = useSyncSSE();
+
+  const loadCachedOccurrences = useCallback(async () => {
+    setLoading(true);
+    const cached = await occurrenceInfoRepo.getOccurrenceInfo();
+    if (cached) {
+      setOccurrence(cached);
+    } else {
+      setOccurrence([]);
+    }
+    setLoading(false);
+  }, []);
+
+  const listOccurrences = useCallback(async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const response = await api.findOccurrencesByReporterId(user.id);
+      setOccurrence(response);
+      await occurrenceInfoRepo.saveOccurrenceInfo(response);
+    } catch (err: any) {
+      loadCachedOccurrences();
+    } finally {
+      setLoading(false);
+    }
+  }, [user, loadCachedOccurrences]);
+
+  const getOccurrence = useCallback(
+    async (id: number) => {
+      try {
+        if (!user) return;
+        const response = await api.findOccurrenceById(id);
+        return response;
+      } catch (err: any) {
+        throw Error(err.message);
+      }
+    },
+    [user],
+  );
+
+  const checkIfIntervenorIsInOccurrence = useCallback(
+    (intervenorId: number, occurrenceId: number) => {
+      const occ = occurrence.find((o) => o.id === occurrenceId);
+      if (!occ) return false;
+      return occ.intervenors.some((i) => i === intervenorId);
+    },
+    [occurrence],
+  );
+
+  const addIntervenorToOccurrence = useCallback(
+    async (intervenorId: number, occurrenceId: number) => {
+      if (isOnline) {
+        try {
+          if (!user) return;
+          await api.addIntervenor({ intervenorId }, occurrenceId);
+          const response = await api.findOccurrencesByReporterId(user.id);
+          setOccurrence(response);
+        } catch (err: any) {
+          throw Error(err.message);
+        }
+        return;
+      } else {
+        if (checkIfIntervenorIsInOccurrence(intervenorId, occurrenceId))
+          throw Error(t("errorResponse.intervenorAlreadyInOccurrence"));
+        const intervenors = await intervenorInfoRepo.getIntervenorInfo();
+        const intervenor = intervenors?.find((i) => i.id === intervenorId);
+        if (!intervenor) throw Error(t("errorResponse.intervenorNotFound"));
+        const payload = { intervenor: intervenor, occurrenceId: occurrenceId };
+        const updated = occurrence.map((o) => {
+          if (o.id === occurrenceId) {
+            return { ...o, intervenors: [...o.intervenors, intervenorId] };
+          }
+          return o;
+        });
+        setOccurrence(updated);
+        await occurrenceInfoRepo.saveOccurrenceInfo(updated);
+        await offlineOccurrenceQueueRepo.addAction("ADD_INTERVENOR", payload);
+      }
+    },
+    [isOnline, user, t, occurrence, checkIfIntervenorIsInOccurrence],
+  );
+
+  const removeIntervenorFromOccurrence = useCallback(
+    async (intervenorId: number, occurrenceId: number) => {
+      if (isOnline) {
+        try {
+          if (!user) return;
+          await api.removeIntervenor({ intervenorId }, occurrenceId);
+          const response = await api.findOccurrencesByReporterId(user.id);
+          setOccurrence(response);
+        } catch (err: any) {
+          throw Error(err.message);
+        }
+        return;
+      } else {
+        const intervenors = await intervenorInfoRepo.getIntervenorInfo();
+        const intervenor = intervenors?.find((i) => i.id === intervenorId);
+        if (!intervenor) throw Error(t("errorResponse.intervenorNotFound"));
+        const payload = { intervenor: intervenor, occurrenceId: occurrenceId };
+        const updated = occurrence.map((o) => {
+          if (o.id === occurrenceId) {
+            return {
+              ...o,
+              intervenors: o.intervenors.filter((id) => id !== intervenorId),
+            };
+          }
+          return o;
+        });
+        setOccurrence(updated);
+        await occurrenceInfoRepo.saveOccurrenceInfo(updated);
+        await offlineOccurrenceQueueRepo.addAction(
+          "REMOVE_INTERVENOR",
+          payload,
+        );
+      }
+    },
+    [isOnline, user, t, occurrence],
+  );
 
   useEffect(() => {
     if (user) {
@@ -48,7 +167,7 @@ export function OccurrenceProvider({ children }) {
         loadCachedOccurrences();
       }
     }
-  }, [user, isOnline]);
+  }, [user, isOnline, listOccurrences, loadCachedOccurrences]);
 
   useEffect(() => {
     const handleOccurrencesChanged = async () => {
@@ -67,147 +186,27 @@ export function OccurrenceProvider({ children }) {
     handleOccurrencesChanged();
   }, [lastEvent]);
 
-  /*
-    const handleOnMessage = useCallback(async (message: SSEMessage) => {
-        setLoading(true)
-        const data = message.data
-        const action = message.action
-        switch (action) {
-            case "OccurrencesChanged":
-                setOccurrence(data.occurrences)
-                await occurrenceInfoRepo.saveOccurrenceInfo(data.occurrences)
-                break
-            default:
-                break
-        }
-        setTimeout(() => setLoading(false), 300);
-    }, [])
-
-    useOccurrencesListener(user?.id, handleOnMessage, isOnline)
-     */
-
-  async function listOccurrences() {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const response = await api.findOccurrencesByReporterId(user.id);
-      setOccurrence(response);
-      await occurrenceInfoRepo.saveOccurrenceInfo(response);
-    } catch (err: any) {
-      loadCachedOccurrences();
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function loadCachedOccurrences() {
-    setLoading(true);
-    const cached = await occurrenceInfoRepo.getOccurrenceInfo();
-    if (cached) {
-      setOccurrence(cached);
-    } else {
-      setOccurrence([]);
-    }
-    setLoading(false);
-  }
-
-  async function getOccurrence(id: number) {
-    try {
-      if (!user) return;
-      const response = await api.findOccurrenceById(id);
-      return response;
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function addIntervenorToOccurrence(
-    intervenorId: number,
-    occurrenceId: number,
-  ) {
-    if (isOnline) {
-      try {
-        if (!user) return;
-        await api.addIntervenor({ intervenorId }, occurrenceId);
-        const response = await api.findOccurrencesByReporterId(user.id);
-        setOccurrence(response);
-      } catch (err: any) {
-        throw Error(err.message);
-      }
-      return;
-    } else {
-      if (checkIfIntervenorIsInOccurrence(intervenorId, occurrenceId))
-        throw Error(t("errorResponse.intervenorAlreadyInOccurrence"));
-      const intervenors = await intervenorInfoRepo.getIntervenorInfo();
-      const intervenor = intervenors?.find((i) => i.id === intervenorId);
-      if (!intervenor) throw Error(t("errorResponse.intervenorNotFound"));
-      const payload = { intervenor: intervenor, occurrenceId: occurrenceId };
-      const updated = occurrence.map((o) => {
-        if (o.id === occurrenceId) {
-          return { ...o, intervenors: [...o.intervenors, intervenorId] };
-        }
-        return o;
-      });
-      setOccurrence(updated);
-      await occurrenceInfoRepo.saveOccurrenceInfo(updated);
-      await offlineOccurrenceQueueRepo.addAction("ADD_INTERVENOR", payload);
-    }
-  }
-
-  async function removeIntervenorFromOccurrence(
-    intervenorId: number,
-    occurrenceId: number,
-  ) {
-    if (isOnline) {
-      try {
-        if (!user) return;
-        await api.removeIntervenor({ intervenorId }, occurrenceId);
-        const response = await api.findOccurrencesByReporterId(user.id);
-        setOccurrence(response);
-      } catch (err: any) {
-        throw Error(err.message);
-      }
-      return;
-    } else {
-      const intervenors = await intervenorInfoRepo.getIntervenorInfo();
-      const intervenor = intervenors?.find((i) => i.id === intervenorId);
-      if (!intervenor) throw Error(t("errorResponse.intervenorNotFound"));
-      const payload = { intervenor: intervenor, occurrenceId: occurrenceId };
-      const updated = occurrence.map((o) => {
-        if (o.id === occurrenceId) {
-          return {
-            ...o,
-            intervenors: o.intervenors.filter((id) => id !== intervenorId),
-          };
-        }
-        return o;
-      });
-      setOccurrence(updated);
-      await occurrenceInfoRepo.saveOccurrenceInfo(updated);
-      await offlineOccurrenceQueueRepo.addAction("REMOVE_INTERVENOR", payload);
-    }
-  }
-
-  function checkIfIntervenorIsInOccurrence(
-    intervenorId: number,
-    occurrenceId: number,
-  ) {
-    const occ = occurrence.find((o) => o.id === occurrenceId);
-    if (!occ) return false;
-    return occ.intervenors.some((i) => i === intervenorId);
-  }
+  const value = useMemo(
+    () => ({
+      listOccurrences,
+      occurrence,
+      getOccurrence,
+      addIntervenorToOccurrence,
+      removeIntervenorFromOccurrence,
+      loading,
+    }),
+    [
+      listOccurrences,
+      occurrence,
+      getOccurrence,
+      addIntervenorToOccurrence,
+      removeIntervenorFromOccurrence,
+      loading,
+    ],
+  );
 
   return (
-    <OccurrenceContext.Provider
-      value={{
-        occurrence,
-        listOccurrences,
-        getOccurrence,
-        addIntervenorToOccurrence,
-        removeIntervenorFromOccurrence,
-        loading,
-      }}
-    >
+    <OccurrenceContext.Provider value={value}>
       {children}
     </OccurrenceContext.Provider>
   );

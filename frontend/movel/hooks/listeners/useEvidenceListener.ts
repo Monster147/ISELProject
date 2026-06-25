@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import EventSource from "react-native-sse";
 import { Evidence } from "@commons/models/evidence/Evidence";
 import { API_URL } from "@commons/constants/apiurl";
-import { log } from "./useDocumentsListener";
 
 export type EvidenceUpdateAction = "EvidenceChanged";
 
@@ -32,7 +31,6 @@ export function useEvidenceListener(
 
   useEffect(() => {
     if (!userId || enabled !== true) {
-      log("[SSE Evidences] disabled, skipping");
       return;
     }
 
@@ -51,7 +49,6 @@ export function useEvidenceListener(
       `${API_URL}/api/evidence/${Number(userId)}/listen`,
     );
 
-    log("[SSE EVIDENCE] connecting...");
     esRef.current = es;
     const onEvent = (event: any) => {
       try {
@@ -81,7 +78,6 @@ export function useEvidenceListener(
 
     es.addEventListener("message", onEvent);
     es.addEventListener("error", (event) => {
-      log("[SSE EVIDENCE] error");
       console.error("SSE Error:", event);
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
@@ -96,7 +92,6 @@ export function useEvidenceListener(
     });
 
     return () => {
-      log("[SSE EVIDENCE] cleanup");
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }

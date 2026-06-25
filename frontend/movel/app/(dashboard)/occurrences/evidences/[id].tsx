@@ -1,8 +1,4 @@
-import {
-  StyleSheet,
-  useColorScheme,
-  FlatList,
-} from "react-native";
+import { StyleSheet, useColorScheme, FlatList } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -250,8 +246,8 @@ const DynamicOccurrenceForm = () => {
     uploadFile,
     type,
     label,
-    sectionName?,
     userId,
+    sectionName?,
   ) => {
     let existingId;
     if (type === "json" && sectionName) {
@@ -414,8 +410,8 @@ const DynamicOccurrenceForm = () => {
               upload,
               field.type === "image" ? "IMAGE" : "FILE",
               field.name,
-              sectionTitle,
               user.id,
+              sectionTitle,
             );
 
             uploadedFilesMetadata.push({
@@ -463,8 +459,8 @@ const DynamicOccurrenceForm = () => {
         uploadFile,
         "json",
         sectionTitle,
-        sectionTitle,
         user.id,
+        sectionTitle,
       );
       setSuccessMessage({
         section: sectionTitle,

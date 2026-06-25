@@ -47,7 +47,6 @@ async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
       },
     }).fetch("GET", url);
 
-    console.log("Guardado em:", res.path());
     Alert.alert(
       "Download concluído",
       "O ficheiro foi guardado na pasta Downloads.",
@@ -61,15 +60,7 @@ async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
     fileCache: true,
     path: path,
   }).fetch("GET", url);
-
-  console.log("Guardado em iOS:", res.path());
 }
-
-const LOG_PREFIX = "[EVIDENCES DOWNLOAD]";
-
-export const log = (...args: any[]) => console.log(LOG_PREFIX, ...args);
-
-const logError = (...args: any[]) => console.error(LOG_PREFIX, ...args);
 
 async function downloadEvidence(
   apiBaseUrl: string,
@@ -92,7 +83,6 @@ async function downloadEvidence(
     const mime = response.headers.get("content-type");
 
     const customPath = `${ReactNativeBlobUtil.fs.dirs.DownloadDir}/${filename}`;
-    log("CUSTOM PATH", customPath);
 
     if (!filename.includes(".")) {
       filename += getExtensionFromMime(mime);
@@ -112,7 +102,6 @@ async function downloadEvidence(
         },
       }).fetch("GET", url, authHeaders as Record<string, string>);
 
-      console.log("Guardado em:", res.path());
       Alert.alert(
         "Download concluído",
         "O ficheiro foi guardado na pasta Downloads.",
@@ -126,8 +115,6 @@ async function downloadEvidence(
       fileCache: true,
       path: path,
     }).fetch("GET", url, authHeaders as Record<string, string>);
-
-    console.log("Guardado em iOS:", res.path());
   } else {
     return ReactNativeBlobUtil.config({
       fileCache: true,

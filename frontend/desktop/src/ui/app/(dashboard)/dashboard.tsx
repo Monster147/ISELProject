@@ -96,8 +96,6 @@ const Dashboard = () => {
     return `${found?.name}`;
   };
 
-  console.log(type);
-
   return (
     <ThemedView safe={true} style={styles.container}>
       <Spacer />

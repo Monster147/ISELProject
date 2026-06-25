@@ -1,9 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  ScrollView,
-  useColorScheme,
-} from "react-native";
+import { StyleSheet, Text, ScrollView, useColorScheme } from "react-native";
 import ThemedView from "@components/ThemedView";
 import ThemedText from "@commons/components/ThemedText";
 import ThemedButton from "@commons/components/ThemedButton";

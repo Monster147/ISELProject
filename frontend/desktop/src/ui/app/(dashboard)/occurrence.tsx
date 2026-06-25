@@ -1,9 +1,4 @@
-import {
-  FlatList,
-  Pressable,
-  StyleSheet,
-  useColorScheme,
-} from "react-native";
+import { FlatList, Pressable, StyleSheet, useColorScheme } from "react-native";
 import ThemedText from "@commons/components/ThemedText";
 import ThemedView from "@components/ThemedView";
 import Spacer from "@commons/components/Spacer";

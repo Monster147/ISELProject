@@ -1,8 +1,17 @@
-import { createContext, useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Type } from "@commons/models/type/Type";
 import { api } from "@commons/api/api";
 import { useAuth } from "@hooks/data/useAuth";
-import { useTypesListener, SSEMessage } from "@hooks/listeners/useTypesListener";
+import {
+  useTypesListener,
+  SSEMessage,
+} from "@hooks/listeners/useTypesListener";
 import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
 
 type TypeContextValue = {
@@ -21,11 +30,20 @@ export const TypeProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const { isOnline } = useNetworkStatus();
 
+  const findAllTypes = useCallback(async () => {
+    try {
+      const response = await api.findAllTypes();
+      setType(response);
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
   useEffect(() => {
     if (user && isOnline) {
       findAllTypes();
     }
-  }, [user, isOnline]);
+  }, [user, isOnline, findAllTypes]);
 
   const handleOnMessage = useCallback((message: SSEMessage) => {
     setLoading(true);
@@ -43,18 +61,14 @@ export const TypeProvider = ({ children }) => {
 
   useTypesListener(user?.id, handleOnMessage, isOnline);
 
-  async function findAllTypes() {
-    try {
-      const response = await api.findAllTypes();
-      setType(response);
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  return (
-    <TypeContext.Provider value={{ type, findAllTypes, loading }}>
-      {children}
-    </TypeContext.Provider>
+  const value = useMemo(
+    () => ({
+      type,
+      findAllTypes,
+      loading,
+    }),
+    [type, loading, findAllTypes],
   );
+
+  return <TypeContext.Provider value={value}>{children}</TypeContext.Provider>;
 };

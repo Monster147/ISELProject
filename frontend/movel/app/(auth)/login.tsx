@@ -45,7 +45,6 @@ const Login = () => {
       await login(email, password);
       router.replace("/occurrence");
     } catch (err: any) {
-      console.log(err.message);
       if (err instanceof Error) setError(err.message);
       else setError(String(err));
     }

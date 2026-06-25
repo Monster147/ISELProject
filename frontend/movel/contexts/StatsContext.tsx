@@ -1,6 +1,4 @@
-import {
-  createContext,
-} from "react";
+import { createContext, useCallback, useMemo } from "react";
 import { api } from "@commons/api/api";
 
 type StatsContextValue = {
@@ -18,82 +16,91 @@ export const StatsContext = createContext<StatsContextValue | undefined>(
 );
 
 export function StatsProvider({ children }) {
-  async function getOverviewStats() {
+  const getOverviewStats = useCallback(async () => {
     try {
       const response = await api.getOverviewStats();
       return response;
     } catch (err: any) {
       throw Error(err.message);
     }
-  }
+  }, []);
 
-  async function getStatsReportByType() {
+  const getStatsReportByType = useCallback(async () => {
     try {
       const response = await api.getStatsReportByType();
       return response;
     } catch (err: any) {
       throw Error(err.message);
     }
-  }
+  }, []);
 
-  async function getStatsReportByStatus() {
+  const getStatsReportByStatus = useCallback(async () => {
     try {
       const response = await api.getStatsReportByStatus();
       return response;
     } catch (err: any) {
       throw Error(err.message);
     }
-  }
+  }, []);
 
-  async function getStatsOccurrenceByImportance() {
+  const getStatsOccurrenceByImportance = useCallback(async () => {
     try {
       const response = await api.getStatsOccurrenceByImportance();
       return response;
     } catch (err: any) {
       throw Error(err.message);
     }
-  }
+  }, []);
 
-  async function getStatsReportByTypeThisMonth() {
+  const getStatsReportByTypeThisMonth = useCallback(async () => {
     try {
       const response = await api.getStatsReportByTypeThisMonth();
       return response;
     } catch (err: any) {
       throw Error(err.message);
     }
-  }
+  }, []);
 
-  async function getStatsReportByStatusThisMonth() {
+  const getStatsReportByStatusThisMonth = useCallback(async () => {
     try {
       const response = await api.getStatsReportByStatusThisMonth();
       return response;
     } catch (err: any) {
       throw Error(err.message);
     }
-  }
+  }, []);
 
-  async function getStatsOccurrenceByImportanceThisMonth() {
+  const getStatsOccurrenceByImportanceThisMonth = useCallback(async () => {
     try {
       const response = await api.getStatsOccurrenceByImportanceThisMonth();
       return response;
     } catch (err: any) {
       throw Error(err.message);
     }
-  }
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      getOverviewStats,
+      getStatsReportByType,
+      getStatsReportByStatus,
+      getStatsOccurrenceByImportance,
+      getStatsReportByTypeThisMonth,
+      getStatsReportByStatusThisMonth,
+      getStatsOccurrenceByImportanceThisMonth,
+    }),
+    [
+      getOverviewStats,
+      getStatsReportByType,
+      getStatsReportByStatus,
+      getStatsOccurrenceByImportance,
+      getStatsReportByTypeThisMonth,
+      getStatsReportByStatusThisMonth,
+      getStatsOccurrenceByImportanceThisMonth,
+    ],
+  );
 
   return (
-    <StatsContext.Provider
-      value={{
-        getOverviewStats,
-        getStatsReportByType,
-        getStatsReportByStatus,
-        getStatsOccurrenceByImportance,
-        getStatsReportByTypeThisMonth,
-        getStatsReportByStatusThisMonth,
-        getStatsOccurrenceByImportanceThisMonth,
-      }}
-    >
-      {children}
-    </StatsContext.Provider>
+    <StatsContext.Provider value={value}>{children}</StatsContext.Provider>
   );
 }

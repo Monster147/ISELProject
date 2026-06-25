@@ -1,4 +1,10 @@
-import { createContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Documents } from "@commons/models/documents/Documents";
 import { api } from "@commons/api/api";
 import { useAuth } from "@hooks/data/useAuth";
@@ -24,9 +30,77 @@ export const DocumentContext = createContext<DocumentContextValue | undefined>(
 export function DocumentProvider({ children }) {
   const [documents, setDocuments] = useState<Documents[]>([]);
   const { user } = useAuth();
-  const { isOnline, shouldResetListeners } = useNetworkStatus();
+  const { isOnline } = useNetworkStatus();
   const [loading, setLoading] = useState(false);
   const { lastEvent } = useSyncSSE();
+
+  const loadCachedDocuments = useCallback(async () => {
+    setLoading(true);
+    const cached = await documentsInfoRepo.getDocumentsInfo();
+    if (cached) {
+      setDocuments(cached);
+    } else {
+      setDocuments([]);
+    }
+    setLoading(false);
+  }, []);
+
+  const getAllDocuments = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await api.getAllDocument();
+      setDocuments(response);
+      await documentsInfoRepo.saveDocumentsInfo(response);
+    } catch (err: any) {
+      loadCachedDocuments();
+    } finally {
+      setLoading(false);
+    }
+  }, [loadCachedDocuments]);
+
+  const getDocumentById = useCallback(async (id: number) => {
+    try {
+      const response = await api.getDocumentById(id);
+      return response;
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
+  const getDocumentByName = useCallback(async (name: string) => {
+    try {
+      const response = await api.getDocumentByName(name);
+      return response;
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
+  const getDocumentByType = useCallback(async (type: string) => {
+    try {
+      const response = await api.getDocumentByType(type);
+      return response;
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
+  const getAllDocumentTypes = useCallback(async () => {
+    try {
+      const response = await api.getAllDocumentTypes();
+      return response;
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
+
+  const downloadDocument = useCallback(async (id: number) => {
+    try {
+      await api.downloadDocument(id);
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -36,7 +110,7 @@ export function DocumentProvider({ children }) {
         loadCachedDocuments();
       }
     }
-  }, [user, isOnline]);
+  }, [user, isOnline, getAllDocuments, loadCachedDocuments]);
 
   useEffect(() => {
     const handleDocumentsChanged = async () => {
@@ -54,107 +128,32 @@ export function DocumentProvider({ children }) {
 
     handleDocumentsChanged();
   }, [lastEvent]);
-  /*
-    const handleOnMessage = useCallback(async (message: SSEMessage) => {
-        setLoading(true)
-        const data = message.data
-        const action = message.action
-        switch (action) {
-            case "DocumentsChanged":
-                setDocuments(data.documents)
-                await documentsInfoRepo.saveDocumentsInfo(data.documents)
-                break
-            default:
-                break
-        }
-        setTimeout(() => setLoading(false), 300);
-    }, [])
 
-    useDocumentsListener(user?.id,handleOnMessage, isOnline)
-
-     */
-
-  async function getAllDocuments() {
-    setLoading(true);
-    try {
-      const response = await api.getAllDocument();
-      setDocuments(response);
-      await documentsInfoRepo.saveDocumentsInfo(response);
-    } catch (err: any) {
-      loadCachedDocuments();
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function loadCachedDocuments() {
-    setLoading(true);
-    const cached = await documentsInfoRepo.getDocumentsInfo();
-    if (cached) {
-      setDocuments(cached);
-    } else {
-      setDocuments([]);
-    }
-    setLoading(false);
-  }
-
-  async function getDocumentById(id: number) {
-    try {
-      const response = await api.getDocumentById(id);
-      return response;
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function getDocumentByName(name: string) {
-    try {
-      const response = await api.getDocumentByName(name);
-      return response;
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function getDocumentByType(type: string) {
-    try {
-      const response = await api.getDocumentByType(type);
-      return response;
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function getAllDocumentTypes() {
-    try {
-      const response = await api.getAllDocumentTypes();
-      return response;
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function downloadDocument(id: number) {
-    try {
-      await api.downloadDocument(id);
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
+  const value = useMemo(
+    () => ({
+      getAllDocumentTypes,
+      getDocumentByType,
+      getDocumentByName,
+      getDocumentById,
+      getAllDocuments,
+      documents,
+      downloadDocument,
+      loading,
+    }),
+    [
+      documents,
+      loading,
+      getAllDocumentTypes,
+      getDocumentByType,
+      getDocumentByName,
+      getDocumentById,
+      getAllDocuments,
+      downloadDocument,
+    ],
+  );
 
   return (
-    <DocumentContext.Provider
-      value={{
-        getAllDocumentTypes,
-        getDocumentByType,
-        getDocumentByName,
-        getDocumentById,
-        getAllDocuments,
-        documents,
-        downloadDocument,
-        loading,
-      }}
-    >
+    <DocumentContext.Provider value={value}>
       {children}
     </DocumentContext.Provider>
   );

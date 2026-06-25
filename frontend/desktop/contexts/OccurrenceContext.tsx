@@ -2,9 +2,10 @@ import {
   createContext,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
-import { api} from "@commons/api/api";
+import { api } from "@commons/api/api";
 import { Occurrence } from "@commons/models/occurrence/Occurrence";
 import { useAuth } from "@hooks/data/useAuth";
 import {
@@ -38,11 +39,62 @@ export function OccurrenceProvider({ children }) {
   const { user } = useAuth();
   const { isOnline } = useNetworkStatus();
 
+  const listOccurrences = useCallback(async () => {
+    try {
+      if (!user) return;
+      const response = await api.findOccurrencesByReporterId(user.id);
+      setOccurrence(response);
+    } catch (err: any) {
+      throw Error(err.message);
+    }
+  }, [user]);
+
+  const getOccurrence = useCallback(
+    async (id: number) => {
+      try {
+        if (!user) return;
+        const response = await api.findOccurrenceById(id);
+        return response;
+      } catch (err: any) {
+        throw Error(err.message);
+      }
+    },
+    [user],
+  );
+
+  const addIntervenorToOccurrence = useCallback(
+    async (intervenorId: number, occurrenceId: number) => {
+      try {
+        if (!user) return;
+        await api.addIntervenor({ intervenorId }, occurrenceId);
+        const response = await api.findOccurrencesByReporterId(user.id);
+        setOccurrence(response);
+      } catch (err: any) {
+        throw Error(err.message);
+      }
+    },
+    [user],
+  );
+
+  const removeIntervenorFromOccurrence = useCallback(
+    async (intervenorId: number, occurrenceId: number) => {
+      try {
+        if (!user) return;
+        await api.removeIntervenor({ intervenorId }, occurrenceId);
+        const response = await api.findOccurrencesByReporterId(user.id);
+        setOccurrence(response);
+      } catch (err: any) {
+        throw Error(err.message);
+      }
+    },
+    [user],
+  );
+
   useEffect(() => {
     if (user && isOnline) {
       listOccurrences();
     }
-  }, [user, isOnline]);
+  }, [user, isOnline, listOccurrences]);
 
   const handleOnMessage = useCallback((message: SSEMessage) => {
     setLoading(true);
@@ -60,65 +112,27 @@ export function OccurrenceProvider({ children }) {
 
   useOccurrencesListener(user?.id, handleOnMessage, isOnline);
 
-  async function listOccurrences() {
-    try {
-      if (!user) return;
-      const response = await api.findOccurrencesByReporterId(user.id);
-      setOccurrence(response);
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function getOccurrence(id: number) {
-    try {
-      if (!user) return;
-      const response = await api.findOccurrenceById(id);
-      return response;
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function addIntervenorToOccurrence(
-    intervenorId: number,
-    occurrenceId: number,
-  ) {
-    try {
-      if (!user) return;
-      await api.addIntervenor({ intervenorId }, occurrenceId);
-      const response = await api.findOccurrencesByReporterId(user.id);
-      setOccurrence(response);
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
-
-  async function removeIntervenorFromOccurrence(
-    intervenorId: number,
-    occurrenceId: number,
-  ) {
-    try {
-      if (!user) return;
-      await api.removeIntervenor({ intervenorId }, occurrenceId);
-      const response = await api.findOccurrencesByReporterId(user.id);
-      setOccurrence(response);
-    } catch (err: any) {
-      throw Error(err.message);
-    }
-  }
+  const value = useMemo(
+    () => ({
+      occurrence,
+      listOccurrences,
+      getOccurrence,
+      addIntervenorToOccurrence,
+      removeIntervenorFromOccurrence,
+      loading,
+    }),
+    [
+      occurrence,
+      loading,
+      listOccurrences,
+      getOccurrence,
+      addIntervenorToOccurrence,
+      removeIntervenorFromOccurrence,
+    ],
+  );
 
   return (
-    <OccurrenceContext.Provider
-      value={{
-        occurrence,
-        listOccurrences,
-        getOccurrence,
-        addIntervenorToOccurrence,
-        removeIntervenorFromOccurrence,
-        loading,
-      }}
-    >
+    <OccurrenceContext.Provider value={value}>
       {children}
     </OccurrenceContext.Provider>
   );

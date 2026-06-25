@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Occurrence } from "@commons/models/occurrence/Occurrence";
 import EventSource from "react-native-sse";
 import { API_URL } from "@commons/constants/apiurl";
-import { log } from "./useDocumentsListener";
 
 export type OccurrencesUpdateAction = "OccurrencesChanged";
 
@@ -32,7 +31,6 @@ export function useOccurrencesListener(
 
   useEffect(() => {
     if (!userID || enabled !== true) {
-      log("[SSE Occurrences] disabled, skipping");
       return;
     }
 
@@ -47,7 +45,6 @@ export function useOccurrencesListener(
       esRef.current = null;
     }
 
-    log("[SSE Occurrences] connecting...");
     const es = new EventSource(
       `${API_URL}/api/occurrence/listen/user/${userID}`,
     );
@@ -80,7 +77,6 @@ export function useOccurrencesListener(
 
     es.addEventListener("message", onEvent);
     es.addEventListener("error", (event) => {
-      log("[SSE Occurrences] error");
       console.error("SSE Error:", event);
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
@@ -95,7 +91,6 @@ export function useOccurrencesListener(
     });
 
     return () => {
-      log("[SSE Occurrences] cleanup");
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }
