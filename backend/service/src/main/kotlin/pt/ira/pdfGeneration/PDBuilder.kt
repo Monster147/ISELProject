@@ -130,18 +130,21 @@ class PDBuilder(
         val pdfBytes = resource.inputStream.use { it.readBytes() }
         Loader.loadPDF(pdfBytes).use { pdf ->
             val renderer = PDFRenderer(pdf)
-            val pageImage = renderer.renderImageWithDPI(0, 150f)
-            val pageImageByteArray = ByteArrayOutputStream()
-            ImageIO.write(pageImage, "png", pageImageByteArray)
-            val image =
-                PDImageXObject.createFromByteArray(
-                    doc,
-                    pageImageByteArray.toByteArray(),
-                    fileName,
-                )
-            val maxWidth = page.mediaBox.width - (margin * 2) - 20f
-            val maxHeight = page.mediaBox.height * 0.7f
-            placeImageOnPage(image, maxWidth, maxHeight)
+            val pdfPages = pdf.numberOfPages
+            for(i in 0 until pdfPages) {
+                val pageImage = renderer.renderImageWithDPI(i, 150f)
+                val pageImageByteArray = ByteArrayOutputStream()
+                ImageIO.write(pageImage, "png", pageImageByteArray)
+                val image =
+                    PDImageXObject.createFromByteArray(
+                        doc,
+                        pageImageByteArray.toByteArray(),
+                        fileName,
+                    )
+                val maxWidth = page.mediaBox.width - (margin * 2) - 20f
+                val maxHeight = page.mediaBox.height * 0.7f
+                placeImageOnPage(image, maxWidth, maxHeight)
+            }
             pdfText.evidenceReference(fileName, language).let { writeLine(it) }
         }
     }

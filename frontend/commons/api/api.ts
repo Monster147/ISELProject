@@ -288,7 +288,7 @@ export const api = {
 
   async updateReportStatus(input: StatusInput, id: number): Promise<Report> {
     return fetchApi<Report>(`/report/update-status/${id}`, {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify(input),
     });
   },
@@ -309,7 +309,7 @@ export const api = {
 
   async updateReport(id: number): Promise<Report> {
     return fetchApi<Report>(`/report/update/${id}`, {
-      method: "POST",
+      method: "PUT",
     });
   },
 
@@ -349,7 +349,7 @@ export const api = {
     intervenorId: number,
   ): Promise<Intervenor> {
     return fetchApi<Intervenor>(`/intervenor/update/${intervenorId}`, {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify(input),
     });
   },
@@ -463,7 +463,7 @@ export const api = {
     }
 
     return fetchApi<Evidence>(`/evidence/update/${id}`, {
-      method: "POST",
+      method: "PUT",
       body: formData,
     });
   },
@@ -598,7 +598,7 @@ export const api = {
 
   async updateType(id: number, input: TypeUpdateInput): Promise<Type> {
     return fetchApi<Type>(`/type/${id}`, {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify(input),
     });
   },

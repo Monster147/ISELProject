@@ -7,7 +7,6 @@ import { offlineEvidenceQueueRepo } from "@infrastructure/offline/OfflineEvidenc
 
 type OfflineSyncContextValue = {
   syncAllOfflineQueues: () => Promise<void>;
-  isSyncing: boolean;
 };
 
 export const OfflineSyncContext = createContext<
@@ -193,7 +192,7 @@ export const OfflineSyncProvider = ({ children }) => {
   }
 
   return (
-    <OfflineSyncContext.Provider value={{ syncAllOfflineQueues, isSyncing }}>
+    <OfflineSyncContext.Provider value={{ syncAllOfflineQueues }}>
       {children}
     </OfflineSyncContext.Provider>
   );

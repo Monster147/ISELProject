@@ -356,10 +356,10 @@ class EvidenceService(
             ActionKind.EvidenceChanged,
         )
 
-        publisher.occurrencesPublisher.sendMessageToAll(
+        publisher.occurrencePublisher.sendMessageToAll(
             data.occurrenceId,
             data.occurrence,
-            ActionKind.OccurrencesChanged,
+            ActionKind.EvidenceChanged,
         )
 
         return success(data.evidence)
