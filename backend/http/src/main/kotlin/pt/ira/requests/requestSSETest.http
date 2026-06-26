@@ -36,7 +36,7 @@ Authorization: Bearer {{token_user}}
   "usersId": 1,
   "endDate": "2031-12-31",
   "importance": "URGENT",
-  "occurrenceType": 2 ,
+  "occurrenceType": 1 ,
   "occurrenceInfo": { "location": "Lisbon", "people": [1,2,3] }
 }
 

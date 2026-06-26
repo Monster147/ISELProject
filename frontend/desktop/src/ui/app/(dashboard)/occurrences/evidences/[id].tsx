@@ -1,4 +1,5 @@
-import { StyleSheet, FlatList, useColorScheme } from "react-native";
+import { StyleSheet, FlatList, useColorScheme, Pressable } from "react-native";
+import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { useCallback, useEffect, useState } from "react";
@@ -22,7 +23,7 @@ import { FieldRenderer } from "./FieldRenderer";
 import {
   useOccurrenceListener,
   SSEMessage,
-} from "../../../../../../hooks/listeners/useOccurrenceListener";
+} from "@hooks/listeners/useOccurrenceListener";
 import { getLabelByLanguage } from "@commons/utils/getLabelByLanguage";
 
 const DynamicOccurrenceForm = () => {
@@ -63,7 +64,7 @@ const DynamicOccurrenceForm = () => {
     section: string;
     message: string;
   } | null>(null);
-  const [isUpdatingFromSSE, setIsUpdatingFromSSE] = useState(false);
+  const [expandableSection, setExpandableSection] = useState<string | null>(null);
 
   const actualOccurrence = occurrence.find((o) => o.id === id);
 
@@ -542,78 +543,96 @@ const DynamicOccurrenceForm = () => {
         contentContainerStyle={styles.list}
         renderItem={({ item: section }) => {
           const displayTitle = getLabelByLanguage(section.title, i18n.language);
+          const checkIfAnyFieldRequired = expandedSections.find((sec) => sec.title === section.title)?.fields.some(
+              (field) => field?.required === true)
 
           return (
             <ThemedCard style={styles.card}>
-              <ThemedView
+              <Pressable
                 style={[
                   styles.sectionHeader,
                   { backgroundColor: theme.uiBackground },
                 ]}
+                onPress={() =>
+                    setExpandableSection(
+                        expandableSection === displayTitle ? null : displayTitle,
+                    )
+                }
               >
                 <ThemedText style={styles.sectionTitle} title={true}>
                   {displayTitle}
+                  {checkIfAnyFieldRequired && <ThemedText style={styles.required}> *</ThemedText>}
                 </ThemedText>
 
+                {expandableSection === displayTitle ? (
+                    <MdExpandLess size={24} color={theme.text} />
+                ) : (
+                    <MdExpandMore size={24} color={theme.text} />
+                )}
+              </Pressable>
+              {expandableSection === displayTitle && (
+                  <>
+                <ThemedView
+                  style={[
+                    styles.fieldsContainer,
+                    { backgroundColor: theme.uiBackground },
+                  ]}
+                >
+                  {loadingFields[displayTitle] ? (
+                    <ThemedView>
+                      <ThemedLoader
+                        style={[{ backgroundColor: theme.uiBackground }]}
+                      />
+                    </ThemedView>
+                  ) : (
+                    section.fields.map((field: FormField) => (
+                      <FieldRenderer
+                        key={field.name}
+                        field={field}
+                        value={
+                          field.type === "file" || field.type === "image"
+                            ? fileValues[field.name]
+                            : formValues[field.name]
+                        }
+                        intervenients={intervenients}
+                        onChange={(name, value) =>
+                          handleFieldChange(field, value)
+                        }
+                        onFileChange={handleFileChange}
+                        colorScheme={colorScheme}
+                        fileValues={fileValues}
+                      />
+                    ))
+                  )}
+                </ThemedView>
+
                 <ThemedButton
-                  onPress={() => saveSection(section)}
-                  style={styles.saveBtn}
-                  disabled={loadingFields[displayTitle]}
+                    onPress={() => saveSection(section)}
+                    style={styles.saveBtn}
+                    disabled={loadingFields[displayTitle]}
                 >
                   <ThemedText style={{ color: "#fff", textAlign: "center" }}>
                     {t("evidences.save")}
                   </ThemedText>
                 </ThemedButton>
-              </ThemedView>
 
-              <ThemedView
-                style={[
-                  styles.fieldsContainer,
-                  { backgroundColor: theme.uiBackground },
-                ]}
-              >
-                {loadingFields[displayTitle] ? (
-                  <ThemedView>
-                    <ThemedLoader
-                      style={[{ backgroundColor: theme.uiBackground }]}
-                    />
-                  </ThemedView>
-                ) : (
-                  section.fields.map((field: FormField) => (
-                    <FieldRenderer
-                      key={field.name}
-                      field={field}
-                      value={
-                        field.type === "file" || field.type === "image"
-                          ? fileValues[field.name]
-                          : formValues[field.name]
-                      }
-                      intervenients={intervenients}
-                      onChange={(name, value) =>
-                        handleFieldChange(field, value)
-                      }
-                      onFileChange={handleFileChange}
-                      colorScheme={colorScheme}
-                      fileValues={fileValues}
-                    />
-                  ))
+                {successMessage && successMessage.section === displayTitle && (
+                  <ThemedText
+                    style={{
+                      ...styles.errorText,
+                      color: Colors.success,
+                      marginTop: 12,
+                    }}
+                  >
+                    {successMessage.message}
+                  </ThemedText>
                 )}
-              </ThemedView>
-              {successMessage && successMessage.section === displayTitle && (
-                <ThemedText
-                  style={{
-                    ...styles.errorText,
-                    color: Colors.success,
-                    marginTop: 12,
-                  }}
-                >
-                  {successMessage.message}
-                </ThemedText>
-              )}
-              {error && error.section === displayTitle && (
-                <ThemedText style={{ ...styles.errorText, marginTop: 12 }}>
-                  {error.message}
-                </ThemedText>
+                {error && error.section === displayTitle && (
+                  <ThemedText style={{ ...styles.errorText, marginTop: 12 }}>
+                    {error.message}
+                  </ThemedText>
+                )}
+              </>
               )}
             </ThemedCard>
           );
@@ -634,6 +653,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
+  required: { color: Colors.warning },
 
   card: {
     marginHorizontal: 20,
@@ -668,6 +689,8 @@ const styles = StyleSheet.create({
   saveBtn: {
     paddingHorizontal: 12,
     paddingVertical: 6,
+    width: "15%",
+    alignSelf: "center",
   },
 
   fieldsContainer: {
