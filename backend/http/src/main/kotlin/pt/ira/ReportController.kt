@@ -342,6 +342,25 @@ class ReportController(
         return sseEmitter
     }
 
+    /**
+     * Converte um erro de domínio [ReportError] na resposta HTTP correspondente.
+     *
+     * Mapeamento de erros:
+     * - [ReportError.ReportNotFound] → 404 Not Found
+     * - [ReportError.UserNotFound] → 404 Not Found
+     * - [ReportError.OccurrenceAlreadyHasReport] → 409 Conflict
+     * - [ReportError.ReportAlreadySubmittedOrApproved] → 409 Conflict
+     * - [ReportError.UploadFailed] → 500 Internal Server Error
+     * - [ReportError.FileNotFound] → 404 Not Found
+     * - [ReportError.TypeNotFound] → 404 Not Found
+     * - [ReportError.MissingRequiredFields] → 400 Bad Request
+     * - [ReportError.IntervenorNotFound] → 404 Not Found
+     * - [ReportError.OccurrenceNotFound] → 404 Not Found
+     * - [ReportError.OccurrenceNotAssignedToUser] → 403 Forbidden
+     *
+     * @receiver Erro de domínio a converter.
+     * @return [ResponseEntity] com o [Problem] e o código HTTP adequados.
+     */
     private fun ReportError.toResponse(): ResponseEntity<*> =
         when (this) {
             is ReportError.ReportNotFound -> Problem.ReportNotFound.response(HttpStatus.NOT_FOUND)

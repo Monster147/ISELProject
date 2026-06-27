@@ -19,6 +19,17 @@ import pt.ira.user.UsersDomainConfig
 import java.time.Clock
 import java.time.Duration
 
+/**
+ * Configurador do pipeline HTTP do Spring MVC.
+ *
+ * Regista o interceptor de autenticação e o resolver de argumentos de utilizadores
+ * autenticados, integrando-os no ciclo de vida do dispatcher servlet.
+ *
+ * @param authenticationInterceptor Interceptor responsável por validar tokens antes
+ *                                  de encaminhar pedidos para os controllers.
+ * @param authenticatedUserArgumentResolver Resolver que injeta o utilizador autenticado
+ *                                          como argumento nos métodos dos controllers.
+ */
 @Configuration
 class PipelineConfigurer(
     val authenticationInterceptor: AuthenticationInterceptor,
@@ -33,8 +44,22 @@ class PipelineConfigurer(
     }
 }
 
+/**
+ * Classe principal da aplicação Spring Boot.
+ *
+ * Define e expõe os beans de infraestrutura necessários para o funcionamento
+ * da aplicação, incluindo a ligação à base de dados, codificação de palavras-passe,
+ * gestão de tokens e configuração de domínio.
+ */
 @SpringBootApplication(scanBasePackages = ["pt.ira"])
 class WebApp {
+    /**
+     * Cria e configura a instância de [Jdbi] para acesso à base de dados PostgreSQL.
+     *
+     * A URL de ligação é obtida a partir da variável de ambiente `DB_URL`.
+     *
+     * @return Instância de [Jdbi] configurada com os requisitos da aplicação.
+     */
     @Bean
     fun jdbi() =
         Jdbi
@@ -44,21 +69,49 @@ class WebApp {
                 },
             ).configureWithAppRequirements()
 
+    /**
+     * Cria o codificador de palavras-passe usando o algoritmo BCrypt.
+     *
+     * @return Instância de [BCryptPasswordEncoder].
+     */
     @Bean
     fun passwordEncoder() = BCryptPasswordEncoder()
 
+    /**
+     * Cria o codificador de tokens usando SHA-256.
+     *
+     * @return Instância de [Sha256TokenEncoder].
+     */
     @Bean
     fun tokenEncoder() = Sha256TokenEncoder()
 
+    /**
+     * Cria o relógio do sistema em UTC, utilizado para validação temporal de tokens.
+     *
+     * @return Instância de [Clock] com fuso horário UTC.
+     */
     @Bean
     fun clock(): Clock = Clock.systemUTC()
 
+    /**
+     * Cria o gestor de transações JDBI, responsável por gerir o ciclo de vida
+     * das transações na base de dados.
+     *
+     * @param jdbi Instância de [Jdbi] injetada pelo Spring.
+     * @return Instância de [TransactionManagerJdbi].
+     */
     @Bean
     fun trxManagerJdbi(jdbi: Jdbi): TransactionManagerJdbi = TransactionManagerJdbi(jdbi)
 
     /*@Bean
     fun trxManager(): TransactionManagerInMem = TransactionManagerInMem()*/
 
+    /**
+     * Cria a configuração de domínio de utilizadores com as políticas de segurança
+     * e gestão de tokens da aplicação.
+     *
+     * @return Instância de [UsersDomainConfig] com os parâmetros definidos.
+     */
     @Bean
     fun usersDomainConfig() =
         UsersDomainConfig(
@@ -69,6 +122,11 @@ class WebApp {
         )
 }
 
+/**
+ * Ponto de entrada da aplicação.
+ *
+ * Inicializa o contexto Spring Boot e arranca o servidor HTTP.
+ */
 fun main() {
     runApplication<WebApp>()
 }

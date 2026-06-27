@@ -1,7 +1,7 @@
 package pt.ira.interfaces
 
 import com.fasterxml.jackson.databind.JsonNode
-import pt.ira.evindence.Evidence
+import pt.ira.evidence.Evidence
 import pt.ira.intervenor.Intervenor
 import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
@@ -87,9 +87,9 @@ interface RepositoryOccurrence : Repository<Occurrence> {
      * Adiciona uma evidência a uma ocorrência.
      *
      * @param occurrence Ocorrência à qual a evidência será adicionado.
-     * @param Evidence Evidência a adicionar.
+     * @param evidence Evidência a adicionar.
      *
-     * @return [Occurrence] atualizada com a evidência adicionado.
+     * @return [Occurrence] atualizada com a evidência adicionada.
      */
     fun addEvidence(
         occurrence: Occurrence,
@@ -100,9 +100,9 @@ interface RepositoryOccurrence : Repository<Occurrence> {
      * Remove uma evidência de uma ocorrência.
      *
      * @param occurrence Ocorrência da qual a evidência será removido.
-     * @param Evidence Evidência a remover.
+     * @param evidence Evidência a remover.
      *
-     * @return [Occurrence] atualizada sem a evidência indicado.
+     * @return [Occurrence] atualizada sem a evidência indicada.
      */
     fun removeEvidence(
         occurrence: Occurrence,

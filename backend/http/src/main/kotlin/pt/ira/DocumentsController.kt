@@ -247,6 +247,18 @@ class DocumentsController(
         return sseEmitter
     }
 
+    /**
+     * Converte um erro de domínio [DocumentsError] na resposta HTTP correspondente.
+     *
+     * Mapeamento de erros:
+     * - [DocumentsError.DocumentNotFound] → 404 Not Found
+     * - [DocumentsError.InvalidFile] → 400 Bad Request
+     * - [DocumentsError.FileAlreadyExists] → 409 Conflict
+     * - [DocumentsError.UploadFailed] → 500 Internal Server Error
+     *
+     * @receiver Erro de domínio a converter.
+     * @return [ResponseEntity] com o [Problem] e o código HTTP adequados.
+     */
     private fun DocumentsError.toResponse(): ResponseEntity<*> =
         when (this) {
             is DocumentsError.DocumentNotFound -> Problem.FileNotFound.response(HttpStatus.NOT_FOUND)

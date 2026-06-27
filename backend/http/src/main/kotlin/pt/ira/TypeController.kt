@@ -178,6 +178,17 @@ class TypeController(
         return sseEmitter
     }
 
+    /**
+     * Converte um erro de domínio [TypeError] na resposta HTTP correspondente.
+     *
+     * Mapeamento de erros:
+     * - [TypeError.TypeNotFound] → 404 Not Found
+     * - [TypeError.TypeAlreadyExists] → 400 Bad Request
+     * - [TypeError.InvalidName] → 400 Bad Request
+     *
+     * @receiver Erro de domínio a converter.
+     * @return [ResponseEntity] com o [Problem] e o código HTTP adequados.
+     */
     private fun TypeError.toResponse(): ResponseEntity<*> =
         when (this) {
             is TypeError.TypeNotFound -> Problem.TypeNotFound.response(HttpStatus.NOT_FOUND)

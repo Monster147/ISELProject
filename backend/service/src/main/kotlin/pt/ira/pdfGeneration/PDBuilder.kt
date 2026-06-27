@@ -15,6 +15,21 @@ import pt.ira.storage.StorageService
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
 
+/**
+ * Construtor de documentos PDF para os relatórios de ocorrências.
+ *
+ * Encapsula a lógica de renderização de conteúdo em páginas A4, incluindo
+ * secções de dados estruturados, imagens de evidências, linhas decorativas e cabeçalhos.
+ * Gere automaticamente a paginação quando o conteúdo excede o espaço disponível.
+ *
+ * @param doc Documento PDF em construção (instância de [PDDocument]).
+ * @param language Identificação internacional usada nos textos gerados (ex: "pt", "es", "en").
+ * @param pdfText Objeto de textos localizados para o PDF.
+ * @param storageService Serviço de armazenamento usado para carregar recursos de evidências.
+ *
+ * @see PDFText
+ * @see PDFGenerator
+ */
 class PDBuilder(
     private val doc: PDDocument,
     private val language: String,

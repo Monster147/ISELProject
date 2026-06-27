@@ -3,6 +3,13 @@ package pt.ira.pdfGeneration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+/**
+ * Objeto utilitário que fornece textos localizados para a geração de documentos PDF.
+ *
+ * Centraliza as strings apresentadas nos relatórios PDF, suportando múltiplas
+ * linguagens (Português, Espanhol e Inglês). Cada método devolve o texto
+ * correspondente à linguagem indicada, com fallback para inglês.
+ */
 object PDFText {
     fun reportTitle(
         occurrenceId: Int,

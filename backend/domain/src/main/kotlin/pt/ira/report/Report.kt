@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.JsonNode
  * @property updatedAt Timestamp (epoch millis) que indica a última atualização do relatório.
  * @property editors Lista de identificadores dos utilizadores com permissões de edição.
  * @property intervenors Lista de identificadores dos intervenientes associados ao relatório.
+ * @property language Identificação internacional da linguagem do relatório (ex: "pt", "es", "en").
+ * @property filePath Caminho para o ficheiro PDF gerado e armazenado no sistema de ficheiros.
  *
  * @constructor Cria uma instância de [Report] com os dados fornecidos.
  */

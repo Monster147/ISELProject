@@ -1,4 +1,4 @@
-package pt.ira.evindence
+package pt.ira.evidence
 
 /**
  * Representa uma evidência associada a uma ocorrência.

@@ -1,7 +1,7 @@
 package pt.ira.mem
 
 import com.fasterxml.jackson.databind.JsonNode
-import pt.ira.evindence.Evidence
+import pt.ira.evidence.Evidence
 import pt.ira.interfaces.RepositoryOccurrence
 import pt.ira.intervenor.Intervenor
 import pt.ira.occurrence.Occurrence

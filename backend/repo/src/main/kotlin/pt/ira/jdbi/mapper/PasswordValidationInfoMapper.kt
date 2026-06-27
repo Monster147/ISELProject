@@ -6,6 +6,12 @@ import pt.ira.user.PasswordValidationInfo
 import java.sql.ResultSet
 import java.sql.SQLException
 
+/**
+ * Mapper JDBI para colunas do tipo [PasswordValidationInfo].
+ *
+ * Converte o valor textual armazenado na base de dados (hash da palavra-passe)
+ * para uma instância tipificada de [PasswordValidationInfo].
+ */
 class PasswordValidationInfoMapper : ColumnMapper<PasswordValidationInfo> {
     @Throws(SQLException::class)
     override fun map(

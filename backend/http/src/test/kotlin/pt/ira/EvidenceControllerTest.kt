@@ -8,13 +8,12 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
-import pt.ira.evindence.Evidence
+import pt.ira.evidence.Evidence
 import pt.ira.interfaces.TransactionManager
 import pt.ira.model.evidence.CreateEvidenceInput
 import pt.ira.occurrence.OccurrenceType
 import pt.ira.user.PasswordValidationInfo
 import java.time.LocalDate
-import kotlin.run
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull

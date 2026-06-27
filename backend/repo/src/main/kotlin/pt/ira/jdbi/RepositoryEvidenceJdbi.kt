@@ -1,7 +1,7 @@
 package pt.ira.jdbi
 
 import org.jdbi.v3.core.Handle
-import pt.ira.evindence.Evidence
+import pt.ira.evidence.Evidence
 import pt.ira.interfaces.RepositoryEvidence
 import java.sql.ResultSet
 

@@ -142,6 +142,16 @@ class RoleController(
             .body(result)
     }
 
+    /**
+     * Converte um erro de domínio [RoleError] na resposta HTTP correspondente.
+     *
+     * Mapeamento de erros:
+     * - [RoleError.RoleNotFound] → 404 Not Found
+     * - [RoleError.RoleAlreadyExists] → 400 Bad Request
+     *
+     * @receiver Erro de domínio a converter.
+     * @return [ResponseEntity] com o [Problem] e o código HTTP adequados.
+     */
     private fun RoleError.toResponse(): ResponseEntity<*> =
         when (this) {
             is RoleError.RoleNotFound -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)

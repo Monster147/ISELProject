@@ -10,7 +10,7 @@ import pt.ira.role.Role
  * Encapsula as situações de erro que podem ocorrer durante operações com cargos,
  * permitindo um tratamento explícito e tipificado dos cenários de falha.
  *
- * @see ReportService
+ * @see RoleService
  */
 sealed class RoleError {
     /**

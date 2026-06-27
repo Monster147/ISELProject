@@ -302,6 +302,19 @@ class UserController(
         @PathVariable userId: Int,
     ): ResponseEntity<List<ReportTypePercentage>> = ResponseEntity.ok(userService.getTypePercentagesByReporter(userId))
 
+    /**
+     * Converte um erro de domínio [UserError] na resposta HTTP correspondente.
+     *
+     * Mapeamento de erros:
+     * - [UserError.RoleDoesntExist] → 404 Not Found
+     * - [UserError.UserNotFound] → 404 Not Found
+     * - [UserError.UserNotAdmin] → 403 Forbidden
+     * - [UserError.InsecurePassword] → 400 Bad Request
+     * - [UserError.AlreadyUsedEmailAddress] → 400 Bad Request
+     *
+     * @receiver Erro de domínio a converter.
+     * @return [ResponseEntity] com o [Problem] e o código HTTP adequados.
+     */
     private fun UserError.toResponse(): ResponseEntity<*> =
         when (this) {
             is UserError.RoleDoesntExist -> Problem.RoleNotFound.response(HttpStatus.NOT_FOUND)
@@ -312,6 +325,15 @@ class UserController(
             else -> Problem.InternalError.response(HttpStatus.INTERNAL_SERVER_ERROR)
         }
 
+    /**
+     * Converte um erro de domínio [TokenCreationError] na resposta HTTP correspondente.
+     *
+     * Mapeamento de erros:
+     * - [TokenCreationError.UserOrPasswordAreInvalid] → 400 Bad Request
+     *
+     * @receiver Erro de domínio a converter.
+     * @return [ResponseEntity] com o [Problem] e o código HTTP adequados.
+     */
     private fun TokenCreationError.toResponse(): ResponseEntity<*> =
         when (this) {
             is TokenCreationError.UserOrPasswordAreInvalid -> Problem.UserOrPasswordAreInvalid.response(HttpStatus.BAD_REQUEST)

@@ -1,6 +1,6 @@
 package pt.ira.interfaces
 
-import pt.ira.evindence.Evidence
+import pt.ira.evidence.Evidence
 
 /**
  * Repositório de operações sobre evidências.

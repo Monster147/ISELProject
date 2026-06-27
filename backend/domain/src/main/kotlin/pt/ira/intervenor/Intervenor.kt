@@ -7,7 +7,7 @@ package pt.ira.intervenor
  * por um tipo e número de identificação, além de conter informação de contacto
  * e morada.
  *
- * @property id Identificador único da evidência.
+ * @property id Identificador único do interveniente.
  * @property idNumber Número de identificação do interveniente (ex: número de documento).
  * @property idType Tipo de identificação (ex: CC, NIF, Passaporte, etc.).
  * @property name Nome completo do interveniente ou designação da entidade.

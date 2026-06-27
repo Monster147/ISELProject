@@ -277,6 +277,16 @@ class IntervenorController(
         return sseEmitter
     }
 
+    /**
+     * Converte um erro de domínio [IntervenorError] na resposta HTTP correspondente.
+     *
+     * Mapeamento de erros:
+     * - [IntervenorError.IntervenorNotFound] → 404 Not Found
+     * - [IntervenorError.IntervenorAlreadyExists] → 400 Bad Request
+     *
+     * @receiver Erro de domínio a converter.
+     * @return [ResponseEntity] com o [Problem] e o código HTTP adequados.
+     */
     private fun IntervenorError.toResponse(): ResponseEntity<*> =
         when (this) {
             is IntervenorError.IntervenorNotFound -> Problem.IntervenorNotFound.response(HttpStatus.NOT_FOUND)

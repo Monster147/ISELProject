@@ -304,6 +304,20 @@ class EvidenceController(
         return sseEmitter
     }
 
+    /**
+     * Converte um erro de domínio [EvidenceError] na resposta HTTP correspondente.
+     *
+     * Mapeamento de erros:
+     * - [EvidenceError.EvidenceNotFound] → 404 Not Found
+     * - [EvidenceError.UploadFailed] → 400 Bad Request
+     * - [EvidenceError.OccurrenceNotFound] → 404 Not Found
+     * - [EvidenceError.InvalidFile] → 400 Bad Request
+     * - [EvidenceError.FileNotFound] → 404 Not Found
+     * - [EvidenceError.ReporterNotFound] → 404 Not Found
+     *
+     * @receiver Erro de domínio a converter.
+     * @return [ResponseEntity] com o [Problem] e o código HTTP adequados.
+     */
     private fun EvidenceError.toResponse(): ResponseEntity<*> =
         when (this) {
             is EvidenceError.EvidenceNotFound -> Problem.EvidenceNotFound.response(HttpStatus.NOT_FOUND)

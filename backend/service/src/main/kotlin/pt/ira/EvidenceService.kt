@@ -3,11 +3,11 @@ package pt.ira
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import pt.ira.emitters.ActionKind
-import pt.ira.evindence.CreatedEvidenceResult
-import pt.ira.evindence.DownloadEvidence
-import pt.ira.evindence.Evidence
-import pt.ira.evindence.EvidenceDeletionResult
-import pt.ira.evindence.EvidenceUpdateResult
+import pt.ira.evidence.CreatedEvidenceResult
+import pt.ira.evidence.DownloadEvidence
+import pt.ira.evidence.Evidence
+import pt.ira.evidence.EvidenceDeletionResult
+import pt.ira.evidence.EvidenceUpdateResult
 import pt.ira.interfaces.TransactionManager
 import pt.ira.publishers.Publishers
 import pt.ira.storage.StorageService

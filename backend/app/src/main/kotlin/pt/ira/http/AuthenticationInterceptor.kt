@@ -7,10 +7,37 @@ import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
 import pt.ira.user.AuthenticatedUser
 
+/**
+ * Interceptor HTTP responsável por validar a autenticação em pedidos que o requeiram.
+ *
+ * Antes de cada pedido ser encaminhado para o controller, verifica se o método alvo
+ * declara um parâmetro do tipo [AuthenticatedUser]. Caso declare, valida o token
+ * presente no cabeçalho `Authorization`. Se o token for válido, armazena o utilizador
+ * autenticado nos atributos do pedido para ser resolvido pelo
+ * [AuthenticatedUserArgumentResolver]. Caso contrário, responde com HTTP 401.
+ *
+ * @param authorizationHeaderProcessor Processador responsável por extrair e validar
+ *                                     o token a partir do cabeçalho de autorização.
+ *
+ * @see AuthenticatedUserArgumentResolver
+ * @see RequestTokenProcessor
+ */
 @Component
 class AuthenticationInterceptor(
     private val authorizationHeaderProcessor: RequestTokenProcessor,
 ) : HandlerInterceptor {
+    /**
+     * Intercepta o pedido antes de ser processado pelo handler.
+     *
+     * Se o método do handler requerer autenticação (parâmetro [AuthenticatedUser]),
+     * processa o cabeçalho `Authorization` e valida o token. Em caso de falha,
+     * responde com HTTP 401 e o cabeçalho `WWW-Authenticate`.
+     *
+     * @param request Pedido HTTP recebido.
+     * @param response Resposta HTTP a enviar.
+     * @param handler Handler que irá processar o pedido.
+     * @return `true` se o pedido deve prosseguir, `false` caso a autenticação falhe.
+     */
     override fun preHandle(
         request: HttpServletRequest,
         response: HttpServletResponse,

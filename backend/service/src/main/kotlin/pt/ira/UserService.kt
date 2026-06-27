@@ -54,7 +54,16 @@ sealed class UserError {
     data object UserNotAdmin : UserError()
 }
 
+/**
+ * Hierarquia de erros específicos da criação de tokens de autenticação.
+ *
+ * @see UserService
+ */
 sealed class TokenCreationError {
+    /**
+     * O email ou a palavra-passe fornecidos são inválidos ou não correspondem
+     * a nenhum utilizador registado no sistema.
+     */
     data object UserOrPasswordAreInvalid : TokenCreationError()
 }
 

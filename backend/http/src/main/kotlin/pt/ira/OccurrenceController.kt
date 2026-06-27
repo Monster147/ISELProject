@@ -258,6 +258,22 @@ class OccurrenceController(
         return sseEmitter
     }
 
+    /**
+     * Converte um erro de domínio [OccurrenceError] na resposta HTTP correspondente.
+     *
+     * Mapeamento de erros:
+     * - [OccurrenceError.EndDateNotValid] → 400 Bad Request
+     * - [OccurrenceError.UserNotFound] → 404 Not Found
+     * - [OccurrenceError.DuplicateUsersIds] → 400 Bad Request
+     * - [OccurrenceError.OccurrenceNotFound] → 404 Not Found
+     * - [OccurrenceError.IntervenorNotFound] → 404 Not Found
+     * - [OccurrenceError.IntervenorAlreadyInOccurrence] → 400 Bad Request
+     * - [OccurrenceError.IntervenorNotInOccurrence] → 404 Not Found
+     * - [OccurrenceError.TypeNotFound] → 404 Not Found
+     *
+     * @receiver Erro de domínio a converter.
+     * @return [ResponseEntity] com o [Problem] e o código HTTP adequados.
+     */
     private fun OccurrenceError.toResponse(): ResponseEntity<*> =
         when (this) {
             is OccurrenceError.EndDateNotValid -> Problem.EndDateNotValid.response(HttpStatus.BAD_REQUEST)

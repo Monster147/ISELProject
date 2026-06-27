@@ -1,6 +1,6 @@
 package pt.ira.mem
 
-import pt.ira.evindence.Evidence
+import pt.ira.evidence.Evidence
 import pt.ira.interfaces.RepositoryEvidence
 
 class RepositoryEvidenceMem : RepositoryEvidence {

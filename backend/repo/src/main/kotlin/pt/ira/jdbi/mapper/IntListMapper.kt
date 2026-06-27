@@ -5,6 +5,12 @@ import org.jdbi.v3.core.statement.StatementContext
 import java.sql.ResultSet
 import java.sql.SQLException
 
+/**
+ * Mapper JDBI para colunas do tipo array de inteiros (PostgreSQL `integer[]`).
+ *
+ * Converte arrays SQL para listas de inteiros Kotlin, utilizados por exemplo
+ * para colunas que armazenam conjuntos de identificadores (roles, intervenors, evidences).
+ */
 class IntListMapper : ColumnMapper<List<Int>> {
     @Throws(SQLException::class)
     override fun map(
