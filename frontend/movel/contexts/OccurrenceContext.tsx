@@ -34,6 +34,14 @@ export const OccurrenceContext = createContext<
   OccurrenceContextValue | undefined
 >(undefined);
 
+/**
+ * Provider que gere o estado e as operações de ocorrências na aplicação móvel.
+ * Suporta modo offline: adiciona e remove intervenientes localmente
+ * (via {@link offlineOccurrenceQueueRepo}).
+ * Subscreve atualizações SSE via {@link useSyncSSE}.
+ *
+ * @param children Árvore de componentes que terão acesso ao contexto de ocorrências.
+ */
 export function OccurrenceProvider({ children }) {
   const [occurrence, setOccurrence] = useState<Occurrence[]>([]);
   const [loading, setLoading] = useState(false);

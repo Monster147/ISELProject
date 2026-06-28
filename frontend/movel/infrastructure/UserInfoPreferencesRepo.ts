@@ -15,6 +15,10 @@ export interface UserInfoRepo {
   clearUserInfo(): Promise<void>;
 }
 
+/**
+ * Implementação de {@link UserInfoRepo} que persiste os dados do utilizador
+ * no `AsyncStorage`, serializado em JSON com a chave `"userId"`.
+ */
 export class UserInfoPreferencesRepo implements UserInfoRepo {
   private USER_KEY = "userId";
 

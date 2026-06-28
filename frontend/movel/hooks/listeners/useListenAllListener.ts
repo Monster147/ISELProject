@@ -9,6 +9,23 @@ export type SSEMessage =
   | { action: "OccurrencesChanged"; data: any }
   | { action: "TypesChanged"; data: any };
 
+/**
+ * Hook que subscreve todos os tipos de eventos SSE do utilizador num único endpoint (React Native).
+ * Usa react-native-sse para abrir uma ligação ao endpoint `/api/listen/user/{userId}`,
+ * que agrega eventos de todos os domínios (ocorrências, intervenientes, evidências, documentos, tipos).
+ * Cada tipo de ação tem o seu próprio debounce independente.
+ * A ligação é encerrada automaticamente ao desmontar ou mudar deps.
+ * A ligação só é estabelecida se `enabled` for true e `userId` estiver definido, garantindo que apenas
+ * utilizadores autenticados e com conexão à internet recebem eventos.
+ *
+ * @param userId Identificador do utilizador (a subscrição só ativa com userId definido).
+ * @param onMessage Callback invocado com a mensagem SSE recebida. O debounce garante que,
+ *                  caso o servidor emita múltiplos eventos do mesmo tipo em rápida sucessão,
+ *                  o callback só é invocado uma vez após o intervalo definido ter passado
+ *                  sem novos eventos desse tipo, evitando re-renders ou chamadas à API desnecessárias.
+ * @param enabled Controla se a ligação SSE deve estar ativa (true para ativar).
+ * @param debounceMs Intervalo de debounce em milissegundos por tipo de ação. Por omissão: 1000.
+ */
 export function useListenAllListener(
   userId: number | undefined,
   onMessage: (message: SSEMessage) => void,

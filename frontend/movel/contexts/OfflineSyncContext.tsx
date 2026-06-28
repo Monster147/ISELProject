@@ -13,6 +13,13 @@ export const OfflineSyncContext = createContext<
   OfflineSyncContextValue | undefined
 >(undefined);
 
+/**
+ * Aguarda o número de milissegundos indicado antes de continuar a execução.
+ * Usado para implementar backoff exponencial entre tentativas de sincronização.
+ *
+ * @param delayInMs Tempo de espera em milissegundos.
+ * @returns Promise que resolve após o tempo indicado.
+ */
 function delay(delayInMs: number) {
   return new Promise((resolve) => {
     setTimeout(() => resolve(undefined), delayInMs);
@@ -21,6 +28,20 @@ function delay(delayInMs: number) {
 
 class OfflineAbortError extends Error {}
 
+/**
+ * Trata o erro resultante de uma ação offline, aplicando a estratégia de retry adequada.
+ *
+ * - Erros de servidor (5xx): aplica backoff exponencial (2^retries segundos) e incrementa
+ *   o contador de tentativas antes de voltar a tentar.
+ * - Erros de cliente (4xx): remove a ação da fila permanentemente, pois não adianta repetir.
+ * - Erros sem status (ex: sem rede): lança {@link OfflineAbortError} para interromper
+ *   o ciclo de sincronização e aguardar o restabelecimento da ligação.
+ *
+ * @param err Erro capturado durante a execução da ação.
+ * @param action Ação que falhou, com o seu id e contador de retries atual.
+ * @param repo Repositório da fila onde a ação está guardada, usado para atualizar ou remover a ação.
+ * @throws {OfflineAbortError} Se o erro não tiver status HTTP (sem ligação à rede).
+ */
 async function handleActionError(
   err: any,
   action: { id: string; retries: number },
@@ -31,7 +52,7 @@ async function handleActionError(
 ): Promise<void> {
   const status = err?.status;
 
-  if (status === undefined || status === null) {
+  if (status === undefined || status === null || status === 0) {
     throw new OfflineAbortError();
   }
 
@@ -46,6 +67,17 @@ async function handleActionError(
   await repo.removeAction(action.id);
 }
 
+/**
+ * Provider responsável por sincronizar as filas de operações offline quando a ligação é restaurada.
+ * Processa sequencialmente as filas de intervenientes, ocorrências e evidências,
+ * com retry exponencial para erros de servidor (5xx) e remoção automática de ações
+ * com erros de cliente (4xx) ou que excederam o número máximo de tentativas.
+ * A sincronização é ativada automaticamente quando `isOnline` passa a true.
+ * Caso a ligação seja perdida durante a sincronização, as ações ainda não processadas
+ * permanecem nas filas e serão retomadas quando a ligação for restabelecida, nada se perde.
+ *
+ * @param children Árvore de componentes que terão acesso ao contexto de sincronização offline.
+ */
 export const OfflineSyncProvider = ({ children }) => {
   const isSyncingRef = useRef(false);
   const { isOnline } = useNetworkStatus();

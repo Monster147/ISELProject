@@ -15,6 +15,10 @@ export interface TypeInfoRepo {
   clearTypeInfo(): Promise<void>;
 }
 
+/**
+ * Implementação de {@link TypeInfoRepo} que persiste a lista de tipos de ocorrência
+ * em cache local usando `AsyncStorage`, serializada em JSON com a chave `"type"`.
+ */
 export class TypeInfoPreferencesRepo implements TypeInfoRepo {
   private TYPE_KEY = "type";
 

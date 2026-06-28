@@ -5,6 +5,7 @@ import en from "@commons/i18next/locales/en";
 import pt from "@commons/i18next/locales/pt";
 import es from "@commons/i18next/locales/es";
 
+/** Código de linguagem do dispositivo, obtido via expo-localization (ex: "pt", "en", "es"). */
 export const lng = getLocales()[0].languageCode ?? "en";
 
 i18n

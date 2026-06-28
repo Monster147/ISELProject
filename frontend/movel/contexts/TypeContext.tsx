@@ -21,6 +21,13 @@ export const TypeContext = createContext<TypeContextValue | undefined>(
   undefined,
 );
 
+/**
+ * Provider que gere o estado e as operações de tipos de ocorrência na aplicação móvel.
+ * Suporta modo offline: carrega da API quando online, com fallback para cache local ({@link typeInfoRepo}).
+ * Subscreve atualizações SSE via {@link useSyncSSE}.
+ *
+ * @param children Árvore de componentes que terão acesso ao contexto de tipos.
+ */
 export const TypeProvider = ({ children }) => {
   const [type, setType] = useState<Type[]>([]);
   const { user } = useAuth();

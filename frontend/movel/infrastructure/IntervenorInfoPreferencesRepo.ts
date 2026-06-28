@@ -17,6 +17,10 @@ export interface IntervenorInfoRepo {
   clearIntervenorInfo(): Promise<void>;
 }
 
+/**
+ * Implementação de {@link IntervenorInfoRepo} que persiste a lista de intervenientes
+ * em cache local usando `AsyncStorage`, serializada em JSON com a chave `"intervenors"`.
+ */
 export class IntervenorInfoPreferencesRepo implements IntervenorInfoRepo {
   private INTERVENOR_KEY = "intervenors";
 

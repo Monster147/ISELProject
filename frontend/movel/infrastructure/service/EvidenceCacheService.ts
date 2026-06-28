@@ -1,5 +1,10 @@
 import ReactNativeBlobUtil from "react-native-blob-util";
 
+/**
+ * Serviço responsável por gerir o cache local de ficheiros de evidências no dispositivo móvel.
+ * Os ficheiros são armazenados na pasta de cache do sistema (`CacheDir/evidence-cache`),
+ * nomeados com o ID da evidência para facilitar a pesquisa e evitar conflitos.
+ */
 export class EvidenceCacheService {
   private CACHE_DIR = `${ReactNativeBlobUtil.fs.dirs.CacheDir}/evidence-cache`;
 

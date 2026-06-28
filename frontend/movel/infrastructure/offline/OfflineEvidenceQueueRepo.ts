@@ -19,6 +19,11 @@ export interface OfflineEvidenceQueueRepo {
   updateAction(actionId: string, updatedAction: OfflineAction): Promise<void>;
 }
 
+/**
+ * Implementação de {@link OfflineEvidenceQueueRepo} que persiste a fila de operações
+ * offline de evidências (CREATE, DELETE, UPDATE) usando `expo-secure-store`.
+ * Cada ação inclui um payload, contador de tentativas e máximo de retries.
+ */
 export class OfflineEvidenceQueuePreferencesRepo implements OfflineEvidenceQueueRepo {
   private QUEUE_KEY = "evidence_offline_queue";
 

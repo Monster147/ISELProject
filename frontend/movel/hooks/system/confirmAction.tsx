@@ -7,6 +7,14 @@ export type ConfirmOptions = {
   cancelText: string;
 };
 
+/**
+ * Apresenta um diálogo de confirmação nativo (Alert) e executa a ação se confirmado.
+ * Suporta botão de cancelar obrigatório e botão de confirmação opcional.
+ * Na plataforma móvel, o botão de confirmação usa estilo "destructive" para ações irreversíveis.
+ *
+ * @param options Configuração do diálogo (título, mensagem, textos dos botões).
+ * @param action Ação assíncrona a executar se o utilizador confirmar. Opcional.
+ */
 export function confirmAction(
   options: ConfirmOptions,
   action?: () => Promise<void> | void,

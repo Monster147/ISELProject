@@ -36,6 +36,15 @@ export const EvidenceContext = createContext<EvidenceContextValue | undefined>(
   undefined,
 );
 
+/**
+ * Provider que gere o estado e as operações de evidências na aplicação móvel.
+ * Suporta modo offline completo: cria, elimina e atualiza evidências localmente
+ * (via {@link offlineEvidenceQueueRepo}) quando não existe conexão, sincronizando depois.
+ * Mantém cache local das evidências e pré-carrega os ficheiros para acesso offline.
+ * Subscreve atualizações SSE via {@link useSyncSSE}.
+ *
+ * @param children Árvore de componentes que terão acesso ao contexto de evidências.
+ */
 export function EvidenceProvider({ children }) {
   const [evidence, setEvidence] = useState<Evidence[]>([]);
   const { user } = useAuth();

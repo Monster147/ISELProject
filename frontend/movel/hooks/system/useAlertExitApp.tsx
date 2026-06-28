@@ -3,6 +3,13 @@ import { Alert, BackHandler } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { useTranslation } from "react-i18next";
 
+/**
+ * Hook que interceta o botão físico de retrocesso no Android e apresenta
+ * um diálogo de confirmação antes de sair da aplicação.
+ * Usa useFocusEffect para registar e desregistar o handler ao entrar/sair do ecrã.
+ *
+ * @see https://reactnative.dev/docs/backhandler
+ */
 export function useAlertExitApp() {
   const { t } = useTranslation();
 
@@ -33,5 +40,3 @@ export function useAlertExitApp() {
     }, []),
   );
 }
-
-// https://reactnative.dev/docs/backhandler

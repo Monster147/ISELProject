@@ -9,6 +9,16 @@ const formatDate = (date: Date) => {
   return date.toISOString().split("T")[0];
 };
 
+/**
+ * Input de data nativo para a plataforma móvel.
+ * Renderiza um `Pressable` que abre o seletor de data do sistema operativo (`DateTimePicker`).
+ * A data é formatada para YYYY-MM-DD antes de ser passada ao callback.
+ *
+ * @param value Valor atual da data no formato YYYY-MM-DD.
+ * @param onChangeText Callback invocado com a data selecionada no formato YYYY-MM-DD.
+ * @param style Estilos adicionais a aplicar ao campo.
+ * @param placeholder Texto apresentado quando não existe data selecionada.
+ */
 const ThemedDateInput = ({ value, onChangeText, style, placeholder }) => {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme] ?? Colors.light;

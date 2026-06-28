@@ -23,6 +23,10 @@ export interface EvidenceInfoRepo {
   clearEvidenceInfo(): Promise<void>;
 }
 
+/**
+ * Implementação de {@link EvidenceInfoRepo} que persiste a lista de evidências
+ * (incluindo caminhos de cache locais) usando `AsyncStorage`, serializada em JSON com a chave `"evidence"`.
+ */
 export class EvidenceInfoPreferencesRepo implements EvidenceInfoRepo {
   private EVIDENCE_KEY = "evidence";
 

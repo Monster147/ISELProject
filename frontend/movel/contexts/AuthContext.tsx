@@ -23,6 +23,14 @@ export const AuthContext = createContext<AuthContextValue | undefined>(
   undefined,
 );
 
+/**
+ * Provider que disponibiliza o contexto de autenticação à aplicação móvel.
+ * Gere o token de sessão (via {@link authInfoRepo} com SecureStore) e os dados do
+ * utilizador (via {@link userInfoRepo} com AsyncStorage).
+ * Ao montar, restaura automaticamente a sessão anterior se existir.
+ *
+ * @param children Árvore de componentes que terão acesso ao contexto de autenticação.
+ */
 export function AuthProvider({ children }) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);

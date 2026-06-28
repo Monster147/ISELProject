@@ -1,6 +1,13 @@
 import { useContext } from "react";
 import { EvidenceContext } from "@contexts/EvidenceContext";
 
+/**
+ * Hook que dá acesso ao contexto de evidências na aplicação móvel.
+ * Deve ser usado num {@link EvidenceProvider}.
+ *
+ * @returns Contexto de evidências com operações de criação, consulta, download, atualização e eliminação.
+ * @throws {Error} Se usado fora de um EvidenceProvider.
+ */
 export function useEvidence() {
   const context = useContext(EvidenceContext);
   if (!context) {

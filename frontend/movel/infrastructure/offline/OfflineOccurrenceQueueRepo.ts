@@ -23,6 +23,11 @@ export interface OfflineOccurenceQueueRepo {
   updateAction(actionId: string, updatedAction: OfflineAction): Promise<void>;
 }
 
+/**
+ * Implementação de {@link OfflineOccurenceQueueRepo} que persiste a fila de operações
+ * offline de ocorrências (ADD_INTERVENOR, REMOVE_INTERVENOR) usando `expo-secure-store`.
+ * Cada ação inclui um payload, contador de tentativas e máximo de retries.
+ */
 export class OfflineOccurrenceQueuePreferencesRepo implements OfflineOccurenceQueueRepo {
   private QUEUE_KEY = "occurrence_offline_queue";
 

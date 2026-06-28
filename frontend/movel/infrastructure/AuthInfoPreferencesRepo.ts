@@ -12,6 +12,10 @@ export interface AuthInfoRepo {
   clearAuthInfo(): Promise<void>;
 }
 
+/**
+ * Implementação de {@link AuthInfoRepo} que persiste o token de autenticação
+ * de forma segura usando expo-secure-store.
+ */
 export class AuthInfoPreferencesRepo implements AuthInfoRepo {
   private TOKEN_KEY = "token";
 

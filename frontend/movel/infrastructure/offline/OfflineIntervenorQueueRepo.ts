@@ -19,6 +19,11 @@ export interface OfflineIntervenorQueueRepo {
   updateAction(actionId: string, updatedAction: OfflineAction): Promise<void>;
 }
 
+/**
+ * Implementação de {@link OfflineIntervenorQueueRepo} que persiste a fila de operações
+ * offline de intervenientes (CREATE, UPDATE) usando `expo-secure-store`.
+ * Cada ação inclui um payload, contador de tentativas e máximo de retries.
+ */
 export class OfflineIntervenorQueuePreferencesRepo implements OfflineIntervenorQueueRepo {
   private QUEUE_KEY = "intervenor_offline_queue";
 

@@ -22,6 +22,10 @@ export interface OccurrenceInfoRepo {
   clearOccurrenceInfo(): Promise<void>;
 }
 
+/**
+ * Implementação de {@link OccurrenceInfoRepo} que persiste a lista de ocorrências
+ * em cache local usando `AsyncStorage`, serializada em JSON com a chave `"occurrence"`.
+ */
 export class OccurrenceInfoPreferencesRepo implements OccurrenceInfoRepo {
   private OCCURRENCE_KEY = "occurrence";
 

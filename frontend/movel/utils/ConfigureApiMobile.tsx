@@ -5,6 +5,11 @@ import { Platform, Alert } from "react-native";
 import { getExtensionFromMime } from "./ConfigureApiMobileUtils";
 import { API_URL } from "@commons/constants/apiurl";
 
+/**
+ * Configura o módulo de API com os handlers específicos da plataforma móvel.
+ * Deve ser chamado uma única vez no arranque da aplicação, antes de qualquer chamada à API.
+ * Usa `${API_URL}/api` como URL base para ligar diretamente ao backend.
+ */
 configureApi(
   {
     getAuthInfo: () => authInfoRepo.getAuthInfo(),
@@ -14,6 +19,18 @@ configureApi(
   `${API_URL}/api`,
 );
 
+/**
+ * Handler de download de documentos para a plataforma móvel.
+ * Extrai o nome e o tipo MIME do ficheiro a partir dos cabeçalhos da resposta,
+ * inferindo a extensão via {@link getExtensionFromMime} caso o nome não a inclua.
+ * - Android: usa o DownloadManager do sistema, guardando na pasta Downloads
+ *   com notificação nativa e alerta de confirmação ao utilizador.
+ * - iOS: guarda o ficheiro no DocumentDir da aplicação via ReactNativeBlobUtil.
+ *
+ * @param apiBaseUrl URL base da API.
+ * @param id Identificador do documento a descarregar.
+ * @throws {Error} Se a resposta HTTP não for bem-sucedida.
+ */
 async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
   const url = `${apiBaseUrl}/documents/${id}/download`;
 
@@ -62,6 +79,23 @@ async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
   }).fetch("GET", url);
 }
 
+/**
+ * Handler de download de evidências para a plataforma móvel.
+ * O comportamento varia consoante o parâmetro `keep`:
+ * - `keep = true`: guarda o ficheiro permanentemente no dispositivo.
+ *   Extrai o nome e o tipo MIME dos cabeçalhos, inferindo a extensão via {@link getExtensionFromMime}.
+ *   No Android, usa o DownloadManager com notificação nativa e alerta de confirmação.
+ *   No iOS, guarda no DocumentDir da aplicação.
+ * - `keep = false`: descarrega o ficheiro para cache temporária e retorna o objeto
+ *   ReactNativeBlobUtil, permitindo o uso imediato do ficheiro (ex: visualização).
+ *
+ * @param apiBaseUrl URL base da API.
+ * @param id Identificador da evidência a descarregar.
+ * @param authHeaders Cabeçalhos de autenticação a incluir no pedido.
+ * @param keep Se true, guarda o ficheiro permanentemente; se false, retorna o objeto temporário.
+ * @returns Void quando `keep` é true, ou objeto ReactNativeBlobUtil quando `keep` é false.
+ * @throws {Error} Se `keep` for true e a resposta HTTP não for bem-sucedida.
+ */
 async function downloadEvidence(
   apiBaseUrl: string,
   id: number,

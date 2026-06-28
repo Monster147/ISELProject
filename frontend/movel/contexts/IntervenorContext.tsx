@@ -42,6 +42,14 @@ export const IntervenorContext = createContext<
   IntervenorContextValue | undefined
 >(undefined);
 
+/**
+ * Provider que gere o estado e as operações de intervenientes na aplicação móvel.
+ * Suporta modo offline: cria e atualiza intervenientes localmente
+ * (via {@link offlineIntervenorQueueRepo}), com as respetivas validações.
+ * Subscreve atualizações SSE via {@link useSyncSSE}.
+ *
+ * @param children Árvore de componentes que terão acesso ao contexto de intervenientes.
+ */
 export function IntervenorProvider({ children }) {
   const [intervenor, setIntervenor] = useState<Intervenor[]>([]);
   const { isOnline } = useNetworkStatus();

@@ -5,6 +5,11 @@ import ThemedText from "@commons/components/ThemedText";
 import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
 import { useTranslation } from "react-i18next";
 
+/**
+ * Banner de aviso de ausência de conectividade para a plataforma móvel.
+ * Renderiza um banner no topo do ecrã quando o dispositivo está offline.
+ * Não renderiza nada enquanto o estado de rede estiver online ou indeterminado.
+ */
 const OfflineBanner = () => {
   const { t } = useTranslation();
   const { isOnline } = useNetworkStatus();

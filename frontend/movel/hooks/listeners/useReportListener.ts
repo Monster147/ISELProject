@@ -21,7 +21,16 @@ export interface SSEMessage {
 }
 
 //Precisa de ser updated depois
-
+/**
+ * Hook que subscreve atualizações de um relatório específico em tempo real via SSE (React Native).
+ * Usa react-native-sse para abrir uma ligação ao endpoint `/api/report/{reportId}/listen`.
+ * Nota: a implementação atual não é utilizada
+ * A ligação é encerrada automaticamente ao desmontar ou mudar deps.
+ *
+ * @param reportId Identificador do relatório a observar.
+ * @param onMessage Callback invocado com a mensagem SSE recebida.
+ * @param enabled Controla se a ligação SSE deve estar ativa (true para ativar).
+ */
 export function useReportListener(
   reportId: string | undefined,
   onMessage: (message: SSEMessage) => void,

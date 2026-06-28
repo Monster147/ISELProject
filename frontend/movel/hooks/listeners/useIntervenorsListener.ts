@@ -16,6 +16,21 @@ export interface SSEMessage {
   action: IntervenorsUpdateAction;
 }
 
+/**
+ * Hook que subscreve atualizações da lista de intervenientes em tempo real via SSE (React Native).
+ * Usa react-native-sse para abrir uma ligação ao endpoint `/api/intervenor/listen`.
+ * A ligação é gerida com debounce e encerrada automaticamente ao desmontar ou mudar deps.
+ * A ligação só é estabelecida se `enabled` for true e `userId` estiver definido, garantindo que apenas
+ * utilizadores autenticados e com conexão à internet recebem eventos.
+ *
+ * @param userId Identificador do utilizador (a subscrição só ativa com userId definido).
+ * @param onMessage Callback invocado com a mensagem SSE recebida. O debounce garante que,
+ *                  caso o servidor emita múltiplos eventos em rápida sucessão, o callback
+ *                  só é invocado uma vez após o intervalo definido ter passado sem novos eventos,
+ *                  evitando re-renders ou chamadas à API desnecessárias.
+ * @param enabled Controla se a ligação SSE deve estar ativa (true para ativar).
+ * @param debounceMs Intervalo de debounce em milissegundos. Por omissão: 1000.
+ */
 export function useIntervenorsListener(
   userId: number | undefined,
   onMessage: (message: SSEMessage) => void,

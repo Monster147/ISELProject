@@ -15,6 +15,10 @@ export interface DocumentsInfoRepo {
   clearDocumentsInfo(): Promise<void>;
 }
 
+/**
+ * Implementação de {@link DocumentsInfoRepo} que persiste a lista de documentos
+ * em cache local usando `AsyncStorage`, serializada em JSON com a chave `"documents"`.
+ */
 export class DocumentsInfoPreferencesRepo implements DocumentsInfoRepo {
   private DOCUMENTS_KEY = "documents";
 

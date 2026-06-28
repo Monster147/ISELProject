@@ -14,6 +14,14 @@ export const SyncSSEContext = createContext<SyncSSEContextValue | undefined>(
   undefined,
 );
 
+/**
+ * Provider que centraliza a receção de eventos SSE para toda a aplicação móvel.
+ * Subscreve o endpoint `/api/listen/user/{userId}` via {@link useListenAllListener},
+ * que agrega eventos de todos os domínios necessários (ocorrências, intervenientes, evidências, etc.).
+ * Os contextos de dados subscrevem o lastEvent para reagir a mudanças em tempo real.
+ *
+ * @param children Árvore de componentes que terão acesso ao contexto SSE de sincronização.
+ */
 export const SyncSSEProvider = ({ children }) => {
   const { isOnline } = useNetworkStatus();
   const { user } = useAuth();

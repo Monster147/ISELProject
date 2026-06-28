@@ -27,6 +27,13 @@ export const DocumentContext = createContext<DocumentContextValue | undefined>(
   undefined,
 );
 
+/**
+ * Provider que gere o estado e as operações de documentos na aplicação móvel.
+ * Suporta modo offline: tenta carregar da API quando online, com fallback
+ * para cache local ({@link documentsInfoRepo}). Subscreve atualizações SSE via {@link useSyncSSE}.
+ *
+ * @param children Árvore de componentes que terão acesso ao contexto de documentos.
+ */
 export function DocumentProvider({ children }) {
   const [documents, setDocuments] = useState<Documents[]>([]);
   const { user } = useAuth();
