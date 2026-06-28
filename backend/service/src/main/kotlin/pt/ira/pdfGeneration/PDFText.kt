@@ -11,6 +11,15 @@ import java.time.format.DateTimeFormatter
  * correspondente à linguagem indicada, com fallback para inglês.
  */
 object PDFText {
+
+    /**
+     * Obtém o título do relatório na linguagem especificada.
+     *
+     * @param occurrenceId Identificador da ocorrência.
+     * @param language Código da linguagem ("pt", "es" ou "en").
+     *
+     * @return Título localizado do relatório.
+     */
     fun reportTitle(
         occurrenceId: Int,
         language: String,
@@ -21,6 +30,16 @@ object PDFText {
             else -> "Occurrence $occurrenceId Report"
         }
 
+    /**
+     * Obtém a data e hora de geração do relatório formatadas e localizadas.
+     *
+     * A data é apresentada no formato `dd/MM/yyyy HH:mm:ss`, sendo o texto
+     * introdutório adaptado à linguagem indicada.
+     *
+     * @param language Código da linguagem ("pt", "es" ou "en").
+     *
+     * @return Texto contendo a data de geração do relatório.
+     */
     fun generationDate(language: String): String {
         val formatter =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
@@ -35,6 +54,13 @@ object PDFText {
         }
     }
 
+    /**
+     * Obtém o texto apresentado quando um valor não se encontra disponível.
+     *
+     * @param language Código da linguagem ("pt", "es" ou "en").
+     *
+     * @return Texto localizado indicando que a informação não foi disponibilizada.
+     */
     fun notProvided(language: String): String =
         when (language) {
             "pt" -> "Não disponibilizado"
@@ -42,6 +68,14 @@ object PDFText {
             else -> "Not provided"
         }
 
+    /**
+     * Obtém o texto de referência para um ficheiro de evidência associado ao relatório.
+     *
+     * @param fileName Nome do ficheiro de evidência.
+     * @param language Código da linguagem ("pt", "es" ou "en").
+     *
+     * @return Texto localizado contendo a referência ao ficheiro de evidência.
+     */
     fun evidenceReference(
         fileName: String,
         language: String,

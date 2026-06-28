@@ -42,8 +42,20 @@ class PDBuilder(
     private var content = PDPageContentStream(doc, page)
     var y = page.mediaBox.height - margin
 
+    /**
+     * Fecha o fluxo de escrita do documento PDF.
+     *
+     * Deve ser invocado após a conclusão da geração do documento para garantir
+     * que todos os recursos associados ao conteúdo são libertados corretamente.
+     */
     fun close() = content.close()
 
+    /**
+     * Cria uma página no documento PDF e prepara um novo fluxo de escrita.
+     *
+     * Fecha a página atual, adiciona uma nova página A4 ao documento e reposiciona
+     * o cursor no topo da nova página.
+     */
     fun newPage() {
         content.beginText()
         content.endText()
@@ -53,6 +65,16 @@ class PDBuilder(
         y = page.mediaBox.height - margin
     }
 
+    /**
+     * Executa uma operação de desenho preservando o estado gráfico atual.
+     *
+     * Quando solicitado, aplica automaticamente a cor e a espessura da linha antes
+     * da execução do bloco de desenho e efetua o respetivo traçado.
+     *
+     * @param lineWidth Espessura da linha utilizada no desenho.
+     * @param greenAndLine Indica se deve aplicar a configuração gráfica padrão.
+     * @param block Bloco responsável pelas operações de desenho.
+     */
     private inline fun drawWithStroke(
         lineWidth: Float = 1f,
         greenAndLine: Boolean = true,
@@ -70,6 +92,9 @@ class PDBuilder(
         content.restoreGraphicsState()
     }
 
+    /**
+     * Desenha uma linha horizontal separadora na posição atual do documento.
+     */
     fun drawLine() {
         drawWithStroke {
             moveTo(margin, y)
@@ -77,6 +102,13 @@ class PDBuilder(
         }
     }
 
+    /**
+     * Desenha uma moldura em torno de uma evidência apresentada no relatório.
+     *
+     * @param x Coordenada horizontal inicial da imagem.
+     * @param width Largura da imagem.
+     * @param height Altura da imagem.
+     */
     fun drawEvidenceBox(
         x: Float,
         width: Float,
@@ -87,6 +119,15 @@ class PDBuilder(
         }
     }
 
+    /**
+     * Escreve uma linha de texto no documento PDF.
+     *
+     * O texto é automaticamente dividido em múltiplas linhas quando excede a largura
+     * disponível da página e cria uma página caso não exista espaço suficiente.
+     *
+     * @param text Texto a escrever.
+     * @param isTitle Indica se o texto deve ser apresentado como título.
+     */
     fun writeLine(
         text: String,
         isTitle: Boolean = false,
@@ -126,6 +167,15 @@ class PDBuilder(
         }
     }
 
+    /**
+     * Renderiza uma imagem de evidência no documento PDF.
+     *
+     * A imagem é carregada do recurso fornecido, dimensionada para caber na página
+     * e acompanhada por uma referência ao ficheiro original.
+     *
+     * @param resource Recurso correspondente à imagem.
+     * @param fileName Nome do ficheiro da evidência.
+     */
     fun renderImage(
         resource: Resource,
         fileName: String,
@@ -138,7 +188,16 @@ class PDBuilder(
         pdfText.evidenceReference(fileName, language).let { writeLine(it) }
     }
 
-    fun renderPDFPreview(
+    /**
+     * Renderiza um ficheiro PDF de evidência.
+     *
+     * Cada página do PDF é convertida numa imagem e inserida sequencialmente no
+     * documento gerado, seguida de uma referência ao ficheiro original.
+     *
+     * @param resource Recurso correspondente ao ficheiro PDF.
+     * @param fileName Nome do ficheiro da evidência.
+     */
+    fun renderPDF(
         resource: Resource,
         fileName: String,
     ) {
@@ -164,6 +223,17 @@ class PDBuilder(
         }
     }
 
+    /**
+     * Posiciona e desenha uma imagem na página atual do documento.
+     *
+     * A imagem é redimensionada proporcionalmente para respeitar as dimensões
+     * máximas indicadas e é criada automaticamente uma nova página caso não exista
+     * espaço suficiente.
+     *
+     * @param image Imagem a inserir.
+     * @param width Largura máxima disponível.
+     * @param height Altura máxima disponível.
+     */
     private fun placeImageOnPage(
         image: PDImageXObject,
         width: Float,
@@ -180,6 +250,16 @@ class PDBuilder(
         y -= boxHeight
     }
 
+    /**
+     * Renderiza uma secção do formulário no documento PDF.
+     *
+     * Escreve o título da secção, os respetivos campos e valores, bem como as
+     * evidências associadas, terminando com uma linha separadora.
+     *
+     * @param title Título da secção.
+     * @param sectionData Dados da secção.
+     * @param fieldLabelMap Associação entre o nome dos campos e os respetivos rótulos.
+     */
     fun renderSection(
         title: String,
         sectionData: JsonNode,
@@ -206,6 +286,16 @@ class PDBuilder(
         y -= 15
     }
 
+    /**
+     * Formata um título para apresentação no relatório.
+     *
+     * Converte o texto para capitalização por palavras, preservando determinadas
+     * preposições e conjunções em minúsculas.
+     *
+     * @param title Título original.
+     *
+     * @return Título formatado.
+     */
     private fun makeTitle(title: String?): String {
         if (title == null) return ""
         val exceptions =
@@ -229,6 +319,15 @@ class PDBuilder(
             }.joinToString(" ")
     }
 
+    /**
+     * Renderiza os ficheiros de evidência associados a uma secção.
+     *
+     * Consoante o tipo de ficheiro, apresenta imagens, PDFs
+     * ou apenas uma referência textual ao ficheiro.
+     *
+     * @param sectionData Dados da secção.
+     * @param fieldLabelMap Associação entre o nome dos campos e os respetivos rótulos.
+     */
     fun renderSectionFiles(
         sectionData: JsonNode,
         fieldLabelMap: Map<String, String>,
@@ -249,13 +348,24 @@ class PDBuilder(
                 filePath.endsWith(".jpg", true) ||
                     filePath.endsWith(".png", true) ||
                     filePath.endsWith(".jpeg", true) -> renderImage(resource, fileName)
-                filePath.endsWith(".pdf", true) -> renderPDFPreview(resource, fileName)
+                filePath.endsWith(".pdf", true) -> renderPDF(resource, fileName)
                 else -> pdfText.evidenceReference(fileName, language).let { writeLine(it) }
             }
         }
         y -= 10
     }
 
+    /**
+     * Obtém o rótulo de apresentação correspondente a um campo do formulário.
+     *
+     * Suporta igualmente campos pertencentes a secções repetíveis, através da
+     * normalização do respetivo índice.
+     *
+     * @param fieldName Nome interno do campo.
+     * @param fieldLabelMap Associação entre nomes de campos e respetivos rótulos.
+     *
+     * @return Rótulo a apresentar no relatório.
+     */
     private fun getLabel(
         fieldName: String,
         fieldLabelMap: Map<String, String>,
@@ -274,6 +384,14 @@ class PDBuilder(
         return label
     }
 
+    /**
+     * Escreve o cabeçalho do relatório na primeira página.
+     *
+     * O cabeçalho inclui um logótipo, o título do relatório e a data
+     * de geração, seguidos de uma linha separadora.
+     *
+     * @param occurrenceId Identificador da ocorrência.
+     */
     fun writeTitle(occurrenceId: Int) {
         val logoImage = loadLogoImage("/images/logo.png", "logo.png")
         val logoWidth = 80f
@@ -318,6 +436,14 @@ class PDBuilder(
         y -= 15f
     }
 
+    /**
+     * Carrega a imagem do logótipo.
+     *
+     * @param path Caminho do recurso no classpath.
+     * @param name Nome atribuído à imagem no documento PDF.
+     *
+     * @return A imagem carregada, ou `null` caso não seja possível encontrá-la ou carregá-la.
+     */
     private fun loadLogoImage(
         path: String,
         name: String?,

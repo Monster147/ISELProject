@@ -271,6 +271,20 @@ class ReportService(
         }
     }
 
+    /**
+     * Obtém todas as secções previamente guardadas para uma determinada ocorrência.
+     *
+     * Percorre todas as evidências associadas à ocorrência, filtra os ficheiros JSON
+     * correspondentes às secções do formulário e converte o respetivo conteúdo para
+     * objetos [JsonNode].
+     *
+     * Os ficheiros que não possam ser carregados ou interpretados são ignorados,
+     * sendo registada uma mensagem de aviso no log.
+     *
+     * @param occurrenceId Identificador da ocorrência.
+     *
+     * @return Lista das secções encontradas em formato [JsonNode].
+     */
     private fun findSavedSections(occurrenceId: Int): List<JsonNode> =
         trxManager.run {
             val evidenceList = repoEvidence.findByOccurrenceId(occurrenceId)
@@ -352,6 +366,20 @@ class ReportService(
         }
     }
 
+    /**
+     * Verifica se todos os campos obrigatórios definidos no formulário foram preenchidos.
+     *
+     * A validação percorre todas as secções do formulário, incluindo secções repetíveis,
+     * carregando os respetivos dados previamente guardados e verificando se todos os
+     * campos marcados como obrigatórios possuem um valor não vazio.
+     *
+     * @param formJson Estrutura JSON do formulário do tipo de ocorrência.
+     * @param occurrenceId Identificador da ocorrência.
+     * @param language Idioma utilizado para resolver os títulos das secções.
+     *
+     * @return `true` caso todos os campos obrigatórios estejam preenchidos;
+     *         `false` caso exista pelo menos um campo obrigatório em falta.
+     */
     private fun areAllRequiredFieldsFilled(
         formJson: JsonNode,
         occurrenceId: Int,
@@ -404,6 +432,19 @@ class ReportService(
         return true
     }
 
+    /**
+     * Carrega os dados persistidos de uma secção do formulário.
+     *
+     * Constrói automaticamente o caminho da evidência correspondente à secção,
+     * tenta carregar o ficheiro JSON do armazenamento e converte-o para um
+     * objeto [JsonNode].
+     *
+     * @param occurrenceId Identificador da ocorrência.
+     * @param sectionKey Chave normalizada da secção.
+     *
+     * @return Conteúdo da secção em formato [JsonNode], ou `null` caso não exista
+     *         ou não seja possível ler o ficheiro.
+     */
     private fun loadSavedSection(
         occurrenceId: Int,
         sectionKey: String,
@@ -419,6 +460,19 @@ class ReportService(
         }
     }
 
+    /**
+     * Procura o valor de um campo previamente preenchido no formulário.
+     *
+     * Percorre todas as secções do formulário até encontrar um campo com o nome
+     * indicado, devolvendo o respetivo valor caso exista.
+     *
+     * @param formJson Estrutura JSON do formulário.
+     * @param occurrenceId Identificador da ocorrência.
+     * @param fieldName Nome do campo a procurar.
+     * @param language Idioma utilizado para resolver os títulos das secções.
+     *
+     * @return Valor do campo em formato [JsonNode], ou `null` caso não exista.
+     */
     private fun findFieldValue(
         formJson: JsonNode,
         occurrenceId: Int,
@@ -439,6 +493,17 @@ class ReportService(
         return null
     }
 
+    /**
+     * Normaliza o nome de uma secção para uma chave compatível com o sistema
+     * de armazenamento.
+     *
+     * O processo remove acentos, substitui caracteres não alfanuméricos por hífen,
+     * elimina hífenes consecutivos e converte o resultado para minúsculas.
+     *
+     * @param name Nome original da secção.
+     *
+     * @return Nome normalizado da secção.
+     */
     private fun sanitizeSectionName(name: String?): String =
         Normalizer.normalize(name, Normalizer.Form.NFD)
             .replace(Regex("[\\u0300-\\u036f]"), "")
