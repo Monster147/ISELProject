@@ -7,6 +7,12 @@ export type ConfirmOptions = {
   cancelText: string;
 };
 
+/**
+ * Hook que combina o diálogo de confirmação com a execução de uma ação assíncrona
+ * na versão desktop. Apresenta o diálogo ao utilizador e, se confirmado, executa a ação.
+ *
+ * @returns Função que recebe uma ação e opções de confirmação, e apresenta o diálogo.
+ */
 export function useConfirmAction() {
   const { confirm } = useConfirm();
 

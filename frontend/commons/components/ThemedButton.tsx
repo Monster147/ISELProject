@@ -1,6 +1,13 @@
 import { Pressable, StyleSheet } from "react-native";
 import { Colors } from "../constants/Colors";
 
+/**
+ * Botão temático partilhado entre plataformas.
+ * Aplica a cor primária da aplicação e reduz a opacidade ao ser pressionado.
+ *
+ * @param style Estilos adicionais a aplicar ao componente.
+ * @param props Restantes props passadas ao `Pressable` (ex: onPress, children).
+ */
 function ThemedButton({ style, ...props }) {
   return (
     <Pressable

@@ -1,6 +1,13 @@
 import { useContext } from "react";
 import { DocumentContext } from "@contexts/DocumentContext";
 
+/**
+ * Hook que dá acesso ao contexto de documentos.
+ * Deve ser usado num {@link DocumentProvider}.
+ *
+ * @returns Contexto de documentos com a lista e operações de CRUD e download.
+ * @throws {Error} Se usado fora de um DocumentProvider.
+ */
 export function useDocument() {
   const context = useContext(DocumentContext);
   if (!context) {

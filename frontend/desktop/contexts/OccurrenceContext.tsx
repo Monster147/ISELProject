@@ -29,6 +29,13 @@ type OccurrenceContextValue = {
   loading: boolean;
 };
 
+/**
+ * Provider que gere o estado e as operações de ocorrências na aplicação desktop.
+ * Carrega as ocorrências do utilizador autenticado automaticamente quando online,
+ * e subscreve atualizações em tempo real via SSE através do {@link useOccurrencesListener}.
+ *
+ * @param children Componentes filhos que terão acesso ao contexto de ocorrências.
+ */
 export const OccurrenceContext = createContext<
   OccurrenceContextValue | undefined
 >(undefined);

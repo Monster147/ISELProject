@@ -23,6 +23,14 @@ export const AuthContext = createContext<AuthContextValue | undefined>(
   undefined,
 );
 
+/**
+ * Provider que disponibiliza o contexto de autenticação a toda a aplicação.
+ * Gere o token de sessão e os dados do utilizador autenticado em memória e em
+ * armazenamento persistente (localStorage via {@link authInfoRepo} e {@link userInfoRepo}).
+ * Ao montar, restaura automaticamente a sessão anterior se existir.
+ *
+ * @param children Árvore de componentes que terão acesso ao contexto de autenticação.
+ */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);

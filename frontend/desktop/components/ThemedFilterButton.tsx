@@ -2,6 +2,14 @@ import { Pressable, StyleSheet, useColorScheme, View } from "react-native";
 import { IoFilterOutline, IoFilterSharp } from "react-icons/io5";
 import { Colors } from "@commons/constants/Colors";
 
+/**
+ * Botão de filtro temático para a plataforma web (desktop).
+ * Alterna entre os ícones de filtro ativo e inativo consoante o estado.
+ *
+ * @param style Estilos adicionais a aplicar ao botão.
+ * @param active Se true, mostra o ícone de filtro ativo.
+ * @param onPress Callback invocado quando o botão é pressionado.
+ */
 function ThemedFilterButton({ style, active, onPress }) {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme] ?? Colors.light;

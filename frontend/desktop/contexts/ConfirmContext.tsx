@@ -23,6 +23,13 @@ export const ConfirmContext = createContext<ConfirmContextType | undefined>(
   undefined,
 );
 
+/**
+ * Provider que disponibiliza um diálogo de confirmação para a versão desktop.
+ * Permite que qualquer componente filho mostre um diálogo de confirmação
+ * através do hook {@link useConfirm}, aguardando a resposta do utilizador via Promise.
+ *
+ * @param children Componentes filhos que terão acesso ao contexto de confirmação.
+ */
 export const ConfirmProvider = ({ children }) => {
   const [dialog, setDialog] = useState<ConfirmDialog | null>(null);
 

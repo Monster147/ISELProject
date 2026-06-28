@@ -15,6 +15,12 @@ export const StatsContext = createContext<StatsContextValue | undefined>(
   undefined,
 );
 
+/**
+ * Provider que disponibiliza as operações de estatísticas na aplicação desktop.
+ * Não mantém estado local, todas as operações delegam diretamente na API.
+ *
+ * @param children Componentes filhos que terão acesso ao contexto de estatísticas.
+ */
 export function StatsProvider({ children }) {
   const getOverviewStats = useCallback(async () => {
     try {

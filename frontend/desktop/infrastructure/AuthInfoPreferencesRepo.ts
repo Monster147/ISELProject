@@ -17,6 +17,10 @@ export interface AuthInfoRepo {
   clearAuthInfo(): Promise<void>;
 }
 
+/**
+ * Repositório de informação de autenticação para a versão desktop.
+ * Persiste e recupera o token de sessão usando localStorage usando a chave "token".
+ */
 export class AuthInfoPreferencesRepo implements AuthInfoRepo {
   private TOKEN_KEY = "token";
 

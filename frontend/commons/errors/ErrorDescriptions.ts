@@ -1,5 +1,11 @@
 import i18n from "i18next";
 
+/**
+ * Mapeamento entre os identificadores de erro retornados pela API (título do problema HTTP)
+ * e as chaves de tradução i18n correspondentes.
+ *
+ * Utilizado por {@link getErrorDescription} para traduzir erros da API para a linguagem do utilizador.
+ */
 export const errorDescriptions: Record<string, string> = {
   "duplicate-users-ids": "errorResponse.duplicateUsersIds",
   "email-already-in-use": "errorResponse.emailAlreadyInUse",
@@ -34,6 +40,14 @@ export const errorDescriptions: Record<string, string> = {
   "user-or-password-are-invalid": "errorResponse.userOrPasswordAreInvalid",
 };
 
+/**
+ * Traduz um código de erro da API para a descrição localizada correspondente.
+ * Usa o mapeamento {@link errorDescriptions} e o i18n para obter a string traduzida.
+ * Se o código não existir no mapeamento, retorna o próprio código como fallback.
+ *
+ * @param errorType Código de erro retornado pela API (ex: "user-not-found").
+ * @returns Mensagem de erro localizada para apresentar ao utilizador.
+ */
 export function getErrorDescription(errorType: string): string {
   const key = errorDescriptions[errorType];
   if (!key) {

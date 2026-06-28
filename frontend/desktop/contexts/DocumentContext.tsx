@@ -29,6 +29,13 @@ export const DocumentContext = createContext<DocumentContextValue | undefined>(
   undefined,
 );
 
+/**
+ * Provider que gere o estado e as operações de documentos na aplicação desktop.
+ * Carrega os documentos automaticamente quando o utilizador está autenticado e online,
+ * e subscreve atualizações em tempo real via SSE através do {@link useDocumentsListener}.
+ *
+ * @param children Componentes filhos que terão acesso ao contexto de documentos.
+ */
 export function DocumentProvider({ children }) {
   const [documents, setDocuments] = useState<Documents[]>([]);
   const { user } = useAuth();

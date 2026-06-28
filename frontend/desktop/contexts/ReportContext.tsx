@@ -30,6 +30,13 @@ export const ReportContext = createContext<ReportContextValue | undefined>(
   undefined,
 );
 
+/**
+ * Provider que disponibiliza as operações de relatórios na aplicação desktop.
+ * Não mantém estado local de relatórios, as operações delegam diretamente na API.
+ * O download de relatórios é feito diretamente via fetch com criação de link temporário.
+ *
+ * @param children Componentes filhos que terão acesso ao contexto de relatórios.
+ */
 export const ReportProvider = ({ children }) => {
   const createReport = useCallback(
     async (

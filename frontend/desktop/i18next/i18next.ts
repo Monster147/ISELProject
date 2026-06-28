@@ -4,7 +4,8 @@ import en from "@commons/i18next/locales/en";
 import pt from "@commons/i18next/locales/pt";
 import es from "@commons/i18next/locales/es";
 
-const lng = navigator.language?.split("-")[0] ?? "en"; // "pt" de "pt-PT"
+/** Identificação internacional de linguagem do browser, extraído da configuração do sistema (ex: "pt" de "pt-PT"). */
+const lng = navigator.language?.split("-")[0] ?? "en";
 
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next

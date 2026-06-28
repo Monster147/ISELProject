@@ -32,10 +32,6 @@ module.exports = {
       displayName: "desktop",
       preset: "jest-expo",
       rootDir: __dirname,
-      // Desktop is React Native Web (Electron): jsdom gives the components and
-      // hooks a real window/navigator (e.g. useNetworkStatus reads
-      // navigator.onLine + window online/offline events). The RN test renderer
-      // works the same under jsdom as under node.
       testEnvironment: "jsdom",
       roots: ["<rootDir>/desktop", "<rootDir>/commons", "<rootDir>/__tests__/desktop"],
       testMatch: ["<rootDir>/__tests__/desktop/**/*.test.{ts,tsx}"],
@@ -70,7 +66,6 @@ module.exports = {
         "^@react-native-community/datetimepicker$": `${mocks}/datetimepicker.js`,
         "^@expo/vector-icons$": `${mocks}/expo-vector-icons.js`,
         "^react-native-safe-area-context$": `${mocks}/safe-area-context.js`,
-        // Storage / SSE / filesystem deps used by movel infra + contexts.
         "^expo-secure-store$": `${mocks}/secure-store.js`,
         "^@react-native-async-storage/async-storage$": `${mocks}/async-storage.js`,
         "^react-native-sse$": `${mocks}/react-native-sse.js`,

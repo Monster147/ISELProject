@@ -1,3 +1,9 @@
+/**
+ * Paleta de cores partilhada entre as aplicações desktop e móvel.
+ * Inclui cores semânticas globais (primary, warning, success, update)
+ * e temas de cor para modo escuro e claro.
+ * Cada tema define cores para texto, fundo, navegação, ícones e elementos de UI.
+ */
 export const Colors = {
   primary: "#6849a7",
   warning: "#cc475a",

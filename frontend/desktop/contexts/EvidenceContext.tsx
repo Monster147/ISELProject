@@ -22,6 +22,12 @@ export const EvidenceContext = createContext<EvidenceContextValue | undefined>(
   undefined,
 );
 
+/**
+ * Provider que disponibiliza as operações de evidências na aplicação desktop.
+ * Não mantém estado local de evidências, as operações delegam diretamente na API.
+ *
+ * @param children Componentes filhos que terão acesso ao contexto de evidências.
+ */
 export function EvidenceProvider({ children }) {
   const createEvidence = useCallback(
     async (

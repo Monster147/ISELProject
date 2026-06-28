@@ -1,1 +1,2 @@
+/** URL base da API usada nas aplicações. */
 export const API_URL = "https://erosely-redemandable-rebbeca.ngrok-free.dev";

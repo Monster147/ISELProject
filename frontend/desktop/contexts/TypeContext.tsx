@@ -24,6 +24,13 @@ export const TypeContext = createContext<TypeContextValue | undefined>(
   undefined,
 );
 
+/**
+ * Provider que gere o estado e as operações de tipos de ocorrência na aplicação desktop.
+ * Carrega os tipos automaticamente quando o utilizador está autenticado e online,
+ * e subscreve atualizações em tempo real via SSE através do {@link useTypesListener}.
+ *
+ * @param children Componentes filhos que terão acesso ao contexto de tipos.
+ */
 export const TypeProvider = ({ children }) => {
   const [type, setType] = useState<Type[]>([]);
   const { user } = useAuth();
