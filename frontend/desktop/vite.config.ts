@@ -53,6 +53,8 @@ export default defineConfig({
       "@utils": path.resolve(__dirname, "./utils"),
       "react-native": path.resolve(__dirname, "node_modules/react-native-web"),
       "i18next": path.resolve(__dirname, "node_modules/i18next"),
+      "react": path.resolve(__dirname, "node_modules/react"),
+      "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
     },
   },
   optimizeDeps: {
