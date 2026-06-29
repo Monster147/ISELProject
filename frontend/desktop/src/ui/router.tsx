@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createHashRouter  } from "react-router";
 import Home from "./app/Home";
 import Login from "./app/(auth)/Login";
 import Register from "./app/(auth)/Register";
@@ -20,7 +20,7 @@ import Dashboard from "./app/(dashboard)/dashboard";
 import OccurrenceScreen from "./app/(dashboard)/occurrence";
 import OccurrenceReport from "./app/(dashboard)/occurrences/report/[id]";
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     element: <RootLayout />,
     children: [

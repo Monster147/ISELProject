@@ -61,7 +61,9 @@ export function useEvidenceListener(
     }
 
     const es = new EventSource(
-      `${API_URL}/api/evidence/${Number(userId)}/listen`,
+      `${API_URL}/api/evidence/${Number(userId)}/listen`, {
+          headers: { "ngrok-skip-browser-warning": "true" },
+        }
     );
 
     esRef.current = es;

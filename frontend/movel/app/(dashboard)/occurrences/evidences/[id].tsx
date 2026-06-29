@@ -643,7 +643,7 @@ const DynamicOccurrenceForm = () => {
                             }
                             onFileChange={handleFileChange}
                             colorScheme={colorScheme}
-                            fileValues={fileValues}
+                            downloadEvidence={downloadEvidence}
                           />
                         ))
                       )}

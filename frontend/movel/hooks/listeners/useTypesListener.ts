@@ -60,7 +60,9 @@ export function useTypesListener(
       esRef.current = null;
     }
 
-    const es = new EventSource(`${API_URL}/api/type/listen`);
+    const es = new EventSource(`${API_URL}/api/type/listen`, {
+      headers: { "ngrok-skip-browser-warning": "true" },
+    });
     esRef.current = es;
     const onEvent = (event: any) => {
       try {

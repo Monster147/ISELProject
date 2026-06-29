@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Occurrence } from "@commons/models/occurrence/Occurrence";
+import {getAPIUrl} from "@utils/getAPIUrl";
 
 export type OccurrencesUpdateAction = "OccurrencesChanged";
 
@@ -47,7 +48,7 @@ export function useOccurrencesListener(
     if (!userID || enabled !== true) return;
 
     const eventSource = new EventSource(
-      `/api/occurrence/listen/user/${userID}`,
+      `${getAPIUrl()}/occurrence/listen/user/${userID}`,
     );
 
     eventSource.onmessage = (occurrence) => {

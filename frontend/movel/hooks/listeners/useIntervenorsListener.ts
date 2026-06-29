@@ -60,7 +60,9 @@ export function useIntervenorsListener(
       esRef.current = null;
     }
 
-    const es = new EventSource(`${API_URL}/api/intervenor/listen`);
+    const es = new EventSource(`${API_URL}/api/intervenor/listen`, {
+      headers: { "ngrok-skip-browser-warning": "true" },
+    });
     esRef.current = es;
     const onEvent = (event: any) => {
       try {

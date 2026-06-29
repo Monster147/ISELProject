@@ -40,7 +40,9 @@ export function useReportListener(
     if (!reportId || enabled !== true) return;
     const esRef = useRef<EventSource | null>(null);
     const es = new EventSource(
-      `${API_URL}/api/report/${Number(reportId)}/listen`,
+      `${API_URL}/api/report/${Number(reportId)}/listen`, {
+          headers: { "ngrok-skip-browser-warning": "true" },
+        }
     );
     esRef.current = es;
     const onEvent = (event: any) => {

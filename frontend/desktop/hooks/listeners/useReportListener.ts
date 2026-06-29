@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import {getAPIUrl} from "@utils/getAPIUrl";
 
 export type ReportUpdateAction =
   | "ReportCreated"
@@ -42,7 +43,7 @@ export function useReportListener(
     if (!userId || !reportId || enabled !== true) return;
 
     const eventSource = new EventSource(
-      `/api/report/${Number(reportId)}/listen`,
+      `${getAPIUrl()}/report/${Number(reportId)}/listen`,
     );
 
     eventSource.onmessage = (report) => {

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Type } from "@commons/models/type/Type";
+import {getAPIUrl} from "@utils/getAPIUrl";
 
 export type TypesUpdateAction = "TypesChanged";
 
@@ -45,7 +46,7 @@ export function useTypesListener(
 
   useEffect(() => {
     if (enabled !== true || !userId) return;
-    const eventSource = new EventSource(`/api/type/listen`);
+    const eventSource = new EventSource(`${getAPIUrl()}/type/listen`);
 
     eventSource.onmessage = (occurrence) => {
       try {

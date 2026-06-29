@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Documents } from "@commons/models/documents/Documents";
+import {getAPIUrl} from "@utils/getAPIUrl";
 
 export type DocumentsUpdateAction = "DocumentsChanged";
 
@@ -44,7 +45,7 @@ export function useDocumentsListener(
   }, [onMessage]);
   useEffect(() => {
     if (enabled !== true || !userId) return;
-    const eventSource = new EventSource(`/api/documents/listen`);
+    const eventSource = new EventSource(`${getAPIUrl()}/documents/listen`);
 
     eventSource.onmessage = (occurrence) => {
       try {

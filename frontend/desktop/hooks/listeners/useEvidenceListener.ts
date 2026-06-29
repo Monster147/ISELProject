@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Evidence } from "@commons/models/evidence/Evidence";
+import {getAPIUrl} from "@utils/getAPIUrl";
 
 export type EvidenceUpdateAction = "EvidenceChanged";
 
@@ -47,7 +48,7 @@ export function useEvidenceListener(
     if (!userId || enabled !== true) return;
 
     const eventSource = new EventSource(
-      `/api/evidence/${Number(userId)}/listen`,
+      `${getAPIUrl()}/evidence/${Number(userId)}/listen`,
     );
 
     eventSource.onmessage = (evidence) => {

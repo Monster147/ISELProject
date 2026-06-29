@@ -1,9 +1,20 @@
-import { app, BrowserWindow, screen } from "electron";
+import { app, BrowserWindow, screen, session } from "electron";
 import path from "path";
 import { isDev } from "./utils.js";
 import { getPreloadPath } from "./pathResolver.js";
 
 app.on("ready", () => {
+
+  if(!isDev()){
+    session.defaultSession.webRequest.onBeforeSendHeaders(
+        { urls: ["https://*.ngrok-free.dev/*"]},
+        (details, callback) => {
+          details.requestHeaders["ngrok-skip-browser-warning"] = "true";
+          callback({ requestHeaders: details.requestHeaders });
+        }
+    )
+  }
+
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
   const mainWindow = new BrowserWindow({

@@ -68,7 +68,9 @@ export function useOccurrenceListener(
     }
 
     const es = new EventSource(
-      `${API_URL}/api/occurrence/${Number(occurrenceId)}/listen`,
+      `${API_URL}/api/occurrence/${Number(occurrenceId)}/listen`, {
+          headers: { "ngrok-skip-browser-warning": "true" },
+        }
     );
 
     esRef.current = es;

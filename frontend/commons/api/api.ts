@@ -156,6 +156,7 @@ export async function fetchApi<T>(
     ...options,
     headers: {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
+      "ngrok-skip-browser-warning": "true",
       ...options.headers,
     },
   });

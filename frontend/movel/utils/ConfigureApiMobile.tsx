@@ -34,7 +34,9 @@ configureApi(
 async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
   const url = `${apiBaseUrl}/documents/${id}/download`;
 
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: { "ngrok-skip-browser-warning": "true" },
+  });
   if (!response.ok) {
     throw new Error("Erro ao ir buscar as informações do documento");
   }
@@ -62,7 +64,7 @@ async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
         mime: mime || "application/octet-stream",
         mediaScannable: true,
       },
-    }).fetch("GET", url);
+    }).fetch("GET", url, { "ngrok-skip-browser-warning": "true" });
 
     Alert.alert(
       "Download concluído",
@@ -76,7 +78,7 @@ async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
   const res = await ReactNativeBlobUtil.config({
     fileCache: true,
     path: path,
-  }).fetch("GET", url);
+  }).fetch("GET", url, { "ngrok-skip-browser-warning": "true" });
 }
 
 /**
@@ -103,8 +105,12 @@ async function downloadEvidence(
   keep: Boolean,
 ): Promise<any> {
   const url = `${apiBaseUrl}/evidence/${id}/download`;
+  const headers = {
+    ...(authHeaders as Record<string, string>),
+    "ngrok-skip-browser-warning": "true"
+  };
   if (keep) {
-    const response = await fetch(url);
+    const response = await fetch(url, { headers });
     if (!response.ok) {
       throw new Error("Erro ao ir buscar as informações do documento");
     }
@@ -134,7 +140,7 @@ async function downloadEvidence(
           mime: mime || "application/octet-stream",
           mediaScannable: true,
         },
-      }).fetch("GET", url, authHeaders as Record<string, string>);
+      }).fetch("GET", url, headers);
 
       Alert.alert(
         "Download concluído",
@@ -148,10 +154,10 @@ async function downloadEvidence(
     const res = await ReactNativeBlobUtil.config({
       fileCache: true,
       path: path,
-    }).fetch("GET", url, authHeaders as Record<string, string>);
+    }).fetch("GET", url, headers);
   } else {
     return ReactNativeBlobUtil.config({
       fileCache: true,
-    }).fetch("GET", url, authHeaders as Record<string, string>);
+    }).fetch("GET", url, headers);
   }
 }

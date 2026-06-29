@@ -1,5 +1,6 @@
 import { Intervenor } from "@commons/models/intervenor/Intervenor";
 import { useEffect, useRef } from "react";
+import {getAPIUrl} from "@utils/getAPIUrl";
 
 export type IntervenorsUpdateAction = "IntervenorsChanged";
 
@@ -45,7 +46,7 @@ export function useIntervenorsListener(
 
   useEffect(() => {
     if (enabled !== true || !userId) return;
-    const eventSource = new EventSource(`/api/intervenor/listen`);
+    const eventSource = new EventSource(`${getAPIUrl()}/intervenor/listen`);
 
     eventSource.onmessage = (intervenor) => {
       try {

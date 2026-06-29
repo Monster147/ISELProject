@@ -58,7 +58,9 @@ export function useListenAllListener(
       esRef.current = null;
     }
 
-    const es = new EventSource(`${API_URL}/api/listen/user/${userId}`);
+    const es = new EventSource(`${API_URL}/api/listen/user/${userId}`, {
+      headers: { "ngrok-skip-browser-warning": "true" },
+    });
 
     esRef.current = es;
     const onEvent = (event: any) => {

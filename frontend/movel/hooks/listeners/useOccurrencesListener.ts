@@ -61,7 +61,9 @@ export function useOccurrencesListener(
     }
 
     const es = new EventSource(
-      `${API_URL}/api/occurrence/listen/user/${userID}`,
+      `${API_URL}/api/occurrence/listen/user/${userID}`, {
+          headers: { "ngrok-skip-browser-warning": "true" },
+        }
     );
     esRef.current = es;
     const onEvent = (event: any) => {

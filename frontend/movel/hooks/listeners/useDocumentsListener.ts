@@ -61,7 +61,9 @@ export function useDocumentsListener(
       esRef.current = null;
     }
 
-    const es = new EventSource(`${API_URL}/api/documents/listen`);
+    const es = new EventSource(`${API_URL}/api/documents/listen`, {
+      headers: { "ngrok-skip-browser-warning": "true" },
+    });
     esRef.current = es;
     const onEvent = (event: any) => {
       try {

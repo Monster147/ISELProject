@@ -58,3 +58,5 @@ backend/service/documents
 backend/http/documents
 reports
 node_modules
+tsconfig.tsbuildinfo
+tsconfig.node.tsbuildinfo
