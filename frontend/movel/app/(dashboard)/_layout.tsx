@@ -6,6 +6,12 @@ import UserOnly from "@components/auth/UserOnly";
 import "../../i18next/i18next";
 import { useTranslation } from "react-i18next";
 
+/**
+ * Layout do dashboard com navegação por separadores (Tabs) na aplicação móvel.
+ * Protege as rotas com `UserOnly` (apenas utilizadores autenticados) e define os separadores de
+ * intervenientes, dashboard, ocorrências, documentos e perfil, cada um com o ícone ativo/inativo
+ * consoante o separador selecionado.
+ */
 const DashboardLayout = () => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();

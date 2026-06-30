@@ -15,6 +15,13 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router";
 import Select from "react-select";
 
+/**
+ * Ecrã de pesquisa de intervenientes (versão desktop/web).
+ * Permite procurar um interveniente por número de identificação ou por contacto telefónico e,
+ * encontrado, mostra os seus dados com opção de atualizar ou criar um novo.
+ * Em modo de seleção (`selectMode` na query string), permite associar o interveniente encontrado
+ * à ocorrência indicada por `occurrenceId`.
+ */
 const IntervenorSearch = () => {
   const { t } = useTranslation();
 

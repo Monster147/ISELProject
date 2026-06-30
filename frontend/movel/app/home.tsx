@@ -9,6 +9,11 @@ import { useAlertExitApp } from "@hooks/system/useAlertExitApp";
 import { useTranslation } from "react-i18next";
 import OfflineBanner from "@components/ThemedOfflineBanner";
 
+/**
+ * Ecrã inicial da aplicação móvel.
+ * Mostra os logótipos e o nome da aplicação, com ligações para login, registo, sobre e contacto.
+ * Inclui o aviso de estado offline e intercepta o botão de retroceder para confirmar a saída da app.
+ */
 const Home = () => {
   const { t } = useTranslation();
 

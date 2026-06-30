@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import {useEffect, useRef, useState} from "react";
 import { Occurrence } from "@commons/models/occurrence/Occurrence";
 import EventSource from "react-native-sse";
 import { API_URL } from "@commons/constants/apiurl";
+import {AppState} from "react-native";
 
 export type OccurrencesUpdateAction = "OccurrencesChanged";
 
@@ -22,6 +23,7 @@ export interface SSEMessage {
  * A ligação é gerida com debounce e encerrada automaticamente ao desmontar ou mudar deps.
  * A ligação só é estabelecida se `enabled` for true e `userId` estiver definido, garantindo que apenas
  * utilizadores autenticados e com conexão à internet recebem eventos.
+ * A ligação é restabelecida quando a aplicação retorna do background (inactive) para o foreground (active).
  *
  * @param userID Identificador do utilizador (subscreve apenas as suas ocorrências).
  * @param onMessage Callback invocado com a mensagem SSE recebida. O debounce garante que,
@@ -40,6 +42,17 @@ export function useOccurrencesListener(
   const onMessageRef = useRef(onMessage);
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const esRef = useRef<EventSource | null>(null);
+  const [reconnectTick, setReconnectTick] = useState(0);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (nextAppState) => {
+      if(nextAppState === "active" && !esRef.current) {
+        setReconnectTick((prev => prev + 1))
+      }
+    })
+    return () => sub.remove()
+  }, []);
+
   useEffect(() => {
     onMessageRef.current = onMessage;
   }, [onMessage]);
@@ -119,5 +132,5 @@ export function useOccurrencesListener(
       }
       esRef.current = null;
     };
-  }, [userID, enabled, debounceMs]);
+  }, [userID, enabled, debounceMs, reconnectTick]);
 }

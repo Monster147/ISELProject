@@ -8,6 +8,10 @@ import Logo from "@commons/img/isel.png";
 import AppLogo from "@commons/img/logo.png";
 import React from "react";
 
+/**
+ * Ecrã inicial da aplicação (versão desktop/web).
+ * Mostra os logótipos e o nome da aplicação, com ligações para login, registo, sobre e contacto.
+ */
 const Home = () => {
   const { t } = useTranslation();
 

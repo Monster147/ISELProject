@@ -12,6 +12,11 @@ import Spacer from "@commons/components/Spacer";
 import { useType } from "@hooks/data/useType";
 import dateFormater from "@commons/utils/dateFormater";
 
+/**
+ * Ecrã de detalhe de uma ocorrência (versão desktop/web).
+ * Obtém a ocorrência pelo `id` da rota e mostra as suas datas, importância e tipo, com botões
+ * para navegar para as evidências, os intervenientes e o relatório associados.
+ */
 const OccurrenceDetails = () => {
   const { t } = useTranslation();
   const { id } = useParams();

@@ -1,4 +1,4 @@
-import { createHashRouter  } from "react-router";
+import {createBrowserRouter, createHashRouter} from "react-router";
 import Home from "./app/Home";
 import Login from "./app/(auth)/Login";
 import Register from "./app/(auth)/Register";
@@ -19,8 +19,9 @@ import DynamicOccurrenceForm from "./app/(dashboard)/occurrences/evidences/[id]"
 import Dashboard from "./app/(dashboard)/dashboard";
 import OccurrenceScreen from "./app/(dashboard)/occurrence";
 import OccurrenceReport from "./app/(dashboard)/occurrences/report/[id]";
+import {isDev} from "../electron/utils";
 
-export const router = createHashRouter([
+const routerArray = [
   {
     element: <RootLayout />,
     children: [
@@ -67,4 +68,17 @@ export const router = createHashRouter([
       },
     ],
   },
-]);
+]
+
+/**
+ * Conjunto de rotas da aplicação.
+ *
+ * Em ambiente de desenvolvimento é utilizado um Browser Router,
+ * permitindo URLs normais e melhor integração com as ferramentas
+ * de desenvolvimento.
+ *
+ * Em produção (Electron) é utilizado um Hash Router, uma vez que
+ * a aplicação é carregada a partir de ficheiros locais (`file://`)
+ * e não existe um servidor HTTP capaz de resolver rotas diretamente.
+ */
+export const router = isDev() ? createBrowserRouter(routerArray) : createHashRouter(routerArray);

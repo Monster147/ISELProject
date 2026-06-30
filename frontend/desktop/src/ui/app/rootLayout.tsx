@@ -16,6 +16,12 @@ import { EvidenceProvider } from "@contexts/EvidenceContext";
 import { StatsProvider } from "@contexts/StatsContext";
 import { ReportProvider } from "@contexts/ReportContext";
 
+/**
+ * Conteúdo do layout raiz (versão desktop/web).
+ * Renderiza a rota ativa (`Outlet`) e o modal de confirmação global.
+ * Vigia o estado de rede e, se ficar offline fora do ecrã de arranque, avisa o utilizador e
+ * reencaminha-o para o ecrã inicial.
+ */
 const RootLayoutContent = () => {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme] ?? Colors.light;

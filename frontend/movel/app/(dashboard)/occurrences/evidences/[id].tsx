@@ -29,6 +29,12 @@ import {
 } from "@hooks/listeners/useOccurrenceListener";
 import { getLabelByLanguage } from "@commons/utils/getLabelByLanguage";
 
+/**
+ * Ecrã de formulário dinâmico de evidências de uma ocorrência na aplicação móvel.
+ * Constrói o formulário a partir da definição do tipo da ocorrência (secções e campos), gere os
+ * valores e ficheiros introduzidos e cria, atualiza, descarrega ou apaga evidências via `useEvidence`.
+ * Reage a eventos de sincronização (SSE) para refletir alterações em tempo real e suporta o modo offline.
+ */
 const DynamicOccurrenceForm = () => {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme] ?? Colors.light;
@@ -78,6 +84,12 @@ const DynamicOccurrenceForm = () => {
     (tp) => tp.id === actualOccurrence?.occurrenceType,
   );
 
+  /**
+   * Constrói um objeto de um ficheiro a partir de uma evidência existente.
+   * Descarrega o ficheiro para a cache local da aplicação e cria a estrutura
+   * esperada pelos componentes do formulário, permitindo apresentar e reutilizar
+   * ficheiros previamente guardados como se tivessem sido selecionados pelo utilizador.
+   */
   const buildFileObject = async (ev: any) => {
     const res = await downloadEvidence(ev.id, false);
     if (!res || !res.path) {
@@ -102,6 +114,11 @@ const DynamicOccurrenceForm = () => {
     return fileObject;
   };
 
+  /**
+   * Preenche os valores do formulário e dos campos de ficheiros a partir das
+   * evidências já armazenadas para a ocorrência. Reconstrói o estado da interface,
+   * incluindo a associação entre campos e respetivas evidências existentes.
+   */
   const populateForm = async (sections, data) => {
     const formNext = {};
     const fileNext = {};
@@ -144,6 +161,11 @@ const DynamicOccurrenceForm = () => {
   };
 
   useEffect(() => {
+    /**
+     * Carrega todas as evidências da ocorrência, reconstrói os dados das secções
+     * armazenadas em ficheiros JSON e inicializa o estado do formulário com os
+     * respetivos valores e ficheiros previamente guardados.
+     */
     const loadEvidences = async () => {
       setLoading(true);
       try {
@@ -208,6 +230,11 @@ const DynamicOccurrenceForm = () => {
     ? expandSections(formDef.sections, formValues, i18n.language)
     : [];
 
+  /**
+   * Atualiza o valor de um campo do formulário. Quando o campo possui configuração
+   * de preenchimento automático (`autofill`), copia também os valores correspondentes
+   * para os restantes campos configurados.
+   */
   const handleChange = (name: string, value: any, autofill?: any) => {
     setFormValues((prev) => {
       const next = { ...prev, [name]: value };
@@ -228,10 +255,20 @@ const DynamicOccurrenceForm = () => {
     });
   };
 
+  /**
+   * Processa alterações efetuadas num campo do formulário, encaminhando-as para
+   * o mecanismo geral de atualização e aplicando automaticamente configurações
+   * de preenchimento quando definidas para o campo.
+   */
   const handleFieldChange = (field: FormField, value: any) => {
     handleChange(field.name, value, field.dynamicOptions?.autofill);
   };
 
+  /**
+   * Atualiza o ficheiro associado a um campo do formulário. Permite tanto a
+   * substituição do ficheiro existente como a sua remoção, refletindo sempre
+   * o novo estado no formulário.
+   */
   const handleFileChange = (name: string, file: UploadFile | null) => {
     setFileValues((prev) => {
       const next = { ...prev };
@@ -246,6 +283,13 @@ const DynamicOccurrenceForm = () => {
     });
   };
 
+  /**
+   * Substitui ou cria uma evidência associada à ocorrência.
+   * Remove referências antigas quando necessário, cria ou atualiza evidências
+   * JSON correspondentes às secções do formulário e trata também do carregamento
+   * de ficheiros e imagens, atualizando os respetivos mapas de evidências e o
+   * estado local da aplicação.
+   */
   const replaceEvidence = async (
     uploadFile,
     type,
@@ -347,6 +391,12 @@ const DynamicOccurrenceForm = () => {
     return evidence;
   };
 
+  /**
+   * Normaliza o nome de uma secção para um formato seguro que possa ser utilizado
+   * como identificador e nome de ficheiro. Remove acentos, substitui caracteres
+   * não alfanuméricos por hífenes, elimina hífenes consecutivos e converte o
+   * resultado para minúsculas.
+   */
   const sanitizeFileName = (name: string): string => {
     return name
       .normalize("NFD")
@@ -356,6 +406,13 @@ const DynamicOccurrenceForm = () => {
       .toLowerCase();
   };
 
+  /**
+   * Guarda uma secção completa do formulário.
+   * Recolhe os valores dos campos, cria ou atualiza as evidências de ficheiros,
+   * gera um ficheiro JSON temporário na cache da aplicação e envia toda a
+   * informação para o servidor, apresentando o estado de carregamento e mensagens
+   * de sucesso ou erro.
+   */
   const saveSection = async (section: any) => {
     if (!user) return;
 
@@ -480,6 +537,12 @@ const DynamicOccurrenceForm = () => {
     }
   };
 
+  /**
+   * Processa notificações recebidas através do SSE relativas à ocorrência.
+   * Quando existem alterações às evidências, volta a carregar toda a informação
+   * armazenada, atualiza os valores do formulário e remove do estado local
+   * quaisquer ficheiros que já não existam no servidor.
+   */
   const handleOccurrenceUpdate = useCallback(
     async (message: SSEMessage) => {
       if (message.action === "EvidenceChanged") {

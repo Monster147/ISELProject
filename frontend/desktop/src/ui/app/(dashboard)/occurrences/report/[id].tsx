@@ -17,6 +17,11 @@ import ThemedCard from "@commons/components/ThemedCard";
 import { ReportStatus } from "@commons/models/report/ReportStatus";
 import ThemedTextInput from "@commons/components/ThemedTextInput";
 
+/**
+ * Ecrã de relatório de uma ocorrência (versão desktop/web).
+ * Carrega o relatório associado à ocorrência (se existir) e permite criar, editar, submeter e
+ * descarregar o relatório via `useReport`, pedindo confirmação nas ações relevantes.
+ */
 const OccurrenceReport = () => {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme] ?? Colors.light;

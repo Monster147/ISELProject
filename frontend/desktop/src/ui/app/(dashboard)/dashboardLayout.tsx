@@ -17,6 +17,12 @@ import {
 } from "react-icons/md";
 import ThemedView from "@components/ThemedView";
 
+/**
+ * Layout do dashboard com barra de navegação (versão desktop/web).
+ * Protege as rotas com `UserOnly` (apenas utilizadores autenticados) e renderiza a rota ativa
+ * (`Outlet`) acima de uma barra com os separadores de intervenientes, dashboard, ocorrências,
+ * documentos e perfil.
+ */
 const DashboardLayout = () => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();

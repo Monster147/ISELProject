@@ -17,6 +17,12 @@ import { useType } from "@hooks/data/useType";
 import OfflineBanner from "@components/ThemedOfflineBanner";
 import { useAlertExitApp } from "@hooks/system/useAlertExitApp";
 
+/**
+ * Ecrã de dashboard com estatísticas na aplicação móvel.
+ * Carrega em paralelo, via `useStats`, os indicadores gerais e as distribuições de relatórios e
+ * ocorrências (por tipo, estado e importância), tanto globais como do mês corrente, e apresenta-os
+ * em cartões de KPIs e gráficos de barras.
+ */
 const Dashboard = () => {
   const { t } = useTranslation();
 

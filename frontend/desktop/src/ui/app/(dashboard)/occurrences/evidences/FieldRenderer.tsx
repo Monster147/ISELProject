@@ -11,6 +11,12 @@ import ThemedTextInput from "@commons/components/ThemedTextInput";
 import { Colors } from "@commons/constants/Colors";
 import { getLabelByLanguage } from "@commons/utils/getLabelByLanguage";
 
+/**
+ * Rótulo de um campo do formulário, com indicação de obrigatoriedade.
+ *
+ * @param label Texto do rótulo.
+ * @param required Se true, acrescenta um asterisco a marcar o campo como obrigatório.
+ */
 const FieldLabel = ({ label, required }) => (
   <ThemedText style={styles.label} label={true}>
     {label}
@@ -18,6 +24,13 @@ const FieldLabel = ({ label, required }) => (
   </ThemedText>
 );
 
+/**
+ * Contentor visual de um campo do formulário, com cor de fundo e estilos configuráveis.
+ *
+ * @param background Cor de fundo do contentor.
+ * @param style Estilos adicionais a aplicar.
+ * @param children Conteúdo do campo a renderizar.
+ */
 const FieldContainer = ({ background, style, children }) => (
   <ThemedView
     style={[styles.fieldContainer, style, { backgroundColor: background }]}
@@ -26,6 +39,18 @@ const FieldContainer = ({ background, style, children }) => (
   </ThemedView>
 );
 
+/**
+ * Renderiza dinamicamente um campo do formulário consoante o seu tipo (texto, data, ficheiro,
+ * seleção de intervenientes, etc.), tratando alterações de valor e de ficheiro.
+ *
+ * @param field Definição do campo a renderizar (tipo, nome, rótulo, obrigatoriedade...).
+ * @param value Valor atual do campo.
+ * @param onChange Callback invocado quando o valor do campo muda.
+ * @param onFileChange Callback invocado quando o ficheiro associado ao campo muda.
+ * @param intervenients Lista de intervenientes disponível para campos de seleção.
+ * @param colorScheme Esquema de cores ativo (claro/escuro) para temar o campo.
+ * @param fileValues Mapa dos ficheiros atualmente selecionados, por nome de campo.
+ */
 export const FieldRenderer = ({
   field,
   value,

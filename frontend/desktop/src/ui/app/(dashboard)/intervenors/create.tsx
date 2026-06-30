@@ -11,6 +11,11 @@ import { useIntervenor } from "@hooks/data/useIntervenor";
 import ThemedTextInput from "@commons/components/ThemedTextInput";
 import { useTranslation } from "react-i18next";
 
+/**
+ * Ecrã de criação de interveniente (versão desktop/web).
+ * Recolhe identificação, tipo de identificação, nome, contacto e morada, valida os campos
+ * e cria o interveniente via `useIntervenor`. Em caso de sucesso, regressa ao ecrã anterior.
+ */
 const IntervenorCreate = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();

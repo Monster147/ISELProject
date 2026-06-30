@@ -15,6 +15,12 @@ import { useBackRedirect } from "@hooks/system/useBackRedirect";
 import { useTranslation } from "react-i18next";
 import OfflineBanner from "@components/ThemedOfflineBanner";
 
+/**
+ * Ecrã de atualização de interveniente na aplicação móvel (rota dinâmica por `id`).
+ * Carrega o interveniente pelo identificador da rota e permite escolher quais campos editar
+ * (identificação, tipo, nome, contacto, morada), gravando as alterações via `useIntervenor`.
+ * Em caso de sucesso, regressa ao ecrã anterior.
+ */
 const IntervenorUpdate = () => {
   const { t } = useTranslation();
 

@@ -20,7 +20,6 @@ export interface SSEMessage {
   action: ReportUpdateData;
 }
 
-//Precisa de ser updated depois
 /**
  * Hook que subscreve atualizações de um relatório específico em tempo real via SSE (React Native).
  * Usa react-native-sse para abrir uma ligação ao endpoint `/api/report/{reportId}/listen`.

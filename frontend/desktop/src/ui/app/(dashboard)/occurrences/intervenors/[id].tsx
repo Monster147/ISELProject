@@ -13,6 +13,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useConfirmAction } from "@hooks/system/confirmAction";
 
+/**
+ * Ecrã com os intervenientes associados a uma ocorrência (versão desktop/web).
+ * Lista os intervenientes da ocorrência indicada na rota, permite adicionar um novo (em modo de
+ * seleção) e remover um existente, pedindo confirmação antes da remoção.
+ */
 const OccurrenceIntervenors = () => {
   const { t } = useTranslation();
   const { occurrenceId } = useParams();

@@ -16,6 +16,19 @@ type ConfirmModalProps = {
   isLoading?: boolean;
 };
 
+/**
+ * Modal de confirmação reutilizável (versão desktop/web).
+ * Mostra um título, uma mensagem e os botões de confirmar e (opcionalmente) cancelar.
+ *
+ * @param visible Controla a visibilidade do modal.
+ * @param title Título apresentado no topo do modal.
+ * @param message Mensagem/corpo do modal.
+ * @param confirmText Texto do botão de confirmação.
+ * @param cancelText Texto do botão de cancelamento (se omitido, o botão não é mostrado).
+ * @param onConfirm Callback invocado ao confirmar.
+ * @param onCancel Callback invocado ao cancelar ou fechar o modal.
+ * @param isLoading Se true, desativa os botões enquanto uma ação está em curso.
+ */
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
   visible,
   title,

@@ -17,6 +17,11 @@ import ThemedFilterButton from "@components/ThemedFilterButton";
 import ThemedDateInput from "@components/ThemedDateInput";
 import OfflineBanner from "@components/ThemedOfflineBanner";
 
+/**
+ * Ecrã com a lista de ocorrências na aplicação móvel.
+ * Obtém as ocorrências via `useOccurrence` e apresenta-as numa lista, com um painel de filtros
+ * por importância e por intervalo de datas. Ao tocar numa ocorrência, navega para o seu detalhe.
+ */
 const OccurrenceScreen = () => {
   const { t } = useTranslation();
   const { occurrence, loading } = useOccurrence();

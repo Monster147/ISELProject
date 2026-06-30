@@ -9,6 +9,11 @@ import { useTranslation } from "react-i18next";
 import { useConfirmAction } from "@hooks/system/confirmAction";
 import { Colors } from "@commons/constants/Colors";
 
+/**
+ * Ecrã de perfil do utilizador (versão desktop/web).
+ * Mostra o nome e o email do utilizador autenticado e permite terminar a sessão,
+ * pedindo confirmação antes de o fazer.
+ */
 const Profile = () => {
   const { t } = useTranslation();
   const { logout, user } = useAuth();

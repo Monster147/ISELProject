@@ -1,5 +1,12 @@
 const path = require("path");
 
+/**
+ * Configuração do Metro (bundler do React Native) da aplicação móvel.
+ * Mapeia os alias de importação para as respetivas pastas via `extraNodeModules`, define o
+ * caminho dos `node_modules` e inclui a pasta `../commons` em `watchFolders` para o código
+ * partilhado ser vigiado em modo de desenvolvimento.
+ * O Metro faz o bundle do código.
+ */
 module.exports = {
   resolver: {
     extraNodeModules: {

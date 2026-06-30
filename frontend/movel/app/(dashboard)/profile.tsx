@@ -11,6 +11,11 @@ import { confirmAction } from "@hooks/system/confirmAction";
 import { Colors } from "@commons/constants/Colors";
 import OfflineBanner from "@components/ThemedOfflineBanner";
 
+/**
+ * Ecrã de perfil do utilizador na aplicação móvel.
+ * Mostra o nome e o email do utilizador autenticado e permite terminar a sessão,
+ * pedindo confirmação antes de o fazer.
+ */
 const Profile = () => {
   const { t } = useTranslation();
   const { logout, token, user } = useAuth();

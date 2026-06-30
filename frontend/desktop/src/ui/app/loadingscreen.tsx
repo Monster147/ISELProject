@@ -13,6 +13,12 @@ import { useConfirm } from "@hooks/system/useConfirm";
 
 const DURATION_MS = 4000;
 
+/**
+ * Ecrã de arranque (versão desktop/web).
+ * Anima uma barra de progresso durante `DURATION_MS` e, quando termina e o estado de autenticação
+ * já está resolvido, encaminha o utilizador: para as ocorrências se tiver sessão, para o início caso contrário.
+ * Se estiver offline, mostra um aviso e recarrega a aplicação após confirmação.
+ */
 const Loadingscreen = () => {
   const { t } = useTranslation();
   const { token, isAuthLoading } = useAuth();

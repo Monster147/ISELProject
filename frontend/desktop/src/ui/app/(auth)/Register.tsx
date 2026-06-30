@@ -10,6 +10,11 @@ import { useAuth } from "@hooks/data/useAuth";
 import { Colors } from "@commons/constants/Colors";
 import { useTranslation } from "react-i18next";
 
+/**
+ * Ecrã de registo de novo utilizador (versão desktop/web).
+ * Recolhe nome, email e palavra-passe (com confirmação), valida os campos e cria a conta via `useAuth`.
+ * Em caso de sucesso, navega para a lista de ocorrências; caso contrário mostra a mensagem de erro.
+ */
 const Register = () => {
   const { t } = useTranslation();
 

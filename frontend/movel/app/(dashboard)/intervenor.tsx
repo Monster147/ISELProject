@@ -18,6 +18,12 @@ import { useOccurrence } from "@hooks/data/useOccurrence";
 import { useTranslation } from "react-i18next";
 import OfflineBanner from "@components/ThemedOfflineBanner";
 
+/**
+ * Ecrã de pesquisa de intervenientes na aplicação móvel.
+ * Permite procurar um interveniente por número de identificação ou por contacto telefónico e,
+ * encontrado, mostra os seus dados com opção de atualizar ou criar um novo.
+ * Em modo de seleção (`selectMode`), permite associar o interveniente encontrado à ocorrência indicada.
+ */
 const IntervenorSearch = () => {
   const { t } = useTranslation();
 

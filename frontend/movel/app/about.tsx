@@ -5,6 +5,11 @@ import ThemedText from "@commons/components/ThemedText";
 import { useBackRedirect } from "@hooks/system/useBackRedirect";
 import OfflineBanner from "@components/ThemedOfflineBanner";
 
+/**
+ * Ecrã "Sobre" da aplicação móvel.
+ * Apresenta informação sobre a aplicação e o aviso de estado offline.
+ * Redireciona para o ecrã inicial quando o utilizador carrega no botão de retroceder.
+ */
 const About = () => {
   useBackRedirect(() => router.navigate(`/home`));
 

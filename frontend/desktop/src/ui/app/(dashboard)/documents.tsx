@@ -17,6 +17,11 @@ import ThemedText from "@commons/components/ThemedText";
 import Spacer from "@commons/components/Spacer";
 import ThemedCard from "@commons/components/ThemedCard";
 
+/**
+ * Ecrã de listagem de documentos (versão desktop/web).
+ * Obtém os documentos via `useDocument`, agrupa-os por tipo em secções expansíveis e permite
+ * descarregar cada documento individualmente, mostrando um indicador enquanto o download decorre.
+ */
 const Document = () => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();

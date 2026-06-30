@@ -11,6 +11,12 @@ import { useTranslation } from "react-i18next";
 
 const DURATION_MS = 4000;
 
+/**
+ * Ecrã de arranque da aplicação móvel (expo-router).
+ * Anima uma barra de progresso durante `DURATION_MS` e, quando termina e o estado de autenticação
+ * já está resolvido, redireciona o utilizador: para as ocorrências se tiver sessão iniciada,
+ * para o ecrã inicial caso contrário.
+ */
 const Index = () => {
   const { t } = useTranslation();
   const { token, isAuthLoading } = useAuth();

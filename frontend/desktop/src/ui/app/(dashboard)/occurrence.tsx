@@ -15,6 +15,11 @@ import { useState } from "react";
 import { OccurrenceType } from "@commons/models/occurrence/OccurrenceType";
 import ThemedDateInput from "@components/ThemedDateInput";
 
+/**
+ * Ecrã com a lista de ocorrências (versão desktop/web).
+ * Obtém as ocorrências via `useOccurrence` e apresenta-as numa lista, com um painel de filtros
+ * por importância e por intervalo de datas. Ao tocar numa ocorrência, navega para o seu detalhe.
+ */
 const OccurrenceScreen = () => {
   const { t } = useTranslation();
   const { occurrence, loading } = useOccurrence();

@@ -15,6 +15,12 @@ import { StatsOccurrenceImportance } from "@commons/models/stats/StatsOccurrence
 import { useStats } from "@hooks/data/useStats";
 import { useType } from "@hooks/data/useType";
 
+/**
+ * Ecrã de dashboard com estatísticas (versão desktop/web).
+ * Carrega em paralelo, via `useStats`, os indicadores gerais e as distribuições de relatórios e
+ * ocorrências (por tipo, estado e importância), tanto globais como do mês corrente, e apresenta-os
+ * em cartões de KPIs e gráficos de barras.
+ */
 const Dashboard = () => {
   const { t } = useTranslation();
 

@@ -21,6 +21,11 @@ import { useNetworkStatus } from "@hooks/system/useNetworkStatus";
 import { confirmAction } from "@hooks/system/confirmAction";
 import { useAlertExitApp } from "@hooks/system/useAlertExitApp";
 
+/**
+ * Ecrã de listagem de documentos na aplicação móvel.
+ * Obtém os documentos via `useDocument`, agrupa-os por tipo em secções expansíveis e permite
+ * descarregar cada documento individualmente, mostrando um indicador enquanto o download decorre.
+ */
 const Document = () => {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();

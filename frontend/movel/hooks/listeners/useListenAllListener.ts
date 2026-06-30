@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import {useEffect, useRef, useState} from "react";
+import { AppState } from "react-native";
 import EventSource from "react-native-sse";
 import { API_URL } from "@commons/constants/apiurl";
 
@@ -17,6 +18,7 @@ export type SSEMessage =
  * A ligação é encerrada automaticamente ao desmontar ou mudar deps.
  * A ligação só é estabelecida se `enabled` for true e `userId` estiver definido, garantindo que apenas
  * utilizadores autenticados e com conexão à internet recebem eventos.
+ * A ligação é restabelecida quando a aplicação retorna do background (inactive) para o foreground (active).
  *
  * @param userId Identificador do utilizador (a subscrição só ativa com userId definido).
  * @param onMessage Callback invocado com a mensagem SSE recebida. O debounce garante que,
@@ -37,6 +39,16 @@ export function useListenAllListener(
   const debounceRefs = useRef<Record<string, ReturnType<typeof setTimeout>>>(
     {},
   );
+  const [reconnectTick, setReconnectTick] = useState(0);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (nextAppState) => {
+      if(nextAppState === "active" && !esRef.current) {
+        setReconnectTick((prev => prev + 1))
+      }
+    })
+    return () => sub.remove()
+  }, []);
 
   useEffect(() => {
     onMessageRef.current = onMessage;
@@ -112,5 +124,5 @@ export function useListenAllListener(
       }
       esRef.current = null;
     };
-  }, [userId, enabled, debounceMs]);
+  }, [userId, enabled, debounceMs, reconnectTick]);
 }

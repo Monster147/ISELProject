@@ -1,3 +1,9 @@
+/**
+ * Configuração do Babel para a versão *desktop*.
+ * Usa o preset `babel-preset-expo` e o plugin `module-resolver` para resolver os alias de
+ * importação (@commons, @components, @contexts, @hooks, @infrastructure, @utils).
+ * O Babel transpila o código TypeScript para JavaScript.
+ */
 module.exports = function (api) {
   api.cache(true);
   return {

@@ -13,6 +13,12 @@ import Select from "react-select";
 import ThemedTextInput from "@commons/components/ThemedTextInput";
 import { useTranslation } from "react-i18next";
 
+/**
+ * Ecrã de atualização de interveniente (versão desktop/web).
+ * Carrega o interveniente pelo `intervenorId` da rota e permite escolher quais campos editar
+ * (identificação, tipo, nome, contacto, morada) através de um seletor múltiplo, gravando as
+ * alterações via `useIntervenor`. Em caso de sucesso, regressa ao ecrã anterior.
+ */
 const IntervenorUpdate = () => {
   const { t } = useTranslation();
 

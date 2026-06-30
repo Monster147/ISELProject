@@ -15,6 +15,12 @@ import { StatsProvider } from "@contexts/StatsContext";
 import { OfflineSyncProvider } from "@contexts/OfflineSyncContext";
 import { SyncSSEProvider } from "@contexts/SyncSSEContext";
 
+/**
+ * Layout raiz da aplicação móvel (expo-router).
+ * Encadeia todos os providers de contexto (sincronização offline, autenticação, SSE, ocorrências,
+ * intervenientes, documentos, tipos, evidências e estatísticas) à volta da navegação por `Stack`,
+ * disponibilizando o estado global a toda a aplicação e aplicando o tema ativo aos ecrãs.
+ */
 const RootLayout = () => {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme] ?? Colors.light;

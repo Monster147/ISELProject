@@ -5,6 +5,11 @@ import GuestOnly from "@components/auth/GuestOnly";
 import ThemedView from "@components/ThemedView";
 import "../../i18next/i18next";
 
+/**
+ * Layout das rotas de autenticação (login/registo) na aplicação móvel.
+ * Envolve os ecrãs em `GuestOnly`, garantindo que só utilizadores sem sessão lhes acedem, e
+ * configura a navegação por `Stack` com o tema ativo.
+ */
 const AuthLayout = () => {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme] ?? Colors.light;

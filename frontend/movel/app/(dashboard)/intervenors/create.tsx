@@ -13,6 +13,11 @@ import { useBackRedirect } from "@hooks/system/useBackRedirect";
 import { useTranslation } from "react-i18next";
 import OfflineBanner from "@components/ThemedOfflineBanner";
 
+/**
+ * Ecrã de criação de interveniente na aplicação móvel.
+ * Recolhe identificação, tipo de identificação, nome, contacto e morada, valida os campos
+ * e cria o interveniente via `useIntervenor`. Em caso de sucesso, regressa ao ecrã anterior.
+ */
 const IntervenorCreate = () => {
   const { t } = useTranslation();
   const router = useRouter();

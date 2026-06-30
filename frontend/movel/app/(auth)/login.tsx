@@ -16,6 +16,11 @@ import { useAuth } from "@hooks/data/useAuth";
 import { useBackRedirect } from "@hooks/system/useBackRedirect";
 import { useTranslation } from "react-i18next";
 
+/**
+ * Ecrã de início de sessão da aplicação móvel.
+ * Recolhe email e palavra-passe, valida os campos e autentica o utilizador via `useAuth`.
+ * Em caso de sucesso, navega para a lista de ocorrências; caso contrário mostra a mensagem de erro.
+ */
 const Login = () => {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
