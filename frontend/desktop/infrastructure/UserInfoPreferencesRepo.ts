@@ -13,7 +13,6 @@ export interface UserInfoRepo {
   clearUserInfo(): Promise<void>;
 }
 
-
 /**
  * Repositório de informação do utilizador para a versão desktop.
  * Persiste e recupera os dados do utilizador autenticado usando localStorage usando a chave "userId".

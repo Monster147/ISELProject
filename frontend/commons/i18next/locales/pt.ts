@@ -292,11 +292,15 @@ const pt = {
       updateConfirm: "Atualizar",
     },
     about: {
-      intro: "Atualmente, o processo de averiguação no terreno assenta num conjunto de métodos e ferramentas genéricas. É comum os averiguadores recorrerem a meios tradicionais, como o bloco de notas, o gravador de voz e a câmara fotográfica do smartphone, complementados por aplicações genéricas como folhas de cálculo e de notas. A consolidação de todos estes elementos num relatório final é, normalmente, realizada pelo próprio averiguador.",
-      market: "No mercado segurador existem diversas soluções destinadas à gestão e tratamento de sinistros, disponibilizando funcionalidades como a participação digital de ocorrências, gestão documental, recolha de evidências e automatização de processos. No entanto, muitas destas soluções encontram-se focadas apenas em etapas específicas do processo de sinistro ou apresentam uma elevada complexidade de utilização, estando orientadas para a gestão operacional das seguradoras em vez do apoio direto ao averiguador. A Insurance Reporter App pretende responder a esta necessidade através de uma solução integrada que apoia o averiguador em todas as fases do processo de averiguação.",
-      conclusion: "Assim, visando a modernização, automatização e simplificação deste processo, esta aplicação têm como principal objetivo apoiar o averiguador na recolha dos diversos elementos necessários, através de um documento padrão, designado relatório de averiguação. Simultaneamente, pretende-se facilitar a análise por parte da seguradora ou entidade responsável, de forma a permitir uma decisão documentada e célere.",
-      authors: "Trabalho desenvolvido por José Saldanha e Afonso Jesus, no âmbito de Projeto e Seminário da Licenciatura em Engenharia Informática e de Computadores do Instituto Superior de Engenharia de Lisboa (ISEL), com a orientação dos docentes Dr. Artur Fereira e Dr. Pedro Miguens Matutino, e desenvolvido em parceria com a CAPT Consulting."
-    }
+      intro:
+        "Atualmente, o processo de averiguação no terreno assenta num conjunto de métodos e ferramentas genéricas. É comum os averiguadores recorrerem a meios tradicionais, como o bloco de notas, o gravador de voz e a câmara fotográfica do smartphone, complementados por aplicações genéricas como folhas de cálculo e de notas. A consolidação de todos estes elementos num relatório final é, normalmente, realizada pelo próprio averiguador.",
+      market:
+        "No mercado segurador existem diversas soluções destinadas à gestão e tratamento de sinistros, disponibilizando funcionalidades como a participação digital de ocorrências, gestão documental, recolha de evidências e automatização de processos. No entanto, muitas destas soluções encontram-se focadas apenas em etapas específicas do processo de sinistro ou apresentam uma elevada complexidade de utilização, estando orientadas para a gestão operacional das seguradoras em vez do apoio direto ao averiguador. A Insurance Reporter App pretende responder a esta necessidade através de uma solução integrada que apoia o averiguador em todas as fases do processo de averiguação.",
+      conclusion:
+        "Assim, visando a modernização, automatização e simplificação deste processo, esta aplicação têm como principal objetivo apoiar o averiguador na recolha dos diversos elementos necessários, através de um documento padrão, designado relatório de averiguação. Simultaneamente, pretende-se facilitar a análise por parte da seguradora ou entidade responsável, de forma a permitir uma decisão documentada e célere.",
+      authors:
+        "Trabalho desenvolvido por José Saldanha e Afonso Jesus, no âmbito de Projeto e Seminário da Licenciatura em Engenharia Informática e de Computadores do Instituto Superior de Engenharia de Lisboa (ISEL), com a orientação dos docentes Dr. Artur Fereira e Dr. Pedro Miguens Matutino, e desenvolvido em parceria com a CAPT Consulting.",
+    },
   },
 };
 

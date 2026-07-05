@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import Spacer from "@commons/components/Spacer";
 import { useType } from "@hooks/data/useType";
 import dateFormater from "@commons/utils/dateFormater";
-import {getLabelByLanguage} from "@commons/utils/getLabelByLanguage";
+import { getLabelByLanguage } from "@commons/utils/getLabelByLanguage";
 
 /**
  * Ecrã de detalhe de uma ocorrência (versão desktop/web).
@@ -54,14 +54,14 @@ const OccurrenceDetails = () => {
 
   const renderOccurInfo = (data) => {
     return getLabelByLanguage(
-        {
-          pt: data?.messagePT,
-          en: data?.messageEN,
-          es: data?.messageES,
-        },
-        i18n.language,
+      {
+        pt: data?.messagePT,
+        en: data?.messageEN,
+        es: data?.messageES,
+      },
+      i18n.language,
     );
-  }
+  };
 
   return (
     <ThemedView safe={true} style={styles.container}>
@@ -95,7 +95,10 @@ const OccurrenceDetails = () => {
             {t("occurrenceDetails.occurrenceType")}: {currentJsonType?.name}
           </ThemedText>
 
-          <ThemedText>{t("occurrenceDetails.occurrenceInfo")}: {renderOccurInfo(actualOccurrence.occurrenceInfo)}</ThemedText>
+          <ThemedText>
+            {t("occurrenceDetails.occurrenceInfo")}:{" "}
+            {renderOccurInfo(actualOccurrence.occurrenceInfo)}
+          </ThemedText>
           <ThemedButton onPress={handleEvidences} style={styles.create}>
             <ThemedText style={{ color: "#fff", textAlign: "center" }}>
               {t("occurrenceDetails.goEvidences")}

@@ -12,7 +12,9 @@ import pt.ira.evidence.Evidence
 import pt.ira.interfaces.TransactionManager
 import pt.ira.model.evidence.CreateEvidenceInput
 import pt.ira.occurrence.OccurrenceType
+import pt.ira.user.AuthenticatedUser
 import pt.ira.user.PasswordValidationInfo
+import pt.ira.user.User
 import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -26,6 +28,13 @@ class EvidenceControllerTest {
     @Autowired
     private lateinit var trxManager: TransactionManager
 
+    @Autowired
+    private lateinit var userServices: UserService
+
+    private lateinit var user: User
+    private lateinit var userToken: String
+    private lateinit var userAuthenticatedUser: AuthenticatedUser
+
     private val mapper = ObjectMapper()
 
     @BeforeEach
@@ -35,6 +44,17 @@ class EvidenceControllerTest {
             repoUsers.clear()
             repoOccurrence.clear()
         }
+        user =
+            userServices.createUser("testUser", "testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value
+            }
+        userToken =
+            userServices.createToken("testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value.tokenValue
+            }
+        userAuthenticatedUser = AuthenticatedUser(user, userToken)
     }
 
     private fun createFile(): MockMultipartFile =
@@ -54,7 +74,7 @@ class EvidenceControllerTest {
         val file = createFile()
         val data = mapper.writeValueAsString(input)
 
-        val resp = controller.createEvidence(file, data)
+        val resp = controller.createEvidence(file, data, userAuthenticatedUser)
 
         assertEquals(HttpStatus.CREATED, resp.statusCode)
         assertNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
@@ -68,7 +88,7 @@ class EvidenceControllerTest {
         val input = createEvidenceInput(999, occurrenceId)
         val file = createFile()
 
-        val resp = controller.createEvidence(file, mapper.writeValueAsString(input))
+        val resp = controller.createEvidence(file, mapper.writeValueAsString(input), userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -80,7 +100,7 @@ class EvidenceControllerTest {
         val input = createEvidenceInput(userId, 999)
         val file = createFile()
 
-        val resp = controller.createEvidence(file, mapper.writeValueAsString(input))
+        val resp = controller.createEvidence(file, mapper.writeValueAsString(input), userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -91,7 +111,7 @@ class EvidenceControllerTest {
         val occurrenceId = createOccurrenceForUser(userId)
         val evidenceId = createEvidence(userId, occurrenceId)
 
-        val resp = controller.findById(evidenceId)
+        val resp = controller.findById(evidenceId, userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         assertIs<Evidence>(resp.body)
@@ -99,7 +119,7 @@ class EvidenceControllerTest {
 
     @Test
     fun `find evidence by id not found`() {
-        val resp = controller.findById(999)
+        val resp = controller.findById(999, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -111,7 +131,7 @@ class EvidenceControllerTest {
         createEvidence(userId, occurrenceId)
         createEvidence(userId, occurrenceId)
 
-        val resp = controller.findAll()
+        val resp = controller.findAll(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         val list = resp.body as List<*>
@@ -125,7 +145,7 @@ class EvidenceControllerTest {
 
         createEvidence(userId, occurrenceId)
 
-        val resp = controller.findByOccurrenceId(occurrenceId)
+        val resp = controller.findByOccurrenceId(occurrenceId, userAuthenticatedUser)
 
         val list = resp.body as List<*>
         assertEquals(1, list.size)
@@ -138,7 +158,7 @@ class EvidenceControllerTest {
 
         createEvidence(userId, occurrenceId)
 
-        val resp = controller.findByReporterId(userId)
+        val resp = controller.findByReporterId(userId, userAuthenticatedUser)
 
         val list = resp.body as List<*>
         assertEquals(1, list.size)
@@ -152,7 +172,7 @@ class EvidenceControllerTest {
 
         createEvidence(userId, occurrenceId, location = "Lisbon")
 
-        val resp = controller.findByLocation("Lisbon")
+        val resp = controller.findByLocation("Lisbon", userAuthenticatedUser)
 
         val list = resp.body as List<*>
         assertEquals(1, list.size)
@@ -168,7 +188,7 @@ class EvidenceControllerTest {
 
         createEvidence(userId, occurrenceId, type = type)
 
-        val resp = controller.findByType(type)
+        val resp = controller.findByType(type, userAuthenticatedUser)
 
         val list = resp.body as List<*>
         assertEquals(1, list.size)
@@ -204,6 +224,7 @@ class EvidenceControllerTest {
         return controller.createEvidence(
             file,
             mapper.writeValueAsString(createEvidenceInput(userId, occurrenceId, location, type)),
+            userAuthenticatedUser,
         ).let { resp ->
             val locationHeader = requireNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
             locationHeader.substringAfterLast("/").toInt()

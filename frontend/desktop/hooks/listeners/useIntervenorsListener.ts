@@ -1,6 +1,6 @@
 import { Intervenor } from "@commons/models/intervenor/Intervenor";
 import { useEffect, useRef } from "react";
-import {getAPIUrl} from "@utils/getAPIUrl";
+import { getAPIUrl } from "@utils/getAPIUrl";
 
 export type IntervenorsUpdateAction = "IntervenorsChanged";
 

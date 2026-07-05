@@ -148,9 +148,7 @@ class ReportController(
      * @return `200 OK` com a lista completa de relatórios.
      */
     @GetMapping
-    fun findAllReports(
-        user: AuthenticatedUser,
-    ): ResponseEntity<*> {
+    fun findAllReports(user: AuthenticatedUser): ResponseEntity<*> {
         val reports = reportService.findAll()
         return ResponseEntity.status(HttpStatus.OK).body(reports)
     }

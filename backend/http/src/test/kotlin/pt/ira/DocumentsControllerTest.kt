@@ -10,6 +10,8 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import pt.ira.documents.Documents
 import pt.ira.interfaces.TransactionManager
 import pt.ira.model.documents.DocumentInputModel
+import pt.ira.user.AuthenticatedUser
+import pt.ira.user.User
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -23,6 +25,13 @@ class DocumentsControllerTest {
     @Autowired
     private lateinit var trxManager: TransactionManager
 
+    @Autowired
+    private lateinit var userServices: UserService
+
+    private lateinit var user: User
+    private lateinit var userToken: String
+    private lateinit var userAuthenticatedUser: AuthenticatedUser
+
     private fun randomName() = UUID.randomUUID().toString()
 
     private fun file(
@@ -35,7 +44,19 @@ class DocumentsControllerTest {
     fun cleanup() {
         trxManager.run {
             repoDocuments.clear()
+            repoUsers.clear()
         }
+        user =
+            userServices.createUser("testUser", "testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value
+            }
+        userToken =
+            userServices.createToken("testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value.tokenValue
+            }
+        userAuthenticatedUser = AuthenticatedUser(user, userToken)
     }
 
     @Test
@@ -46,7 +67,7 @@ class DocumentsControllerTest {
                 type = "pdf",
             )
 
-        val resp = controller.uploadDocument(file(), input)
+        val resp = controller.uploadDocument(file(), input, userAuthenticatedUser)
 
         assertEquals(HttpStatus.CREATED, resp.statusCode)
         assertNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
@@ -62,7 +83,7 @@ class DocumentsControllerTest {
 
         val invalidFile = file(contentType = "application/zip")
 
-        val resp = controller.uploadDocument(invalidFile, input)
+        val resp = controller.uploadDocument(invalidFile, input, userAuthenticatedUser)
 
         assertEquals(HttpStatus.BAD_REQUEST, resp.statusCode)
     }
@@ -71,7 +92,7 @@ class DocumentsControllerTest {
     fun `get document by id success`() {
         val id = createDocument()
 
-        val resp = controller.getDocumentById(id)
+        val resp = controller.getDocumentById(id, userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         assertIs<Documents>(resp.body)
@@ -79,7 +100,7 @@ class DocumentsControllerTest {
 
     @Test
     fun `get document by id not found`() {
-        val resp = controller.getDocumentById(999)
+        val resp = controller.getDocumentById(999, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -89,7 +110,7 @@ class DocumentsControllerTest {
         val name = randomName()
         val id = createDocument(name)
 
-        val resp = controller.getDocumentByName(name)
+        val resp = controller.getDocumentByName(name, userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         val doc = resp.body as Documents
@@ -98,7 +119,7 @@ class DocumentsControllerTest {
 
     @Test
     fun `get document by name not found`() {
-        val resp = controller.getDocumentByName(randomName())
+        val resp = controller.getDocumentByName(randomName(), userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -108,7 +129,7 @@ class DocumentsControllerTest {
         createDocument(type = "pdf")
         createDocument(type = "pdf")
 
-        val resp = controller.getDocumentsByType("pdf")
+        val resp = controller.getDocumentsByType("pdf", userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         val list = resp.body as List<*>
@@ -117,7 +138,7 @@ class DocumentsControllerTest {
 
     @Test
     fun `get documents by type not found`() {
-        val resp = controller.getDocumentsByType("pdf")
+        val resp = controller.getDocumentsByType("pdf", userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -127,7 +148,7 @@ class DocumentsControllerTest {
         createDocument(type = "pdf")
         createDocument(type = "img")
 
-        val resp = controller.getAllDocumentTypes()
+        val resp = controller.getAllDocumentTypes(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         val list = resp.body!!
@@ -139,7 +160,7 @@ class DocumentsControllerTest {
         createDocument()
         createDocument()
 
-        val resp = controller.getAllDocuments()
+        val resp = controller.getAllDocuments(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         val list = resp.body!!
@@ -150,14 +171,14 @@ class DocumentsControllerTest {
     fun `delete document success`() {
         val id = createDocument()
 
-        val resp = controller.deleteDocument(id)
+        val resp = controller.deleteDocument(id, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NO_CONTENT, resp.statusCode)
     }
 
     @Test
     fun `delete document not found`() {
-        val resp = controller.deleteDocument(999)
+        val resp = controller.deleteDocument(999, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -170,6 +191,7 @@ class DocumentsControllerTest {
             controller.uploadDocument(
                 file(),
                 DocumentInputModel(name, type),
+                userAuthenticatedUser,
             )
 
         val location = requireNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))

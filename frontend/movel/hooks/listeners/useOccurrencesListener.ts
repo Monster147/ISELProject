@@ -1,8 +1,8 @@
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import { Occurrence } from "@commons/models/occurrence/Occurrence";
 import EventSource from "react-native-sse";
 import { API_URL } from "@commons/constants/apiurl";
-import {AppState} from "react-native";
+import { AppState } from "react-native";
 
 export type OccurrencesUpdateAction = "OccurrencesChanged";
 
@@ -46,11 +46,11 @@ export function useOccurrencesListener(
 
   useEffect(() => {
     const sub = AppState.addEventListener("change", (nextAppState) => {
-      if(nextAppState === "active" && !esRef.current) {
-        setReconnectTick((prev => prev + 1))
+      if (nextAppState === "active" && !esRef.current) {
+        setReconnectTick((prev) => prev + 1);
       }
-    })
-    return () => sub.remove()
+    });
+    return () => sub.remove();
   }, []);
 
   useEffect(() => {
@@ -74,9 +74,10 @@ export function useOccurrencesListener(
     }
 
     const es = new EventSource(
-      `${API_URL}/api/occurrence/listen/user/${userID}`, {
-          headers: { "ngrok-skip-browser-warning": "true" },
-        }
+      `${API_URL}/api/occurrence/listen/user/${userID}`,
+      {
+        headers: { "ngrok-skip-browser-warning": "true" },
+      },
     );
     esRef.current = es;
     const onEvent = (event: any) => {

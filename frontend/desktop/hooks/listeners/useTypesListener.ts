@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Type } from "@commons/models/type/Type";
-import {getAPIUrl} from "@utils/getAPIUrl";
+import { getAPIUrl } from "@utils/getAPIUrl";
 
 export type TypesUpdateAction = "TypesChanged";
 

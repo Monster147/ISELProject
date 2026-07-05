@@ -37,9 +37,7 @@ class StatsController(
      * @return `200 OK` com uma instância de [OverviewStats].
      */
     @GetMapping
-    fun getOverviewStats(
-        user: AuthenticatedUser,
-    ): ResponseEntity<*> {
+    fun getOverviewStats(user: AuthenticatedUser): ResponseEntity<*> {
         val statsOverview = statsService.getOverviewStatistics()
         return ResponseEntity.ok(statsOverview)
     }
@@ -50,9 +48,7 @@ class StatsController(
      * @return `200 OK` com uma lista de [StatsReportType] mostrando contagens e percentagens.
      */
     @GetMapping("/report/type")
-    fun getStatsReportByType(
-        user: AuthenticatedUser,
-    ): ResponseEntity<*> {
+    fun getStatsReportByType(user: AuthenticatedUser): ResponseEntity<*> {
         val statsReportByType = statsService.getStatsReportByType()
         return ResponseEntity.ok(statsReportByType)
     }
@@ -63,9 +59,7 @@ class StatsController(
      * @return `200 OK` com uma lista de [StatsReportStatus] mostrando contagens e percentagens.
      */
     @GetMapping("/report/status")
-    fun getStatsReportByStatus(
-        user: AuthenticatedUser,
-    ): ResponseEntity<*> {
+    fun getStatsReportByStatus(user: AuthenticatedUser): ResponseEntity<*> {
         val statsReportByStatus = statsService.getStatsReportByStatus()
         return ResponseEntity.ok(statsReportByStatus)
     }
@@ -76,9 +70,7 @@ class StatsController(
      * @return `200 OK` com uma lista de [StatsOccurrenceImportance] mostrando contagens e percentagens.
      */
     @GetMapping("/occurrence/importance")
-    fun getStatsOccurrenceByImportance(
-        user: AuthenticatedUser,
-    ): ResponseEntity<*> {
+    fun getStatsOccurrenceByImportance(user: AuthenticatedUser): ResponseEntity<*> {
         val statsOccurrenceByImportance = statsService.getStatsOccurrenceByImportance()
         return ResponseEntity.ok(statsOccurrenceByImportance)
     }
@@ -89,9 +81,7 @@ class StatsController(
      * @return `200 OK` com uma lista de [StatsReportType] filtrada para o mês corrente.
      */
     @GetMapping("/report/type/month")
-    fun getStatsReportByTypeThisMonth(
-        user: AuthenticatedUser,
-    ): ResponseEntity<*> {
+    fun getStatsReportByTypeThisMonth(user: AuthenticatedUser): ResponseEntity<*> {
         val statsReportByType = statsService.getStatsReportByTypeThisMonth()
         return ResponseEntity.ok(statsReportByType)
     }
@@ -102,9 +92,7 @@ class StatsController(
      * @return `200 OK` com uma lista de [StatsReportStatus] filtrada para o mês corrente.
      */
     @GetMapping("/report/status/month")
-    fun getStatsReportByStatusThisMonth(
-        user: AuthenticatedUser,
-    ): ResponseEntity<*> {
+    fun getStatsReportByStatusThisMonth(user: AuthenticatedUser): ResponseEntity<*> {
         val statsReportByStatus = statsService.getStatsReportByStatusThisMonth()
         return ResponseEntity.ok(statsReportByStatus)
     }
@@ -115,9 +103,7 @@ class StatsController(
      * @return `200 OK` com uma lista de [StatsOccurrenceImportance] filtrada para o mês corrente.
      */
     @GetMapping("/occurrence/importance/month")
-    fun getStatsOccurrenceByImportanceThisMonth(
-        user: AuthenticatedUser,
-    ): ResponseEntity<*> {
+    fun getStatsOccurrenceByImportanceThisMonth(user: AuthenticatedUser): ResponseEntity<*> {
         val statsReportByStatus = statsService.getStatsOccurrenceByImportanceThisMonth()
         return ResponseEntity.ok(statsReportByStatus)
     }

@@ -12,7 +12,9 @@ import pt.ira.model.occurrence.IntervenorIdInput
 import pt.ira.model.occurrence.OccurrenceCreateInput
 import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
+import pt.ira.user.AuthenticatedUser
 import pt.ira.user.PasswordValidationInfo
+import pt.ira.user.User
 import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -27,6 +29,13 @@ class OccurrenceControllerTest {
 
     @Autowired
     private lateinit var trxManager: TransactionManager
+
+    @Autowired
+    private lateinit var userServices: UserService
+
+    private lateinit var user: User
+    private lateinit var userToken: String
+    private lateinit var userAuthenticatedUser: AuthenticatedUser
 
     private val mapper = ObjectMapper()
 
@@ -45,6 +54,17 @@ class OccurrenceControllerTest {
             repoIntervenor.clear()
             repoType.clear()
         }
+        user =
+            userServices.createUser("testUser", "testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value
+            }
+        userToken =
+            userServices.createToken("testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value.tokenValue
+            }
+        userAuthenticatedUser = AuthenticatedUser(user, userToken)
     }
 
     @Test
@@ -61,7 +81,7 @@ class OccurrenceControllerTest {
                 occurrenceInfo = json("""{}"""),
             )
 
-        val resp = controller.createOccurrence(input)
+        val resp = controller.createOccurrence(input, userAuthenticatedUser)
 
         assertEquals(HttpStatus.CREATED, resp.statusCode)
         assertNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
@@ -80,7 +100,7 @@ class OccurrenceControllerTest {
                 occurrenceInfo = json("""{}"""),
             )
 
-        val resp = controller.createOccurrence(input)
+        val resp = controller.createOccurrence(input, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -99,7 +119,7 @@ class OccurrenceControllerTest {
                 occurrenceInfo = json("""{}"""),
             )
 
-        val resp = controller.createOccurrence(input)
+        val resp = controller.createOccurrence(input, userAuthenticatedUser)
 
         assertEquals(HttpStatus.BAD_REQUEST, resp.statusCode)
     }
@@ -108,7 +128,7 @@ class OccurrenceControllerTest {
     fun `find occurrence by id success`() {
         val occurrenceId = createOccurrence()
 
-        val resp = controller.findById(occurrenceId)
+        val resp = controller.findById(occurrenceId, userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         assertIs<Occurrence>(resp.body)
@@ -116,7 +136,7 @@ class OccurrenceControllerTest {
 
     @Test
     fun `find occurrence by id not found`() {
-        val resp = controller.findById(999)
+        val resp = controller.findById(999, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -126,7 +146,7 @@ class OccurrenceControllerTest {
         val occurrenceId = createOccurrence()
         val intervenorId = createIntervenor()
 
-        val resp = controller.addIntervenor(occurrenceId, IntervenorIdInput(intervenorId))
+        val resp = controller.addIntervenor(occurrenceId, IntervenorIdInput(intervenorId), userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 
@@ -138,7 +158,7 @@ class OccurrenceControllerTest {
     fun `add intervenor report not found`() {
         val intervenorId = createIntervenor()
 
-        val resp = controller.addIntervenor(999, IntervenorIdInput(intervenorId))
+        val resp = controller.addIntervenor(999, IntervenorIdInput(intervenorId), userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -147,7 +167,7 @@ class OccurrenceControllerTest {
     fun `add intervenor not found`() {
         val occurrenceId = createOccurrence()
 
-        val resp = controller.addIntervenor(occurrenceId, IntervenorIdInput(999))
+        val resp = controller.addIntervenor(occurrenceId, IntervenorIdInput(999), userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -157,9 +177,9 @@ class OccurrenceControllerTest {
         val occurrenceId = createOccurrence()
         val intervenorId = createIntervenor()
 
-        controller.addIntervenor(occurrenceId, IntervenorIdInput(intervenorId))
+        controller.addIntervenor(occurrenceId, IntervenorIdInput(intervenorId), userAuthenticatedUser)
 
-        val resp = controller.removeIntervenor(occurrenceId, IntervenorIdInput(intervenorId))
+        val resp = controller.removeIntervenor(occurrenceId, IntervenorIdInput(intervenorId), userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 
@@ -172,7 +192,7 @@ class OccurrenceControllerTest {
         createOccurrence()
         createOccurrence()
 
-        val resp = controller.findAll()
+        val resp = controller.findAll(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 
@@ -196,7 +216,7 @@ class OccurrenceControllerTest {
             )
         }
 
-        val resp = controller.findByImportance("CRITICAL")
+        val resp = controller.findByImportance("CRITICAL", userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         assertEquals(1, resp.body.size)
@@ -218,7 +238,7 @@ class OccurrenceControllerTest {
             )
         }
 
-        val resp = controller.findByReporterId(userId)
+        val resp = controller.findByReporterId(userId, userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         assertEquals(1, resp.body.size)
@@ -229,17 +249,17 @@ class OccurrenceControllerTest {
     fun `delete occurrence success returns 204`() {
         val occurrenceId = createOccurrence()
 
-        val resp = controller.deleteById(occurrenceId)
+        val resp = controller.deleteById(occurrenceId, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NO_CONTENT, resp.statusCode)
 
-        val find = controller.findById(occurrenceId)
+        val find = controller.findById(occurrenceId, userAuthenticatedUser)
         assertEquals(HttpStatus.NOT_FOUND, find.statusCode)
     }
 
     @Test
     fun `delete occurrence not found returns 404`() {
-        val resp = controller.deleteById(999)
+        val resp = controller.deleteById(999, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -262,6 +282,7 @@ class OccurrenceControllerTest {
                 occurrenceType = createType(),
                 occurrenceInfo = json("""{}"""),
             ),
+            userAuthenticatedUser,
         ).let { resp ->
             val location =
                 requireNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))

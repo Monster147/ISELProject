@@ -33,7 +33,11 @@ module.exports = {
       preset: "jest-expo",
       rootDir: __dirname,
       testEnvironment: "jsdom",
-      roots: ["<rootDir>/desktop", "<rootDir>/commons", "<rootDir>/__tests__/desktop"],
+      roots: [
+        "<rootDir>/desktop",
+        "<rootDir>/commons",
+        "<rootDir>/__tests__/desktop",
+      ],
       testMatch: ["<rootDir>/__tests__/desktop/**/*.test.{ts,tsx}"],
       setupFilesAfterEnv: ["<rootDir>/__tests__/jest.setup.js"],
       moduleNameMapper: {
@@ -52,7 +56,11 @@ module.exports = {
       displayName: "movel",
       preset: "jest-expo",
       rootDir: __dirname,
-      roots: ["<rootDir>/movel", "<rootDir>/commons", "<rootDir>/__tests__/movel"],
+      roots: [
+        "<rootDir>/movel",
+        "<rootDir>/commons",
+        "<rootDir>/__tests__/movel",
+      ],
       testMatch: ["<rootDir>/__tests__/movel/**/*.test.{ts,tsx}"],
       setupFilesAfterEnv: ["<rootDir>/__tests__/jest.setup.js"],
       moduleNameMapper: {

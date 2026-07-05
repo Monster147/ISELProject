@@ -1,6 +1,6 @@
 import { Occurrence } from "@commons/models/occurrence/Occurrence";
 import { useEffect, useRef } from "react";
-import {getAPIUrl} from "@utils/getAPIUrl";
+import { getAPIUrl } from "@utils/getAPIUrl";
 
 export type OccurrenceUpdateAction =
   | "EvidenceChanged"

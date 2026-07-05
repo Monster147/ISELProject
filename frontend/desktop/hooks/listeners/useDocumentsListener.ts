@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Documents } from "@commons/models/documents/Documents";
-import {getAPIUrl} from "@utils/getAPIUrl";
+import { getAPIUrl } from "@utils/getAPIUrl";
 
 export type DocumentsUpdateAction = "DocumentsChanged";
 

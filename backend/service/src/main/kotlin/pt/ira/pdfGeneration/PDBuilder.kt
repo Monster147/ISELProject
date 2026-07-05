@@ -205,7 +205,7 @@ class PDBuilder(
         Loader.loadPDF(pdfBytes).use { pdf ->
             val renderer = PDFRenderer(pdf)
             val pdfPages = pdf.numberOfPages
-            for(i in 0 until pdfPages) {
+            for (i in 0 until pdfPages) {
                 val pageImage = renderer.renderImageWithDPI(i, 150f)
                 val pageImageByteArray = ByteArrayOutputStream()
                 ImageIO.write(pageImage, "png", pageImageByteArray)

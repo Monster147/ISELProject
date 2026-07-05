@@ -11,6 +11,8 @@ import pt.ira.interfaces.TransactionManager
 import pt.ira.model.type.TypeCreateInput
 import pt.ira.model.type.TypeUpdateInput
 import pt.ira.type.Type
+import pt.ira.user.AuthenticatedUser
+import pt.ira.user.User
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
@@ -24,6 +26,13 @@ class TypeControllerTest {
     @Autowired
     private lateinit var trxManager: TransactionManager
 
+    @Autowired
+    private lateinit var userServices: UserService
+
+    private lateinit var user: User
+    private lateinit var userToken: String
+    private lateinit var userAuthenticatedUser: AuthenticatedUser
+
     private val mapper = ObjectMapper()
 
     private fun json(v: String) = mapper.readTree(v)
@@ -32,7 +41,19 @@ class TypeControllerTest {
     fun cleanup() {
         trxManager.run {
             repoType.clear()
+            repoUsers.clear()
         }
+        user =
+            userServices.createUser("testUser", "testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value
+            }
+        userToken =
+            userServices.createToken("testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value.tokenValue
+            }
+        userAuthenticatedUser = AuthenticatedUser(user, userToken)
     }
 
     @Test
@@ -43,6 +64,7 @@ class TypeControllerTest {
                     name = "type1",
                     form = json("""{}"""),
                 ),
+                userAuthenticatedUser,
             )
 
         assertEquals(HttpStatus.CREATED, resp.statusCode)
@@ -57,6 +79,7 @@ class TypeControllerTest {
                     name = "",
                     form = json("""{}"""),
                 ),
+                userAuthenticatedUser,
             )
 
         assertEquals(HttpStatus.BAD_REQUEST, resp.statusCode)
@@ -72,6 +95,7 @@ class TypeControllerTest {
                     name = "type1",
                     form = json("""{}"""),
                 ),
+                userAuthenticatedUser,
             )
 
         assertEquals(HttpStatus.BAD_REQUEST, resp.statusCode)
@@ -81,7 +105,7 @@ class TypeControllerTest {
     fun `find type by id success`() {
         val id = createType()
 
-        val resp = controller.findById(id)
+        val resp = controller.findById(id, userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         assertIs<Type>(resp.body)
@@ -89,7 +113,7 @@ class TypeControllerTest {
 
     @Test
     fun `find type by id not found`() {
-        val resp = controller.findById(999)
+        val resp = controller.findById(999, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -98,7 +122,7 @@ class TypeControllerTest {
     fun `find type by name success`() {
         createType("type1")
 
-        val resp = controller.findByName("type1")
+        val resp = controller.findByName("type1", userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         assertIs<Type>(resp.body)
@@ -106,7 +130,7 @@ class TypeControllerTest {
 
     @Test
     fun `find type by name not found`() {
-        val resp = controller.findByName("unknown")
+        val resp = controller.findByName("unknown", userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -116,7 +140,7 @@ class TypeControllerTest {
         createType("t1")
         createType("t2")
 
-        val resp = controller.findAll()
+        val resp = controller.findAll(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         val list = resp.body as List<*>
@@ -125,7 +149,7 @@ class TypeControllerTest {
 
     @Test
     fun `find all empty`() {
-        val resp = controller.findAll()
+        val resp = controller.findAll(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         val list = resp.body as List<*>
@@ -143,6 +167,7 @@ class TypeControllerTest {
                     name = "new",
                     form = json("""{"a":1}"""),
                 ),
+                userAuthenticatedUser,
             )
 
         assertEquals(HttpStatus.OK, resp.statusCode)
@@ -160,6 +185,7 @@ class TypeControllerTest {
                     name = "new",
                     form = json("""{}"""),
                 ),
+                userAuthenticatedUser,
             )
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
@@ -176,6 +202,7 @@ class TypeControllerTest {
                     name = null,
                     form = json("""{"x":1}"""),
                 ),
+                userAuthenticatedUser,
             )
 
         assertEquals(HttpStatus.OK, resp.statusCode)
@@ -189,17 +216,17 @@ class TypeControllerTest {
     fun `delete type success`() {
         val id = createType()
 
-        val resp = controller.deleteById(id)
+        val resp = controller.deleteById(id, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NO_CONTENT, resp.statusCode)
 
-        val find = controller.findById(id)
+        val find = controller.findById(id, userAuthenticatedUser)
         assertEquals(HttpStatus.NOT_FOUND, find.statusCode)
     }
 
     @Test
     fun `delete type not found`() {
-        val resp = controller.deleteById(999)
+        val resp = controller.deleteById(999, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -210,6 +237,7 @@ class TypeControllerTest {
                 name = name,
                 form = json("""{}"""),
             ),
+            userAuthenticatedUser,
         ).let { resp ->
             val location =
                 requireNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))

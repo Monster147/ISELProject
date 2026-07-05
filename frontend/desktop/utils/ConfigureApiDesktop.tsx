@@ -1,6 +1,6 @@
-import {configureApi, getAuthHeaders} from "@commons/api/api";
+import { configureApi, getAuthHeaders } from "@commons/api/api";
 import { authInfoRepo } from "@infrastructure/AuthInfoPreferencesRepo";
-import {getAPIUrl} from "@utils/getAPIUrl";
+import { getAPIUrl } from "@utils/getAPIUrl";
 
 /**
  * Configura o módulo de API com os handlers específicos da aplicação desktop.
@@ -13,7 +13,7 @@ configureApi(
     documentDownloadHandler: downloadDocument,
     evidenceDownloadHandler: downloadEvidence,
   },
-    getAPIUrl(),
+  getAPIUrl(),
 );
 
 /**
@@ -29,11 +29,11 @@ configureApi(
 async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
   const headers = {
     ...(await getAuthHeaders()),
-    "ngrok-skip-browser-warning": "true"
-  }
+    "ngrok-skip-browser-warning": "true",
+  };
   const response = await fetch(`${apiBaseUrl}/documents/${id}/download`, {
     method: "GET",
-    headers: headers
+    headers: headers,
   });
 
   if (!response.ok) {
@@ -73,8 +73,8 @@ async function downloadEvidence(
 ): Promise<Blob> {
   const headers = {
     ...authHeaders,
-    "ngrok-skip-browser-warning": "true"
-  }
+    "ngrok-skip-browser-warning": "true",
+  };
   const response = await fetch(`${apiBaseUrl}/evidence/${id}/download`, {
     headers: headers,
   });

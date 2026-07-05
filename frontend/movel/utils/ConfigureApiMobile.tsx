@@ -1,4 +1,4 @@
-import {configureApi, getAuthHeaders} from "@commons/api/api";
+import { configureApi, getAuthHeaders } from "@commons/api/api";
 import { authInfoRepo } from "@infrastructure/AuthInfoPreferencesRepo";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import { Platform, Alert } from "react-native";
@@ -34,9 +34,9 @@ configureApi(
 async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
   const url = `${apiBaseUrl}/documents/${id}/download`;
   const headers = {
-    ...(await getAuthHeaders() as Record<string, string>),
-    "ngrok-skip-browser-warning": "true"
-  }
+    ...((await getAuthHeaders()) as Record<string, string>),
+    "ngrok-skip-browser-warning": "true",
+  };
 
   const response = await fetch(url, {
     headers: headers,
@@ -111,7 +111,7 @@ async function downloadEvidence(
   const url = `${apiBaseUrl}/evidence/${id}/download`;
   const headers = {
     ...(authHeaders as Record<string, string>),
-    "ngrok-skip-browser-warning": "true"
+    "ngrok-skip-browser-warning": "true",
   };
   if (keep) {
     const response = await fetch(url, { headers });

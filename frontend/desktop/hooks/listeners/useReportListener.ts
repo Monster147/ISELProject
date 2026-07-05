@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import {getAPIUrl} from "@utils/getAPIUrl";
+import { getAPIUrl } from "@utils/getAPIUrl";
 
 export type ReportUpdateAction =
   | "ReportCreated"

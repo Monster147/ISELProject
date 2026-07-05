@@ -11,7 +11,6 @@ import java.time.format.DateTimeFormatter
  * correspondente à linguagem indicada, com fallback para inglês.
  */
 object PDFText {
-
     /**
      * Obtém o título do relatório na linguagem especificada.
      *

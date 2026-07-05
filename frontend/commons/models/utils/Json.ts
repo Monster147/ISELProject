@@ -8,9 +8,4 @@
  * @see https://github.com/microsoft/TypeScript/issues/1897#issuecomment-580962081
  */
 export type Json =
-  | null
-  | boolean
-  | number
-  | string
-  | Json[]
-  | { [prop: string]: Json };
+  null | boolean | number | string | Json[] | { [prop: string]: Json };

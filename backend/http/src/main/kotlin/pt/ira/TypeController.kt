@@ -118,9 +118,7 @@ class TypeController(
      * @return `200 OK` com a lista completa de tipos.
      */
     @GetMapping
-    fun findAll(
-        user: AuthenticatedUser,
-    ): ResponseEntity<List<Type>> = ResponseEntity.ok(typeService.findAll())
+    fun findAll(user: AuthenticatedUser): ResponseEntity<List<Type>> = ResponseEntity.ok(typeService.findAll())
 
     /**
      * Atualiza os dados de um tipo de ocorrência existente.

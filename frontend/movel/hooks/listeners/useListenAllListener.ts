@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 import EventSource from "react-native-sse";
 import { API_URL } from "@commons/constants/apiurl";
@@ -43,11 +43,11 @@ export function useListenAllListener(
 
   useEffect(() => {
     const sub = AppState.addEventListener("change", (nextAppState) => {
-      if(nextAppState === "active" && !esRef.current) {
-        setReconnectTick((prev => prev + 1))
+      if (nextAppState === "active" && !esRef.current) {
+        setReconnectTick((prev) => prev + 1);
       }
-    })
-    return () => sub.remove()
+    });
+    return () => sub.remove();
   }, []);
 
   useEffect(() => {

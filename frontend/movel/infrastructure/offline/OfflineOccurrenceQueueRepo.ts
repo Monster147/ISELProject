@@ -1,10 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 
 export type OfflineActionType =
-  | "ADD_INTERVENOR"
-  | "REMOVE_INTERVENOR"
-  | "ADD_EVIDENCE"
-  | "REMOVE_EVIDENCE";
+  "ADD_INTERVENOR" | "REMOVE_INTERVENOR" | "ADD_EVIDENCE" | "REMOVE_EVIDENCE";
 
 export interface OfflineAction<T = any> {
   id: string;

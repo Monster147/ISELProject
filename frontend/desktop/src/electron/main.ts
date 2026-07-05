@@ -8,14 +8,14 @@ app.on("ready", () => {
     shell.openExternal(url);
   });
 
-  if(!isDev()){
+  if (!isDev()) {
     session.defaultSession.webRequest.onBeforeSendHeaders(
-        { urls: ["https://*.ngrok-free.dev/*"]},
-        (details, callback) => {
-          details.requestHeaders["ngrok-skip-browser-warning"] = "true";
-          callback({ requestHeaders: details.requestHeaders });
-        }
-    )
+      { urls: ["https://*.ngrok-free.dev/*"] },
+      (details, callback) => {
+        details.requestHeaders["ngrok-skip-browser-warning"] = "true";
+        callback({ requestHeaders: details.requestHeaders });
+      },
+    );
   }
 
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;

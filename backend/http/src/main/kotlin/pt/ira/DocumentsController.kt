@@ -158,9 +158,7 @@ class DocumentsController(
      * @return `200 OK` com a lista de tipos únicos.
      */
     @GetMapping("/types")
-    fun getAllDocumentTypes(
-        user: AuthenticatedUser,
-    ): ResponseEntity<List<String>> {
+    fun getAllDocumentTypes(user: AuthenticatedUser): ResponseEntity<List<String>> {
         val types = documentsService.findAllDocumentTypes()
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -173,9 +171,7 @@ class DocumentsController(
      * @return `200 OK` com a lista de todos os documentos.
      */
     @GetMapping
-    fun getAllDocuments(
-        user: AuthenticatedUser,
-    ): ResponseEntity<List<Documents>> {
+    fun getAllDocuments(user: AuthenticatedUser): ResponseEntity<List<Documents>> {
         val documents = documentsService.findAllDocuments()
         return ResponseEntity
             .status(HttpStatus.OK)

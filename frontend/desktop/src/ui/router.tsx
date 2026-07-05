@@ -1,4 +1,4 @@
-import {createBrowserRouter, createHashRouter} from "react-router";
+import { createBrowserRouter, createHashRouter } from "react-router";
 import Home from "./app/Home";
 import Login from "./app/(auth)/Login";
 import Register from "./app/(auth)/Register";
@@ -19,7 +19,7 @@ import DynamicOccurrenceForm from "./app/(dashboard)/occurrences/evidences/[id]"
 import Dashboard from "./app/(dashboard)/dashboard";
 import OccurrenceScreen from "./app/(dashboard)/occurrence";
 import OccurrenceReport from "./app/(dashboard)/occurrences/report/[id]";
-import {isDev} from "../electron/utils";
+import { isDev } from "../electron/utils";
 import About from "./app/About";
 import Contacts from "./app/Contacts";
 
@@ -72,7 +72,7 @@ const routerArray = [
       },
     ],
   },
-]
+];
 
 /**
  * Conjunto de rotas da aplicação.
@@ -85,4 +85,6 @@ const routerArray = [
  * a aplicação é carregada a partir de ficheiros locais (`file://`)
  * e não existe um servidor HTTP capaz de resolver rotas diretamente.
  */
-export const router = isDev() ? createBrowserRouter(routerArray) : createHashRouter(routerArray);
+export const router = isDev()
+  ? createBrowserRouter(routerArray)
+  : createHashRouter(routerArray);

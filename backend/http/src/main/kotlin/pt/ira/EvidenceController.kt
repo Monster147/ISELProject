@@ -228,9 +228,7 @@ class EvidenceController(
      * @return lista completa de evidências.
      */
     @GetMapping
-    fun findAll(
-        user: AuthenticatedUser,
-    ): ResponseEntity<*> {
+    fun findAll(user: AuthenticatedUser): ResponseEntity<*> {
         val result = evidenceService.findAll()
         return ResponseEntity
             .status(HttpStatus.OK)

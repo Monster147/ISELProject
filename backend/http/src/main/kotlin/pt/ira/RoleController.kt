@@ -140,9 +140,7 @@ class RoleController(
      * @return `200 OK` com a lista completa de cargos.
      */
     @GetMapping
-    fun findAll(
-        user: AuthenticatedUser,
-    ): ResponseEntity<*> {
+    fun findAll(user: AuthenticatedUser): ResponseEntity<*> {
         val result = roleService.findAllRoles()
         return ResponseEntity
             .status(HttpStatus.OK)

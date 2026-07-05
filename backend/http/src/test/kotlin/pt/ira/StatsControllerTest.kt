@@ -9,7 +9,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import pt.ira.interfaces.TransactionManager
 import pt.ira.occurrence.OccurrenceType
 import pt.ira.report.ReportStatus
+import pt.ira.user.AuthenticatedUser
 import pt.ira.user.PasswordValidationInfo
+import pt.ira.user.User
 import java.time.LocalDate
 import kotlin.test.assertEquals
 
@@ -25,6 +27,13 @@ class StatsControllerTest {
     @Autowired
     private lateinit var trxManager: TransactionManager
 
+    @Autowired
+    private lateinit var userServices: UserService
+
+    private lateinit var user: User
+    private lateinit var userToken: String
+    private lateinit var userAuthenticatedUser: AuthenticatedUser
+
     @BeforeEach
     fun reset() {
         trxManager.run {
@@ -35,6 +44,17 @@ class StatsControllerTest {
             repoEvidence.clear()
             repoType.clear()
         }
+        user =
+            userServices.createUser("testUser", "testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value
+            }
+        userToken =
+            userServices.createToken("testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value.tokenValue
+            }
+        userAuthenticatedUser = AuthenticatedUser(user, userToken)
     }
 
     private fun createUser(
@@ -91,13 +111,13 @@ class StatsControllerTest {
             )
         }
 
-        val response = statsController.getOverviewStats()
+        val response = statsController.getOverviewStats(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, response.statusCode)
 
         val body = response.body as pt.ira.statistics.OverviewStats
 
-        assertEquals(1, body.totalUsers)
+        assertEquals(2, body.totalUsers)
         assertEquals(2, body.totalOccurrences)
         assertEquals(1, body.totalReports)
         assertEquals(0, body.totalEvidences)
@@ -146,7 +166,7 @@ class StatsControllerTest {
             )
         }
 
-        val response = statsController.getStatsReportByType()
+        val response = statsController.getStatsReportByType(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, response.statusCode)
 
@@ -205,7 +225,7 @@ class StatsControllerTest {
             repoReport.updateStatus(r3, ReportStatus.REJECTED)
         }
 
-        val response = statsController.getStatsReportByStatus()
+        val response = statsController.getStatsReportByStatus(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, response.statusCode)
 
@@ -221,7 +241,7 @@ class StatsControllerTest {
         createOccurrence(user.id, OccurrenceType.NORMAL)
         createOccurrence(user.id, OccurrenceType.CRITICAL)
 
-        val response = statsController.getStatsOccurrenceByImportance()
+        val response = statsController.getStatsOccurrenceByImportance(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, response.statusCode)
 
@@ -249,7 +269,7 @@ class StatsControllerTest {
             )
         }
 
-        val response = statsController.getStatsReportByTypeThisMonth()
+        val response = statsController.getStatsReportByTypeThisMonth(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, response.statusCode)
 
@@ -280,7 +300,7 @@ class StatsControllerTest {
             repoReport.updateStatus(report, ReportStatus.APPROVED)
         }
 
-        val response = statsController.getStatsReportByStatusThisMonth()
+        val response = statsController.getStatsReportByStatusThisMonth(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, response.statusCode)
 
@@ -295,7 +315,7 @@ class StatsControllerTest {
 
         createOccurrence(user.id, OccurrenceType.URGENT)
 
-        val response = statsController.getStatsOccurrenceByImportanceThisMonth()
+        val response = statsController.getStatsOccurrenceByImportanceThisMonth(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, response.statusCode)
 
@@ -306,9 +326,9 @@ class StatsControllerTest {
 
     @Test
     fun `stats endpoints return empty lists when no data exists`() {
-        val reportType = statsController.getStatsReportByType()
-        val reportStatus = statsController.getStatsReportByStatus()
-        val occurrenceImportance = statsController.getStatsOccurrenceByImportance()
+        val reportType = statsController.getStatsReportByType(userAuthenticatedUser)
+        val reportStatus = statsController.getStatsReportByStatus(userAuthenticatedUser)
+        val occurrenceImportance = statsController.getStatsOccurrenceByImportance(userAuthenticatedUser)
 
         assertEquals(emptyList<Any>(), reportType.body)
         assertEquals(emptyList<Any>(), reportStatus.body)

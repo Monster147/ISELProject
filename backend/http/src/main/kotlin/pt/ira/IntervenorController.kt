@@ -87,9 +87,7 @@ class IntervenorController(
      * @return `200 OK` com a lista completa de intervenientes.
      */
     @GetMapping
-    fun findAllIntervenors(
-        user: AuthenticatedUser,
-    ): ResponseEntity<*> {
+    fun findAllIntervenors(user: AuthenticatedUser): ResponseEntity<*> {
         val intervenors = intervenorService.findAll()
         return ResponseEntity.status(HttpStatus.OK).body(intervenors)
     }

@@ -6,7 +6,7 @@ import { useBackRedirect } from "@hooks/system/useBackRedirect";
 import OfflineBanner from "@components/ThemedOfflineBanner";
 import ThemedCard from "@commons/components/ThemedCard";
 import Spacer from "@commons/components/Spacer";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 /**
  * Ecrã "Sobre" da aplicação móvel.
@@ -18,18 +18,18 @@ const About = () => {
   useBackRedirect(() => router.navigate(`/home`));
 
   return (
-      <ThemedView style={styles.container}>
-        <ThemedCard style={styles.cart}>
-          <ThemedText>{t("about.intro")}</ThemedText>
-          <Spacer height={10} />
-          <ThemedText>{t("about.market")}</ThemedText>
-          <Spacer height={10} />
-          <ThemedText>{t("about.conclusion")}</ThemedText>
-          <Spacer height={10} />
-          <ThemedText>{t("about.authors")}</ThemedText>
-        </ThemedCard>
-        <OfflineBanner />
-      </ThemedView>
+    <ThemedView style={styles.container}>
+      <ThemedCard style={styles.cart}>
+        <ThemedText>{t("about.intro")}</ThemedText>
+        <Spacer height={10} />
+        <ThemedText>{t("about.market")}</ThemedText>
+        <Spacer height={10} />
+        <ThemedText>{t("about.conclusion")}</ThemedText>
+        <Spacer height={10} />
+        <ThemedText>{t("about.authors")}</ThemedText>
+      </ThemedCard>
+      <OfflineBanner />
+    </ThemedView>
   );
 };
 

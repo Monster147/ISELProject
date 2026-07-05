@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Evidence } from "@commons/models/evidence/Evidence";
-import {getAPIUrl} from "@utils/getAPIUrl";
+import { getAPIUrl } from "@utils/getAPIUrl";
 
 export type EvidenceUpdateAction = "EvidenceChanged";
 

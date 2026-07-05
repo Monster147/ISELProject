@@ -14,7 +14,9 @@ import pt.ira.model.report.StatusInput
 import pt.ira.occurrence.OccurrenceType
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
+import pt.ira.user.AuthenticatedUser
 import pt.ira.user.PasswordValidationInfo
+import pt.ira.user.User
 import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -30,6 +32,13 @@ class ReportControllerTest {
     @Autowired
     private lateinit var trxManager: TransactionManager
 
+    @Autowired
+    private lateinit var userServices: UserService
+
+    private lateinit var user: User
+    private lateinit var userToken: String
+    private lateinit var userAuthenticatedUser: AuthenticatedUser
+
     private val mapper = ObjectMapper()
 
     @BeforeEach
@@ -39,6 +48,17 @@ class ReportControllerTest {
             repoUsers.clear()
             repoIntervenor.clear()
         }
+        user =
+            userServices.createUser("testUser", "testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value
+            }
+        userToken =
+            userServices.createToken("testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value.tokenValue
+            }
+        userAuthenticatedUser = AuthenticatedUser(user, userToken)
     }
 
     @Test
@@ -48,7 +68,7 @@ class ReportControllerTest {
         val occurrenceId = createOccurrenceForUser(userId)
         val input = createReportInput(userId, occurrenceId)
 
-        val resp = controller.createReport(input)
+        val resp = controller.createReport(input, userAuthenticatedUser)
 
         assertEquals(HttpStatus.CREATED, resp.statusCode)
         assertNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
@@ -58,7 +78,7 @@ class ReportControllerTest {
     fun `create report with invalid user returns 404`() {
         val input = createReportInput(999, 1)
 
-        val resp = controller.createReport(input)
+        val resp = controller.createReport(input, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -67,7 +87,7 @@ class ReportControllerTest {
     fun `find report by id success`() {
         val reportId = createReport()
 
-        val resp = controller.findReportById(reportId)
+        val resp = controller.findReportById(reportId, userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
         assertIs<Report>(resp.body)
@@ -75,7 +95,7 @@ class ReportControllerTest {
 
     @Test
     fun `find report by id not found`() {
-        val resp = controller.findReportById(999)
+        val resp = controller.findReportById(999, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -85,7 +105,7 @@ class ReportControllerTest {
         createReport()
         createReport()
 
-        val resp = controller.findAllReports()
+        val resp = controller.findAllReports(userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 
@@ -97,9 +117,9 @@ class ReportControllerTest {
     fun `find by status`() {
         val reportId = createReport()
 
-        controller.updateReportStatus(reportId, StatusInput("APPROVED"))
+        controller.updateReportStatus(reportId, StatusInput("APPROVED"), userAuthenticatedUser)
 
-        val resp = controller.findByStatus("APPROVED")
+        val resp = controller.findByStatus("APPROVED", userAuthenticatedUser)
 
         assertEquals(1, resp.body.size)
     }
@@ -109,7 +129,7 @@ class ReportControllerTest {
         val userId = createUser()
         createReport(userId)
 
-        val resp = controller.findByCreator(userId)
+        val resp = controller.findByCreator(userId, userAuthenticatedUser)
 
         assertEquals(1, resp.body.size)
     }
@@ -118,14 +138,14 @@ class ReportControllerTest {
     fun `delete report success`() {
         val reportId = createReport()
 
-        val resp = controller.deleteReportById(reportId)
+        val resp = controller.deleteReportById(reportId, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NO_CONTENT, resp.statusCode)
     }
 
     @Test
     fun `delete report not found`() {
-        val resp = controller.deleteReportById(999)
+        val resp = controller.deleteReportById(999, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -134,7 +154,7 @@ class ReportControllerTest {
     fun `update report status`() {
         val reportId = createReport()
 
-        val resp = controller.updateReportStatus(reportId, StatusInput("APPROVED"))
+        val resp = controller.updateReportStatus(reportId, StatusInput("APPROVED"), userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 
@@ -144,7 +164,7 @@ class ReportControllerTest {
 
     @Test
     fun `update report status not found`() {
-        val resp = controller.updateReportStatus(999, StatusInput("APPROVED"))
+        val resp = controller.updateReportStatus(999, StatusInput("APPROVED"), userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -154,7 +174,7 @@ class ReportControllerTest {
         val reportId = createReport()
         val userId = createUser()
 
-        val resp = controller.addEditor(reportId, EditorInput(userId))
+        val resp = controller.addEditor(reportId, EditorInput(userId), userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 
@@ -166,7 +186,7 @@ class ReportControllerTest {
     fun `add editor report not found`() {
         val userId = createUser()
 
-        val resp = controller.addEditor(999, EditorInput(userId))
+        val resp = controller.addEditor(999, EditorInput(userId), userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -175,7 +195,7 @@ class ReportControllerTest {
     fun `add editor user not found`() {
         val reportId = createReport()
 
-        val resp = controller.addEditor(reportId, EditorInput(999))
+        val resp = controller.addEditor(reportId, EditorInput(999), userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -185,9 +205,9 @@ class ReportControllerTest {
         val reportId = createReport()
         val userId = createUser()
 
-        controller.addEditor(reportId, EditorInput(userId))
+        controller.addEditor(reportId, EditorInput(userId), userAuthenticatedUser)
 
-        val resp = controller.removeEditor(reportId, EditorInput(userId))
+        val resp = controller.removeEditor(reportId, EditorInput(userId), userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 
@@ -221,7 +241,7 @@ class ReportControllerTest {
         creatorId: Int = createUser(),
         occurrenceId: Int = createOccurrenceForUser(creatorId),
     ): Int =
-        controller.createReport(createReportInput(creatorId, occurrenceId)).let { resp ->
+        controller.createReport(createReportInput(creatorId, occurrenceId), userAuthenticatedUser).let { resp ->
             val location = requireNotNull(resp.headers.getFirst(HttpHeaders.LOCATION))
             location.substringAfterLast("/").toInt()
         }

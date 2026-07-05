@@ -288,11 +288,15 @@ const en = {
       updateConfirm: "Update",
     },
     about: {
-      intro: "Currently, the field investigation process relies on a set of generic methods and tools. Investigators commonly use traditional resources such as notebooks, voice recorders and smartphone cameras, complemented by general-purpose applications such as spreadsheets and note-taking software. The consolidation of all these elements into a final report is usually carried out by the investigator.",
-      market: "Within the insurance sector, there are several solutions designed for claims management and processing, providing functionalities such as digital claims notification, document management, evidence collection and process automation. However, many of these solutions focus only on specific stages of the claims process or present a high level of complexity, being primarily oriented towards insurers’ operational management rather than providing direct support to investigators. The Insurance Reporter App aims to address this need through an integrated solution that supports investigators throughout all stages of the investigation process.",
-      conclusion: "With the aim of modernising, automating and simplifying this process, the main objective of this application is to support investigators in gathering the various elements required through a standardised document known as an investigation report. At the same time, it seeks to facilitate the assessment carried out by the insurer or responsible entity, enabling a well-documented and timely decision-making process.",
-      authors: "This work was carried out by José Saldanha and Afonso Jesus as part of the Project and Seminar course of the Bachelor's Degree in Computer Science and Computer Engineering at the Instituto Superior de Engenharia de Lisboa (ISEL), under the supervision of Dr Artur Ferreira and Dr Pedro Miguens Matutino, and developed in partnership with CAPT Consulting."
-    }
+      intro:
+        "Currently, the field investigation process relies on a set of generic methods and tools. Investigators commonly use traditional resources such as notebooks, voice recorders and smartphone cameras, complemented by general-purpose applications such as spreadsheets and note-taking software. The consolidation of all these elements into a final report is usually carried out by the investigator.",
+      market:
+        "Within the insurance sector, there are several solutions designed for claims management and processing, providing functionalities such as digital claims notification, document management, evidence collection and process automation. However, many of these solutions focus only on specific stages of the claims process or present a high level of complexity, being primarily oriented towards insurers’ operational management rather than providing direct support to investigators. The Insurance Reporter App aims to address this need through an integrated solution that supports investigators throughout all stages of the investigation process.",
+      conclusion:
+        "With the aim of modernising, automating and simplifying this process, the main objective of this application is to support investigators in gathering the various elements required through a standardised document known as an investigation report. At the same time, it seeks to facilitate the assessment carried out by the insurer or responsible entity, enabling a well-documented and timely decision-making process.",
+      authors:
+        "This work was carried out by José Saldanha and Afonso Jesus as part of the Project and Seminar course of the Bachelor's Degree in Computer Science and Computer Engineering at the Instituto Superior de Engenharia de Lisboa (ISEL), under the supervision of Dr Artur Ferreira and Dr Pedro Miguens Matutino, and developed in partnership with CAPT Consulting.",
+    },
   },
 };
 

@@ -2,21 +2,23 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { API_URL } from "../commons/constants/apiurl";
-import { isDev } from "./src/electron/utils"
+import { isDev } from "./src/electron/utils";
 
 /**
  * Configuração para a adaptação do `react-native` para `react-native-web`, e outras bibliotecas
  * que podem ter problemas de resolução de dependências em produção, como `i18next`, `react` e `react-dom`.
  * A configuração é escolhida, verificando se estamos em modo de desenvolvimento ou em modo de produção.
  */
-const resolveAlias = isDev() ? {
-  "react-native": "react-native-web",
-} : {
-  "react-native": path.resolve(__dirname, "node_modules/react-native-web"),
-  "i18next": path.resolve(__dirname, "node_modules/i18next"),
-  "react": path.resolve(__dirname, "node_modules/react"),
-  "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
-}
+const resolveAlias = isDev()
+  ? {
+      "react-native": "react-native-web",
+    }
+  : {
+      "react-native": path.resolve(__dirname, "node_modules/react-native-web"),
+      i18next: path.resolve(__dirname, "node_modules/i18next"),
+      react: path.resolve(__dirname, "node_modules/react"),
+      "react-dom": path.resolve(__dirname, "node_modules/react-dom"),
+    };
 
 /**
  * Configuração do Vite para a interface desktop (React + Electron).

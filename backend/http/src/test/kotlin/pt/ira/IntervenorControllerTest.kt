@@ -11,6 +11,8 @@ import pt.ira.interfaces.TransactionManager
 import pt.ira.intervenor.Intervenor
 import pt.ira.model.intervenor.IntervenorInput
 import pt.ira.model.intervenor.IntervenorUpdateInput
+import pt.ira.user.AuthenticatedUser
+import pt.ira.user.User
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -22,11 +24,30 @@ class IntervenorControllerTest {
     @Autowired
     private lateinit var trxManager: TransactionManager
 
+    @Autowired
+    private lateinit var userServices: UserService
+
+    private lateinit var user: User
+    private lateinit var userToken: String
+    private lateinit var userAuthenticatedUser: AuthenticatedUser
+
     @BeforeEach
     fun cleanup() {
         trxManager.run {
             repoIntervenor.clear()
+            repoUsers.clear()
         }
+        user =
+            userServices.createUser("testUser", "testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value
+            }
+        userToken =
+            userServices.createToken("testUser@mail.com", "Pass@123").let {
+                check(it is Success)
+                it.value.tokenValue
+            }
+        userAuthenticatedUser = AuthenticatedUser(user, userToken)
     }
 
     @Test
@@ -41,8 +62,7 @@ class IntervenorControllerTest {
                 address = "Lisbon",
             )
 
-        // create
-        controller.createIntervenor(input).let { resp ->
+        controller.createIntervenor(input, userAuthenticatedUser).let { resp ->
             assertEquals(HttpStatus.CREATED, resp.statusCode)
 
             val location = resp.headers.getFirst(HttpHeaders.LOCATION)
@@ -50,8 +70,7 @@ class IntervenorControllerTest {
             assertTrue(location.startsWith("/api/intervenor"))
         }
 
-        // find
-        controller.findIntervenorByIdNumber(idNumber).also { resp ->
+        controller.findIntervenorByIdNumber(idNumber, userAuthenticatedUser).also { resp ->
             assertEquals(HttpStatus.OK, resp.statusCode)
             val body = resp.body as Intervenor
             assertEquals(idNumber, body.idNumber)
@@ -62,8 +81,8 @@ class IntervenorControllerTest {
     fun `create duplicate intervenor returns bad request`() {
         val input = IntervenorInput("123", "CC", "John", "mail", "addr")
 
-        controller.createIntervenor(input)
-        val resp = controller.createIntervenor(input)
+        controller.createIntervenor(input, userAuthenticatedUser)
+        val resp = controller.createIntervenor(input, userAuthenticatedUser)
 
         assertEquals(HttpStatus.BAD_REQUEST, resp.statusCode)
     }
@@ -81,7 +100,7 @@ class IntervenorControllerTest {
                 address = null,
             )
 
-        val resp = controller.updateIntervenor(updateInput, id)
+        val resp = controller.updateIntervenor(updateInput, id, userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 
@@ -100,7 +119,7 @@ class IntervenorControllerTest {
                 null,
             )
 
-        val resp = controller.updateIntervenor(updateInput, 999)
+        val resp = controller.updateIntervenor(updateInput, 999, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -110,17 +129,17 @@ class IntervenorControllerTest {
         val idNumber = "123"
         createIntervenor(idNumber)
 
-        val resp = controller.deleteIntervenorByIdNumber(idNumber)
+        val resp = controller.deleteIntervenorByIdNumber(idNumber, userAuthenticatedUser)
 
         assertEquals(HttpStatus.NO_CONTENT, resp.statusCode)
 
-        val findResp = controller.findIntervenorByIdNumber(idNumber)
+        val findResp = controller.findIntervenorByIdNumber(idNumber, userAuthenticatedUser)
         assertEquals(HttpStatus.NOT_FOUND, findResp.statusCode)
     }
 
     @Test
     fun `delete non existing intervenor returns error`() {
-        val resp = controller.deleteIntervenorByIdNumber("999")
+        val resp = controller.deleteIntervenorByIdNumber("999", userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -130,7 +149,7 @@ class IntervenorControllerTest {
         val contact = "contact@mail.com"
         createIntervenor("123", contactInfo = contact)
 
-        val resp = controller.findIntervenorByContactInfo(contact)
+        val resp = controller.findIntervenorByContactInfo(contact, userAuthenticatedUser)
 
         assertEquals(HttpStatus.OK, resp.statusCode)
 
@@ -140,7 +159,7 @@ class IntervenorControllerTest {
 
     @Test
     fun `find by contact info not found`() {
-        val resp = controller.findIntervenorByContactInfo("nope")
+        val resp = controller.findIntervenorByContactInfo("nope", userAuthenticatedUser)
 
         assertEquals(HttpStatus.NOT_FOUND, resp.statusCode)
     }
@@ -157,6 +176,7 @@ class IntervenorControllerTest {
                 contactInfo = contactInfo,
                 address = "Addr",
             ),
+            userAuthenticatedUser,
         ).let { resp ->
             val location =
                 requireNotNull(

@@ -112,9 +112,7 @@ class OccurrenceController(
      * @return `200 OK` com a lista de ocorrências ou erro interno do sistema.
      */
     @GetMapping
-    fun findAll(
-        user: AuthenticatedUser,
-    ): ResponseEntity<*> {
+    fun findAll(user: AuthenticatedUser): ResponseEntity<*> {
         val occurrences = occurrenceService.findAll()
         return when (occurrences) {
             is Success ->
