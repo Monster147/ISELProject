@@ -26,9 +26,9 @@ const RootLayout = () => {
   const theme = Colors[colorScheme] ?? Colors.light;
 
   return (
-    <OfflineSyncProvider>
-      <AuthProvider>
-        <SyncSSEProvider>
+    <AuthProvider>
+      <SyncSSEProvider>
+        <OfflineSyncProvider>
           <OccurrenceProvider>
             <IntervenorProvider>
               <DocumentProvider>
@@ -78,9 +78,9 @@ const RootLayout = () => {
               </DocumentProvider>
             </IntervenorProvider>
           </OccurrenceProvider>
-        </SyncSSEProvider>
-      </AuthProvider>
-    </OfflineSyncProvider>
+        </OfflineSyncProvider>
+      </SyncSSEProvider>
+    </AuthProvider>
   );
 };
 

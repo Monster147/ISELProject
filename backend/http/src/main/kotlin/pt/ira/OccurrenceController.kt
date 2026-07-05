@@ -16,6 +16,7 @@ import pt.ira.model.occurrence.OccurrenceCreateInput
 import pt.ira.occurrence.Occurrence
 import pt.ira.occurrence.OccurrenceType
 import pt.ira.publishers.Publishers
+import pt.ira.user.AuthenticatedUser
 
 /**
  * Controlador REST responsável pela gestão de ocorrências no sistema.
@@ -58,6 +59,7 @@ class OccurrenceController(
     @PostMapping
     fun createOccurrence(
         @RequestBody occurrenceInput: OccurrenceCreateInput,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result =
             occurrenceService.createOccurrence(
@@ -89,6 +91,7 @@ class OccurrenceController(
     @GetMapping("/{occurrenceId}")
     fun findById(
         @PathVariable occurrenceId: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = occurrenceService.findById(occurrenceId)
         return when (result) {
@@ -109,7 +112,9 @@ class OccurrenceController(
      * @return `200 OK` com a lista de ocorrências ou erro interno do sistema.
      */
     @GetMapping
-    fun findAll(): ResponseEntity<*> {
+    fun findAll(
+        user: AuthenticatedUser,
+    ): ResponseEntity<*> {
         val occurrences = occurrenceService.findAll()
         return when (occurrences) {
             is Success ->
@@ -130,6 +135,7 @@ class OccurrenceController(
     @GetMapping("/importance/{importance}")
     fun findByImportance(
         @PathVariable importance: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<List<Occurrence>> = ResponseEntity.ok(occurrenceService.findByImportance(OccurrenceType.valueOf(importance)))
 
     /**
@@ -142,6 +148,7 @@ class OccurrenceController(
     @GetMapping("/reporter/{reporterId}")
     fun findByReporterId(
         @PathVariable reporterId: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<List<Occurrence>> = ResponseEntity.ok(occurrenceService.findOccurrenceByReporterId(reporterId))
 
     /**
@@ -156,6 +163,7 @@ class OccurrenceController(
     @DeleteMapping("/{occurrenceId}")
     fun deleteById(
         @PathVariable occurrenceId: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = occurrenceService.deleteById(occurrenceId)
         return when (result) {
@@ -179,6 +187,7 @@ class OccurrenceController(
     fun addIntervenor(
         @PathVariable id: Int,
         @RequestBody intervenor: IntervenorIdInput,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = occurrenceService.addIntervenor(id, intervenor.intervenorId)
         return when (result) {
@@ -199,6 +208,7 @@ class OccurrenceController(
     fun removeIntervenor(
         @PathVariable id: Int,
         @RequestBody intervenor: IntervenorIdInput,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = occurrenceService.removeIntervenor(id, intervenor.intervenorId)
         return when (result) {

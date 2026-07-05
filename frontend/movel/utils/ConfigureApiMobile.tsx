@@ -1,4 +1,4 @@
-import { configureApi } from "@commons/api/api";
+import {configureApi, getAuthHeaders} from "@commons/api/api";
 import { authInfoRepo } from "@infrastructure/AuthInfoPreferencesRepo";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import { Platform, Alert } from "react-native";
@@ -33,9 +33,13 @@ configureApi(
  */
 async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
   const url = `${apiBaseUrl}/documents/${id}/download`;
+  const headers = {
+    ...(await getAuthHeaders() as Record<string, string>),
+    "ngrok-skip-browser-warning": "true"
+  }
 
   const response = await fetch(url, {
-    headers: { "ngrok-skip-browser-warning": "true" },
+    headers: headers,
   });
   if (!response.ok) {
     throw new Error("Erro ao ir buscar as informações do documento");
@@ -64,7 +68,7 @@ async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
         mime: mime || "application/octet-stream",
         mediaScannable: true,
       },
-    }).fetch("GET", url, { "ngrok-skip-browser-warning": "true" });
+    }).fetch("GET", url, headers);
 
     Alert.alert(
       "Download concluído",
@@ -78,7 +82,7 @@ async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
   const res = await ReactNativeBlobUtil.config({
     fileCache: true,
     path: path,
-  }).fetch("GET", url, { "ngrok-skip-browser-warning": "true" });
+  }).fetch("GET", url, headers);
 }
 
 /**

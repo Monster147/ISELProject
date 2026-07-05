@@ -16,6 +16,7 @@ import pt.ira.model.type.TypeCreateInput
 import pt.ira.model.type.TypeUpdateInput
 import pt.ira.publishers.Publishers
 import pt.ira.type.Type
+import pt.ira.user.AuthenticatedUser
 
 /**
  * Controlador REST responsável pela gestão de tipos.
@@ -54,6 +55,7 @@ class TypeController(
     @PostMapping
     fun createType(
         @RequestBody input: TypeCreateInput,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = typeService.createType(input.name, input.form)
 
@@ -78,6 +80,7 @@ class TypeController(
     @GetMapping("/{id}")
     fun findById(
         @PathVariable id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = typeService.findById(id)
 
@@ -99,6 +102,7 @@ class TypeController(
     @GetMapping("/name/{name}")
     fun findByName(
         @PathVariable name: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = typeService.findByName(name)
 
@@ -114,7 +118,9 @@ class TypeController(
      * @return `200 OK` com a lista completa de tipos.
      */
     @GetMapping
-    fun findAll(): ResponseEntity<List<Type>> = ResponseEntity.ok(typeService.findAll())
+    fun findAll(
+        user: AuthenticatedUser,
+    ): ResponseEntity<List<Type>> = ResponseEntity.ok(typeService.findAll())
 
     /**
      * Atualiza os dados de um tipo de ocorrência existente.
@@ -130,6 +136,7 @@ class TypeController(
     fun updateType(
         @PathVariable id: Int,
         @RequestBody input: TypeUpdateInput,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = typeService.updateType(id, input.name, input.form)
 
@@ -149,6 +156,7 @@ class TypeController(
     @DeleteMapping("/{id}")
     fun deleteById(
         @PathVariable id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = typeService.deleteById(id)
 

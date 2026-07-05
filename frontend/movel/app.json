@@ -5,10 +5,10 @@
     "slug": "IRA",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "../commons/img/adaptive_icon.png",
+    "icon": "../commons/img/adaptive_icon_1.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "../commons/img/adaptive_icon.png",
+      "image": "../commons/img/adaptive_icon_1.png",
       "resizeMode": "contain",
       "backgroundColor": "#613089"
     },
@@ -19,7 +19,7 @@
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"],
       "adaptiveIcon": {
         "backgroundColor": "#613089",
-        "foregroundImage": "../commons/img/adaptive_icon.png"
+        "foregroundImage": "../commons/img/adaptive_icon_1.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "pt.isel.IRA"

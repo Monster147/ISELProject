@@ -4,6 +4,9 @@ import ThemedView from "@components/ThemedView";
 import ThemedText from "@commons/components/ThemedText";
 import { useBackRedirect } from "@hooks/system/useBackRedirect";
 import OfflineBanner from "@components/ThemedOfflineBanner";
+import ThemedCard from "@commons/components/ThemedCard";
+import Spacer from "@commons/components/Spacer";
+import {useTranslation} from "react-i18next";
 
 /**
  * Ecrã "Sobre" da aplicação móvel.
@@ -11,15 +14,22 @@ import OfflineBanner from "@components/ThemedOfflineBanner";
  * Redireciona para o ecrã inicial quando o utilizador carrega no botão de retroceder.
  */
 const About = () => {
+  const { t } = useTranslation();
   useBackRedirect(() => router.navigate(`/home`));
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText style={styles.title} title={true}>
-        About Page
-      </ThemedText>
-      <OfflineBanner />
-    </ThemedView>
+      <ThemedView style={styles.container}>
+        <ThemedCard style={styles.cart}>
+          <ThemedText>{t("about.intro")}</ThemedText>
+          <Spacer height={10} />
+          <ThemedText>{t("about.market")}</ThemedText>
+          <Spacer height={10} />
+          <ThemedText>{t("about.conclusion")}</ThemedText>
+          <Spacer height={10} />
+          <ThemedText>{t("about.authors")}</ThemedText>
+        </ThemedCard>
+        <OfflineBanner />
+      </ThemedView>
   );
 };
 
@@ -35,6 +45,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
     color: "purple",
+  },
+  cart: {
+    padding: 20,
+    borderRadius: 5,
+    boxShadow: "4px 4px rgba(0,0,0,0.1)",
+    maxWidth: 900,
+    width: "85%",
   },
   link: {
     marginVertical: 10,

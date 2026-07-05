@@ -16,6 +16,7 @@ import pt.ira.documents.Documents
 import pt.ira.model.Problem
 import pt.ira.model.documents.DocumentInputModel
 import pt.ira.publishers.Publishers
+import pt.ira.user.AuthenticatedUser
 import java.nio.file.Paths
 
 /**
@@ -58,6 +59,7 @@ class DocumentsController(
     fun uploadDocument(
         @RequestPart("file") file: MultipartFile,
         @RequestPart("data") data: DocumentInputModel,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result =
             documentsService.uploadDocument(
@@ -88,6 +90,7 @@ class DocumentsController(
     @GetMapping("/{id}")
     fun getDocumentById(
         @PathVariable("id") id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = documentsService.findDocumentById(id)
 
@@ -111,6 +114,7 @@ class DocumentsController(
     @GetMapping("/name/{name}")
     fun getDocumentByName(
         @PathVariable("name") name: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = documentsService.findDocumentByName(name)
 
@@ -134,6 +138,7 @@ class DocumentsController(
     @GetMapping("/type/{type}")
     fun getDocumentsByType(
         @PathVariable("type") type: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = documentsService.findDocumentsByType(type)
 
@@ -153,7 +158,9 @@ class DocumentsController(
      * @return `200 OK` com a lista de tipos únicos.
      */
     @GetMapping("/types")
-    fun getAllDocumentTypes(): ResponseEntity<List<String>> {
+    fun getAllDocumentTypes(
+        user: AuthenticatedUser,
+    ): ResponseEntity<List<String>> {
         val types = documentsService.findAllDocumentTypes()
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -166,7 +173,9 @@ class DocumentsController(
      * @return `200 OK` com a lista de todos os documentos.
      */
     @GetMapping
-    fun getAllDocuments(): ResponseEntity<List<Documents>> {
+    fun getAllDocuments(
+        user: AuthenticatedUser,
+    ): ResponseEntity<List<Documents>> {
         val documents = documentsService.findAllDocuments()
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -183,6 +192,7 @@ class DocumentsController(
     @GetMapping("/{id}/download")
     fun downloadDocument(
         @PathVariable("id") id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = documentsService.downloadDocument(id)
 
@@ -215,6 +225,7 @@ class DocumentsController(
     @DeleteMapping("/{id}")
     fun deleteDocument(
         @PathVariable("id") id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = documentsService.deleteDocument(id)
 

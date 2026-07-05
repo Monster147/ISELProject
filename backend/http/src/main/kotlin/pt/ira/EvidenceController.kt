@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import pt.ira.model.Problem
 import pt.ira.model.evidence.CreateEvidenceInput
 import pt.ira.publishers.Publishers
+import pt.ira.user.AuthenticatedUser
 import java.nio.file.Paths
 
 /**
@@ -63,6 +64,7 @@ class EvidenceController(
     fun createEvidence(
         @RequestPart("file") file: MultipartFile,
         @RequestPart("data") data: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val input = objectMapper.readValue(data, CreateEvidenceInput::class.java)
         val result =
@@ -96,6 +98,7 @@ class EvidenceController(
     @GetMapping("/{id}")
     fun findById(
         @PathVariable id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = evidenceService.findById(id)
         return when (result) {
@@ -121,6 +124,7 @@ class EvidenceController(
     @GetMapping("/{id}/download")
     fun downloadEvidence(
         @PathVariable id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = evidenceService.downloadEvidence(id)
         return when (result) {
@@ -154,6 +158,7 @@ class EvidenceController(
     @GetMapping("/byOccurrence/{occurrenceId}")
     fun findByOccurrenceId(
         @PathVariable occurrenceId: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = evidenceService.findByOccurrenceId(occurrenceId)
         return ResponseEntity
@@ -171,6 +176,7 @@ class EvidenceController(
     @GetMapping("/byReporter/{reporterId}")
     fun findByReporterId(
         @PathVariable reporterId: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = evidenceService.findByReporterId(reporterId)
         return ResponseEntity
@@ -190,6 +196,7 @@ class EvidenceController(
     @GetMapping("/byType/{type}")
     fun findByType(
         @PathVariable type: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = evidenceService.findByType(type)
         return ResponseEntity
@@ -207,6 +214,7 @@ class EvidenceController(
     @GetMapping("/byLocation/{location}")
     fun findByLocation(
         @PathVariable location: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = evidenceService.findByLocation(location)
         return ResponseEntity
@@ -220,7 +228,9 @@ class EvidenceController(
      * @return lista completa de evidências.
      */
     @GetMapping
-    fun findAll(): ResponseEntity<*> {
+    fun findAll(
+        user: AuthenticatedUser,
+    ): ResponseEntity<*> {
         val result = evidenceService.findAll()
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -239,6 +249,7 @@ class EvidenceController(
     @DeleteMapping("/{id}")
     fun deleteEvidence(
         @PathVariable id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = evidenceService.deleteById(id)
         return when (result) {
@@ -266,6 +277,7 @@ class EvidenceController(
     fun updateEvidence(
         @PathVariable id: Int,
         @RequestPart("file") file: MultipartFile,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = evidenceService.updateEvidence(id, file)
         return when (result) {

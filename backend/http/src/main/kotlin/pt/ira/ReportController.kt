@@ -19,6 +19,7 @@ import pt.ira.model.report.StatusInput
 import pt.ira.publishers.Publishers
 import pt.ira.report.Report
 import pt.ira.report.ReportStatus
+import pt.ira.user.AuthenticatedUser
 import java.nio.file.Paths
 
 /**
@@ -62,6 +63,7 @@ class ReportController(
     @PostMapping
     fun createReport(
         @RequestBody reportInput: CreateReportInput,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result =
             reportService.createReport(
@@ -93,6 +95,7 @@ class ReportController(
     @GetMapping("/{id}")
     fun findReportById(
         @PathVariable id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = reportService.findById(id)
         return when (result) {
@@ -111,6 +114,7 @@ class ReportController(
     @PostMapping("/submit/{id}")
     fun submitReport(
         @PathVariable id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = reportService.submitReport(id)
         return when (result) {
@@ -129,6 +133,7 @@ class ReportController(
     @GetMapping("byOccurrence/{occurrenceId}")
     fun findReportByOccurrenceId(
         @PathVariable occurrenceId: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = reportService.findByOccurrenceId(occurrenceId)
         return when (result) {
@@ -143,7 +148,9 @@ class ReportController(
      * @return `200 OK` com a lista completa de relatórios.
      */
     @GetMapping
-    fun findAllReports(): ResponseEntity<*> {
+    fun findAllReports(
+        user: AuthenticatedUser,
+    ): ResponseEntity<*> {
         val reports = reportService.findAll()
         return ResponseEntity.status(HttpStatus.OK).body(reports)
     }
@@ -158,6 +165,7 @@ class ReportController(
     @GetMapping("/byStatus/{status}")
     fun findByStatus(
         @PathVariable status: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<List<Report>> = ResponseEntity.ok(reportService.findByStatus(ReportStatus.valueOf(status)))
 
     /**
@@ -170,6 +178,7 @@ class ReportController(
     @GetMapping("/byCreator/{creatorId}")
     fun findByCreator(
         @PathVariable creatorId: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<List<Report>> = ResponseEntity.ok(reportService.findByCreatorId(creatorId))
 
     /**
@@ -184,6 +193,7 @@ class ReportController(
     @DeleteMapping("/{id}")
     fun deleteReportById(
         @PathVariable id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = reportService.deleteById(id)
         return when (result) {
@@ -204,6 +214,7 @@ class ReportController(
     fun updateReportStatus(
         @PathVariable id: Int,
         @RequestBody newStatus: StatusInput,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = reportService.updateStatus(id, ReportStatus.valueOf(newStatus.newStatus))
         return when (result) {
@@ -224,6 +235,7 @@ class ReportController(
     fun addEditor(
         @PathVariable id: Int,
         @RequestBody editor: EditorInput,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = reportService.addEditor(id, editor.editorId)
         return when (result) {
@@ -244,6 +256,7 @@ class ReportController(
     fun removeEditor(
         @PathVariable id: Int,
         @RequestBody editor: EditorInput,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = reportService.removeEditor(id, editor.editorId)
         return when (result) {
@@ -264,6 +277,7 @@ class ReportController(
     @PutMapping("/update/{id}")
     fun updateReport(
         @PathVariable id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = reportService.updateReport(id)
         return when (result) {
@@ -289,6 +303,7 @@ class ReportController(
     @GetMapping("/{id}/download")
     fun downloadReport(
         @PathVariable id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = reportService.downloadReport(id)
         logger.info("Report result: {}", result)

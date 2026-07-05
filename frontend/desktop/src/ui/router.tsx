@@ -20,6 +20,8 @@ import Dashboard from "./app/(dashboard)/dashboard";
 import OccurrenceScreen from "./app/(dashboard)/occurrence";
 import OccurrenceReport from "./app/(dashboard)/occurrences/report/[id]";
 import {isDev} from "../electron/utils";
+import About from "./app/About";
+import Contacts from "./app/Contacts";
 
 const routerArray = [
   {
@@ -27,6 +29,8 @@ const routerArray = [
     children: [
       { path: "/", element: <Loadingscreen /> },
       { path: "/home", element: <Home /> },
+      { path: "/about", element: <About /> },
+      { path: "/contact", element: <Contacts /> },
       {
         element: <AuthLayout />,
         children: [

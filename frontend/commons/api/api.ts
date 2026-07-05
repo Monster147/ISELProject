@@ -41,6 +41,7 @@ type ApiAuthInfo = { token: string } | null;
 type DocumentDownloadHandler = (
   apiBaseUrl: string,
   id: number,
+  authHeaders: HeadersInit,
 ) => Promise<void>;
 
 /**
@@ -243,6 +244,7 @@ export const api = {
   async findUserById(userId: number): Promise<UserHomeOutputModel> {
     return fetchApi<UserHomeOutputModel>(`/user/${userId}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -254,6 +256,7 @@ export const api = {
     return fetchApi<void>("/user/roles/add", {
       method: "POST",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -265,6 +268,7 @@ export const api = {
     return fetchApi<void>("/user/roles/remove", {
       method: "POST",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -276,6 +280,7 @@ export const api = {
     return fetchApi<void>("/user/roles/set", {
       method: "POST",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -311,6 +316,7 @@ export const api = {
     return fetchApi<void>("/role", {
       method: "POST",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -321,6 +327,7 @@ export const api = {
   async deleteRole(roleName: string): Promise<void> {
     return fetchApi<void>(`/role/${roleName}`, {
       method: "DELETE",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -332,6 +339,7 @@ export const api = {
   async findRoleByName(roleName: string): Promise<Role> {
     return fetchApi<Role>(`/role/byName/${roleName}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -343,6 +351,7 @@ export const api = {
   async findRoleById(id: number): Promise<Role> {
     return fetchApi<Role>(`/role/byId/${id}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -353,6 +362,7 @@ export const api = {
   async findAllRole(): Promise<Role[]> {
     return fetchApi<Role[]>("/role", {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -366,6 +376,7 @@ export const api = {
     return fetchApi<void>("/report", {
       method: "POST",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -377,6 +388,7 @@ export const api = {
   async findReportById(id: number): Promise<Report> {
     return fetchApi<Report>(`/report/${id}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -388,6 +400,7 @@ export const api = {
   async findReportByOccurrenceId(occurrenceId: number): Promise<Report> {
     return fetchApi<Report>(`/report/byOccurrence/${occurrenceId}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -399,6 +412,7 @@ export const api = {
   async submitReport(id: number): Promise<Boolean> {
     return fetchApi<Boolean>(`/report/submit/${id}`, {
       method: "POST",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -409,6 +423,7 @@ export const api = {
   async findAllReports(): Promise<Report[]> {
     return fetchApi<Report[]>("/report", {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -420,6 +435,7 @@ export const api = {
   async findByStatus(status: string): Promise<Report[]> {
     return fetchApi<Report[]>(`/report/byStatus/${status}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -431,6 +447,7 @@ export const api = {
   async findByCreator(creatorId: number): Promise<Report[]> {
     return fetchApi<Report[]>(`/report/byCreator/${creatorId}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -441,6 +458,7 @@ export const api = {
   async deleteReportById(id: number): Promise<void> {
     return fetchApi<void>(`/report/${id}`, {
       method: "DELETE",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -454,6 +472,7 @@ export const api = {
     return fetchApi<Report>(`/report/update-status/${id}`, {
       method: "PUT",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -467,6 +486,7 @@ export const api = {
     return fetchApi<Report>(`/report/${id}/editors`, {
       method: "POST",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -480,6 +500,7 @@ export const api = {
     return fetchApi<Report>(`/report/${id}/editors/`, {
       method: "DELETE",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -491,6 +512,7 @@ export const api = {
   async updateReport(id: number): Promise<Report> {
     return fetchApi<Report>(`/report/update/${id}`, {
       method: "PUT",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -520,6 +542,7 @@ export const api = {
     return fetchApi<void>("/intervenor", {
       method: "POST",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -530,6 +553,7 @@ export const api = {
   async findAllIntervenors(): Promise<Intervenor[]> {
     return fetchApi<Intervenor[]>("/intervenor", {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -546,6 +570,7 @@ export const api = {
     return fetchApi<Intervenor>(`/intervenor/update/${intervenorId}`, {
       method: "PUT",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -556,6 +581,7 @@ export const api = {
   async deleteIntervenorByIdNumber(idNumber: string): Promise<void> {
     return fetchApi<void>(`/intervenor/delete/byIdNumber/${idNumber}`, {
       method: "DELETE",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -567,6 +593,7 @@ export const api = {
   async findIntervenorByIdNumber(idNumber: string): Promise<Intervenor> {
     return fetchApi<Intervenor>(`/intervenor/byIdNumber/${idNumber}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -578,6 +605,7 @@ export const api = {
   async findIntervenorByContactInfo(contactInfo: string): Promise<Intervenor> {
     return fetchApi<Intervenor>(`/intervenor/byContactInfo/${contactInfo}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -589,6 +617,7 @@ export const api = {
   async findIntervenorById(id: number): Promise<Intervenor> {
     return fetchApi<Intervenor>(`/intervenor/${id}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -619,6 +648,7 @@ export const api = {
     return fetchApi<Evidence>("/evidence", {
       method: "POST",
       body: formData,
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -630,6 +660,7 @@ export const api = {
   async findEvidenceById(id: number): Promise<Evidence> {
     return fetchApi<Evidence>(`/evidence/${id}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -652,6 +683,7 @@ export const api = {
   async findEvidenceByOccurrenceId(occurrenceId: number): Promise<Evidence[]> {
     return fetchApi<Evidence[]>(`/evidence/byOccurrence/${occurrenceId}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -663,6 +695,7 @@ export const api = {
   async findEvidenceByReporterId(reporterId: number): Promise<Evidence[]> {
     return fetchApi<Evidence[]>(`/evidence/byReporter/${reporterId}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -674,6 +707,7 @@ export const api = {
   async findEvidenceByType(input: Json): Promise<Evidence> {
     return fetchApi<Evidence>("/evidence/byType", {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -685,6 +719,7 @@ export const api = {
   async findEvidenceByLocation(location: string): Promise<Evidence> {
     return fetchApi<Evidence>(`/evidence/byLocation/${location}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -695,6 +730,7 @@ export const api = {
   async findAllEvidence(): Promise<Evidence[]> {
     return fetchApi<Evidence[]>("/evidence", {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -705,6 +741,7 @@ export const api = {
   async deleteEvidence(id: number): Promise<void> {
     return fetchApi<void>(`/evidence/${id}`, {
       method: "DELETE",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -729,6 +766,7 @@ export const api = {
     return fetchApi<Evidence>(`/evidence/update/${id}`, {
       method: "PUT",
       body: formData,
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -742,6 +780,7 @@ export const api = {
     return fetchApi<void>("/occurrence", {
       method: "POST",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -753,6 +792,7 @@ export const api = {
   async findOccurrenceById(occurrenceId: number): Promise<Occurrence> {
     return fetchApi<Occurrence>(`/occurrence/${occurrenceId}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -763,6 +803,7 @@ export const api = {
   async findAllOccurrences(): Promise<Occurrence[]> {
     return fetchApi<Occurrence[]>("/occurrence", {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -774,6 +815,7 @@ export const api = {
   async findOccurrencesByImportance(importance: string): Promise<Occurrence[]> {
     return fetchApi<Occurrence[]>(`/occurrence/importance/${importance}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -785,6 +827,7 @@ export const api = {
   async findOccurrencesByReporterId(reporterId: number): Promise<Occurrence[]> {
     return fetchApi<Occurrence[]>(`/occurrence/reporter/${reporterId}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -795,6 +838,7 @@ export const api = {
   async deleteOccurrenceById(occurrenceId: number): Promise<void> {
     return fetchApi<void>(`/occurrence/${occurrenceId}`, {
       method: "DELETE",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -811,6 +855,7 @@ export const api = {
     return fetchApi<Occurrence>(`/occurrence/${id}/intervenors`, {
       method: "POST",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -827,6 +872,7 @@ export const api = {
     return fetchApi<Occurrence>(`/occurrence/${id}/intervenors`, {
       method: "DELETE",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -840,6 +886,7 @@ export const api = {
   async getDocumentById(id: number): Promise<Documents> {
     return fetchApi<Documents>(`/documents/${id}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -851,6 +898,7 @@ export const api = {
   async getDocumentByName(name: string): Promise<Documents> {
     return fetchApi<Documents>(`/documents/name/${name}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -862,6 +910,7 @@ export const api = {
   async getDocumentByType(type: string): Promise<Documents> {
     return fetchApi<Documents>(`/documents/type/${type}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -872,6 +921,7 @@ export const api = {
   async getAllDocumentTypes(): Promise<string[]> {
     return fetchApi<string[]>(`/documents/types`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -882,6 +932,7 @@ export const api = {
   async getAllDocument(): Promise<Documents[]> {
     return fetchApi<Documents[]>(`/documents`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -893,6 +944,7 @@ export const api = {
   async DeleteDocumentById(id: number): Promise<Documents> {
     return fetchApi<Documents>(`/documents/${id}`, {
       method: "DELETE",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -901,7 +953,8 @@ export const api = {
    * @param id Identificador do documento a realizar download.
    */
   async downloadDocument(id: number): Promise<void> {
-    return documentDownloadHandler(API_BASE_URL, id);
+    const authHeaders = await getAuthHeaders();
+    return documentDownloadHandler(API_BASE_URL, id, authHeaders);
   },
 
   //Types
@@ -915,6 +968,7 @@ export const api = {
     return fetchApi<Type>(`/type`, {
       method: "POST",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -926,6 +980,7 @@ export const api = {
   async findTypeById(id: number): Promise<Type> {
     return fetchApi<Type>(`/type/${id}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -937,6 +992,7 @@ export const api = {
   async findTypeByName(name: string): Promise<Type> {
     return fetchApi<Type>(`/type/name/${name}`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -947,6 +1003,7 @@ export const api = {
   async findAllTypes(): Promise<Type[]> {
     return fetchApi<Type[]>(`/type`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -960,6 +1017,7 @@ export const api = {
     return fetchApi<Type>(`/type/${id}`, {
       method: "PUT",
       body: JSON.stringify(input),
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -970,6 +1028,7 @@ export const api = {
   async deleteTypeById(id: number): Promise<void> {
     return fetchApi<void>(`/type/${id}`, {
       method: "DELETE",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -982,6 +1041,7 @@ export const api = {
   async getOverviewStats(): Promise<OverviewStats> {
     return fetchApi<OverviewStats>(`/stats`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -992,6 +1052,7 @@ export const api = {
   async getStatsReportByType(): Promise<StatsReportType[]> {
     return fetchApi<StatsReportType[]>(`/stats/report/type`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -1002,6 +1063,7 @@ export const api = {
   async getStatsReportByStatus(): Promise<StatsReportStatus[]> {
     return fetchApi<StatsReportStatus[]>(`/stats/report/status`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -1014,6 +1076,7 @@ export const api = {
       `/stats/occurrence/importance`,
       {
         method: "GET",
+        headers: await getAuthHeaders(),
       },
     );
   },
@@ -1025,6 +1088,7 @@ export const api = {
   async getStatsReportByTypeThisMonth(): Promise<StatsReportType[]> {
     return fetchApi<StatsReportType[]>(`/stats/report/type/month`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -1035,6 +1099,7 @@ export const api = {
   async getStatsReportByStatusThisMonth(): Promise<StatsReportStatus[]> {
     return fetchApi<StatsReportStatus[]>(`/stats/report/status/month`, {
       method: "GET",
+      headers: await getAuthHeaders(),
     });
   },
 
@@ -1049,6 +1114,7 @@ export const api = {
       `/stats/occurrence/importance/month`,
       {
         method: "GET",
+        headers: await getAuthHeaders(),
       },
     );
   },

@@ -1,4 +1,4 @@
-import { configureApi } from "@commons/api/api";
+import {configureApi, getAuthHeaders} from "@commons/api/api";
 import { authInfoRepo } from "@infrastructure/AuthInfoPreferencesRepo";
 import {getAPIUrl} from "@utils/getAPIUrl";
 
@@ -27,11 +27,13 @@ configureApi(
  * @throws {Error} Se a resposta HTTP não for bem-sucedida.
  */
 async function downloadDocument(apiBaseUrl: string, id: number): Promise<void> {
+  const headers = {
+    ...(await getAuthHeaders()),
+    "ngrok-skip-browser-warning": "true"
+  }
   const response = await fetch(`${apiBaseUrl}/documents/${id}/download`, {
     method: "GET",
-    headers: {
-      "ngrok-skip-browser-warning": "true"
-    }
+    headers: headers
   });
 
   if (!response.ok) {

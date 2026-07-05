@@ -68,8 +68,11 @@ ISELProject/
 
 ## Autores
 
+- José Saldanha
+- Afonso Jesus
+
 Projeto Final de Curso — [ISEL](https://www.isel.pt) 2025/26
 
 Desenvolvido em parceria com **CAPT Consulting**.
 
-Orientação: Dr. Artur Ferreira e Dr. Pedro Matutino.
+Orientação: Dr. Artur Ferreira e Dr. Pedro Miguens Matutino.

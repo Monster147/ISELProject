@@ -16,6 +16,7 @@ import pt.ira.model.Problem
 import pt.ira.model.intervenor.IntervenorInput
 import pt.ira.model.intervenor.IntervenorUpdateInput
 import pt.ira.publishers.Publishers
+import pt.ira.user.AuthenticatedUser
 
 /**
  * Controlador REST responsável pela gestão de intervenientes (intervenors).
@@ -56,6 +57,7 @@ class IntervenorController(
     @PostMapping
     fun createIntervenor(
         @RequestBody intervenorInput: IntervenorInput,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result: Either<IntervenorError, Intervenor> =
             intervenorService.createIntervenor(
@@ -85,7 +87,9 @@ class IntervenorController(
      * @return `200 OK` com a lista completa de intervenientes.
      */
     @GetMapping
-    fun findAllIntervenors(): ResponseEntity<*> {
+    fun findAllIntervenors(
+        user: AuthenticatedUser,
+    ): ResponseEntity<*> {
         val intervenors = intervenorService.findAll()
         return ResponseEntity.status(HttpStatus.OK).body(intervenors)
     }
@@ -105,6 +109,7 @@ class IntervenorController(
     fun updateIntervenor(
         @RequestBody intervenorUpdateInput: IntervenorUpdateInput,
         @PathVariable intervenorId: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result =
             intervenorService.updateIntervenor(
@@ -143,6 +148,7 @@ class IntervenorController(
     @DeleteMapping("/delete/byIdNumber/{idNumber}")
     fun deleteIntervenorByIdNumber(
         @PathVariable idNumber: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result =
             intervenorService.deleteIntervenorByIdNumber(
@@ -169,6 +175,7 @@ class IntervenorController(
     @GetMapping("/byIdNumber/{idNumber}")
     fun findIntervenorByIdNumber(
         @PathVariable idNumber: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result =
             intervenorService.findByIntervenorByIdNumber(
@@ -195,6 +202,7 @@ class IntervenorController(
     @GetMapping("/byContactInfo/{contactInfo}")
     fun findIntervenorByContactInfo(
         @PathVariable contactInfo: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result =
             intervenorService.findByIntervenorContactInfo(
@@ -220,6 +228,7 @@ class IntervenorController(
     @GetMapping("/{id}")
     fun findIntervenorById(
         @PathVariable id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = intervenorService.findByID(id)
         return when (result) {

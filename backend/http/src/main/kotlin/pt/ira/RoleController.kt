@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pt.ira.model.Problem
+import pt.ira.user.AuthenticatedUser
 
 /**
  * Controlador REST responsável pela gestão dos cargos (roles) no sistema.
@@ -48,6 +49,7 @@ class RoleController(
     @PostMapping
     fun createRole(
         @RequestBody roleName: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = roleService.createRole(roleName)
         return when (result) {
@@ -74,6 +76,7 @@ class RoleController(
     @DeleteMapping("/{roleName}")
     fun delete(
         @PathVariable roleName: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = roleService.deleteRoleByName(roleName)
         return when (result) {
@@ -95,6 +98,7 @@ class RoleController(
     @GetMapping("/byName/{roleName}")
     fun findByName(
         @PathVariable roleName: String,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = roleService.findByName(roleName)
         return when (result) {
@@ -117,6 +121,7 @@ class RoleController(
     @GetMapping("/byId/{id}")
     fun findById(
         @PathVariable id: Int,
+        user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val result = roleService.findById(id)
         return when (result) {
@@ -135,7 +140,9 @@ class RoleController(
      * @return `200 OK` com a lista completa de cargos.
      */
     @GetMapping
-    fun findAll(): ResponseEntity<*> {
+    fun findAll(
+        user: AuthenticatedUser,
+    ): ResponseEntity<*> {
         val result = roleService.findAllRoles()
         return ResponseEntity
             .status(HttpStatus.OK)

@@ -290,6 +290,12 @@ const es = {
       updateMessage: "Estás seguro(a) de que quieres actualizar el informe?",
       updateConfirm: "Actualizar",
     },
+    about: {
+      intro: "Actualmente, el proceso de investigación sobre el terreno se basa en un conjunto de métodos y herramientas genéricos. Es habitual que los investigadores recurran a medios tradicionales, como la libreta de notas, la grabadora de voz y la cámara fotográfica del teléfono móvil, complementados con aplicaciones de uso general, como hojas de cálculo y aplicaciones de notas. La consolidación de todos estos elementos en un informe final suele ser realizada por el propio investigador.",
+      market: "En el sector asegurador existen diversas soluciones destinadas a la gestión y tramitación de siniestros, que ofrecen funcionalidades como la notificación digital de incidencias, la gestión documental, la recopilación de evidencias y la automatización de procesos. Sin embargo, muchas de estas soluciones se centran únicamente en etapas específicas del proceso de siniestro o presentan una elevada complejidad de uso, estando orientadas a la gestión operativa de las aseguradoras en lugar de proporcionar apoyo directo al investigador. Insurance Reporter App pretende dar respuesta a esta necesidad mediante una solución integrada que acompaña al investigador en todas las fases del proceso de investigación.",
+      conclusion: "Con el objetivo de modernizar, automatizar y simplificar este proceso, la principal finalidad de esta aplicación es apoyar al investigador en la recopilación de los distintos elementos necesarios mediante un documento estandarizado denominado informe de investigación. Al mismo tiempo, se pretende facilitar el análisis por parte de la aseguradora o entidad responsable, permitiendo una toma de decisiones fundamentada y ágil.",
+      authors: "Este trabajo ha sido realizado por José Saldanha y Afonso Jesus en el marco de Proyecto y Seminario del Grado en Ingeniería Informática y de Computadores del Instituto Superior de Engenharia de Lisboa (ISEL), bajo la supervisión de los profesores Dr. Artur Ferreira y Dr. Pedro Miguens Matutino, y desarrollado en colaboración con CAPT Consulting."
+    }
   },
 };
 
