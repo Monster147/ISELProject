@@ -91,9 +91,11 @@ frontend/
 │   └── ...
 ├── desktop/     # Aplicação desktop (Electron)
 │   └── <a href="./desktop/README.md">README.md</a>
+│   └── <a href="./desktop/INSTRUCTIONS.md">INSTRUCTIONS.md</a>
 │   └── ...
 ├── movel/       # Aplicação móvel (Expo)
 │   └── <a href="./movel/README.md">README.md</a>
+│   └── <a href="./movel/INSTRUCTIONS.md">INSTRUCTIONS.md</a>
 │   └── ...
 └── __tests__/   # Testes Jest às três áreas do frontend
 </pre>

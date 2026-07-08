@@ -53,6 +53,7 @@ Relativamente às aplicações cliente, a implementação da interface gráfica 
 ISELProject/
 ├── backend/        # API REST, lógica de negócio e base de dados
 │   └── <a href="./backend/README.md">README.md</a>   # Documentação detalhada do backend
+│   └── <a href="./backend/INSTRUCTIONS.md">INSTRUCTIONS.md</a>   # Instruções para executar o backend
 │   └── ...
 │
 ├── frontend/       # Aplicações cliente móvel e desktop
