@@ -14,6 +14,8 @@ Para resolver esta limitação, implementou-se uma configuração estratégica n
 
 Caso o objetivo futuro do projeto passe por gerar binários _desktop_ nativos, como executáveis `.exe` para _Windows_ ou pacotes `.app` para _macOS_, com otimização máxima de desempenho, recomenda-se a substituição do _Electron_ pela adoção direta de soluções dedicadas, nomeadamente o _React Native Windows_ ou o _React Native macOS_.
 
+Importa salientar que, face a esta abordagem híbrida, caso o objetivo futuro do projeto passe por gerar binários _desktop_ nativos, como executáveis _.exe_ para _Windows_ ou pacotes _.app_ para _macOS_, com otimização máxima de desempenho, recomenda-se a substituição do _Electron_ pela adoção direta de soluções dedicadas, nomeadamente o _React Native Windows_ ou o _React Native macOS_. Esta substituição teria como principal impacto a obtenção de binários _desktop_ mais leves e com melhor desempenho, eliminando o _overhead_ associado ao motor _Chromium_. Contudo, essa transição exigiria uma refatoração relevante da vertente _desktop_, nomeadamente a migração do sistema de empacotamento para o _Metro_, a remoção de dependências e componentes específicos do _Electron_, a adaptação dos elementos de interface e a substituição dos mecanismos de persistência e de comunicação atualmente baseados em _localStorage_ e em funcionalidades _web_. Assim, apesar dos ganhos em desempenho e integração nativa, esta alteração implicaria um esforço significativo de adaptação e manutenção do código existente.
+
 ---
 
 ## Estrutura Interna

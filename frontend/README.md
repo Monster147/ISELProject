@@ -16,6 +16,10 @@ Em virtude destas escolhas tecnológicas, o código do _frontend_ encontra-se es
 - **`desktop/`** — Aplicação _desktop_, construída com _Electron_;
 - **`movel/`** — Aplicação móvel, construída com _Expo_.
 
+<p align="center">
+  <img src="pictures/DiagramaFrontend.png" alt="Arquitetura do Frontend" width="850">
+</p>
+
 ### Separação do Desenvolvimento em Expo e Electron
 
 Apesar de partilharem a mesma base tecnológica (_React Native_ e _TypeScript_), o desenvolvimento foi realizado em duas tecnologias distintas, dada a diferença de objetivos e de ambiente de execução de cada vertente.
@@ -37,6 +41,10 @@ Os ecrãs encontram-se agrupados em duas zonas de acesso distintas: uma de acess
 A zona pública inicia-se no ecrã de carregamento (_Loading Screen_), que verifica o estado de autenticação do utilizador, encaminhando-o para o ecrã principal (_Home Screen_) ou, caso já exista sessão ativa, diretamente para o ecrã de ocorrências. A partir do ecrã principal é possível aceder aos ecrãs informativos _About_ e _Contacts_, bem como aos ecrãs de registo e de início de sessão.
 
 Na zona restrita, a navegação entre os principais domínios do sistema é assegurada por uma barra de navegação persistente, que disponibiliza o acesso aos ecrãs de intervenientes, estatísticas, ocorrências, documentos e perfil. A partir do ecrã de uma ocorrência é possível aceder aos respetivos intervenientes, evidências e, na aplicação _desktop_, ao relatório de averiguação.
+
+<p align="center">
+  <img src="pictures/DiagramaEcras.png" alt="Diagrama de ecrãs do sistema" width="850">
+</p>
 
 ---
 

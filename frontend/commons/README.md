@@ -1,6 +1,6 @@
 # Commons
 
-Com o objetivo de maximizar a eficiência do desenvolvimento, a arquitetura do _frontend_ adota uma estratégia de reaproveitamento de componentes. Este módulo centraliza as interfaces lógicas, os serviços e as definições de dados partilhadas entre as aplicações _desktop_ e móvel, isolando-as por completo das plataformas consumidoras. Este desacoplamento elimina a redundância de código nas aplicações cliente, estruturando-se em quatro pilares fundamentais.
+Com o objetivo de maximizar a eficiência do desenvolvimento, a arquitetura do _frontend_ adota uma estratégia de reaproveitamento de componentes. Este módulo centraliza as interfaces lógicas, os serviços e as definições de dados partilhadas entre as aplicações _desktop_ e móvel, isolando-as por completo das plataformas consumidoras. Este desacoplamento elimina a redundância de código nas aplicações cliente, estruturando-se em seis pilares fundamentais.
 
 ---
 
@@ -26,9 +26,5 @@ Os recursos multimédia estáticos, comuns a ambas as aplicações, encontram-se
 
 Este subdiretório agrupa os componentes de interface que não dependem de implementações específicas de cada plataforma, permitindo a sua reutilização tanto na aplicação _desktop_ como na móvel. Por assentarem nas primitivas do _React Native_, estes componentes são renderizados de forma coerente em ambos os ambientes, contribuindo para uma identidade visual uniforme.
 
-## Outros Módulos Partilhados
-
-Complementarmente aos pilares descritos, este diretório inclui ainda:
-
-- **`errors/`** — Estruturas comuns para o tratamento e representação de erros devolvidos pela API;
-- **`i18next/`** — Configuração base e ficheiros de tradução (`locales`) partilhados pela internacionalização das aplicações.
+##  Traduções e mensagem de erros (`i18n` e `errors`)
+Estes subdiretórios agrupam as traduções da aplicação e as descrições das mensagens de erro vindas da resposta de pedidos para a _API_, garantindo que ambos os elementos são partilhados entre plataformas e apresentados no idioma do utilizador.
