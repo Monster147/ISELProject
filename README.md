@@ -72,7 +72,7 @@ ISELProject/
 - José Saldanha
 - Afonso Jesus
 
-Projeto Final de Curso — [ISEL](https://www.isel.pt) [LEIC](https://www.isel.pt/curso/licenciatura/licenciatura-em-engenharia-informatica-e-de-computadores) 2025/26
+Projeto Final de Curso — [ISEL](https://www.isel.pt) — [LEIC](https://www.isel.pt/curso/licenciatura/licenciatura-em-engenharia-informatica-e-de-computadores) 2025/26
 
 Desenvolvido em parceria com **CAPT Consulting**.
 
