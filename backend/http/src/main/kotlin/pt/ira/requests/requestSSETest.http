@@ -1,4 +1,4 @@
-@token_user = RmZO1vDOtejAA2CP_MiLVeN0e__ksnOwCEkVC66Ufs4=
+@token_user = M-aq3tS5EcQFMYcXz2Im1XSCAm8y2bPoqQJqx9ONoEk=
 
 ### Create Admin User
 POST http://localhost:8080/api/user
@@ -20,6 +20,26 @@ Content-Type: application/json
   "password": "123456"
 }
 
+### Create Document
+POST http://localhost:8080/api/documents
+Content-Type: multipart/form-data; boundary=boundary123
+Authorization: Bearer {{token_user}}
+
+--boundary123
+Content-Disposition: form-data; name="file"; filename="03_InformaçãoSocioeconómica.pdf"
+Content-Type: application/pdf
+
+< C:\Users\User\Downloads\Templates\Templates\01_AUTOMÓVEL\02_DOCUMENTOSDESUPORTECAPTAUTO_paraimpressão\03_InformaçãoSocioeconómica.pdf
+--boundary123
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+  "name": "03_InformaçãoSocioeconómica",
+  "type": "Socioeconómica"
+}
+--boundary123--
+
 ### Create Type
 POST http://localhost:8080/api/type
 Content-Type: application/json
@@ -27,16 +47,40 @@ Authorization: Bearer {{token_user}}
 
 < ../../../../../../../docs/forms/example-form.json
 
+### Create Type
+POST http://localhost:8080/api/type
+Content-Type: application/json
+Authorization: Bearer {{token_user}}
+
+< ../../../../../../../docs/forms/accident-form.json
+
 ### Create occurrence
 POST http://localhost:8080/api/occurrence
 Content-Type: application/json
 Authorization: Bearer {{token_user}}
 
 {
-  "usersId": 1,
+  "usersId": 2,
   "endDate": "2031-12-31",
-  "importance": "URGENT",
+  "importance": "CRITICAL",
   "occurrenceType": 1 ,
+  "occurrenceInfo": {
+    "messagePT": "O sinistro foi registado com base nas informações fornecidas pelo participante. De acordo com os dados recolhidos, o evento ocorreu na data, hora e local indicados, envolvendo as entidades identificadas na participação. As circunstâncias descritas foram registadas para efeitos de análise e validação, incluindo os danos reportados, os intervenientes envolvidos e quaisquer observações adicionais relevantes. Esta informação será utilizada no processo de avaliação do sinistro e poderá ser complementada ou atualizada caso sejam disponibilizados novos elementos.",
+    "messageEN": "The claim has been registered based on the information provided by the claimant. According to the collected data, the incident occurred on the specified date, time and location, involving the parties identified in the report. The described circumstances have been recorded for review and validation purposes, including the reported damages, the parties involved and any additional relevant observations. This information will be used during the claim assessment process and may be supplemented or updated if further details become available.",
+    "messageES": "El siniestro ha sido registrado con base en la información proporcionada por el declarante. Según los datos recopilados, el incidente ocurrió en la fecha, hora y lugar indicados, involucrando a las partes identificadas en la declaración. Las circunstâncias descritas han sido registradas para su análisis y validación, incluyendo los daños comunicados, las personas o entidades implicadas y cualquier observación adicional relevante. Esta información se utilizará durante el proceso de evaluación del siniestro y podrá complementarse o actualizarse en caso de que se disponga de novos datos."
+  }
+}
+
+### Create occurrence
+POST http://localhost:8080/api/occurrence
+Content-Type: application/json
+Authorization: Bearer {{token_user}}
+
+{
+  "usersId": 2,
+  "endDate": "2031-12-31",
+  "importance": "NORMAL",
+  "occurrenceType": 2 ,
   "occurrenceInfo": {
     "messagePT": "O sinistro foi registado com base nas informações fornecidas pelo participante. De acordo com os dados recolhidos, o evento ocorreu na data, hora e local indicados, envolvendo as entidades identificadas na participação. As circunstâncias descritas foram registadas para efeitos de análise e validação, incluindo os danos reportados, os intervenientes envolvidos e quaisquer observações adicionais relevantes. Esta informação será utilizada no processo de avaliação do sinistro e poderá ser complementada ou atualizada caso sejam disponibilizados novos elementos.",
     "messageEN": "The claim has been registered based on the information provided by the claimant. According to the collected data, the incident occurred on the specified date, time and location, involving the parties identified in the report. The described circumstances have been recorded for review and validation purposes, including the reported damages, the parties involved and any additional relevant observations. This information will be used during the claim assessment process and may be supplemented or updated if further details become available.",

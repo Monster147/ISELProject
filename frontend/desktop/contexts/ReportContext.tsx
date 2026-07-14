@@ -1,9 +1,10 @@
 import { createContext, useCallback, useMemo } from "react";
-import { api } from "@commons/api/api";
+import {api, getAuthHeaders} from "@commons/api/api";
 import { CreateReportInput } from "@commons/models/report/CreateReportInput";
 import { Report } from "@commons/models/report/Report";
 import { StatusInput } from "@commons/models/report/StatusInput";
 import { Json } from "@commons/models/utils/Json";
+import {getAPIUrl} from "@utils/getAPIUrl";
 
 type ReportContextValue = {
   createReport: (
@@ -158,8 +159,13 @@ export const ReportProvider = ({ children }) => {
 
   const downloadReport = useCallback(async (id: number): Promise<any> => {
     try {
-      const response = await fetch(`/api/report/${id}/download`, {
+      const headers = {
+        ...(await getAuthHeaders()),
+        "ngrok-skip-browser-warning": "true",
+      };
+      const response = await fetch(`${getAPIUrl()}/report/${id}/download`, {
         method: "GET",
+        headers
       });
 
       if (!response.ok) {

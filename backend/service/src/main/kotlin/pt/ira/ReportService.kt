@@ -397,7 +397,7 @@ class ReportService(
                 }
                 for (i in 0 until repeatCount) {
                     val sectionTitle = section["title"]
-                    val expandedTitle = sectionTitle?.get(language)?.asText()?.replace("{index}", i.toString())
+                    val expandedTitle = sectionTitle?.get(language)?.asText()?.replace("{index}", (i+1).toString())
                     val sanitizedTitle = sanitizeSectionName(expandedTitle)
                     val savedSection = loadSavedSection(occurrenceId, sanitizedTitle)
                     val data = savedSection?.get("data")
@@ -407,7 +407,8 @@ class ReportService(
                         }
                         val fieldName = field["name"].asText().replace("{index}", i.toString())
                         val value = data?.get(fieldName)
-                        if (value == null || value.asText().isBlank()) {
+                        logger.info("VALUE IN FOR: {}", value)
+                        if (value == null || value.isNull || value.asText().isBlank()) {
                             return false
                         }
                     }
@@ -423,7 +424,8 @@ class ReportService(
                     }
                     val fieldName = field["name"].asText()
                     val value = data?.get(fieldName)
-                    if (value == null || value.asText().isBlank()) {
+                    logger.info("VALUE: {}", value)
+                    if (value == null || value.isNull || value.asText().isBlank()) {
                         return false
                     }
                 }
