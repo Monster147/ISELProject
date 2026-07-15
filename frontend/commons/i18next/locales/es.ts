@@ -1,7 +1,7 @@
 const es = {
   translation: {
     home: {
-      appName: "Aplicación de reportes de seguros",
+      appName: "Aplicación de Informes Periciales",
       login: "Iniciar sesión",
       register: "Registrarse",
       about: "Acerca de",

@@ -1,7 +1,7 @@
 const pt = {
   translation: {
     home: {
-      appName: "Aplicação de reportagem de seguros",
+      appName: "Aplicação de Relatórios de Peritagem",
       login: "Iniciar sessão",
       register: "Criar Conta",
       about: "Sobre",
