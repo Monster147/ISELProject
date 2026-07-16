@@ -17,6 +17,7 @@ jest.mock("@commons/api/api", () => ({
     submitReport: jest.fn(),
     updateReport: jest.fn(),
   },
+  getAuthHeaders: jest.fn(async () => ({})),
 }));
 
 const mockApi = api as jest.Mocked<typeof api>;
@@ -132,9 +133,10 @@ describe("ReportContext / useReport", () => {
       await result.current.downloadReport(5);
       clickSpy.mockRestore();
 
-      expect(fetchMock).toHaveBeenCalledWith("/api/report/5/download", {
-        method: "GET",
-      });
+      expect(fetchMock).toHaveBeenCalledWith(
+          "/api/report/5/download",
+          expect.objectContaining({ method: "GET" }),
+      );
       expect(createObjectURL).toHaveBeenCalledWith(blob);
       expect(revokeObjectURL).toHaveBeenCalledWith("blob:url");
     });
